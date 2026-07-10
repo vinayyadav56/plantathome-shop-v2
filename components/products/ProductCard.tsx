@@ -6,7 +6,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/products/${product.uuid}`}
       className="card group overflow-hidden transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-18px_rgba(22,48,26,.28)]"
     >
       <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-forest-soft to-cream">
