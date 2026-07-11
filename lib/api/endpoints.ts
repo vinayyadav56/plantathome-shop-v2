@@ -3,27 +3,53 @@ import type {
   Product,
   Category,
   City,
+  Availability,
   Configuration,
   Quote,
   ValidationResult,
   Cart,
   CheckoutSession,
   Order,
+  SearchHit,
+  SearchMeta,
+  Banner,
+  CmsPage,
 } from './types';
 
 /* ── Catalog ─────────────────────────────────────────────────────────────── */
-export function listProducts(params: { search?: string; category?: string; limit?: number }) {
+export function listProducts(params: { search?: string; category?: string; limit?: number; page?: number }) {
   const q = new URLSearchParams({ status: 'published' });
   if (params.search) q.set('search', params.search);
   if (params.category) q.set('category', params.category);
+  if (params.page) q.set('page', String(params.page));
   q.set('limit', String(params.limit ?? 24));
   return getWithMeta<Product[]>(`/catalog/products?${q.toString()}`);
 }
 export const getProduct = (idOrSlug: string) => get<Product>(`/catalog/products/${idOrSlug}`);
 export const listCategories = () => get<Category[]>(`/catalog/categories`);
+export const getCategory = (uuidOrSlug: string) => get<Category>(`/catalog/categories/${uuidOrSlug}`);
+
+/* ── Search (the only public price source: price_min/max in RUPEES) ───────── */
+export function searchProducts(params: { q?: string; category?: string; city?: string | null; limit?: number }) {
+  const qs = new URLSearchParams();
+  if (params.q) qs.set('q', params.q);
+  if (params.category) qs.set('filter[category]', params.category);
+  if (params.city) qs.set('city', params.city);
+  qs.set('limit', String(params.limit ?? 24));
+  return getWithMeta<SearchHit[]>(`/search?${qs.toString()}`) as Promise<{ data: SearchHit[]; meta: SearchMeta }>;
+}
+export const autocomplete = (q: string) => get<string[]>(`/search/autocomplete?q=${encodeURIComponent(q)}`);
+
+/* ── CMS ─────────────────────────────────────────────────────────────────── */
+export const listBanners = (position: string, city?: string | null) =>
+  get<Banner[]>(`/cms/banners?position=${position}${city ? `&city=${city}` : ''}`);
+export const getCmsPage = (slug: string, city?: string | null) =>
+  get<CmsPage>(`/cms/pages/${slug}${city ? `?city=${city}` : ''}`);
 
 /* ── Serviceability ──────────────────────────────────────────────────────── */
 export const listCities = () => get<City[]>(`/serviceability/cities`);
+export const getAvailability = (city: string, product: string) =>
+  get<Availability>(`/serviceability/availability?city=${city}&product=${product}`);
 
 /* ── Configuration (meta.nursery_id resolves the fulfilling vendor for a city) ─ */
 export const getConfiguration = (product: string, variant: string, city: string | null) =>

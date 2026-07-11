@@ -1,59 +1,47 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { listProducts } from '@/lib/api/endpoints';
-import { qk } from '@/lib/query-keys';
-import { ProductCard } from './ProductCard';
+import { useBrowseCards, useSearchCards } from '@/lib/hooks/useProductCards';
+import { ProductCard, ProductCardSkeleton } from './ProductCard';
 
 export function ProductGrid({
   search,
-  category,
-  limit = 24,
+  categoryUuids,
+  limit = 12,
+  cols = 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
 }: {
   search?: string;
-  category?: string;
+  categoryUuids?: string[] | null;
   limit?: number;
+  cols?: string;
 }) {
-  const filters = { search, category, limit };
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: qk.products(filters),
-    queryFn: () => listProducts(filters),
-    placeholderData: (prev) => prev,
-  });
+  const browse = useBrowseCards({ categoryUuids, limit });
+  const searched = useSearchCards({ q: search ?? '', limit });
+  const active = search ? searched : browse;
+  const { cards, isLoading, isError } = active;
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="card animate-pulse">
-            <div className="aspect-square bg-forest-soft/60" />
-            <div className="space-y-2 p-4">
-              <div className="h-3 w-1/3 rounded bg-forest-soft" />
-              <div className="h-4 w-2/3 rounded bg-forest-soft" />
-            </div>
-          </div>
+      <div className={`grid gap-4 ${cols}`}>
+        {Array.from({ length: Math.min(limit, 8) }).map((_, i) => (
+          <ProductCardSkeleton key={i} />
         ))}
       </div>
     );
   }
-
   if (isError) {
     return (
       <p className="rounded-card border border-clay/30 bg-clay/5 p-6 text-center text-sm text-clay">
-        Couldn&apos;t load products{error instanceof Error ? `: ${error.message}` : ''}.
+        Couldn’t load products. Please try again.
       </p>
     );
   }
-
-  const products = data?.data ?? [];
-  if (products.length === 0) {
-    return <p className="py-12 text-center text-forest-ink/60">No plants found. Try another search.</p>;
+  if (cards.length === 0) {
+    return <p className="py-12 text-center text-forest-ink/60">No products found here yet.</p>;
   }
-
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      {products.map((p) => (
-        <ProductCard key={p.uuid} product={p} />
+    <div className={`grid gap-4 ${cols}`}>
+      {cards.map((c) => (
+        <ProductCard key={c.uuid} card={c} />
       ))}
     </div>
   );

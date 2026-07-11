@@ -12,7 +12,6 @@ export type ApiEnvelope<T> = {
 };
 
 /* ── Catalog ─────────────────────────────────────────────────────────────── */
-export type Category = { uuid: string; name: string; slug: string; status?: string; parent_uuid?: string | null };
 export type Variant = { uuid: string; sku?: string; size_code?: string; name?: string; weight_grams?: number };
 export type Media = { url: string; type?: string; alt?: string };
 export type Product = {
@@ -30,8 +29,28 @@ export type Product = {
   attributes?: { code: string; value: unknown }[];
 };
 
+export type Category = { uuid: string; name: string; slug: string; status?: string; depth?: number; sort?: number; parent_uuid?: string | null; children?: Category[] | null };
+
+/* ── Search ──────────────────────────────────────────────────────────────── */
+export type SearchHit = {
+  product_uuid: string;
+  name: string;
+  slug: string;
+  category?: { uuid: string; name: string } | null;
+  attributes?: Record<string, unknown>;
+  price_min?: string | number | null;
+  price_max?: string | number | null;
+};
+export type SearchFacet = { uuid: string; name: string; count: number };
+export type SearchMeta = { total: number; facets?: { category?: SearchFacet[] }; backend?: string; city_filtered?: boolean };
+
+/* ── CMS ─────────────────────────────────────────────────────────────────── */
+export type Banner = { uuid: string; title: string; image_url: string; link?: string | null; position?: string; city_uuid?: string | null };
+export type CmsPage = { slug: string; title: string; body?: string | null; city_uuid?: string | null };
+
 /* ── Serviceability ──────────────────────────────────────────────────────── */
 export type City = { uuid: string; name: string; state?: string | null };
+export type Availability = { available: boolean; reason?: string; serving_vendor_count?: number; in_stock_vendor_count?: number };
 
 /* ── Configuration ───────────────────────────────────────────────────────── */
 export type ConfigOption = {

@@ -2,10 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Brand tokens. Font vars are supplied by next/font (see layout.tsx); the
-   values below are only fallbacks if the fonts fail to load. */
+/* ── PlantAtHome design tokens (ported from V1 premium design system) ──
+   Font vars come from next/font (layout.tsx); values below are fallbacks. */
 :root {
   --wrap: 1280px;
+
+  /* runtime design-system (no admin swapper in v2 — fixed to brand defaults) */
+  --ds-accent: #4e8b31;
+  --ds-accent-soft: #eaf4e6;
+  --ds-accent-ink: #2e5e2a;
+  --ds-btn: #2e5e2a;
+  --ds-btn-hover: #285325;
+  --ds-cta: #4ade80;
+  --ds-cta-hover: #41c371;
+  --ds-cta-ink: #061a0b;
+
+  /* premium neutral + gradient tokens */
+  --pa-primary: #1b5e3a;
+  --pa-bg: #fafaf8;
+  --pa-bg-alt: #f4f7f4;
+  --pa-text: #374151;
+  --pa-text-muted: #6b7280;
+  --pa-border: #e7e1d6;
+  --pa-grad: linear-gradient(135deg, #1b5e3a 0%, #2e7d32 60%, #388e3c 100%);
+  --pa-grad-hero: linear-gradient(160deg, #0d3d14 0%, #1b5e3a 50%, #2e7d32 100%);
+  --pa-radius: 20px;
+  --pa-radius-card: 24px;
+  --pa-shadow-sm: 0 2px 12px rgba(27, 94, 32, 0.08);
+  --pa-shadow-md: 0 4px 24px rgba(27, 94, 32, 0.12);
+  --pa-shadow-lg: 0 8px 48px rgba(27, 94, 32, 0.18);
+
+  /* responsive type scale (clamp) — backs the tailwind fontSize tokens */
+  --fs-hero: clamp(2.5rem, 1.6rem + 4vw, 4rem);
+  --fs-section: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+  --fs-subhead: clamp(1.5rem, 1.25rem + 1.1vw, 2rem);
+  --fs-card: 1.5rem;
+  --fs-body-lg: 1.125rem;
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
+  --fs-caption: 0.75rem;
+
+  /* gradient band palette (footer / light sections) */
+  --g-band-via: #d6efe0;
+  --g-band-to: #c4e8d2;
+  --g-lighta-from: #fbfefc;
+  --g-lighta-to: #f0faf4;
+  --g-lightb-from: #f0faf4;
+  --g-lightb-to: #e5f5ec;
+  --g-footer-from: #143a24;
+  --g-footer-to: #0c2417;
 }
 
 @layer base {
@@ -30,9 +75,16 @@
 }
 
 @layer components {
+  /* layout helpers */
   .container-wrap {
     @apply mx-auto w-full max-w-wrap px-4 sm:px-6 lg:px-8;
   }
+  .container-wide {
+    @apply mx-auto w-full px-5 sm:px-8 lg:px-16;
+    max-width: 80rem;
+  }
+
+  /* buttons (v2 originals kept) */
   .btn-cta {
     @apply inline-flex items-center justify-center rounded-pill bg-cta px-5 py-2.5 font-semibold text-cta-ink
       transition hover:bg-cta-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-forest-accent/40
@@ -48,5 +100,102 @@
   .field {
     @apply w-full rounded-xl border-forest/20 bg-white text-forest-ink shadow-sm
       focus:border-forest-accent focus:ring-2 focus:ring-forest-accent/20;
+  }
+
+  /* ── ported premium button system (.pa-btn + variants) ── */
+  .pa-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill font-semibold transition;
+    padding: 12px 24px;
+    font-weight: 600;
+  }
+  .pa-btn-primary {
+    background: var(--pa-grad);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(27, 94, 32, 0.3);
+  }
+  .pa-btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0d3d14 0%, #1b5e3a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(27, 94, 32, 0.4);
+  }
+  .pa-btn-secondary {
+    background: var(--ds-accent-soft);
+    color: var(--ds-accent-ink);
+    border: 1px solid rgba(27, 94, 32, 0.12);
+  }
+  .pa-btn-secondary:hover:not(:disabled) {
+    background: var(--ds-accent-ink);
+    color: #fff;
+  }
+  .pa-btn-outline {
+    background: transparent;
+    color: var(--ds-accent-ink);
+    border: 1px solid rgba(27, 94, 32, 0.25);
+  }
+  .pa-btn-outline:hover:not(:disabled) {
+    background: var(--ds-accent-ink);
+    color: #fff;
+  }
+  .pa-btn-gold {
+    background: linear-gradient(180deg, #dcc07a, #b8923e);
+    color: #16301a;
+    box-shadow: 0 8px 20px rgba(184, 146, 62, 0.35);
+  }
+  .pa-btn-gold:hover:not(:disabled) {
+    filter: brightness(1.05);
+    transform: translateY(-2px);
+  }
+  .pa-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .pa-btn:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  /* ── gradient bands ── */
+  .g-light-a {
+    background-image: linear-gradient(to bottom, var(--g-lighta-from), var(--g-lighta-to));
+  }
+  .g-light-b {
+    background-image: linear-gradient(to bottom, var(--g-lightb-from), var(--g-lightb-to));
+  }
+  .g-footer {
+    background-image: linear-gradient(to bottom, var(--g-footer-from), var(--g-footer-to));
+  }
+
+  /* ── horizontal snap rail (mobile carousels) ── */
+  .pah-rail {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .pah-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .pah-rail > * {
+    flex: 0 0 auto;
+    width: var(--rail-w, 42%);
+    scroll-snap-align: start;
+  }
+
+  /* organic image clip used on the PDP gallery + card art */
+  .pa-card-art {
+    background: radial-gradient(130% 130% at 30% 15%, #fbfcf8, #e9f0e3 70%, #dee9d6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }

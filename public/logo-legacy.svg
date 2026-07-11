@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 58" width="270" height="58">
+  <!-- House + two-leaf plant icon -->
+  <g transform="translate(3, 2)">
+    <!-- Left wall -->
+    <line x1="4" y1="54" x2="4" y2="26" stroke="#2C5F2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Right wall -->
+    <line x1="56" y1="26" x2="56" y2="54" stroke="#2C5F2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Roof left -->
+    <line x1="4" y1="26" x2="30" y2="4" stroke="#2C5F2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Roof right -->
+    <line x1="30" y1="4" x2="56" y2="26" stroke="#2C5F2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Floor left -->
+    <line x1="4" y1="54" x2="19" y2="54" stroke="#2C5F2E" stroke-width="3" stroke-linecap="round"/>
+    <!-- Floor right -->
+    <line x1="41" y1="54" x2="56" y2="54" stroke="#2C5F2E" stroke-width="3" stroke-linecap="round"/>
+    <!-- Stem -->
+    <line x1="30" y1="54" x2="30" y2="36" stroke="#2C5F2E" stroke-width="2.4" stroke-linecap="round"/>
+    <!-- Left leaf — large curved teardrop -->
+    <path d="M30 51 C20 45 12 31 17 19 C21 27 26 41 30 51Z" fill="#2C5F2E"/>
+    <!-- Right leaf — large curved teardrop -->
+    <path d="M30 46 C40 38 50 26 46 14 C41 22 34 35 30 46Z" fill="#2C5F2E"/>
+  </g>
+  <!-- PLANTATHOME -->
+  <text x="74" y="28" font-family="'Montserrat','Arial Black',sans-serif" font-weight="800" font-size="19" letter-spacing="2.8" fill="#2C5F2E">PLANTATHOME</text>
+  <!-- Left divider -->
+  <line x1="74" y1="38" x2="91" y2="38" stroke="#2C5F2E" stroke-width="0.75" opacity="0.5"/>
+  <!-- Tagline -->
+  <text x="95" y="42" font-family="'Montserrat','Arial',sans-serif" font-weight="500" font-size="7.5" letter-spacing="3.2" fill="#2C5F2E" opacity="0.75">BRING NATURE HOME</text>
+  <!-- Right divider -->
+  <line x1="212" y1="38" x2="229" y2="38" stroke="#2C5F2E" stroke-width="0.75" opacity="0.5"/>
+</svg>
