@@ -9,7 +9,7 @@ import { useAtom } from 'jotai';
 import { couponAtom } from '@/store/checkout';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { setMaintenanceDetails } from './utils/maintenance-utils';
 
 export function useSettings() {

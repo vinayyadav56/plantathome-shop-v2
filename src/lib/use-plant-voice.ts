@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 
 interface PlantVoiceState {
   listening: boolean;

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 
 // PlantAtHome: English + the 22 scheduled Indian languages. RTL for Urdu, Kashmiri, Sindhi.
 const localeRTLList = ['ur', 'ks', 'sd'];

@@ -17,7 +17,7 @@ import { mapPaginatorData } from '@/framework/utils/data-mappers';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 
 export function useShops(options?: Partial<ShopQueryOptions>) {
   const {

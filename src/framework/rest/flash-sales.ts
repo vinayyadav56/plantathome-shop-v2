@@ -8,7 +8,7 @@ import type {
 import { useQuery } from 'react-query';
 import client from '@/framework/client';
 import { API_ENDPOINTS } from '@/framework/client/api-endpoints';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { mapPaginatorData } from '@/framework/utils/data-mappers';
 import { useInfiniteQuery } from 'react-query';
 

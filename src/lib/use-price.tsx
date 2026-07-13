@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { useSettings } from '@/framework/settings';
 
 export function formatPrice({

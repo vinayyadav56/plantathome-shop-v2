@@ -1,6 +1,6 @@
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { useTypes } from '@/framework/type';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 const useLayout = () => {
   const data = useTypes({
     limit: TYPES_PER_PAGE,

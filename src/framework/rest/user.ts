@@ -27,7 +27,7 @@ import Cookies from 'js-cookie';
 import { useStateMachine } from 'little-state-machine';
 import { signOut as socialLoginSignOut } from 'next-auth/react';
 import { useTranslation } from 'next-i18next';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { useState } from 'react';
 import {
   QueryClient,

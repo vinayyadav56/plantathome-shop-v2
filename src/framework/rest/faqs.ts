@@ -2,7 +2,7 @@ import type { FAQS, FaqsPaginator, FaqsQueryOptions } from '@/types';
 import { useQuery } from 'react-query';
 import client from './client';
 import { API_ENDPOINTS } from './client/api-endpoints';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { mapPaginatorData } from '@/framework/utils/data-mappers';
 import { useInfiniteQuery } from 'react-query';
 

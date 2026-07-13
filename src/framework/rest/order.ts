@@ -23,7 +23,7 @@ import { API_ENDPOINTS } from './client/api-endpoints';
 import client from './client';
 import { useAtom } from 'jotai';
 import { verifiedResponseAtom } from '@/store/checkout';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { Routes } from '@/config/routes';
 import { mapPaginatorData } from '@/framework/utils/data-mappers';
 import { isArray, isObject, isEmpty } from 'lodash';

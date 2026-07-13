@@ -8,7 +8,7 @@ import { useInfiniteQuery, useQuery } from 'react-query';
 import client from './client';
 import { API_ENDPOINTS } from './client/api-endpoints';
 import { mapPaginatorData } from '@/framework/utils/data-mappers';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 
 export function useManufacturers(options?: ManufacturerQueryOptions) {
   const { locale, query } = useRouter();

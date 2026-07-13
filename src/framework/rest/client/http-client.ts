@@ -3,7 +3,7 @@ import { AUTH_TOKEN_KEY } from '@/lib/constants';
 import type { SearchParamOptions } from '@/types';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import Router from 'next/router';
+import Router from '@/compat/next-router';
 
 const Axios = axios.create({
   // SSR (no window): call Railway directly. Browser: call /rest-api on this domain,

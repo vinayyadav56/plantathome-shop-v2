@@ -1,6 +1,6 @@
 import { mapPaginatorData } from '@/framework/utils/data-mappers';
 import type { RefundPolicyPaginator, RefundPolicyQueryOptions } from '@/types';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { useInfiniteQuery } from 'react-query';
 import client from './client';
 import { API_ENDPOINTS } from './client/api-endpoints';

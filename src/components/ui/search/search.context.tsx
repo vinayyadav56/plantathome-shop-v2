@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import React, { FC, useEffect, useMemo, useState } from 'react';
 
 export interface State {

@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { HttpClient } from '@/framework/client/http-client';
 import { useUser } from '@/framework/user';
 import type { Product } from '@/types';

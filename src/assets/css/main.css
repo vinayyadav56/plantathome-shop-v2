@@ -347,5 +347,4 @@
     @apply font-heading;
   }
 }
-/* moved to app/layout.tsx import order (Turbopack requires @import at top) */
-
+/* trailing @imports moved to app/layout.tsx import order (Turbopack requires @import at top) */

@@ -3,7 +3,7 @@
 /**
  * next/router → next/navigation compat shim.
  *
- * 130 V1 files import from 'next/router'; the tsconfig/turbopack aliases point
+ * 130 V1 files import from '@/compat/next-router'; the tsconfig/turbopack aliases point
  * them here. Covers the patterns V1 actually uses:
  *  - useRouter().query        (route params ∪ search params)
  *  - .locale / .pathname / .asPath
@@ -62,6 +62,10 @@ export function useRouter() {
   const params = useParams() ?? {};
   const search = useSyncExternalStore(subscribeToLocation, getSearchSnapshot, getServerSearchSnapshot);
 
+  // useParams() may return a fresh object every render — key the memo on its
+  // serialized VALUE so `query` identity is stable (V1 components put `query`
+  // in effect deps; unstable identity = infinite effect loops).
+  const paramsKey = JSON.stringify(params);
   const query = useMemo(() => {
     const q: Record<string, string | string[]> = {};
     if (search) {
@@ -72,9 +76,10 @@ export function useRouter() {
         else q[key] = Array.isArray(existing) ? [...existing, value] : [existing, value];
       });
     }
-    for (const [k, v] of Object.entries(params)) q[k] = v as string | string[];
+    for (const [k, v] of Object.entries(JSON.parse(paramsKey))) q[k] = v as string | string[];
     return q;
-  }, [search, params]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, paramsKey]);
 
   return useMemo(
     () => ({
@@ -108,7 +113,7 @@ function toUrl(url: string | { pathname?: string; query?: Record<string, any> })
   return `${url.pathname ?? '/'}${qs ? `?${qs}` : ''}`;
 }
 
-/** Module-scope singleton (V1: `import Router from 'next/router'`). */
+/** Module-scope singleton (V1: `import Router from '@/compat/next-router'`). */
 const Router = {
   locale: 'en' as string | undefined,
   events: NOOP_EVENTS,

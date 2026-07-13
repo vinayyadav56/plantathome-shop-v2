@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { useUser } from '@/framework/user';
 import { setTrackUser, trackPage } from '@/lib/analytics/track';
 
@@ -8,9 +10,12 @@ import { setTrackUser, trackPage } from '@/lib/analytics/track';
  * storefront analytics: attaches the logged-in user id (advisory) and emits a
  * page view (+ funnel step) on every navigation. Renders nothing; everything is
  * fail-safe inside the tracker.
+ *
+ * App Router port: router.events doesn't exist — a usePathname effect fires on
+ * every client navigation instead (identical behavior).
  */
 export default function TrackingBridge() {
-  const router = useRouter();
+  const pathname = usePathname();
   const { me } = useUser();
 
   useEffect(() => {
@@ -18,16 +23,13 @@ export default function TrackingBridge() {
   }, [me?.id]);
 
   useEffect(() => {
+    if (!pathname) return;
     try {
-      trackPage(window.location.pathname);
+      trackPage(pathname);
     } catch {
       /* noop */
     }
-    const handle = (url: string) => trackPage(url);
-    router.events.on('routeChangeComplete', handle);
-    return () => router.events.off('routeChangeComplete', handle);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.events]);
+  }, [pathname]);
 
   return null;
 }

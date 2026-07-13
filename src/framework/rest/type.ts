@@ -2,7 +2,7 @@ import type { Type, TypeQueryOptions } from '@/types';
 import { useQuery } from 'react-query';
 import client from './client';
 import { API_ENDPOINTS } from './client/api-endpoints';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { useEffect, useState } from 'react';
 import { getStoredCity } from '@/lib/customer-location';
 

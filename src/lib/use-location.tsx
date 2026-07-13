@@ -139,5 +139,5 @@ export default function useLocation({ onChange, onChangeCurrentLocation, setInpu
     getCurrentLocation,
     isLoaded,
     loadError && t(loadError),
-  ];
+  ] as [typeof onLoad, typeof onUnmount, typeof onPlaceChanged, typeof getCurrentLocation, typeof isLoaded, string | false | undefined];
 }

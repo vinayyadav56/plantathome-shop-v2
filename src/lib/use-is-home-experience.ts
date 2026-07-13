@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 

@@ -21,7 +21,7 @@ import { formatProductsArgs } from '@/framework/utils/format-products-args';
 import { useTranslation } from 'next-i18next';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 import { useCustomerCity } from '@/lib/use-customer-city';
 
 export function useProducts(options?: Partial<ProductQueryOptions>) {

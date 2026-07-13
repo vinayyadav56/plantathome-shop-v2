@@ -1,4 +1,4 @@
-import Router from 'next/router';
+import Router from '@/compat/next-router';
 
 /**
  * Navigate to the dedicated sign-in page (replaces the old login popup),

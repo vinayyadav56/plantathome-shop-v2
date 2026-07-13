@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from '@/compat/next-router';
 
 export function useIsHomePage() {
   const router = useRouter();
