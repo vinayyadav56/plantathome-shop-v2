@@ -20,15 +20,9 @@ import { Routes } from '@/config/routes';
 import OrderNote from '@/components/checkout/order-note';
 
 
-const ScheduleGrid = dynamic(
-  () => import('@/components/checkout/schedule/schedule-grid')
-);
-const GuestAddressGrid = dynamic(
-  () => import('@/components/checkout/address-grid-guest')
-);
-const ContactGrid = dynamic(
-  () => import('@/components/checkout/contact/contact-grid')
-);
+import ScheduleGrid from '@/components/checkout/schedule/schedule-grid';
+import GuestAddressGrid from '@/components/checkout/address-grid-guest';
+import ContactGrid from '@/components/checkout/contact/contact-grid';
 const RightSideView = dynamic(
   () => import('@/components/checkout/right-side-view'),
   { ssr: false }

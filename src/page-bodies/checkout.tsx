@@ -13,9 +13,7 @@ import { useUser } from '@/framework/user';
 import OrderNote from '@/components/checkout/order-note';
 import type { WizardPanel } from '@/components/checkout/checkout-wizard';
 
-const ScheduleGrid = dynamic(
-  () => import('@/components/checkout/schedule/schedule-grid')
-);
+import ScheduleGrid from '@/components/checkout/schedule/schedule-grid';
 const AddressGrid = dynamic(
   () => import('@/components/checkout/address-grid'),
   { ssr: false }
