@@ -1,0 +1,159 @@
+name: Shop – Staging Deploy
+
+# ─── V2 (Next 16 App Router port). Auto-deploy on push to staging ──────────────
+# Deploys to the SAME Vercel staging project as V1 did (V1 is decommissioned;
+# rollback = redeploy the v1-legacy branch). npm-based (V2 has package-lock).
+# Requires GitHub Secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_SHOP_PROJECT_ID
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy (any branch allowed for staging)'
+        required: false
+        default: 'staging'
+        type: string
+      confirm:
+        description: 'Type "deploy" to confirm (optional for manual run)'
+        required: false
+        default: 'deploy'
+        type: string
+
+jobs:
+  # ── 1. Security & Vulnerability Scan ─────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency vulnerability scan (npm audit)
+        run: npm audit --audit-level=high || true
+
+      - name: Filesystem vulnerability scan (Trivy)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL
+          exit-code: '0'
+          ignore-unfixed: true
+          format: table
+
+  # ── 2. Build & Type Check ─────────────────────────────────────────────────────
+  test:
+    name: Type Check & Build
+    runs-on: ubuntu-latest
+    needs: security
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # V2 keeps tsc at ZERO errors — hard gate (V1 had `|| true`).
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Build check (staging env)
+        env:
+          NEXT_PUBLIC_VERSION: REST
+          NEXT_PUBLIC_REST_API_ENDPOINT: https://plantathome-production.up.railway.app/api
+          NEXT_PUBLIC_SITE_URL: https://plantathome-shop-staging.vercel.app
+          NEXT_PUBLIC_ADMIN_URL: https://plantathome-admin-staging.vercel.app
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
+          NEXT_PUBLIC_DEFAULT_LANGUAGE: en
+          NEXT_PUBLIC_ENABLE_MULTI_LANG: 'false'
+          NODE_OPTIONS: '--max-old-space-size=4096'
+        run: npm run build
+
+  # ── 3. Deploy to Vercel (Staging Shop) ────────────────────────────────────────
+  deploy:
+    name: Deploy → Vercel (Staging Shop)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [security, test]
+    if: github.event_name == 'push' || inputs.confirm == 'deploy'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Cancel any stale BUILDING/QUEUED Vercel deployments so this deploy gets
+      # a slot (one-build-at-a-time plan). Best-effort.
+      - name: Cancel stale Vercel builds (unblock the queue)
+        continue-on-error: true
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_SHOP_PROJECT_ID }}
+        run: |
+          set +e
+          TEAM=""
+          [ -n "$VERCEL_ORG_ID" ] && TEAM="&teamId=$VERCEL_ORG_ID"
+          LIST=$(curl -s "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=40$TEAM" \
+            -H "Authorization: Bearer $VERCEL_TOKEN")
+          IDS=$(echo "$LIST" | jq -r '.deployments[]? | select((.state // .readyState) as $s | $s=="BUILDING" or $s=="QUEUED" or $s=="INITIALIZING") | .uid')
+          if [ -z "$IDS" ]; then
+            echo "No stale building deployments."
+          else
+            for id in $IDS; do
+              echo "Cancelling stale Vercel build: $id"
+              curl -s -X PATCH "https://api.vercel.com/v12/deployments/$id/cancel?${VERCEL_ORG_ID:+teamId=$VERCEL_ORG_ID}" \
+                -H "Authorization: Bearer $VERCEL_TOKEN" -o /dev/null -w "  -> HTTP %{http_code}\n"
+            done
+            sleep 5
+          fi
+
+      - name: Deploy to Vercel
+        run: |
+          npx vercel --token "$VERCEL_TOKEN" \
+            --yes --prod \
+            --build-env "NODE_OPTIONS=--max-old-space-size=4096" \
+            --build-env "NEXT_PUBLIC_RAZORPAY_KEY_ID=$STAGING_RAZORPAY_KEY_ID" \
+            --build-env "NEXT_PUBLIC_VERSION=REST" \
+            --build-env "NEXT_PUBLIC_REST_API_ENDPOINT=https://plantathome-production.up.railway.app/api" \
+            --build-env "NEXT_PUBLIC_SITE_URL=https://plantathome-shop-staging.vercel.app" \
+            --build-env "NEXT_PUBLIC_ADMIN_URL=https://plantathome-admin-staging.vercel.app" \
+            --build-env "NEXT_PUBLIC_DEFAULT_LANGUAGE=en" \
+            --build-env "NEXT_PUBLIC_ENABLE_MULTI_LANG=false" \
+            --build-env "NEXT_PUBLIC_GOOGLE_MAP_API_KEY=$GOOGLE_MAP_API_KEY"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_SHOP_PROJECT_ID }}
+          STAGING_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
+          GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}

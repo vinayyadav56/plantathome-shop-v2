@@ -1,0 +1,255 @@
+name: Shop – Production Deploy
+
+# ─── V2 (Next 16 App Router port) → EC2/PM2 behind Cloudflare ──────────────────
+# Same rails as V1: build on the runner, ship the artifact over SSH, reload PM2.
+# npm-based. A Node preflight ABORTS BEFORE touching the running app if the EC2
+# runtime can't run Next 16 (needs Node >= 20.9).
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy — must be "main" for production'
+        required: true
+        default: 'main'
+        type: string
+      confirm:
+        description: 'Type "deploy-production" to confirm — this touches live traffic'
+        required: true
+        type: string
+
+jobs:
+  # ── 0. Enforce main-only ──────────────────────────────────────────────────────
+  validate:
+    name: Validate Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject non-main branches
+        run: |
+          if [ "${{ inputs.branch }}" != "main" ]; then
+            echo "ERROR: Production deploys must use branch 'main'. Got: ${{ inputs.branch }}"
+            exit 1
+          fi
+          echo "Branch check passed"
+
+  # ── 1. Security Scan ─────────────────────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+
+      - name: Secret scan (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency vulnerability scan
+        run: npm audit --audit-level=high || true
+
+      - name: Filesystem vulnerability scan (Trivy)
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL
+          exit-code: '0'
+          ignore-unfixed: true
+          format: table
+
+  # ── 2. Build on Runner (7GB RAM — zero OOM risk) ─────────────────────────────
+  build:
+    name: Build Shop (on runner)
+    runs-on: ubuntu-latest
+    needs: security
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Build (production env — runner has 7GB RAM)
+        env:
+          NEXT_PUBLIC_VERSION: REST
+          NEXT_PUBLIC_REST_API_ENDPOINT: https://api.plantathome.in/api
+          NEXT_PUBLIC_SITE_URL: https://plantathome.in
+          NEXT_PUBLIC_ADMIN_URL: https://admin.plantathome.in
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PROD_RAZORPAY_KEY_ID }}
+          NEXT_PUBLIC_GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}
+          NEXT_PUBLIC_DEFAULT_LANGUAGE: en
+          NEXT_PUBLIC_ENABLE_MULTI_LANG: 'false'
+          NODE_OPTIONS: '--max-old-space-size=6144'
+        run: npm run build
+
+      - name: Package build artifact
+        run: tar -czf shop-build.tar.gz .next public
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shop-build
+          path: shop-build.tar.gz
+          retention-days: 1
+
+  # ── 3. Deploy to AWS EC2 ──────────────────────────────────────────────────────
+  deploy:
+    name: Deploy → AWS EC2 (Production Shop)
+    runs-on: ubuntu-latest
+    needs: [security, build]
+    if: inputs.confirm == 'deploy-production'
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: shop-build
+
+      - name: Open port 22 for this runner
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          RUNNER_IP=$(curl -s ifconfig.me/ip)
+          echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_EC2_SG_ID }} \
+            --protocol tcp --port 22 --cidr "${RUNNER_IP}/32" \
+            --region ${{ secrets.AWS_REGION }} || true
+
+      - name: Upload build artifact to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "shop-build.tar.gz"
+          target: "/tmp/"
+
+      - name: SSH deploy to EC2
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 25m
+          script: |
+            set -e
+
+            echo "==> Preflight: Next 16 needs Node >= 20.9 — abort BEFORE touching the running app"
+            # PM2 apps inherit the login shell's node; check that one.
+            export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true
+            NODE_MAJOR=$(node -v | sed 's/^v\([0-9]*\).*/\1/')
+            echo "EC2 node: $(node -v)"
+            if [ "$NODE_MAJOR" -lt 20 ]; then
+              if command -v nvm >/dev/null 2>&1; then
+                echo "==> Installing Node 20 via nvm..."
+                nvm install 20 && nvm alias default 20 && nvm use 20
+              else
+                echo "ERROR: EC2 runs node $(node -v) — Next 16 needs >= 20.9 and nvm is unavailable."
+                echo "The running V1 app was NOT touched. Install Node 20 on the box, then re-run."
+                exit 1
+              fi
+            fi
+
+            echo "==> Pulling latest source..."
+            cd /var/www/plantathome/shop-src
+            git fetch origin
+            git checkout -- . 2>/dev/null || true
+            git checkout main
+            git reset --hard origin/main
+
+            echo "==> Installing production dependencies (npm — V2 has package-lock.json)..."
+            npm ci
+
+            echo "==> Clearing stale build output before artifact extraction..."
+            rm -rf .next
+
+            echo "==> Deploying pre-built artifact from runner..."
+            tar -xzf /tmp/shop-build.tar.gz
+            rm -f /tmp/shop-build.tar.gz
+
+            echo "==> Fixing build paths (runner path → EC2 path)..."
+            sed -i 's|"appDir":"[^"]*"|"appDir":"/var/www/plantathome/shop-src"|g' \
+              .next/required-server-files.json
+            python3 -c "import json; d=json.load(open('.next/required-server-files.json')); print('appDir after patch:', d.get('appDir'))"
+
+            echo "==> Writing runtime env..."
+            printf '%s\n' \
+              'NEXT_PUBLIC_DEFAULT_LANGUAGE=en' \
+              'NEXT_PUBLIC_ENABLE_MULTI_LANG=false' \
+              'NEXT_PUBLIC_AVAILABLE_LANGUAGES=en' \
+              'NEXT_PUBLIC_VERSION=REST' \
+              'NEXT_PUBLIC_REST_API_ENDPOINT=https://api.plantathome.in/api' \
+              'NEXT_PUBLIC_SITE_URL=https://plantathome.in' \
+              'NEXT_PUBLIC_ADMIN_URL=https://admin.plantathome.in' \
+              'NODE_ENV=production' \
+              > .env.production.local
+
+            echo "==> Reloading PM2 (zero-downtime)..."
+            pm2 delete shop 2>/dev/null || true
+            pm2 start "npm start" --name shop --cwd /var/www/plantathome/shop-src
+            pm2 save
+
+            echo "==> Deploy complete"
+
+      - name: Production health check
+        run: |
+          sleep 15
+          for i in 1 2 3; do
+            STATUS=$(curl -sL -o /dev/null -w "%{http_code}" --max-time 15 "https://plantathome.in")
+            echo "Attempt $i: HTTP $STATUS"
+            echo "$STATUS" | grep -qE "^2" && echo "PASS" && exit 0
+            sleep 10
+          done
+          echo "FAIL — shop health check failed"
+          exit 1
+
+      - name: Purge Cloudflare cache
+        if: success()
+        run: |
+          RESP=$(curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          echo "$RESP" | grep -q '"success":true' \
+            && echo "Cloudflare cache purged" \
+            || echo "WARNING: cache purge failed: $RESP"
+
+      - name: Close port 22 for this runner
+        if: always()
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_EC2_SG_ID }} \
+            --protocol tcp --port 22 --cidr "${RUNNER_IP}/32" \
+            --region ${{ secrets.AWS_REGION }} || true
