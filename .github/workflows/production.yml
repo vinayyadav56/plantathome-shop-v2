@@ -158,20 +158,19 @@ jobs:
           script: |
             set -e
 
-            echo "==> Preflight: Next 16 needs Node >= 20.9 — abort BEFORE touching the running app"
-            # PM2 apps inherit the login shell's node; check that one.
-            export NVM_DIR="$HOME/.nvm"; [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" || true
+            echo "==> Preflight: Next 16 needs Node >= 20.9"
             NODE_MAJOR=$(node -v | sed 's/^v\([0-9]*\).*/\1/')
             echo "EC2 node: $(node -v)"
             if [ "$NODE_MAJOR" -lt 20 ]; then
-              if command -v nvm >/dev/null 2>&1; then
-                echo "==> Installing Node 20 via nvm..."
-                nvm install 20 && nvm alias default 20 && nvm use 20
-              else
-                echo "ERROR: EC2 runs node $(node -v) — Next 16 needs >= 20.9 and nvm is unavailable."
-                echo "The running V1 app was NOT touched. Install Node 20 on the box, then re-run."
-                exit 1
-              fi
+              echo "==> Upgrading system Node via NodeSource (18 is EOL; older Next apps run fine on 20)..."
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+              echo "EC2 node now: $(node -v)"
+              NODE_MAJOR=$(node -v | sed 's/^v\([0-9]*\).*/\1/')
+              [ "$NODE_MAJOR" -ge 20 ] || { echo "ERROR: node upgrade failed — running app untouched"; exit 1; }
+              # Refresh the PM2 daemon under the new node (keeps the app list).
+              sudo npm i -g pm2 >/dev/null 2>&1 || true
+              pm2 update || true
             fi
 
             echo "==> Pulling latest source..."
