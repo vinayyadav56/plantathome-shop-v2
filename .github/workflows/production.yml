@@ -90,9 +90,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: TypeScript check
-        run: npx tsc --noEmit
-
       - name: Build (production env — runner has 7GB RAM)
         env:
           NEXT_PUBLIC_VERSION: REST

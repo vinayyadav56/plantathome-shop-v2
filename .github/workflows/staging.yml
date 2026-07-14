@@ -78,10 +78,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # V2 keeps tsc at ZERO errors — hard gate (V1 had `|| true`).
-      - name: TypeScript check
-        run: npx tsc --noEmit
-
       - name: Build check (staging env)
         env:
           NEXT_PUBLIC_VERSION: REST
@@ -93,6 +89,12 @@ jobs:
           NEXT_PUBLIC_ENABLE_MULTI_LANG: 'false'
           NODE_OPTIONS: '--max-old-space-size=4096'
         run: npm run build
+
+      # AFTER the build: `next build` generates next-env.d.ts, which declares
+      # the *.svg/*.png module types — tsc before build can't see them (V1
+      # masked this with `|| true`). V2 keeps tsc at ZERO errors, hard gate.
+      - name: TypeScript check
+        run: npx tsc --noEmit
 
   # ── 3. Deploy to Vercel (Staging Shop) ────────────────────────────────────────
   deploy:
