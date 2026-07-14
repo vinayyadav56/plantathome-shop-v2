@@ -27,7 +27,12 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // The ds-prepaint script below mutates <html> (data-density + --ds-* inline
+    // styles from the PERSISTED design system) before React hydrates, so from
+    // the second page load onward hydration would flag an attribute mismatch.
+    // Standard theme-script pattern (same as next-themes): suppress on <html>
+    // only — children still hydrate strictly.
+    <html lang="en" suppressHydrationWarning>
       <body>
         {/* Apply persisted Design System theme (font/color) before paint. */}
         <Script id="ds-prepaint" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: DS_PREPAINT_SCRIPT }} />

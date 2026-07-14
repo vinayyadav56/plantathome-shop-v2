@@ -29,6 +29,7 @@ const page = await ctx.newPage();
 // these on mount; post-load seeding raced the atoms).
 await page.addInitScript(() => {
   const addr = (type) => ({
+    id: type === 'billing' ? 'guest-billing-1' : 'guest-shipping-1',
     title: 'Home',
     type,
     address: { country: 'India', city: 'Delhi', state: 'Delhi', zip: '110001', street_address: '12 Garden Lane, Hauz Khas' },
@@ -55,8 +56,8 @@ await page.addInitScript(() => {
   }
 });
 const errs = [];
-page.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 130)));
-page.on('pageerror', (e) => errs.push('PAGEERROR: ' + e.message.slice(0, 130)));
+page.on('console', (m) => m.type() === 'error' && errs.push(m.text().slice(0, 2500)));
+page.on('pageerror', (e) => errs.push('PAGEERROR: ' + e.message.slice(0, 400)));
 
 /* ── 1+2: PDP size → price → cart ── */
 await page.goto(`${BASE}/products/monstera-deliciosa`, { waitUntil: 'domcontentloaded', timeout: 120000 });
@@ -79,31 +80,50 @@ step(
   `${line?.name} ₹${line?.price} var=${line?.variationId}`,
 );
 
-/* ── 3: pot UX on the mock PDP ── */
-await page.goto(`${BASE}/pot-test`, { waitUntil: 'domcontentloaded', timeout: 120000 });
-await page.waitForTimeout(5000);
-await page.locator('button', { hasText: /^Small$/ }).first().click();
-await page.waitForTimeout(500);
-await page.locator('button').filter({ hasText: /^With Pot/ }).first().click();
-await page.waitForTimeout(1200);
-const pot558 = (await page.locator('text=/558/').count()) > 0;
-const potDelta = (await page.locator('text=+₹199').count()) > 0;
-step('Pot cards resolve Size×Pot combo price', pot558 && potDelta, '₹558 (+₹199 delta)');
-await page.locator('button', { hasText: /add to cart/i }).first().click().catch(() => {});
-await page.waitForTimeout(1500);
-cart = await page.evaluate(() => JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}'));
-const potLine = (cart?.items ?? []).find((i) => /With Pot/.test(i?.name ?? ''));
-step('Pot cart line title carries the choice', !!potLine, potLine?.name);
+/* ── 3: pot UX on the mock PDP (mock route was removed in the P9 cleanup —
+ *       skip until real pot data is authored, then point these steps at a
+ *       real PDP instead) ── */
+// The mock's presence can't be detected by status: the root [searchType]
+// catch-all serves ANY unknown slug with a 200, and visiting that junk page in
+// the MAIN page pollutes the flow. Probe for the pot UI in a throwaway context.
+const potCtx = await b.newContext();
+const potProbe = await potCtx.newPage();
+await potProbe.goto(`${BASE}/pot-test`, { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(() => {});
+const potUiPresent = await potProbe
+  .locator('button', { hasText: /^Small$/ })
+  .first()
+  .waitFor({ timeout: 10000 })
+  .then(() => true)
+  .catch(() => false);
+await potCtx.close();
+if (potUiPresent) {
+  await page.goto(`${BASE}/pot-test`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+  await page.waitForTimeout(5000);
+  await page.locator('button', { hasText: /^Small$/ }).first().click();
+  await page.waitForTimeout(500);
+  await page.locator('button').filter({ hasText: /^With Pot/ }).first().click();
+  await page.waitForTimeout(1200);
+  const pot558 = (await page.locator('text=/558/').count()) > 0;
+  const potDelta = (await page.locator('text=+₹199').count()) > 0;
+  step('Pot cards resolve Size×Pot combo price', pot558 && potDelta, '₹558 (+₹199 delta)');
+  await page.locator('button', { hasText: /add to cart/i }).first().click().catch(() => {});
+  await page.waitForTimeout(1500);
+  cart = await page.evaluate(() => JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}'));
+  const potLine = (cart?.items ?? []).find((i) => /With Pot/.test(i?.name ?? ''));
+  step('Pot cart line title carries the choice', !!potLine, potLine?.name);
 
-/* reset cart to ONLY the real (orderable) monstera line */
-await page.evaluate(() => {
-  const c = JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}');
-  c.items = (c.items ?? []).filter((i) => !/With Pot/.test(i?.name ?? ''));
-  c.totalUniqueItems = c.items.length;
-  c.totalItems = c.items.reduce((s, i) => s + (i.quantity ?? 1), 0);
-  c.total = c.items.reduce((s, i) => s + (i.itemTotal ?? i.price * (i.quantity ?? 1)), 0);
-  localStorage.setItem('plantathome-cart', JSON.stringify(c));
-});
+  /* reset cart to ONLY the real (orderable) monstera line */
+  await page.evaluate(() => {
+    const c = JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}');
+    c.items = (c.items ?? []).filter((i) => !/With Pot/.test(i?.name ?? ''));
+    c.totalUniqueItems = c.items.length;
+    c.totalItems = c.items.reduce((s, i) => s + (i.quantity ?? 1), 0);
+    c.total = c.items.reduce((s, i) => s + (i.itemTotal ?? i.price * (i.quantity ?? 1)), 0);
+    localStorage.setItem('plantathome-cart', JSON.stringify(c));
+  });
+} else {
+  console.log('  [skip] /pot-test mock removed (P9 cleanup) — pot UI was verified pre-cleanup; author real pot data to re-enable');
+}
 
 /* ── 4: guest COD checkout (prefs pre-seeded via addInitScript) ── */
 
@@ -115,14 +135,23 @@ page.on('response', (r) => {
 });
 
 await page.goto(`${BASE}/checkout/guest`, { waitUntil: 'domcontentloaded', timeout: 120000 });
-await page.waitForTimeout(6000);
-
+// StrictMode dev double-renders make checkout hydration slow — wait for the
+// button itself rather than a fixed sleep.
 const checkBtn = page.locator('button', { hasText: /check availability/i }).first();
+await checkBtn.waitFor({ timeout: 60000 }).catch(() => {});
+await page.waitForTimeout(2000);
 if (await checkBtn.count()) {
   await checkBtn.click({ timeout: 8000 }).catch((e) => console.log('  (check click:', e.message.slice(0, 50), ')'));
   await page.waitForTimeout(6000);
 }
 step('Checkout data path reaches API (verify 200)', verifyStatus === 200, `POST /orders/checkout/verify → ${verifyStatus}`);
+if (verifyStatus !== 200) {
+  const dbgDir = process.env.SHOT || '/tmp';
+  await page.screenshot({ path: `${dbgDir}/loop-checkout-debug.png`, timeout: 10000 }).catch(() => {});
+  const bodyTxt = await page.evaluate(() => document.body.innerText.slice(0, 300)).catch(() => '(evaluate failed)');
+  console.log('  [debug] checkout body:', bodyTxt.replace(/\n+/g, ' | ').slice(0, 260));
+  console.log('  [debug] url:', page.url());
+}
 
 const orderTotalShown = (await page.locator('text=/359/').count()) > 0;
 step('Order summary shows the cart total', orderTotalShown, orderTotalShown ? '₹359 visible' : 'total missing');

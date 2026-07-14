@@ -2,8 +2,9 @@ import dynamic from 'next/dynamic';
 import ErrorMessage from '@/components/ui/error-message';
 import { useProducts } from '@/framework/product';
 import { useRouter } from "next/router";
+import AutoSuggestion from '@/components/ui/auto-suggestion';
 
-const AutoSuggestion = dynamic(() => import('@/components/ui/auto-suggestion'));
+
 
 interface AutoSuggestionProps {
   className?: string;

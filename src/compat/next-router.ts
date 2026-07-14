@@ -28,24 +28,22 @@ const NOOP_EVENTS = {
   emit: (_e: string, ..._a: any[]) => {},
 };
 
-/* ── reactive window.location.search (no Suspense requirement) ────────────── */
-const LOCATION_EVENT = 'pah-locationchange';
-let historyPatched = false;
-function patchHistoryOnce() {
-  if (historyPatched || typeof window === 'undefined') return;
-  historyPatched = true;
-  for (const method of ['pushState', 'replaceState'] as const) {
-    const orig = window.history[method].bind(window.history);
-    window.history[method] = ((...args: any[]) => {
-      const r = (orig as any)(...args);
-      window.dispatchEvent(new Event(LOCATION_EVENT));
-      return r;
-    }) as any;
-  }
+/* ── reactive window.location.search (no Suspense requirement) ──────────────
+ *
+ * We intentionally DO NOT patch window.history.pushState/replaceState: Next.js
+ * App Router calls replaceState internally during hydration + scroll handling,
+ * and patching it to notify useSyncExternalStore subscribers created a feedback
+ * loop (notify → re-render → Next replaceState → notify …) that froze data-rich
+ * pages (home). Instead subscribers listen to `popstate` (browser back/forward)
+ * + a custom event that ONLY this shim's own push/replace dispatch — so search
+ * updates on programmatic navigation without racing Next's internal history. */
+const LOCATION_EVENT = 'pah-router-nav';
+
+function notifyNav() {
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(LOCATION_EVENT));
 }
 
 function subscribeToLocation(cb: () => void) {
-  patchHistoryOnce();
   window.addEventListener('popstate', cb);
   window.addEventListener(LOCATION_EVENT, cb);
   return () => {
@@ -91,8 +89,17 @@ export function useRouter() {
       route: pathname,
       asPath: pathname + search,
       isReady: true,
-      push: (url: any, _as?: any, _opts?: any) => Promise.resolve(nav.push(toUrl(url))),
-      replace: (url: any, _as?: any, _opts?: any) => Promise.resolve(nav.replace(toUrl(url))),
+      push: (url: any, _as?: any, _opts?: any) => {
+        nav.push(toUrl(url));
+        // let App Router update the URL, then re-read search
+        setTimeout(notifyNav, 0);
+        return Promise.resolve(true);
+      },
+      replace: (url: any, _as?: any, _opts?: any) => {
+        nav.replace(toUrl(url));
+        setTimeout(notifyNav, 0);
+        return Promise.resolve(true);
+      },
       back: () => nav.back(),
       reload: () => window.location.reload(),
       prefetch: (url: string) => Promise.resolve(nav.prefetch(url)),

@@ -19,8 +19,9 @@ import CitySwitcher from '@/components/location/city-switcher';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
+import Search from '@/components/ui/search/search';
 
-const Search = dynamic(() => import('@/components/ui/search/search'));
+
 
 type NavItem = { label: string; href: string; menu?: { label: string; href: string }[] };
 

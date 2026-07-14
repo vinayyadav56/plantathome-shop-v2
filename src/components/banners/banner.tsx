@@ -1,10 +1,12 @@
 import { useType } from '@/framework/type';
 import dynamic from 'next/dynamic';
-const ErrorMessage = dynamic(() => import('@/components/ui/error-message'));
+import ErrorMessage from '@/components/ui/error-message';
+import BannerShort from '@/components/banners/banner-short';
+
 const BannerWithSearch = dynamic(
   () => import('@/components/banners/banner-with-search')
 );
-const BannerShort = dynamic(() => import('@/components/banners/banner-short'));
+
 const BannerWithoutSlider = dynamic(
   () => import('@/components/banners/banner-without-slider')
 );

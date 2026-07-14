@@ -8,8 +8,9 @@ import { Icon } from '../icons';
 import { useTypes } from '@/framework/type';
 import { useProducts } from '@/framework/product';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
+import ProductCard from '@/components/products/cards/home-mini';
 
-const ProductCard = dynamic(() => import('@/components/products/cards/home-mini'));
+
 
 /** Vertical tab pills — lets the home sell all three worlds, not just plants. */
 export function VerticalTabs({

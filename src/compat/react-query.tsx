@@ -95,7 +95,18 @@ export function useQuery<TData = unknown, TError = unknown>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q.error]);
 
-  return { ...q, isLoading: q.isPending } as typeof q & { isLoading: boolean };
+  // v5 returns a tracking Proxy: every property read marks that prop tracked,
+  // and reading `promise` rejects a pendingThenable when prefetchInRender is
+  // off. Spreading it (`{...q}`) therefore enumerates every getter on EVERY
+  // render → all-props tracking + a rejected-thenable microtask per render,
+  // which sustained an infinite dev-only re-render loop. Delegate instead.
+  return React.useMemo(
+    () =>
+      new Proxy(q as any, {
+        get: (t, p) => (p === 'isLoading' ? t.isPending : Reflect.get(t, p)),
+      }),
+    [q],
+  ) as typeof q & { isLoading: boolean };
 }
 
 /* ── useInfiniteQuery ─────────────────────────────────────────────────────── */
@@ -140,12 +151,15 @@ export function useInfiniteQuery<TData = unknown, TError = unknown>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q.error]);
 
-  return {
-    ...q,
-    isLoading: q.isPending,
-    // v3 name for "fetching next page"
-    isFetchingNextPage: q.isFetchingNextPage,
-  } as typeof q & { isLoading: boolean };
+  // Same delegating Proxy as useQuery — never enumerate the tracked result
+  // (isFetchingNextPage is a real v5 prop and passes straight through).
+  return React.useMemo(
+    () =>
+      new Proxy(q as any, {
+        get: (t, p) => (p === 'isLoading' ? t.isPending : Reflect.get(t, p)),
+      }),
+    [q],
+  ) as typeof q & { isLoading: boolean };
 }
 
 /* ── useMutation ──────────────────────────────────────────────────────────── */

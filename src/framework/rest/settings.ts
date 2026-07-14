@@ -2,7 +2,7 @@ import type { Settings } from '@/types';
 import { useMutation, useQuery } from 'react-query';
 import client from './client';
 import { API_ENDPOINTS } from './client/api-endpoints';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FileWithPath } from 'react-dropzone';
 import { getPreviewImage } from '@/lib/get-preview-image';
 import { useAtom } from 'jotai';
@@ -28,7 +28,10 @@ export function useSettings() {
     { refetchOnMount: 'always' }
   );
   const { isUnderMaintenance = false, maintenance = {} } = data?.options! ?? {};
-  setMaintenanceDetails(isUnderMaintenance, maintenance);
+  // Cookie write moved out of the render body (V1 wrote it every render).
+  useEffect(() => {
+    setMaintenanceDetails(isUnderMaintenance, maintenance);
+  }, [isUnderMaintenance, maintenance]);
   return {
     settings: data?.options ?? {},
     isLoading,

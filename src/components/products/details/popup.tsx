@@ -9,8 +9,9 @@ import { stickyShortDetailsAtom } from '@/store/sticky-short-details-atom';
 import { useAtom } from 'jotai';
 import { AttributesProvider } from './attributes.context';
 import { useProduct } from '@/framework/product';
+import RelatedProducts from './related-products';
 
-const RelatedProducts = dynamic(() => import('./related-products'));
+
 interface ProductPopupProps {
   productSlug: string;
 }
