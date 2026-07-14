@@ -217,8 +217,10 @@ jobs:
       - name: Production health check
         run: |
           sleep 15
+          # www is the PUBLIC host — the apex is behind Cloudflare Access, whose
+          # login page returns 200 and false-passes this check.
           for i in 1 2 3; do
-            STATUS=$(curl -sL -o /dev/null -w "%{http_code}" --max-time 15 "https://plantathome.in")
+            STATUS=$(curl -sL -o /dev/null -w "%{http_code}" --max-time 15 "https://www.plantathome.in")
             echo "Attempt $i: HTTP $STATUS"
             echo "$STATUS" | grep -qE "^2" && echo "PASS" && exit 0
             sleep 10
