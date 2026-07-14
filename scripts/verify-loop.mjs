@@ -70,60 +70,35 @@ await page.waitForTimeout(1000);
 const price359 = (await page.locator('text=/359/').count()) > 0;
 step('Size chip resolves variation price', price359, '₹359 shown');
 
+/* pot picker — pots are REAL products (2026-07-14 design): size-matched to the
+   selected plant size, material-filterable, added as their own cart line */
+await page.locator('button', { hasText: /^With Pot/ }).first().click();
+await page.waitForTimeout(4000); // lazy pots fetch (list + per-slug details)
+await page.locator('button', { hasText: /^Ceramic$/ }).first().click();
+await page.waitForTimeout(800);
+await page.locator('button', { hasText: 'Terracotta Classic Pot' }).first().click();
+await page.waitForTimeout(800);
+const potPicked = (await page.locator('text=/\\+₹249 · Terracotta Classic Pot/').count()) > 0;
+step('Pot picker: ceramic pot size-matched to Small', potPicked, '+₹249 Terracotta');
+
 await page.locator('button', { hasText: /add to cart/i }).first().click();
 await page.waitForTimeout(2000);
 let cart = await page.evaluate(() => JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}'));
-const line = cart?.items?.[0];
+const line = (cart?.items ?? []).find((i) => /Monstera/.test(i?.name ?? ''));
 step(
   'Cart line has V1 shape',
   line?.name === 'Monstera Deliciosa - Small' && line?.price === 359 && !!line?.variationId,
   `${line?.name} ₹${line?.price} var=${line?.variationId}`,
 );
+const potLine = (cart?.items ?? []).find((i) => /Terracotta Classic Pot - Small/.test(i?.name ?? ''));
+step(
+  'Pot rides as its own cart line',
+  !!potLine && potLine.price === 249 && cart?.total === 608,
+  `${potLine?.name} ₹${potLine?.price} · cart total ₹${cart?.total}`,
+);
 
-/* ── 3: pot UX on the mock PDP (mock route was removed in the P9 cleanup —
- *       skip until real pot data is authored, then point these steps at a
- *       real PDP instead) ── */
-// The mock's presence can't be detected by status: the root [searchType]
-// catch-all serves ANY unknown slug with a 200, and visiting that junk page in
-// the MAIN page pollutes the flow. Probe for the pot UI in a throwaway context.
-const potCtx = await b.newContext();
-const potProbe = await potCtx.newPage();
-await potProbe.goto(`${BASE}/pot-test`, { waitUntil: 'domcontentloaded', timeout: 120000 }).catch(() => {});
-const potUiPresent = await potProbe
-  .locator('button', { hasText: /^Small$/ })
-  .first()
-  .waitFor({ timeout: 10000 })
-  .then(() => true)
-  .catch(() => false);
-await potCtx.close();
-if (potUiPresent) {
-  await page.goto(`${BASE}/pot-test`, { waitUntil: 'domcontentloaded', timeout: 120000 });
-  await page.waitForTimeout(5000);
-  await page.locator('button', { hasText: /^Small$/ }).first().click();
-  await page.waitForTimeout(500);
-  await page.locator('button').filter({ hasText: /^With Pot/ }).first().click();
-  await page.waitForTimeout(1200);
-  const pot558 = (await page.locator('text=/558/').count()) > 0;
-  const potDelta = (await page.locator('text=+₹199').count()) > 0;
-  step('Pot cards resolve Size×Pot combo price', pot558 && potDelta, '₹558 (+₹199 delta)');
-  await page.locator('button', { hasText: /add to cart/i }).first().click().catch(() => {});
-  await page.waitForTimeout(1500);
-  cart = await page.evaluate(() => JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}'));
-  const potLine = (cart?.items ?? []).find((i) => /With Pot/.test(i?.name ?? ''));
-  step('Pot cart line title carries the choice', !!potLine, potLine?.name);
-
-  /* reset cart to ONLY the real (orderable) monstera line */
-  await page.evaluate(() => {
-    const c = JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}');
-    c.items = (c.items ?? []).filter((i) => !/With Pot/.test(i?.name ?? ''));
-    c.totalUniqueItems = c.items.length;
-    c.totalItems = c.items.reduce((s, i) => s + (i.quantity ?? 1), 0);
-    c.total = c.items.reduce((s, i) => s + (i.itemTotal ?? i.price * (i.quantity ?? 1)), 0);
-    localStorage.setItem('plantathome-cart', JSON.stringify(c));
-  });
-} else {
-  console.log('  [skip] /pot-test mock removed (P9 cleanup) — pot UI was verified pre-cleanup; author real pot data to re-enable');
-}
+/* pot steps live in the main PDP flow above (real staging pot products);
+   the plant + pot lines BOTH ride into checkout — multi-line verify. */
 
 /* ── 4: guest COD checkout (prefs pre-seeded via addInitScript) ── */
 

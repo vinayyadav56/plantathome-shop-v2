@@ -26,6 +26,7 @@ import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
+import PotPicker, { type SelectedPot } from './pot-picker';
 import { cartAnimation } from '@/lib/cart-animation';
 import PlantAtHomeGallery from './plantathome/gallery';
 import PlantAtHomeAccordion, { AccordionItem } from './plantathome/accordion';
@@ -105,18 +106,6 @@ const isColorGroup = (name: string, options: any[]) =>
 
 /** "Buy with pot / without pot" — the marvel `Pot` attribute gets a bespoke
  *  card-toggle treatment instead of default chips. */
-const isPotGroup = (name: string) => name.toLowerCase() === 'pot';
-
-/** Cheapest effective price among variation_options whose options include the
- *  given attribute value (sale_price wins) — used to show "+₹N" on pot cards. */
-const minPriceForValue = (variationOptions: any[], value: string): number | null => {
-  const prices = (variationOptions ?? [])
-    .filter((vo) => (vo?.options ?? []).some((o: any) => o?.value === value))
-    .map((vo) => Number(vo?.sale_price ? vo.sale_price : vo?.price))
-    .filter((n) => Number.isFinite(n));
-  return prices.length ? Math.min(...prices) : null;
-};
-
 type Props = { product: Product; isModal?: boolean };
 
 const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }) => {
@@ -133,6 +122,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   } = (product ?? {}) as any;
 
   const [qty, setQty] = useState(1);
+  // Pots are separate products chosen alongside a plant (user decision
+  // 2026-07-14): the picked pot rides into the cart as its own line item.
+  const [selectedPot, setSelectedPot] = useState<SelectedPot | null>(null);
 
   const variations = useMemo(
     () => (product_type?.toLowerCase() === 'variable' ? getVariations(product?.variations) : {}),
@@ -224,6 +216,15 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     const item = generateCartItem(product as any, selectedVariation);
     if (item?.language && item.language !== language) updateCartLanguage(item.language);
     addItemToCart(item, qty);
+    // The chosen pot is its own product line (one pot per plant) — the server
+    // re-prices both lines from their variation_option ids at checkout.
+    if (selectedPot?.option) {
+      const potProduct = {
+        ...selectedPot.product,
+        shop: selectedPot.product.shop ?? { id: selectedPot.product.shop_id },
+      };
+      addItemToCart(generateCartItem(potProduct, selectedPot.option), qty);
+    }
     cartAnimation(e as any);
   };
 
@@ -370,66 +371,13 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               Object.keys(variations).map((groupName) => {
                 const options = variations[groupName] as any[];
                 const color = isColorGroup(groupName, options);
-                const pot = isPotGroup(groupName);
                 const selected = attributes[groupName];
-                // pot cards show the price delta vs the cheaper choice
-                const potMins = pot
-                  ? options.map((o) => minPriceForValue(product?.variation_options as any[], o.value))
-                  : [];
-                const potBase = pot
-                  ? Math.min(...potMins.filter((n): n is number => n != null))
-                  : 0;
                 return (
                   <div key={groupName} className="mt-6">
                     <p className="mb-3 text-base font-semibold capitalize text-forest-900">
-                      {pot ? 'Choose your pot' : `Product ${groupName.replace(/-/g, ' ')}`}
+                      {`Product ${groupName.replace(/-/g, ' ')}`}
                     </p>
-                    {pot ? (
-                      <div className="grid grid-cols-2 gap-3">
-                        {options.map((o, i) => {
-                          const active = selected === o.value;
-                          const withPot = /with\s?pot/i.test(o.value) && !/without/i.test(o.value);
-                          const delta = potMins[i] != null && Number.isFinite(potBase) ? (potMins[i] as number) - potBase : null;
-                          return (
-                            <button
-                              key={o.id}
-                              type="button"
-                              onClick={() => setAttributes((p: any) => ({ ...p, [groupName]: o.value }))}
-                              className={classNames(
-                                'flex flex-col items-start gap-1 rounded-2xl border-2 px-4 py-3.5 text-left transition',
-                                active
-                                  ? 'border-forest-700 bg-forest-700/[0.06] shadow-[0_4px_14px_rgba(22,48,26,0.10)]'
-                                  : 'border-kraft-300 bg-white hover:border-forest-500',
-                              )}
-                            >
-                              <span className="flex w-full items-center justify-between">
-                                <span
-                                  className={classNames(
-                                    'grid h-8 w-8 place-items-center rounded-full',
-                                    active ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700',
-                                  )}
-                                >
-                                  {withPot ? (
-                                    /* plant in pot */
-                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 11V6" /><path d="M12 6c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 8c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M5 11h14l-1 4a4 4 0 0 1-4 3h-4a4 4 0 0 1-4-3l-1-4Z" /></svg>
-                                  ) : (
-                                    /* bare roots */
-                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 7c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 9c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M12 13c0 2-1 4-2.5 5.5M12 13c0 2 1 4 2.5 5.5M12 13v7" /></svg>
-                                  )}
-                                </span>
-                                {active && (
-                                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="text-forest-700"><path d="m5 13 4 4L19 7" /></svg>
-                                )}
-                              </span>
-                              <span className="text-[13.5px] font-semibold text-forest-900">{o.value}</span>
-                              <span className="text-[12px] font-medium text-forest-600">
-                                {delta == null ? '' : delta > 0 ? `+₹${delta.toLocaleString('en-IN')}` : 'Included'}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : color ? (
+                    {color ? (
                       <div className="flex flex-wrap items-center gap-3">
                         {options.map((o) => {
                           const active = selected === o.value;
@@ -474,6 +422,16 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   </div>
                 );
               })}
+
+            {/* pot picker — plants only; pots are real products added as their
+                own cart line, size-matched to the selected plant size */}
+            {type?.slug === 'plants' && (
+              <PotPicker
+                plantSize={(attributes as any)?.size ?? null}
+                selected={selectedPot}
+                onSelect={setSelectedPot}
+              />
+            )}
 
             {/* vendor availability ("we'll confirm within 6h" when cost = 0) */}
             <VendorAvailabilityNote
