@@ -428,6 +428,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {type?.slug === 'plants' && (
               <PotPicker
                 plantSize={(attributes as any)?.size ?? null}
+                fallbackSize={((variations as any)?.size?.[0]?.value as string) ?? null}
                 selected={selectedPot}
                 onSelect={setSelectedPot}
               />

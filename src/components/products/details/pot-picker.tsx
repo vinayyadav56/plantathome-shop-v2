@@ -24,6 +24,8 @@ export type SelectedPot = {
 type Props = {
   /** The plant's currently selected Size value (e.g. "Small"), or null. */
   plantSize: string | null;
+  /** The plant's first size option — pots default to this until a size is picked. */
+  fallbackSize?: string | null;
   selected: SelectedPot | null;
   onSelect: (pot: SelectedPot | null) => void;
 };
@@ -61,11 +63,15 @@ const sizeOption = (pot: any, size: string | null) =>
 const rupees = (n: number) => `₹${Number(n).toLocaleString('en-IN')}`;
 const optPrice = (o: any) => Number(o?.sale_price ? o.sale_price : o?.price ?? 0);
 
-const PotPicker: React.FC<Props> = ({ plantSize, selected, onSelect }) => {
+const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, onSelect }) => {
   const [withPot, setWithPot] = useState(false);
   const [material, setMaterial] = useState<string>('All');
 
-  const { data: pots = [] } = useQuery<any[]>(['pot-picker-pots'], fetchPots, {
+  // Show pots for the plant's first size until the customer picks one — an
+  // empty rail behind a one-line hint read as "broken".
+  const effectiveSize = plantSize ?? fallbackSize;
+
+  const { data: pots = [], isLoading } = useQuery<any[]>(['pot-picker-pots'], fetchPots, {
     enabled: withPot,
     staleTime: 5 * 60 * 1000,
   });
@@ -76,25 +82,25 @@ const PotPicker: React.FC<Props> = ({ plantSize, selected, onSelect }) => {
     return ['All', ...Array.from(set)];
   }, [pots]);
 
-  // Pots that exist in the plant's size, with that size's price.
+  // Pots that exist in the effective size, with that size's price.
   const matched = useMemo(
     () =>
       pots
-        .map((p) => ({ product: p, option: sizeOption(p, plantSize) }))
+        .map((p) => ({ product: p, option: sizeOption(p, effectiveSize) }))
         .filter((m) => m.option)
         .filter((m) => material === 'All' || materialLabel(m.product) === material),
-    [pots, plantSize, material],
+    [pots, effectiveSize, material],
   );
 
   // Plant size changed → re-match the chosen pot to the new size (or drop it
   // if that pot doesn't come in the new size).
   useEffect(() => {
     if (!selected) return;
-    const opt = sizeOption(selected.product, plantSize);
+    const opt = sizeOption(selected.product, effectiveSize);
     if (!opt) onSelect(null);
     else if (opt.id !== selected.option?.id) onSelect({ product: selected.product, option: opt });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plantSize]);
+  }, [effectiveSize]);
 
   const choose = (mode: 'without' | 'with') => {
     setWithPot(mode === 'with');
@@ -158,7 +164,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, selected, onSelect }) => {
 
       {withPot && (
         <div className="mt-4">
-          {!plantSize ? (
+          {!effectiveSize ? (
             <p className="text-[13px] text-forest-600">
               Select a plant size above to see pots that fit it.
             </p>
@@ -183,10 +189,26 @@ const PotPicker: React.FC<Props> = ({ plantSize, selected, onSelect }) => {
                 ))}
               </div>
 
+              {!plantSize && (
+                <p className="mb-2 text-[12px] text-forest-600">
+                  Showing {effectiveSize} pots — pick a plant size above to match yours.
+                </p>
+              )}
+
               {/* size-matched pots, horizontal scroll */}
-              {matched.length === 0 ? (
+              {isLoading ? (
+                <div className="-mx-1 flex gap-3 overflow-x-hidden px-1 pb-2" aria-label="Loading pots">
+                  {[0, 1, 2, 3].map((i) => (
+                    <span key={i} className="w-36 shrink-0 animate-pulse rounded-2xl border-2 border-kraft-300 bg-white p-2">
+                      <span className="block h-24 w-full rounded-xl bg-sage-100" />
+                      <span className="mt-2 block h-3 w-24 rounded bg-sage-100" />
+                      <span className="mt-1.5 block h-3 w-14 rounded bg-sage-100" />
+                    </span>
+                  ))}
+                </div>
+              ) : matched.length === 0 ? (
                 <p className="text-[13px] text-forest-600">
-                  No {material === 'All' ? '' : material.toLowerCase() + ' '}pots available in {plantSize} right now.
+                  No {material === 'All' ? '' : material.toLowerCase() + ' '}pots available in {effectiveSize} right now.
                 </p>
               ) : (
                 <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
@@ -223,7 +245,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, selected, onSelect }) => {
                         <span className="mt-0.5 flex items-center justify-between">
                           <span className="text-[13px] font-bold text-forest-900">{rupees(optPrice(option))}</span>
                           <span className="text-[10.5px] font-medium uppercase tracking-wide text-forest-600">
-                            {materialLabel(product)} · {plantSize}
+                            {materialLabel(product)} · {effectiveSize}
                           </span>
                         </span>
                       </button>
