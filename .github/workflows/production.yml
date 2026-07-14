@@ -94,7 +94,7 @@ jobs:
         env:
           NEXT_PUBLIC_VERSION: REST
           NEXT_PUBLIC_REST_API_ENDPOINT: https://api.plantathome.in/api
-          NEXT_PUBLIC_SITE_URL: https://plantathome.in
+          NEXT_PUBLIC_SITE_URL: https://www.plantathome.in
           NEXT_PUBLIC_ADMIN_URL: https://admin.plantathome.in
           NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PROD_RAZORPAY_KEY_ID }}
           NEXT_PUBLIC_GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}
@@ -202,7 +202,7 @@ jobs:
               'NEXT_PUBLIC_AVAILABLE_LANGUAGES=en' \
               'NEXT_PUBLIC_VERSION=REST' \
               'NEXT_PUBLIC_REST_API_ENDPOINT=https://api.plantathome.in/api' \
-              'NEXT_PUBLIC_SITE_URL=https://plantathome.in' \
+              'NEXT_PUBLIC_SITE_URL=https://www.plantathome.in' \
               'NEXT_PUBLIC_ADMIN_URL=https://admin.plantathome.in' \
               'NODE_ENV=production' \
               > .env.production.local

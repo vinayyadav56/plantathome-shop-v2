@@ -214,6 +214,14 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!inStock || needsSelection) return;
     const item = generateCartItem(product as any, selectedVariation);
+    // Price integrity: when this product has a vendor cost sheet the server
+    // charges the location/margin price (also what the PDP displays), NOT the
+    // raw catalog variation price. The cart line must carry that same price or
+    // the displayed cart total diverges from the amount actually charged.
+    if (useVendorPrice && vendorPriceData?.price != null) {
+      const vp = Number(vendorPriceData.price);
+      if (Number.isFinite(vp) && vp > 0) (item as any).price = vp;
+    }
     if (item?.language && item.language !== language) updateCartLanguage(item.language);
     addItemToCart(item, qty);
     // The chosen pot is its own product line (one pot per plant) — the server
