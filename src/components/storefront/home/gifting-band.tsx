@@ -81,16 +81,24 @@ export function GiftingBand() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[15px] w-[15px] text-forest-500"><path d="M7 20s-1-7 4-11c0 0 2 4-1 7" /><path d="M12 20c0-6 4-10 9-10 0 6-4 10-9 10Z" /></svg>
             <div className="h-px flex-1 bg-kraft-300" />
           </div>
-          <p className="mt-3.5 max-w-[468px] text-[16px] leading-[1.58] tracking-[0.002em] text-[#33422F] sm:text-[19px]">
+          {/* single line at every width: font scales with the viewport below lg,
+              then steps with the 56% column from lg (nowrap must never clip). */}
+          <p className="mt-3.5 whitespace-nowrap text-[clamp(10px,1.85vw,16px)] leading-[1.58] tracking-[0.002em] text-[#33422F] lg:text-[13px] xl:text-[16.5px]">
             {t('home-gift-subtitle')}
           </p>
           {/* equal-width columns so all four reasons sit in symmetry */}
           <div className="mt-6 grid max-w-[820px] grid-cols-2 gap-y-7 sm:grid-cols-4 sm:items-stretch">
             {REASONS.map((r, i) => (
-              <div key={r.a} className="relative flex flex-col items-center px-2 text-center sm:px-3.5 md:flex-row md:gap-3 md:text-left lg:flex-col lg:gap-0 lg:text-center">
+              <div key={r.a} className="relative flex flex-col items-center px-2 text-center sm:px-3.5 md:flex-row md:gap-2.5 md:px-1.5 md:text-left lg:flex-col lg:gap-0 lg:px-3.5 lg:text-center">
                 {i > 0 && <div className="absolute left-0 top-1/2 hidden h-16 w-px -translate-y-1/2 bg-kraft-300 sm:block" />}
-                <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-sage-100 text-forest-700 sm:h-[62px] sm:w-[62px] md:h-[44px] md:w-[44px] lg:h-[62px] lg:w-[62px]">{r.icon}</div>
-                <div className="mt-3.5 text-[12px] font-semibold leading-[1.45] tracking-[0.01em] text-forest-900 sm:text-[12.5px] md:mt-0 md:text-[11.5px] lg:mt-3.5 lg:text-[12.5px]">{r.a}<br />{r.b}</div>
+                <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-sage-100 text-forest-700 sm:h-[62px] sm:w-[62px] md:h-[40px] md:w-[40px] lg:h-[62px] lg:w-[62px]">{r.icon}</div>
+                {/* ≤2 lines everywhere: natural wrap + clamp below lg (the hard
+                    <br/> forced 3+ lines in the narrow md columns); the designed
+                    manual break returns at lg where the columns are wide. */}
+                <div className="mt-3.5 line-clamp-2 text-[12px] font-semibold leading-[1.45] tracking-[0.01em] text-forest-900 sm:text-[12.5px] md:mt-0 md:text-[10.5px] md:leading-[1.35] lg:mt-3.5 lg:line-clamp-none lg:text-[12.5px] lg:leading-[1.45]">
+                  <span className="lg:hidden">{r.a} {r.b}</span>
+                  <span className="hidden lg:inline">{r.a}<br />{r.b}</span>
+                </div>
               </div>
             ))}
           </div>

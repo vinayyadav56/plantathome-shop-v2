@@ -46,7 +46,7 @@ export function CategoryRow() {
   return (
     <section className="relative z-[5]">
       <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-16">
-        <div className="pah-rail [--rail-w:46%] md:[--rail-w:31%] lg:[--rail-w:calc((100%_-_48px)/5)] grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
+        <div className="pah-rail [--rail-w:46%] md:[--rail-w:calc((100%_-_40px)/5)] lg:[--rail-w:calc((100%_-_48px)/5)] grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
 
           {isLoading && categories.length === 0
             ? Array.from({ length: 5 }).map((_, i) => (
@@ -64,17 +64,17 @@ export function CategoryRow() {
                   >
                     <Link
                       href={`/c/${c.slug}`}
-                      className="group flex h-[150px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[116px] lg:h-[150px]"
+                      className="group flex h-[150px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[92px] lg:h-[150px]"
                     >
                       {/* text — left */}
-                      <div className="flex min-w-0 flex-1 flex-col justify-center p-3.5 md:p-3 lg:p-3.5">
-                        <p className="line-clamp-2 font-hanken text-[15px] font-bold leading-snug text-forest-900 md:text-[13px] lg:text-[15px]">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center p-3.5 md:p-2.5 lg:p-3.5">
+                        <p className="line-clamp-2 font-hanken text-[15px] font-bold leading-snug text-forest-900 md:text-[11.5px] lg:text-[15px]">
                           {c.name}
                         </p>
-                        <p className="mt-1 line-clamp-2 font-hanken text-[11.5px] leading-snug text-stone-500 md:line-clamp-1 md:text-[10.5px] lg:line-clamp-2 lg:text-[11.5px]">
+                        <p className="mt-1 line-clamp-2 font-hanken text-[11.5px] leading-snug text-stone-500 md:hidden lg:line-clamp-2">
                           {c.description || c.details || 'Explore collection'}
                         </p>
-                        <p className="mt-2 flex items-center gap-1 font-hanken text-[12px] font-semibold text-forest-900 transition-colors duration-200 group-hover:text-forest-700">
+                        <p className="mt-2 flex items-center gap-1 font-hanken text-[12px] font-semibold text-forest-900 transition-colors duration-200 group-hover:text-forest-700 md:mt-1 md:text-[10px] lg:mt-2 lg:text-[12px]">
                           Shop Now
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-[10px] w-[10px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden>
                             <path d="M5 12h13M13 6l6 6-6 6" />

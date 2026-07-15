@@ -46,7 +46,8 @@ export function CorporateGifting() {
           <i className="fa-solid fa-seedling" aria-hidden style={{ fontSize: '12px', color: '#4E8244' }} />
           <div className="h-px w-[58px] bg-kraft-300" />
         </div>
-        <p className="mx-auto mt-[12px] max-w-[284px] text-[13px] leading-[1.55] text-[#33422F]">{t('m-gift-subtitle')}</p>
+        {/* single line at every width — font scales with the viewport */}
+        <p className="mx-auto mt-[12px] whitespace-nowrap text-[clamp(8px,2.25vw,13px)] leading-[1.55] text-[#33422F]">{t('m-gift-subtitle')}</p>
       </div>
       {/* 4 reasons (2x2) */}
       <div className="mt-[22px] grid grid-cols-2 gap-x-[10px] gap-y-[18px]">

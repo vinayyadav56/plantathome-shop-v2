@@ -114,7 +114,7 @@ export function WhyPlants() {
         </motion.div>
 
         {/* benefit cards — small, clean, single scrollable row */}
-        <div className="pah-rail [--rail-w:52%] lg:[--rail-w:calc((100%_-_72px)/4)] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
+        <div className="pah-rail [--rail-w:52%] md:[--rail-w:calc((100%_-_60px)/4)] lg:[--rail-w:calc((100%_-_72px)/4)] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
           {cards.map((b, i) => (
             <motion.div
               key={`${b.title}-${i}`}
@@ -125,7 +125,7 @@ export function WhyPlants() {
               className="group relative overflow-hidden rounded-[18px] border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition-all duration-300 hover:-translate-y-[6px] hover:border-forest-200 hover:shadow-[0_16px_36px_rgba(34,48,26,0.13)]"
             >
               {/* image */}
-              <div className="relative h-[150px] overflow-hidden bg-cream-100 sm:h-[160px] lg:h-[170px]">
+              <div className="relative h-[150px] overflow-hidden bg-cream-100 sm:h-[160px] md:h-[100px] lg:h-[170px]">
                 <SafeImage
                   src={b.img}
                   alt={b.title}
@@ -138,17 +138,17 @@ export function WhyPlants() {
               </div>
 
               {/* icon badge */}
-              <div className="absolute left-1/2 top-[150px] flex h-[50px] w-[50px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-sage-200 bg-white text-forest-700 shadow-[0_6px_16px_rgba(20,40,24,0.12)] transition-all duration-300 group-hover:scale-110 group-hover:border-forest-300 group-hover:text-forest-600 group-hover:shadow-[0_8px_22px_rgba(20,80,24,0.2)] sm:top-[160px] lg:top-[170px]">
+              <div className="absolute left-1/2 top-[150px] flex h-[50px] w-[50px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-sage-200 bg-white text-forest-700 shadow-[0_6px_16px_rgba(20,40,24,0.12)] transition-all duration-300 group-hover:scale-110 group-hover:border-forest-300 group-hover:text-forest-600 group-hover:shadow-[0_8px_22px_rgba(20,80,24,0.2)] sm:top-[160px] md:top-[100px] md:h-[36px] md:w-[36px] lg:top-[170px] lg:h-[50px] lg:w-[50px]">
                 {b.icon}
               </div>
 
-              <div className="px-5 pb-6 pt-9 text-center">
-                <h3 className="font-hanken text-[16px] font-bold leading-[1.2] text-forest-900 transition-colors duration-300 group-hover:text-forest-700">
+              <div className="px-5 pb-6 pt-9 text-center md:px-3 md:pb-4 md:pt-7 lg:px-5 lg:pb-6 lg:pt-9">
+                <h3 className="font-hanken text-[16px] font-bold leading-[1.2] text-forest-900 transition-colors duration-300 group-hover:text-forest-700 md:text-[12.5px] lg:text-[16px]">
                   {b.title}
                 </h3>
                 {/* animated divider — grows + turns green on hover */}
-                <div className="mx-auto mb-3 mt-2.5 h-0.5 w-[24px] rounded-full bg-forest-400 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-[44px] group-hover:bg-[#4ADE80]" />
-                <p className="mx-auto max-w-[300px] font-hanken text-[12.5px] leading-[1.6] text-stone-500">{b.body}</p>
+                <div className="mx-auto mb-3 mt-2.5 h-0.5 w-[24px] rounded-full bg-forest-400 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-[44px] group-hover:bg-[#4ADE80] md:mb-2 md:mt-1.5 lg:mb-3 lg:mt-2.5" />
+                <p className="mx-auto max-w-[300px] font-hanken text-[12.5px] leading-[1.6] text-stone-500 md:line-clamp-3 md:text-[10.5px] md:leading-[1.5] lg:line-clamp-none lg:text-[12.5px] lg:leading-[1.6]">{b.body}</p>
               </div>
             </motion.div>
           ))}
