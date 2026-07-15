@@ -28,6 +28,9 @@ import GlobalFetchBar from '@/components/ui/global-fetch-bar';
 import LocationGate from '@/components/location/location-gate';
 import TrackingBridge from '@/lib/analytics/tracking-bridge';
 import DesignSystemApplier from '@/lib/design-system-applier';
+// Static import (no next/dynamic — hydration-loop trap); the component itself
+// gates on mounted-state + staging/localhost hostname, so prod renders nothing.
+import AgentationToolbar from '@/components/dev/agentation-toolbar';
 
 // STATIC import — V1's _app.tsx imported ToastContainer statically; the port's
 // dynamic() made it the last always-rendered React.lazy in the shell, which is
@@ -69,6 +72,7 @@ export default function AppProviders({ children }: { children: React.ReactNode }
                 <ToastContainer position="top-center" autoClose={3000} newestOnTop theme="light" closeOnClick pauseOnHover />
                 <SocialLogin />
                 <FirstVisitLanguageModal />
+                <AgentationToolbar />
               </>
             </CartProvider>
           </ModalProvider>
