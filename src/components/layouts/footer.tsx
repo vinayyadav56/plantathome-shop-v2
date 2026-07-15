@@ -172,10 +172,10 @@ const Footer = () => {
       </div>
 
       {/* ── main grid: brand + link columns ── */}
-      <div className="relative z-[1] mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 md:grid-cols-3 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:px-16 lg:pb-[46px] lg:pt-[54px]">
+      <div className="relative z-[1] mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 md:grid-cols-4 md:gap-x-6 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:px-16 lg:pb-[46px] lg:pt-[54px]">
 
         {/* brand column */}
-        <div className="col-span-2 md:col-span-3 lg:col-span-1 lg:max-w-[300px]">
+        <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:max-w-[300px]">
           <WordmarkStacked light className="[&_*]:!text-white" />
           <p className="mt-4 text-[13.5px] leading-relaxed text-white/62">{t('footer-brand-description')}</p>
 
@@ -223,7 +223,7 @@ const Footer = () => {
                 <li key={l.name}>
                   <Link
                     href={l.href}
-                    className="group inline-flex items-center gap-1.5 text-[13.5px] text-white/55 transition-colors duration-200 hover:text-white"
+                    className="group inline-flex items-center gap-1.5 text-[13.5px] text-white/55 transition-colors duration-200 hover:text-white md:text-[12.5px] lg:text-[13.5px]"
                   >
                     <span className="h-px w-0 rounded-full bg-[#4ADE80] transition-all duration-300 group-hover:w-3" />
                     {l.name}

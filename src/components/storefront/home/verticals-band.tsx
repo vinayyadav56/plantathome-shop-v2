@@ -54,7 +54,7 @@ export function VerticalsBand() {
             <h2 className="m-0 font-pahserif text-[26px] font-semibold leading-[1.05] tracking-[-0.005em] text-forest-900 sm:text-[34px]">
               {t('home-verticals-title')}
             </h2>
-            <p className="mt-2 max-w-xl font-hanken text-[13.5px] leading-[1.55] text-stone-500 sm:text-[14.5px]">
+            <p className="mt-2 max-w-xl font-hanken text-[13.5px] leading-[1.55] text-stone-500 sm:text-[14.5px] md:max-w-none md:whitespace-nowrap md:text-[12px] lg:max-w-xl lg:whitespace-normal lg:text-[14.5px]">
               {t('home-verticals-sub')}
             </p>
           </div>
@@ -78,7 +78,7 @@ export function VerticalsBand() {
             v.skeleton ? (
               <div
                 key={v.slug}
-                className="h-[210px] w-[72%] shrink-0 animate-pulse rounded-[18px] bg-sage-100 sm:w-[44%] lg:h-[230px] lg:w-auto"
+                className="h-[210px] w-[72%] shrink-0 animate-pulse rounded-[18px] bg-sage-100 sm:w-[44%] md:h-[172px] md:w-[36%] lg:h-[230px] lg:w-auto"
               />
             ) : (
               <motion.div
@@ -87,11 +87,11 @@ export function VerticalsBand() {
                 whileInView={{ y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: EXPO }}
-                className="w-[72%] shrink-0 snap-start sm:w-[44%] lg:w-auto"
+                className="w-[72%] shrink-0 snap-start sm:w-[44%] md:w-[36%] lg:w-auto"
               >
                 <Link
                   href={v.href}
-                  className="group relative block h-[210px] overflow-hidden rounded-[18px] border border-kraft-200 bg-forest-900 shadow-[0_2px_10px_rgba(34,48,26,0.08)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_16px_36px_rgba(34,48,26,0.16)] lg:h-[230px]"
+                  className="group relative block h-[210px] overflow-hidden rounded-[18px] border border-kraft-200 bg-forest-900 shadow-[0_2px_10px_rgba(34,48,26,0.08)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_16px_36px_rgba(34,48,26,0.16)] md:h-[172px] lg:h-[230px]"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -108,9 +108,9 @@ export function VerticalsBand() {
                     </span>
                   )}
 
-                  <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
+                  <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 md:p-4 lg:p-5">
                     <div className="min-w-0">
-                      <h3 className="m-0 font-pahserif text-[23px] font-semibold leading-none text-white">
+                      <h3 className="m-0 font-pahserif text-[23px] font-semibold leading-none text-white md:text-[19px] lg:text-[23px]">
                         {v.name}
                       </h3>
                       <p className="mt-1.5 line-clamp-1 font-hanken text-[12.5px] text-white/75">

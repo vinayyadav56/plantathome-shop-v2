@@ -87,10 +87,10 @@ export function GiftingBand() {
           {/* equal-width columns so all four reasons sit in symmetry */}
           <div className="mt-6 grid max-w-[820px] grid-cols-2 gap-y-7 sm:grid-cols-4 sm:items-stretch">
             {REASONS.map((r, i) => (
-              <div key={r.a} className="relative flex flex-col items-center px-2 text-center sm:px-3.5">
+              <div key={r.a} className="relative flex flex-col items-center px-2 text-center sm:px-3.5 md:flex-row md:gap-3 md:text-left lg:flex-col lg:gap-0 lg:text-center">
                 {i > 0 && <div className="absolute left-0 top-1/2 hidden h-16 w-px -translate-y-1/2 bg-kraft-300 sm:block" />}
-                <div className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-sage-100 text-forest-700 sm:h-[62px] sm:w-[62px]">{r.icon}</div>
-                <div className="mt-3.5 text-[12px] font-semibold leading-[1.45] tracking-[0.01em] text-forest-900 sm:text-[12.5px]">{r.a}<br />{r.b}</div>
+                <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-sage-100 text-forest-700 sm:h-[62px] sm:w-[62px] md:h-[44px] md:w-[44px] lg:h-[62px] lg:w-[62px]">{r.icon}</div>
+                <div className="mt-3.5 text-[12px] font-semibold leading-[1.45] tracking-[0.01em] text-forest-900 sm:text-[12.5px] md:mt-0 md:text-[11.5px] lg:mt-3.5 lg:text-[12.5px]">{r.a}<br />{r.b}</div>
               </div>
             ))}
           </div>
@@ -147,7 +147,7 @@ export function GiftingBand() {
                 whileInView={{ y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.55, ease: EXPO }}
-                className="group flex flex-1 items-center gap-4 px-7 py-6 transition-colors duration-300 hover:bg-white/[0.035] sm:flex-col sm:items-start sm:px-8 sm:py-7 lg:flex-row lg:items-center"
+                className="group flex flex-1 items-center gap-4 px-7 py-6 transition-colors duration-300 hover:bg-white/[0.035] sm:px-6 sm:py-7 lg:px-8"
               >
                 {/* icon with glow ring */}
                 <div className="relative shrink-0">

@@ -71,10 +71,10 @@ export function SpringSaleBand() {
         {/* soft radial glow on left */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-[380px] bg-[radial-gradient(ellipse_at_10%_50%,rgba(74,222,128,0.13)_0%,transparent_65%)]" />
 
-        <div className="relative z-10 flex flex-col gap-4 px-5 py-5 sm:px-8 lg:flex-row lg:items-center lg:gap-0 lg:px-10 lg:py-6">
+        <div className="relative z-10 flex flex-col gap-4 px-5 py-5 sm:px-8 md:flex-row md:items-center md:gap-0 lg:px-10 lg:py-6">
 
           {/* ── LEFT — offer block ── */}
-          <div className="shrink-0 lg:w-[260px]">
+          <div className="shrink-0 md:w-[210px] lg:w-[260px]">
             {/* pulsing badge */}
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#4ADE80]/25 bg-[#4ADE80]/10 px-3 py-1">
               <span className="relative flex h-[6px] w-[6px]">
@@ -107,15 +107,15 @@ export function SpringSaleBand() {
           </div>
 
           {/* vertical divider */}
-          <div className="hidden w-px self-stretch bg-white/[0.1] lg:mx-10 lg:block" />
+          <div className="hidden w-px self-stretch bg-white/[0.1] md:mx-6 md:block lg:mx-10" />
           {/* horizontal divider on mobile */}
-          <div className="h-px w-full bg-white/[0.08] lg:hidden" />
+          <div className="h-px w-full bg-white/[0.08] md:hidden" />
 
           {/* ── RIGHT — perks ── */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 lg:flex lg:flex-1 lg:items-center lg:justify-between">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-4 md:flex md:flex-1 md:items-center md:justify-between">
             {PERKS.map((p, i) => (
               <React.Fragment key={p.label}>
-                {i > 0 && <span aria-hidden className="hidden h-8 w-px shrink-0 bg-white/15 lg:block" />}
+                {i > 0 && <span aria-hidden className="hidden h-8 w-px shrink-0 bg-white/15 md:block" />}
                 <motion.div
                   initial={{ y: 14 }}
                   whileInView={{ y: 0 }}
@@ -123,10 +123,10 @@ export function SpringSaleBand() {
                   transition={{ delay: 0.1 + i * 0.07, duration: 0.45, ease: EXPO }}
                   className="flex items-center gap-3"
                 >
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/25 text-[#4ADE80] [&>svg]:h-[18px] [&>svg]:w-[18px]">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-white/25 text-[#4ADE80] md:h-9 md:w-9 lg:h-11 lg:w-11 [&>svg]:h-[18px] [&>svg]:w-[18px] md:[&>svg]:h-[15px] md:[&>svg]:w-[15px] lg:[&>svg]:h-[18px] lg:[&>svg]:w-[18px]">
                     {p.icon}
                   </span>
-                  <div className="max-w-[120px] font-hanken text-[12.5px] font-semibold leading-[1.35] text-white">
+                  <div className="max-w-[120px] font-hanken text-[12.5px] font-semibold leading-[1.35] text-white md:max-w-[96px] md:text-[11px] lg:max-w-[120px] lg:text-[12.5px]">
                     {p.label}
                   </div>
                 </motion.div>

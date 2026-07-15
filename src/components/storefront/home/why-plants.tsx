@@ -180,18 +180,18 @@ export function WhyPlants() {
           {/* gold glow right */}
           <div className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 rounded-full bg-[#C8F09A]/8 blur-3xl" />
 
-          <div className="relative z-10 flex flex-col items-center gap-6 px-7 py-9 text-center sm:px-10 lg:flex-row lg:gap-10 lg:px-12 lg:py-10 lg:text-left">
+          <div className="relative z-10 flex flex-col items-center gap-6 px-7 py-9 text-center sm:px-10 md:flex-row md:gap-7 md:py-8 md:text-left lg:gap-10 lg:px-12 lg:py-10">
 
             {/* icon — premium solid */}
-            <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl border border-[#4ADE80]/25 bg-[#4ADE80]/12 text-[#4ADE80]">
-              <i className="fa-solid fa-leaf text-[26px]" aria-hidden />
+            <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl border border-[#4ADE80]/25 bg-[#4ADE80]/12 text-[#4ADE80] md:h-[46px] md:w-[46px] lg:h-[60px] lg:w-[60px]">
+              <i className="fa-solid fa-leaf text-[26px] md:text-[20px] lg:text-[26px]" aria-hidden />
             </div>
 
             {/* vertical divider */}
-            <div className="hidden w-px self-stretch bg-white/10 lg:block" />
+            <div className="hidden w-px self-stretch bg-white/10 md:block" />
 
             {/* text */}
-            <p className="flex-1 font-hanken text-[18px] font-medium leading-[1.55] text-white/90 lg:text-[21px]">
+            <p className="flex-1 font-hanken text-[18px] font-medium leading-[1.55] text-white/90 md:text-[16px] lg:text-[21px]">
               {t('home-why-cta-band-text')}{' '}
               <strong className="font-bold text-[#86EFAC]">{t('home-why-cta-band-strong-1')}</strong>
               {' '}{t('home-why-cta-band-and')}{' '}
