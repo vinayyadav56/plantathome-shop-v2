@@ -6,6 +6,7 @@ import { PlusIcon } from '@/components/icons/plus-icon';
 import { useTranslation } from 'next-i18next';
 import classNames from 'classnames';
 import PhoneInput from '@/components/ui/forms/phone-input';
+import { useContacts } from '@/framework/contact';
 
 interface ContactProps {
   contact: string | undefined | null;
@@ -26,13 +27,21 @@ const ContactGrid = ({
   const { openModal } = useModalAction();
   const { t } = useTranslation('common');
 
+  // Prefer the account's saved primary phone (from the contacts API); fall back to
+  // the profile contact passed in. Guests get no contacts data → `contact` wins.
+  const { data: contactsData } = useContacts();
+  const savedPhone =
+    contactsData?.data?.phones?.find((p) => p.primary)?.number ??
+    contactsData?.data?.phones?.[0]?.number ??
+    contact;
+
   useEffect(() => {
     // Seed from the saved profile only when the checkout has no contact yet.
     // Never clear a number the user just entered (that caused it to be lost).
-    if (contact && !contactNumber) {
-      setContactNumber(contact);
+    if (savedPhone && !contactNumber) {
+      setContactNumber(savedPhone);
     }
-  }, [contact, contactNumber, setContactNumber]);
+  }, [savedPhone, contactNumber, setContactNumber]);
 
   function onAddOrChange() {
     openModal('ADD_OR_UPDATE_CHECKOUT_CONTACT');

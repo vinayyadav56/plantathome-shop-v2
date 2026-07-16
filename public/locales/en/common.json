@@ -679,5 +679,19 @@
   "text-coming-soon": "Coming soon",
   "categories-page-title": "All Categories",
   "categories-count-label": "collections",
-  "categories-explore-vertical": "Explore world"
+  "categories-explore-vertical": "Explore world",
+  "text-contact-details": "Contact details",
+  "contact-details-subtitle": "Manage the phone numbers and emails on your account",
+  "text-phone-numbers": "Phone numbers",
+  "text-phone-primary-placeholder": "Primary phone",
+  "text-phone-secondary-placeholder": "Secondary phone (optional)",
+  "text-email-addresses": "Email addresses",
+  "text-primary-email": "Primary email",
+  "text-secondary-email": "Secondary email",
+  "text-unverified": "Unverified",
+  "text-verify": "Verify",
+  "text-resend": "Resend",
+  "text-send-code": "Send code",
+  "add-secondary-email-helper": "Add a second email and verify it with a code.",
+  "contact-otp-sent-helper": "Enter the 6-digit code we emailed to {{email}}."
 }

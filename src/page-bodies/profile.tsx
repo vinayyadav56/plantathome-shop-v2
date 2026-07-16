@@ -6,6 +6,7 @@ import Card from '@/components/ui/cards/card';
 import { useTranslation } from 'next-i18next';
 import ProfileForm from '@/components/profile/profile-form';
 import ProfileContact from '@/components/profile/profile-contact';
+import ProfileContactDetails from '@/components/profile/profile-contact-details';
 import Seo from '@/components/seo/seo';
 import { useUser } from '@/framework/user';
 import DashboardLayout from '@/layouts/_dashboard';
@@ -28,6 +29,7 @@ const ProfilePage = () => {
           profileId={me.profile?.id!}
           contact={me.profile?.contact!}
         />
+        <ProfileContactDetails />
         <Card className="w-full">
           <ProfileAddressGrid
             userId={me.id}

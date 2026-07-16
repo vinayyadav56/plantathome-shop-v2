@@ -6,6 +6,15 @@ import { useAtom } from 'jotai';
 import { verifiedResponseAtom } from '@/store/checkout';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { getServerCart, saveServerCart } from '@/framework/server-cart';
+
+/** Order-independent fingerprint of a cart's lines (id + quantity) for change detection. */
+function cartSignature(items: Array<{ id: any; quantity?: number }>): string {
+  return (items ?? [])
+    .map((it) => `${it.id}:${Number(it.quantity ?? 1)}`)
+    .sort()
+    .join('|');
+}
+
 interface CartProviderState extends State {
   addItemsToCart: (items: Item[]) => void;
   addItemToCart: (item: Item, quantity: number) => void;
@@ -45,6 +54,11 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
   const [isAuthorized] = useAtom(authorizationAtom);
   const syncedRef = React.useRef(false);
   const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True only while a debounced save has actually started and not yet resolved.
+  const savingRef = React.useRef(false);
+  // Always-current snapshot of state, for the polling interval's stale closure.
+  const stateRef = React.useRef(state);
+  stateRef.current = state;
 
   // Rehydrate the persisted cart once, after mount.
   React.useEffect(() => {
@@ -115,16 +129,58 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
   }, [hydrated, isAuthorized]);
 
   // Debounced push of cart changes to the account cart (only once synced-in).
+  // `saveTimer` marks a queued save; `savingRef` marks an in-flight one — together
+  // they tell the cross-device poller (below) not to clobber a local change.
   React.useEffect(() => {
     if (!hydrated || !isAuthorized || !syncedRef.current) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      saveServerCart(state.items as any[]).catch(() => {});
+      saveTimer.current = null;
+      savingRef.current = true;
+      saveServerCart(state.items as any[])
+        .catch(() => {})
+        .finally(() => {
+          savingRef.current = false;
+        });
     }, 700);
     return () => {
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
   }, [state.items, hydrated, isAuthorized]);
+
+  // ── Cross-device real-time: poll the account cart and adopt server changes ──
+  // A change made on another device (Android / iOS / another tab) shows up here
+  // without a page refresh. Client-only + post-hydration (never during SSR), and
+  // only while authorized. Skipped whenever a local save is queued or in flight so
+  // the user's own just-made change is never overwritten by a stale server snapshot.
+  React.useEffect(() => {
+    if (!hydrated || !isAuthorized) return;
+    const POLL_MS = 7000;
+    const id = setInterval(async () => {
+      if (!syncedRef.current) return;
+      if (saveTimer.current || savingRef.current) return;
+      try {
+        const serverItems = await getServerCart();
+        const adopted = serverItems.map(({ item, quantity }) => ({
+          ...item,
+          quantity,
+        }));
+        // Re-check the guard after the await — a local edit may have landed meanwhile.
+        if (saveTimer.current || savingRef.current) return;
+        if (
+          cartSignature(adopted) === cartSignature(stateRef.current.items as any[])
+        )
+          return;
+        dispatch({ type: 'RESET_CART' });
+        if (adopted.length)
+          dispatch({ type: 'ADD_ITEMS_WITH_QUANTITY', items: adopted });
+      } catch {
+        /* offline / not reachable — keep the local cart */
+      }
+    }, POLL_MS);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, isAuthorized]);
 
   const addItemsToCart = (items: Item[]) =>
     dispatch({ type: 'ADD_ITEMS_WITH_QUANTITY', items });
