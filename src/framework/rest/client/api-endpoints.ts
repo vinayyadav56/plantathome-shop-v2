@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   USERS: '/users',
   USERS_ADDRESS: '/address',
   USERS_ME: '/me',
+  CART: '/me/cart',
   USERS_LOGIN: '/token',
   USERS_REGISTER: '/register',
   USERS_FORGOT_PASSWORD: '/forget-password',

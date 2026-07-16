@@ -4,6 +4,8 @@ import { Item, getItem, inStock } from './cart.utils';
 import { CART_KEY } from '@/lib/constants';
 import { useAtom } from 'jotai';
 import { verifiedResponseAtom } from '@/store/checkout';
+import { authorizationAtom } from '@/store/authorization-atom';
+import { getServerCart, saveServerCart } from '@/framework/server-cart';
 interface CartProviderState extends State {
   addItemsToCart: (items: Item[]) => void;
   addItemToCart: (item: Item, quantity: number) => void;
@@ -40,6 +42,9 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
   const [state, dispatch] = React.useReducer(cartReducer, initialState);
   const [hydrated, setHydrated] = React.useState(false);
   const [, emptyVerifiedResponse] = useAtom(verifiedResponseAtom);
+  const [isAuthorized] = useAtom(authorizationAtom);
+  const syncedRef = React.useRef(false);
+  const saveTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Rehydrate the persisted cart once, after mount.
   React.useEffect(() => {
@@ -70,6 +75,56 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
       /* ignore */
     }
   }, [state, hydrated]);
+
+  // ── Account cart sync (cross-device: web ↔ Android ↔ iOS) ──
+  // On sign-in, merge the server cart with the local one (union by line, larger
+  // quantity wins) so no device silently loses items; on sign-out, drop the local
+  // cart. Client-only + post-hydration, mirroring the localStorage effects above
+  // so nothing runs during SSR.
+  React.useEffect(() => {
+    if (!hydrated) return;
+    if (!isAuthorized) {
+      // Signed out — reset the just-in-case leftover so the next user starts clean.
+      if (syncedRef.current) {
+        syncedRef.current = false;
+        dispatch({ type: 'RESET_CART' });
+      }
+      return;
+    }
+    if (syncedRef.current) return;
+    syncedRef.current = true;
+    (async () => {
+      try {
+        const serverItems = await getServerCart();
+        const byId = new Map<any, any>();
+        for (const it of state.items) byId.set(it.id, { ...it });
+        for (const { item, quantity } of serverItems) {
+          const ex = byId.get(item.id);
+          if (ex) ex.quantity = Math.max(Number(ex.quantity ?? 1), quantity);
+          else byId.set(item.id, { ...item, quantity });
+        }
+        const merged = Array.from(byId.values());
+        dispatch({ type: 'RESET_CART' });
+        if (merged.length) dispatch({ type: 'ADD_ITEMS_WITH_QUANTITY', items: merged });
+        saveServerCart(merged).catch(() => {});
+      } catch {
+        /* offline / not reachable — keep the local cart */
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, isAuthorized]);
+
+  // Debounced push of cart changes to the account cart (only once synced-in).
+  React.useEffect(() => {
+    if (!hydrated || !isAuthorized || !syncedRef.current) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveServerCart(state.items as any[]).catch(() => {});
+    }, 700);
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+    };
+  }, [state.items, hydrated, isAuthorized]);
 
   const addItemsToCart = (items: Item[]) =>
     dispatch({ type: 'ADD_ITEMS_WITH_QUANTITY', items });
