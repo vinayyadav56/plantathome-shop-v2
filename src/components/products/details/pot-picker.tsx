@@ -116,23 +116,23 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
           type="button"
           onClick={() => choose('without')}
           className={classNames(
-            'flex flex-col items-start gap-1 rounded-2xl border-2 px-4 py-3.5 text-left transition',
+            'flex items-center gap-2 rounded-2xl border-2 px-3 py-2 text-left transition',
             !withPot
               ? 'border-forest-700 bg-forest-700/[0.06] shadow-[0_4px_14px_rgba(22,48,26,0.10)]'
               : 'border-kraft-300 bg-white hover:border-forest-500',
           )}
         >
-          <span className="flex w-full items-center justify-between">
-            <span className={classNames('grid h-8 w-8 place-items-center rounded-full', !withPot ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700')}>
-              {/* bare roots */}
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 7c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 9c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M12 13c0 2-1 4-2.5 5.5M12 13c0 2 1 4 2.5 5.5M12 13v7" /></svg>
-            </span>
-            {!withPot && (
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="text-forest-700"><path d="m5 13 4 4L19 7" /></svg>
-            )}
+          <span className={classNames('grid h-7 w-7 shrink-0 place-items-center rounded-full', !withPot ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700')}>
+            {/* bare roots */}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 13V7" /><path d="M12 7c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 9c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M12 13c0 2-1 4-2.5 5.5M12 13c0 2 1 4 2.5 5.5M12 13v7" /></svg>
           </span>
-          <span className="text-[13.5px] font-semibold text-forest-900">Without Pot</span>
-          <span className="text-[12px] font-medium text-forest-600">Included</span>
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block text-[13px] font-semibold text-forest-900">Without Pot</span>
+            <span className="block truncate text-[11px] font-medium text-forest-600">Included</span>
+          </span>
+          {!withPot && (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-forest-700"><path d="m5 13 4 4L19 7" /></svg>
+          )}
         </button>
 
         {/* With Pot */}
@@ -140,25 +140,25 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
           type="button"
           onClick={() => choose('with')}
           className={classNames(
-            'flex flex-col items-start gap-1 rounded-2xl border-2 px-4 py-3.5 text-left transition',
+            'flex items-center gap-2 rounded-2xl border-2 px-3 py-2 text-left transition',
             withPot
               ? 'border-forest-700 bg-forest-700/[0.06] shadow-[0_4px_14px_rgba(22,48,26,0.10)]'
               : 'border-kraft-300 bg-white hover:border-forest-500',
           )}
         >
-          <span className="flex w-full items-center justify-between">
-            <span className={classNames('grid h-8 w-8 place-items-center rounded-full', withPot ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700')}>
-              {/* plant in pot */}
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 11V6" /><path d="M12 6c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 8c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M5 11h14l-1 4a4 4 0 0 1-4 3h-4a4 4 0 0 1-4-3l-1-4Z" /></svg>
+          <span className={classNames('grid h-7 w-7 shrink-0 place-items-center rounded-full', withPot ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700')}>
+            {/* plant in pot */}
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 11V6" /><path d="M12 6c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 8c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M5 11h14l-1 4a4 4 0 0 1-4 3h-4a4 4 0 0 1-4-3l-1-4Z" /></svg>
+          </span>
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block text-[13px] font-semibold text-forest-900">With Pot</span>
+            <span className="block truncate text-[11px] font-medium text-forest-600">
+              {selected ? `+${rupees(optPrice(selected.option))}` : 'Pick a pot'}
             </span>
-            {withPot && (
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="text-forest-700"><path d="m5 13 4 4L19 7" /></svg>
-            )}
           </span>
-          <span className="text-[13.5px] font-semibold text-forest-900">With Pot</span>
-          <span className="text-[12px] font-medium text-forest-600">
-            {selected ? `+${rupees(optPrice(selected.option))} · ${selected.product.name}` : 'Pick a matching pot'}
-          </span>
+          {withPot && (
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-forest-700"><path d="m5 13 4 4L19 7" /></svg>
+          )}
         </button>
       </div>
 

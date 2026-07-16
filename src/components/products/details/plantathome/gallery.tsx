@@ -12,11 +12,6 @@ type Props = {
   badge?: string | null;
 };
 
-// Gentle, shallow multi-lobe curve near the right edge only (objectBoundingBox 0..1)
-// — decorative, never cuts into the centred plant.
-const CURVE =
-  'M0,0 L1,0 C0.93,0.10 0.97,0.18 0.93,0.27 C0.89,0.36 0.97,0.46 0.92,0.55 C0.88,0.66 0.96,0.82 1,1 L0,1 Z';
-
 const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
   const images = (gallery?.length ? gallery : [{ original: '', thumbnail: '' }]) as GalleryImage[];
   const [active, setActive] = useState(0);
@@ -27,34 +22,27 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
 
   return (
     <div className="relative h-[300px] w-full sm:h-[380px] lg:h-auto lg:min-h-[620px]">
-      {/* responsive clip-path def (used only at lg via .pdp-curve) */}
-      <svg width="0" height="0" className="absolute" aria-hidden>
-        <defs>
-          <clipPath id="pdp-img-curve" clipPathUnits="objectBoundingBox">
-            <path d={CURVE} />
-          </clipPath>
-        </defs>
-      </svg>
-
-      {/* back echo layer — desktop only, same curve shifted right → a 2nd visible curve */}
-      <div
-        aria-hidden
-        className="pdp-curve absolute inset-0 hidden translate-x-[18px] bg-gradient-to-br from-sage-200 to-sage-100 lg:block"
-      />
-
-      {/* front image — full-width rectangle on mobile, curved on desktop */}
-      <div className="pdp-curve absolute inset-0 bg-gradient-to-br from-[#E9F0E2] via-[#F1F3E8] to-[#F6F2E6]">
-        {mainSrc && !err[active] ? (
-          <Image
-            src={mainSrc}
-            alt={productName}
-            fill
-            priority
-            sizes="(max-width:1024px) 100vw, 55vw"
-            onError={() => setErr((e) => ({ ...e, [active]: true }))}
-            className="object-cover object-center lg:object-[34%_50%]"
-          />
-        ) : (
+      {/* Full rectangular image — no decorative curve/border, fills the right side.
+          All gallery images are stacked + preloaded, so switching thumbnails is an
+          instant opacity swap (no reload flash / fluctuation). */}
+      <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-[#E9F0E2] via-[#F1F3E8] to-[#F6F2E6]">
+        {images.map((img, i) => {
+          const src = img.original || img.thumbnail || '';
+          if (!src || err[i]) return null;
+          return (
+            <Image
+              key={img.id ?? i}
+              src={src}
+              alt={productName}
+              fill
+              priority={i === 0}
+              sizes="(max-width:1024px) 100vw, 55vw"
+              onError={() => setErr((e) => ({ ...e, [i]: true }))}
+              className={`object-cover object-center transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-0'}`}
+            />
+          );
+        })}
+        {(!mainSrc || err[active]) && (
           <span className="absolute inset-0 grid place-items-center px-6 text-center font-poppins text-2xl font-semibold text-forest-800/40">
             {productName}
           </span>
