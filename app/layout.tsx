@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import '@/assets/css/toast-overrides.css';
 
 import { DS_PREPAINT_SCRIPT } from '@/lib/design-system';
+import { TYPO_PREPAINT_SCRIPT } from '@/lib/typography';
 import AppProviders from '@/app-shell/app-providers';
 
 export const metadata: Metadata = {
@@ -36,6 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {/* Apply persisted Design System theme (font/color) before paint. */}
         <Script id="ds-prepaint" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: DS_PREPAINT_SCRIPT }} />
+        {/* Apply the single website font (default Inter) AFTER the design system,
+            so headings + content share one typeface with no flash. */}
+        <Script id="typo-prepaint" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: TYPO_PREPAINT_SCRIPT }} />
 
         {/* Google Fonts — V1 _document.tsx set, verbatim */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
