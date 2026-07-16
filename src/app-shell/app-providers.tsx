@@ -28,7 +28,6 @@ import GlobalFetchBar from '@/components/ui/global-fetch-bar';
 import LocationGate from '@/components/location/location-gate';
 import TrackingBridge from '@/lib/analytics/tracking-bridge';
 import DesignSystemApplier from '@/lib/design-system-applier';
-import TypographyApplier from '@/lib/typography-applier';
 // Static import (no next/dynamic — hydration-loop trap); the component itself
 // gates on mounted-state + staging/localhost hostname, so prod renders nothing.
 import AgentationToolbar from '@/components/dev/agentation-toolbar';
@@ -60,10 +59,8 @@ export default function AppProviders({ children }: { children: React.ReactNode }
             <CartProvider>
               <>
                 <GlobalFetchBar />
+                {/* Applies the design system + the single website font (Inter). */}
                 <DesignSystemApplier />
-                {/* Single website font (default Inter) — mounted AFTER the design
-                    system so it wins the --font-* vars for a unified typeface. */}
-                <TypographyApplier />
                 <TrackingBridge />
                 <DefaultSeo />
                 <CitySync />

@@ -1,5 +1,21 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
+// Single website font: every text alias resolves to the one --font-sans variable
+// (default Inter, admin-switchable) so headings, subheadings and body share one
+// typeface. Only `mono` stays monospace.
+const SANS = [
+  'var(--font-sans)',
+  'Inter',
+  'ui-sans-serif',
+  'system-ui',
+  '-apple-system',
+  '"Segoe UI"',
+  'Roboto',
+  '"Helvetica Neue"',
+  'Arial',
+  'sans-serif',
+];
+
 function withOpacity(variableName) {
   return ({ opacityValue }) => {
     if (opacityValue !== undefined) {
@@ -27,28 +43,23 @@ module.exports = {
         '-1': '-1',
       },
       fontFamily: {
-        // Design-system fonts resolve from CSS variables so the admin "Design
-        // System" control can swap the whole site's typography at runtime.
-        // --font-body / --font-heading default to the Luxury Signature pairing
-        // (Manrope + Cormorant Garamond) in main.css; every body/heading alias
-        // follows the active theme.
-        body: ['var(--font-body)', 'Manrope', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        sans: ['var(--font-body)', 'Manrope', 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        heading: ['var(--font-heading)', '"Cormorant Garamond"', 'Georgia', 'serif'],
-        display: ['var(--font-heading)', '"Cormorant Garamond"', 'Georgia', 'serif'],
-        serif: ['var(--font-heading)', '"Cormorant Garamond"', 'Georgia', 'serif'],
-        // Editorial luxury alias: fixed brand serif (NOT theme-switched) — the
-        // storefront wordmark/display type must stay serif under any admin font.
-        cormorant: ['"Cormorant Garamond"', 'Georgia', 'Cambria', 'serif'],
-        playfair: ['var(--font-heading)', '"Playfair Display"', '"Cormorant Garamond"', 'Georgia', 'serif'],
-        // Product-page accent fonts: Poppins (geometric) + Caveat (script) stay fixed.
-        poppins: ['"Poppins"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        caveat: ['"Caveat"', 'ui-serif', 'cursive'],
+        // Every text alias resolves to the single --font-sans variable so the
+        // admin "Website font" control swaps the WHOLE site's typeface in one
+        // click (default Inter). Headings, subheadings, body and the former
+        // brand/display fonts all share one face. Only `mono` stays monospace.
+        body: SANS,
+        sans: SANS,
+        heading: SANS,
+        display: SANS,
+        serif: SANS,
+        cormorant: SANS,
+        playfair: SANS,
+        poppins: SANS,
+        caveat: SANS,
+        hanken: SANS,
+        jost: SANS,
+        pahserif: SANS,
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
-        // ── Mobile home (Claude Design) fonts, fixed (not theme-switched) ──
-        hanken: ['"Hanken Grotesk"', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        jost: ['"Jost"', '"Century Gothic"', 'Futura', 'ui-sans-serif', 'sans-serif'],
-        pahserif: ['"Cormorant Garamond"', '"Iowan Old Style"', 'Georgia', 'serif'],
       },
       fontSize: {
         '10px': '0.625rem',
