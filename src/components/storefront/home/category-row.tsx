@@ -54,7 +54,7 @@ export function CategoryRow() {
 
           {isLoading && categories.length === 0
             ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-[104px] animate-pulse rounded-[14px] bg-white/60" />
+                <div key={i} className="h-[84px] animate-pulse rounded-[14px] bg-white/60" />
               ))
             : categories.map((c: any, i: number) => {
                 const img = c.image?.original ?? c.image?.thumbnail ?? '';
@@ -68,15 +68,12 @@ export function CategoryRow() {
                   >
                     <Link
                       href={`/c/${c.slug}`}
-                      className="group flex h-[104px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[84px] lg:h-[104px]"
+                      className="group flex h-[84px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[70px] lg:h-[84px]"
                     >
                       {/* text — left */}
                       <div className="flex min-w-0 flex-1 flex-col justify-center p-3 md:p-2.5 lg:p-3">
-                        <p className="line-clamp-1 font-hanken text-[14px] font-bold leading-snug text-forest-900 md:text-[11.5px] lg:text-[14px]">
+                        <p className="line-clamp-2 font-hanken text-[14px] font-bold leading-snug text-forest-900 md:text-[11.5px] lg:text-[14px]">
                           {c.name}
-                        </p>
-                        <p className="mt-0.5 line-clamp-1 font-hanken text-[11.5px] leading-snug text-stone-500 md:hidden lg:line-clamp-1">
-                          {c.description || c.details || 'Explore collection'}
                         </p>
                         <p className="mt-1.5 flex items-center gap-1 font-hanken text-[12px] font-semibold text-forest-900 transition-colors duration-200 group-hover:text-forest-700 md:mt-1 md:text-[10px] lg:mt-1.5 lg:text-[12px]">
                           Shop Now
