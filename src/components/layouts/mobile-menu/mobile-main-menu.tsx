@@ -32,13 +32,15 @@ export default function MobileMainMenu() {
         <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">
           Shop by world
         </p>
-        <div className="flex gap-2">
+        {/* 3-per-row grid so every vertical (up to six) fits without crushing /
+            clipping long labels like "Pots & Planters" on a phone. */}
+        <div className="grid grid-cols-3 gap-2">
           {typeList.map((tp) => (
             <Link
               key={tp.slug}
               href={tp.slug === homeSlug ? '/' : `/${tp.slug}`}
               onClick={() => closeSidebar({ display: false, view: '' })}
-              className={`flex-1 whitespace-nowrap rounded-full py-2 text-center text-sm font-bold transition ${
+              className={`flex min-h-[38px] items-center justify-center rounded-full px-1.5 py-1.5 text-center text-[12.5px] font-bold leading-tight transition ${
                 currentSlug === tp.slug
                   ? 'bg-leaf text-white'
                   : 'bg-forest/8 text-forest'
