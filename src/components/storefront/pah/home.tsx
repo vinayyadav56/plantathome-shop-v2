@@ -212,7 +212,7 @@ function Footer() {
                 <path d="M12 13c0-3-2-5-5.5-5.5C6 11 8.5 13 12 13Z" />
               </svg>
               <span className="font-jost text-[15px] font-normal uppercase tracking-[0.2em] text-white">
-                A
+                AT
               </span>
             </span>
             <span className="font-jost text-[15px] font-normal uppercase tracking-[0.3em] text-white">

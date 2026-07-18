@@ -45,7 +45,7 @@ export function Hero() {
             <span className="font-jost text-[18px] font-normal uppercase tracking-[0.3em] text-white">PLANT</span>
             <span className="relative inline-flex items-center justify-center">
               <svg className="absolute -top-[11px]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#86E0A3" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21V11" /><path d="M12 11c0-3.5 2.5-6 6.5-6.5C18 8.5 15.5 11 12 11Z" /><path d="M12 13c0-3-2-5-5.5-5.5C6 11 8.5 13 12 13Z" /></svg>
-              <span className="font-jost text-[18px] font-normal uppercase tracking-[0.2em] text-white">A</span>
+              <span className="font-jost text-[18px] font-normal uppercase tracking-[0.2em] text-white">AT</span>
             </span>
             <span className="font-jost text-[18px] font-normal uppercase tracking-[0.3em] text-white">HOME</span>
           </div>
