@@ -313,9 +313,11 @@ export function useCreateOrder() {
       // message — surface the dedicated mismatch dialog instead of a raw toast.
       try {
         const parsed =
-          typeof data?.message === 'string' && data.message.trim().startsWith('{')
-            ? JSON.parse(data.message)
-            : null;
+          data?.code === 'SHOPPING_CITY_MISMATCH'
+            ? data
+            : typeof data?.message === 'string' && data.message.trim().startsWith('{')
+              ? JSON.parse(data.message)
+              : null;
         if (parsed?.code === 'SHOPPING_CITY_MISMATCH') {
           window.dispatchEvent(
             new CustomEvent('pah-city-mismatch', { detail: parsed }),
