@@ -13,6 +13,7 @@ import usePrice from '@/lib/use-price';
 import { stickyShortDetailsAtom } from '@/store/sticky-short-details-atom';
 import type { Product } from '@/types';
 import classNames from 'classnames';
+import { useCitySupply } from '@/lib/use-city-supply';
 import { useAtom } from 'jotai';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
@@ -66,6 +67,7 @@ const Details: React.FC<Props> = ({
     product_type,
   } = product ?? {};
 
+  const { city: shoppingCity, displayOnly } = useCitySupply();
   const { t } = useTranslation('common');
   const [_, setShowStickyShortDetails] = useAtom(stickyShortDetailsAtom);
 
@@ -231,6 +233,14 @@ const Details: React.FC<Props> = ({
                   </del>
                 )}
               </span>
+            )}
+
+            {displayOnly && (
+              <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-800">
+                <span className="font-semibold">Out of stock in {shoppingCity}.</span>{' '}
+                You can browse the catalog, but ordering opens once our{' '}
+                {shoppingCity} nursery partners are live.
+              </div>
             )}
 
             <div className="mt-6 flex flex-col items-center md:mt-6 lg:flex-row">

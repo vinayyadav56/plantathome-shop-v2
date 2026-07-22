@@ -93,6 +93,9 @@ export const PlaceOrderAction: React.FC<{
   const courierMode = deliveryMode === 'courier' || isNonServiceable;
   const [confirmCourier, setConfirmCourier] = useState(false);
 
+  // Display-only city: verify() flagged the whole cart as browse-only.
+  const cityStock = (verified_response as any)?.city_stock ?? null;
+
   const shippingZip = (shipping_address as any)?.address?.zip as string | undefined;
   const { result: pincodeResult } = usePincodeServiceability(shippingZip);
   const pincodeBlocked = pincodeResult?.serviceable === false && !courierMode;
@@ -280,7 +283,7 @@ export const PlaceOrderAction: React.FC<{
       <button
         className="pa-place-order-btn"
         onClick={handlePlaceOrder}
-        disabled={!isAllRequiredFieldSelected || !!isLoading || pincodeBlocked}
+        disabled={!isAllRequiredFieldSelected || !!isLoading || pincodeBlocked || !!cityStock}
       >
         {isLoading ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
@@ -293,6 +296,11 @@ export const PlaceOrderAction: React.FC<{
         )}
         {props.children ?? t('text-place-order')}
       </button>
+      {cityStock && (
+        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] leading-relaxed text-amber-800">
+          {cityStock.message}
+        </div>
+      )}
       {pincodeBlocked && (
         <div className="mt-3">
           <ValidationError

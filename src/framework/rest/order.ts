@@ -311,6 +311,10 @@ export function useCreateOrder() {
       }: any = error ?? {};
       // Shopping-City hard gate (422): the API encodes a structured payload in
       // message — surface the dedicated mismatch dialog instead of a raw toast.
+      if (data?.code === 'CITY_OUT_OF_STOCK') {
+        toast.error(data?.message);
+        return;
+      }
       try {
         const parsed =
           data?.code === 'SHOPPING_CITY_MISMATCH'

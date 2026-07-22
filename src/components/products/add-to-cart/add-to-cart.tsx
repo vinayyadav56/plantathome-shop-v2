@@ -7,6 +7,7 @@ import { PlusIconNew } from '@/components/icons/plus-icon';
 import { MinusIconNew } from '@/components/icons/minus-icon';
 import { useTranslation } from 'next-i18next';
 import classNames from 'classnames';
+import { useCitySupply } from '@/lib/use-city-supply';
 import dynamic from 'next/dynamic';
 const AddToCartBtn = dynamic(
   () => import('@/components/products/add-to-cart/add-to-cart-btn'),
@@ -64,6 +65,8 @@ export const AddToCart = ({
     updateCartLanguage,
     language,
   } = useCart();
+  // Display-only city (no nursery supply): everything is browse-only.
+  const { displayOnly } = useCitySupply();
   const item = generateCartItem(data, variation);
   const handleAddClick = (
     e: React.MouseEvent<HTMLButtonElement | MouseEvent>
@@ -93,6 +96,16 @@ export const AddToCart = ({
   // simple-product PDP (Tools/FarmBox). Absent status = treat as publishable.
   const disabledState =
     disabled || outOfStock || (data?.status ? data.status.toLowerCase() !== 'publish' : false);
+
+  // Display-only city: swap every add-to-cart affordance for an Out of Stock
+  // pill — the catalog stays browsable, ordering waits for nursery supply.
+  if (displayOnly && !isInCart(item?.id)) {
+    return (
+      <span className="inline-flex cursor-not-allowed items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-stone-500">
+        Out of Stock
+      </span>
+    );
+  }
 
   return !isInCart(item?.id) ? (
     <div>
@@ -152,7 +165,7 @@ export const AddToCart = ({
         onIncrement={handleAddClick}
         variant={(counterVariant || variant) as any}
         className={counterClass}
-        disabled={outOfStock}
+        disabled={outOfStock || displayOnly}
       />
     </>
   );
