@@ -36,7 +36,7 @@ import AgentationToolbar from '@/components/dev/agentation-toolbar';
 // dynamic() made it the last always-rendered React.lazy in the shell, which is
 // the known React-19 hydration-suspension livelock pattern (resolveLazy pending
 // → sync re-render per microtask → starves the very stream it waits on).
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, Bounce } from 'react-toastify';
 
 export default function AppProviders({ children }: { children: React.ReactNode }) {
   const [queryClient] = React.useState(
@@ -70,7 +70,41 @@ export default function AppProviders({ children }: { children: React.ReactNode }
                 </Maintenance>
                 <ManagedModal />
                 <ManagedDrawer />
-                <ToastContainer position="top-center" autoClose={3000} newestOnTop theme="light" closeOnClick pauseOnHover />
+                {/* React 19 removed defaultProps on function/forwardRef components,
+                    which react-toastify v9 relies on — most critically
+                    `transition: Bounce`. Without it every toast rendered an
+                    <undefined> element and crashed the whole app ("Application
+                    error") the moment any toast fired. Every former defaultProp a
+                    toast renders with must be passed EXPLICITLY here. */}
+                <ToastContainer
+                  position="top-center"
+                  transition={Bounce}
+                  autoClose={3000}
+                  newestOnTop
+                  theme="light"
+                  closeOnClick
+                  pauseOnHover
+                  pauseOnFocusLoss
+                  draggable
+                  draggablePercent={80}
+                  draggableDirection="x"
+                  role="alert"
+                  closeButton={({ closeToast }: any) => (
+                    <button
+                      type="button"
+                      className="Toastify__close-button Toastify__close-button--light"
+                      aria-label="close"
+                      onClick={closeToast}
+                    >
+                      <svg aria-hidden="true" viewBox="0 0 14 16" width="14" height="16" fill="currentColor">
+                        <path
+                          fillRule="evenodd"
+                          d="M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                />
                 <SocialLogin />
                 <FirstVisitLanguageModal />
                 <AgentationToolbar />
