@@ -15,9 +15,11 @@ import { useIsRTL } from '@/lib/locals';
 import Button from '@/components/ui/button';
 import AppliedFilters from '@/components/search-view/applied-filters';
 
-const FieldWrapper = ({ children, title, count }: any) => (
+const FieldWrapper = ({ children, title, count, defaultOpen }: any) => (
   <div className="border-b border-forest-900/10 py-5 last:border-0">
-    <CustomDisclosure title={title} count={count}>{children}</CustomDisclosure>
+    <CustomDisclosure title={title} count={count} defaultOpen={defaultOpen}>
+      {children}
+    </CustomDisclosure>
   </div>
 );
 
@@ -133,12 +135,23 @@ const SidebarFilter: React.FC<{
           <PriceFilter />
         </FieldWrapper>
 
-        <FieldWrapper title="text-tags" count={tagCount}>
+        {/* Secondary filters start collapsed (unless already applied via the
+            URL) — declutters the panel and defers their metadata fetch until
+            the shopper opens the section. */}
+        <FieldWrapper
+          title="text-tags"
+          count={tagCount}
+          defaultOpen={tagCount > 0}
+        >
           <TagFilter type={type} />
         </FieldWrapper>
 
         {showManufacturers && (
-          <FieldWrapper title="text-manufacturers" count={manufacturerCount}>
+          <FieldWrapper
+            title="text-manufacturers"
+            count={manufacturerCount}
+            defaultOpen={manufacturerCount > 0}
+          >
             <ManufacturerFilter type={type} />
           </FieldWrapper>
         )}

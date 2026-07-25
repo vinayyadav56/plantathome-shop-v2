@@ -41,6 +41,7 @@ const CategoryFilterView = ({ categories }: Props) => {
   );
 
   function handleChange(values: string[]) {
+    setState(values); // flip the checkbox instantly, before the URL/refetch settles
     router.push({
       pathname: router.pathname,
       query: {

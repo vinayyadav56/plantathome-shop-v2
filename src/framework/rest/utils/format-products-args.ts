@@ -13,9 +13,18 @@ export const formatProductsArgs = (options?: Partial<ProductQueryOptions>) => {
     ...restOptions
   } = options || {};
 
+  // Price arrives as a "min,max" range string from the slider. The products
+  // endpoint expects SEPARATE min_price / max_price search params — split and
+  // send both so the upper bound actually filters. Previously the whole
+  // "min,max" string was sent as min_price (and max_price was never sent), so
+  // the slider's max had no effect on results.
+  const [minPrice, maxPrice] =
+    typeof price === 'string' && price.length ? price.split(',') : [];
+
   return {
     limit,
-    ...(price && { min_price: price as string }),
+    ...(minPrice !== undefined && minPrice !== '' && { min_price: minPrice }),
+    ...(maxPrice !== undefined && maxPrice !== '' && { max_price: maxPrice }),
     ...(name && { name: name.toString() }),
     ...(categories && { categories: categories.toString() }),
     ...(searchType && { type: searchType.toString() }),

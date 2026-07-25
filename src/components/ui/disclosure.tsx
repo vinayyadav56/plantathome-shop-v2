@@ -7,17 +7,22 @@ type DisclosureProps = {
   children: React.ReactNode;
   /** Selected-item count — shows a small accent badge next to the title. */
   count?: number;
+  /** Whether the section starts expanded (default true). A collapsed section
+   *  doesn't mount its children, so secondary filter lists can defer their
+   *  network fetch until the shopper opens them. */
+  defaultOpen?: boolean;
 };
 
 export const CustomDisclosure: React.FC<DisclosureProps> = ({
   title,
   children,
   count,
+  defaultOpen = true,
   ...props
 }) => {
   const { t } = useTranslation('common');
   return (
-    <HeadlessDisclosure defaultOpen={true} {...props}>
+    <HeadlessDisclosure defaultOpen={defaultOpen} {...props}>
       {({ open }) => (
         <>
           <HeadlessDisclosure.Button className="flex w-full items-center justify-between focus:outline-0 focus:ring-1 focus:ring-accent focus:ring-opacity-40">

@@ -54,6 +54,36 @@ function subscribeToLocation(cb: () => void) {
 const getSearchSnapshot = () => window.location.search;
 const getServerSearchSnapshot = () => '';
 
+/* ── shallow (client-only) URL updates for same-path query changes ───────────
+ *
+ * A push/replace that only changes the query string on the CURRENT path needs
+ * no server round-trip: no page in this app reads search params on the server
+ * (getServerSearchSnapshot === '' — `query` is {} until hydration), so all
+ * filter-dependent data is fetched client-side by React Query keyed off the
+ * reactive `query`. We change the URL via the History API — App Router treats
+ * pushState/replaceState as a shallow URL update, NOT a navigation — then fire
+ * our own event so useSyncExternalStore re-reads window.location.search and the
+ * dependent queries re-run. This turns every filter / sort / chip click on the
+ * search page from a full `force-dynamic` server render into an instant client
+ * refetch (the products query already uses keepPreviousData, so the grid stays
+ * put and just dims). An explicit `{ shallow: true }` opt forces it too. */
+function pathOf(href: string): string {
+  return href.split('#')[0].split('?')[0];
+}
+function canShallowNavigate(href: string, currentPath: string, opts?: any): boolean {
+  if (typeof window === 'undefined') return false;
+  if (opts && opts.shallow) return true;
+  return pathOf(href) === currentPath;
+}
+function shallowNavigate(href: string, replace: boolean): void {
+  // Call History directly — never PATCH it: patching pushState to notify created
+  // a re-render → replaceState → notify loop that froze data-rich pages. One
+  // call, then one notify: no recursion.
+  if (replace) window.history.replaceState(null, '', href);
+  else window.history.pushState(null, '', href);
+  notifyNav();
+}
+
 export function useRouter() {
   const nav = useNavRouter();
   const pathname = usePathname() ?? '/';
@@ -89,14 +119,24 @@ export function useRouter() {
       route: pathname,
       asPath: pathname + search,
       isReady: true,
-      push: (url: any, _as?: any, _opts?: any) => {
-        nav.push(toUrl(url));
+      push: (url: any, _as?: any, opts?: any) => {
+        const href = toUrl(url);
+        if (canShallowNavigate(href, pathname, opts)) {
+          shallowNavigate(href, false);
+          return Promise.resolve(true);
+        }
+        nav.push(href);
         // let App Router update the URL, then re-read search
         setTimeout(notifyNav, 0);
         return Promise.resolve(true);
       },
-      replace: (url: any, _as?: any, _opts?: any) => {
-        nav.replace(toUrl(url));
+      replace: (url: any, _as?: any, opts?: any) => {
+        const href = toUrl(url);
+        if (canShallowNavigate(href, pathname, opts)) {
+          shallowNavigate(href, true);
+          return Promise.resolve(true);
+        }
+        nav.replace(href);
         setTimeout(notifyNav, 0);
         return Promise.resolve(true);
       },
