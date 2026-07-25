@@ -70,15 +70,6 @@ const Sorting: React.FC<Props> = ({ variant = 'radio' }) => {
       },
     });
     setSelected(values);
-    // A sort change means "show me from the top". The same-path push is now a
-    // shallow client update (no App Router scroll-reset), and the infinite list
-    // resets to page 1 — so if the shopper had paged/scrolled down, scroll back
-    // to the start of the freshly-sorted grid instead of stranding them at the
-    // bottom of a suddenly-shorter list. (Filter toggles deliberately do NOT
-    // scroll — the shopper stays in context while refining.)
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
   }
 
   return (
