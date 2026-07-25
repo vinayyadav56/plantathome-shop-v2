@@ -135,14 +135,15 @@ const SidebarFilter: React.FC<{
           <PriceFilter />
         </FieldWrapper>
 
-        {/* Secondary filters start collapsed (unless already applied via the
-            URL) — declutters the panel and defers their metadata fetch until
-            the shopper opens the section. */}
-        <FieldWrapper
-          title="text-tags"
-          count={tagCount}
-          defaultOpen={tagCount > 0}
-        >
+        {/* Secondary filters start collapsed — declutters the panel and defers
+            their metadata fetch until the shopper opens the section. Any active
+            selection is still surfaced by the count badge on the header and the
+            removable "Applied filters" chips above, so nothing is hidden.
+            (We deliberately don't key defaultOpen off the count: the desktop
+            rail mounts during hydration when the URL query isn't yet readable —
+            getServerSearchSnapshot === '' — so count is always 0 at mount and
+            Headless UI never re-reads defaultOpen afterwards.) */}
+        <FieldWrapper title="text-tags" count={tagCount} defaultOpen={false}>
           <TagFilter type={type} />
         </FieldWrapper>
 
@@ -150,7 +151,7 @@ const SidebarFilter: React.FC<{
           <FieldWrapper
             title="text-manufacturers"
             count={manufacturerCount}
-            defaultOpen={manufacturerCount > 0}
+            defaultOpen={false}
           >
             <ManufacturerFilter type={type} />
           </FieldWrapper>
