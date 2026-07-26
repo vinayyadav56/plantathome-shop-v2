@@ -7,6 +7,13 @@ const BASE = process.env.SHOP_BASE ?? 'https://plantathome-shop-staging.vercel.a
 const EMAIL = process.env.QA_EMAIL ?? 'customer@plantathome.test';
 const PASSWORD = process.env.QA_PASSWORD ?? 'Passw0rd!';
 
+// Pre-seed the shopping city everywhere: the blocking first-visit city dialog
+// otherwise sits over the page and intercepts every Login click. Its own
+// behaviour is covered in the golden-path spec.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('pah_customer_city', 'Delhi'));
+});
+
 test.describe('storefront auth', () => {
   test('signin page renders login + register forms', async ({ page }) => {
     await page.goto(`${BASE}/signin`, { waitUntil: 'domcontentloaded' });

@@ -43,6 +43,15 @@ test.describe('Storefront golden path', () => {
     // --- Home ---
     await page.goto(`${BASE}/`, { waitUntil: 'networkidle' });
     await expect(page).toHaveTitle(/PlantAtHome/i);
+
+    // City-first gate: a fresh visitor must pick a shopping city before the
+    // catalog is browsable (blocking dialog, cannot be dismissed). Selecting
+    // the city IS step 1 of the golden path.
+    const cityDialog = page.getByRole('dialog').filter({ hasText: /Select your shopping city/i });
+    await expect(cityDialog).toBeVisible({ timeout: 15_000 });
+    await cityDialog.getByRole('button', { name: 'Delhi', exact: true }).first().click();
+    await expect(cityDialog).toBeHidden({ timeout: 10_000 });
+
     await expect(page.locator('a[href*="/products/"]').first()).toBeVisible();
 
     // --- PDP ---
@@ -137,8 +146,11 @@ test.describe('Storefront golden path', () => {
   });
 
   // Individual page smoke: every core page must render clean with 0 console errors.
+  // The shopping city is pre-seeded so the blocking first-visit dialog doesn't
+  // sit over every page — its own behaviour is covered by the funnel test above.
   for (const path of ['/', '/categories', '/c/indoor', '/plants/search', `/products/${PRODUCT}`]) {
     test(`no console errors on ${path}`, async ({ page }) => {
+      await page.addInitScript(() => localStorage.setItem('pah_customer_city', 'Delhi'));
       const errors = attachConsoleGuard(page);
       const resp = await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle' });
       expect(resp?.status(), `${path} HTTP`).toBeLessThan(400);

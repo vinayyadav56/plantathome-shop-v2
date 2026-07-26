@@ -37,7 +37,7 @@ export default function CityPickerDialog({
   subtitle,
   suggestedCity,
 }: Props) {
-  const { data: cities } = useAllCities();
+  const { data: cities, isLoading, isError, refetch } = useAllCities();
   const [q, setQ] = useState('');
   const [detecting, setDetecting] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
@@ -233,7 +233,28 @@ export default function CityPickerDialog({
                     </button>
                   </li>
                 ))}
-                {!list.length ? (
+                {/* While the serviceable-city list is in flight this dialog is
+                    the ONLY thing a first-time visitor can see (blocking mode),
+                    so it must never flash the empty-state — "No matching
+                    cities." reads as "we deliver nowhere". */}
+                {isLoading
+                  ? Array.from({ length: 5 }, (_, i) => (
+                      <li key={`sk-${i}`} className="flex items-center justify-between px-3.5 py-2.5" aria-hidden="true">
+                        <span className="h-3.5 w-28 animate-pulse rounded bg-gray-100" />
+                        <span className="h-3 w-14 animate-pulse rounded bg-gray-100" />
+                      </li>
+                    ))
+                  : null}
+                {!isLoading && isError && !list.length ? (
+                  <li className="px-3.5 py-4 text-center text-sm text-stone-500">
+                    Couldn&rsquo;t load cities. Check your connection and{' '}
+                    <button type="button" onClick={() => refetch()} className="font-semibold text-accent underline">
+                      try again
+                    </button>
+                    .
+                  </li>
+                ) : null}
+                {!isLoading && !isError && !list.length ? (
                   <li className="px-3.5 py-4 text-center text-sm text-stone-500">
                     No matching cities.
                   </li>

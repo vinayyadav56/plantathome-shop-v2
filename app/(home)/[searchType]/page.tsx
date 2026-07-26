@@ -29,6 +29,14 @@ export async function generateMetadata({
   params: Promise<{ searchType: string }>;
 }): Promise<Metadata> {
   const { searchType } = await params;
+  // Reject unknown verticals HERE, not just in the page body: app/loading.tsx
+  // makes Next flush a 200 + loader shell before the page component runs, so a
+  // notFound() thrown there can only downgrade to a streamed soft-404. Metadata
+  // resolves before the shell flush, so this notFound() still yields a real 404
+  // status (and stops the garbage slug from being keyword-stuffed into <title>).
+  // Fail-soft: if the types API is down (slugs = []), let the page decide.
+  const slugs: string[] = await loadTypeSlugs();
+  if (slugs.length && !slugs.includes(searchType)) notFound();
   const name = prettify(searchType);
   return {
     title: `${name} — Shop ${name} Online`,
