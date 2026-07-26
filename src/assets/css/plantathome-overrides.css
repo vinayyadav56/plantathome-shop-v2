@@ -1333,10 +1333,18 @@ button.close-btn,
   transition: var(--pa-t-fast) !important;
 }
 
-/* ── FOOTER ─────────────────────────────────────────────────── */
+/* ── FOOTER ─────────────────────────────────────────────────────────────
+   This `!important` is what ACTUALLY paints every footer — it outranks the
+   `.g-footer` gradient class the markup asks for, so reading footer.tsx or
+   `.g-footer` tells you nothing about what ships. (Worth knowing before
+   "fixing" the footer somewhere else and seeing no change.)
+   It was --pa-dark #111827, a slate blue-grey belonging to no part of the
+   brand palette — readable, but off-brand on every page of a green D2C
+   storefront. Repointed to the brand inverse surface (forest-900) so the
+   footer matches the design system; white/75 body text sits near 13:1. */
 footer {
-  background: var(--pa-dark) !important;
-  color: rgba(255,255,255,0.75) !important;
+  background: var(--surface-inverse, #16301A) !important;
+  color: rgba(255,255,255,0.78) !important;
 }
 footer h3, footer h4 {
   font-family: var(--font-heading) !important;
