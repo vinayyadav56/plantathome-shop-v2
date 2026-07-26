@@ -3238,3 +3238,43 @@ html[data-density='compact'] { --density: 0.78; }
 @media (min-width: 1024px) {
   .ds-section-y { padding-top: calc(5.5rem * var(--density)); padding-bottom: calc(5.5rem * var(--density)); }
 }
+
+/* ── Brand loading mark (PlantLoader) ────────────────────────────────────
+   Keyframes live here rather than in the component because the loader renders
+   during Suspense — i.e. while the JS bundle is still arriving — so the
+   animation must be pure CSS to actually run when it is needed.
+   Under prefers-reduced-motion the mark renders complete and static: still
+   informative, no motion. */
+.pah-leaf-stem {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: pah-leaf-grow 1.6s ease-out infinite;
+}
+.pah-leaf-blade {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  transform-origin: 24px 30px;
+  animation: pah-leaf-unfurl 1.6s ease-out infinite;
+}
+.pah-leaf-blade--r { animation-delay: 0.25s; }
+.pah-leaf-blade--l { animation-delay: 0.5s; }
+
+@keyframes pah-leaf-grow {
+  0%        { stroke-dashoffset: 32; }
+  45%, 100% { stroke-dashoffset: 0; }
+}
+@keyframes pah-leaf-unfurl {
+  0%   { stroke-dashoffset: 60; opacity: 0; transform: scale(0.85) rotate(-6deg); }
+  55%  { stroke-dashoffset: 0;  opacity: 1; transform: scale(1) rotate(0deg); }
+  100% { stroke-dashoffset: 0;  opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pah-leaf-stem,
+  .pah-leaf-blade {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: none;
+  }
+}
