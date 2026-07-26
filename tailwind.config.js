@@ -1,8 +1,9 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
-// Single website font: every text alias resolves to the one --font-sans variable
-// (default Inter, admin-switchable) so headings, subheadings and body share one
-// typeface. Only `mono` stays monospace.
+// Two admin-switchable font axes (Settings → Design System):
+// --font-sans = the body font (default Inter), --font-heading = the display
+// serif (default Playfair Display; "Same as body" collapses headings onto the
+// body stack). Only `mono` stays monospace.
 const SANS = [
   'var(--font-sans)',
   'Inter',
@@ -14,6 +15,14 @@ const SANS = [
   '"Helvetica Neue"',
   'Arial',
   'sans-serif',
+];
+
+const HEADING = [
+  'var(--font-heading)',
+  '"Playfair Display"',
+  'Georgia',
+  '"Times New Roman"',
+  'serif',
 ];
 
 function withOpacity(variableName) {
@@ -43,22 +52,23 @@ module.exports = {
         '-1': '-1',
       },
       fontFamily: {
-        // Every text alias resolves to the single --font-sans variable so the
-        // admin "Website font" control swaps the WHOLE site's typeface in one
-        // click (default Inter). Headings, subheadings, body and the former
-        // brand/display fonts all share one face. Only `mono` stays monospace.
+        // TWO axes, both admin-controlled (Settings → Design System):
+        // --font-sans = the body font (default Inter) and --font-heading = the
+        // display serif (default Playfair Display; "Same as body" collapses it).
+        // Display/heading aliases point at --font-heading; body-scale aliases
+        // stay on --font-sans. Only `mono` is a real fixed face.
         body: SANS,
         sans: SANS,
-        heading: SANS,
-        display: SANS,
-        serif: SANS,
-        cormorant: SANS,
-        playfair: SANS,
+        heading: HEADING,
+        display: HEADING,
+        serif: HEADING,
+        cormorant: HEADING,
+        playfair: HEADING,
         poppins: SANS,
         caveat: SANS,
         hanken: SANS,
         jost: SANS,
-        pahserif: SANS,
+        pahserif: HEADING,
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       fontSize: {
