@@ -21,7 +21,12 @@ export function useToken() {
     },
     getEmailVerified() {
       const emailVerified = Cookies.get(EMAIL_VERIFIED);
-      return emailVerified ? JSON.parse(emailVerified) : true;
+      // Corrupt cookie → default, never throw.
+      try {
+        return emailVerified ? JSON.parse(emailVerified) : true;
+      } catch {
+        return true;
+      }
     },
   };
 }

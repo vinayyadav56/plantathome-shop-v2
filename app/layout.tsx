@@ -15,9 +15,27 @@ import { DS_PREPAINT_SCRIPT } from '@/lib/design-system';
 import { TYPO_PREPAINT_SCRIPT } from '@/lib/typography';
 import AppProviders from '@/app-shell/app-providers';
 
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in'
+).replace(/\/$/, '');
+
 export const metadata: Metadata = {
-  title: 'PlantAtHome',
-  description: 'Bring Nature Home — plants, tools & farm-fresh produce delivered.',
+  // metadataBase makes every relative canonical/og URL in child routes
+  // resolve against the real host — there was none before, so no route
+  // emitted a canonical at all.
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'PlantAtHome — Premium Plants Delivered',
+    template: '%s | PlantAtHome',
+  },
+  description:
+    'Bring Nature Home — plants, tools & farm-fresh produce delivered.',
+  openGraph: {
+    type: 'website',
+    siteName: 'PlantAtHome',
+    locale: 'en_IN',
+  },
+  twitter: { card: 'summary_large_image' },
 };
 
 /**

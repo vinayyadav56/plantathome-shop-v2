@@ -46,8 +46,12 @@ export default function LocationBasedShopForm({
   useEffect(() => {
     const storedLocation = localStorage.getItem('currentLocation');
     if (storedLocation) {
-      const parsedLocation = JSON.parse(storedLocation);
-      setLocation(parsedLocation);
+      // Corrupt localStorage → ignore, never throw during render setup.
+      try {
+        setLocation(JSON.parse(storedLocation));
+      } catch {
+        localStorage.removeItem('currentLocation');
+      }
     }
   }, []);
 

@@ -45,19 +45,52 @@ Axios.interceptors.request.use((config) => {
   return config;
 });
 
-// Change response data/error here
+// 401/403 handling. The previous version treated them identically: drop the
+// token and SILENTLY Router.replace('/') — no message, no login prompt, and a
+// mere 403 (authenticated but not allowed) destroyed the whole session. The
+// admin panel had this exact bug and it made staff RBAC unusable there.
+//
+//  401 / NOT_AUTHORIZED, and a token existed → the session is dead. Clear it,
+//    say so once, and send the user to sign-in so they can come straight back.
+//    The `hadToken` guard matters: a guest (or a failed login POST) also gets
+//    401s, and bouncing THEM to /signin would loop.
+//  403 → the user is signed in but not allowed this one thing. Keep the
+//    session, keep the page; the failing call's own error surface handles it.
+let sessionExpiredNotified = false;
 Axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      (error.response && error.response.status === 401) ||
-      (error.response && error.response.status === 403) ||
-      (error.response &&
-        error.response.data.message === 'PLANTATHOME_ERROR.NOT_AUTHORIZED')
-    ) {
+    const status = error.response?.status;
+    // A 403 NEVER counts as session death, even when the body says
+    // NOT_AUTHORIZED — the API uses that message on permission failures too,
+    // and treating it as auth-expiry would reintroduce exactly the
+    // 403-nukes-the-session bug this rework removes. The message check only
+    // applies to non-403 responses (legacy endpoints that signal a dead token
+    // without a clean 401).
+    const isAuthError =
+      status === 401 ||
+      (status !== 403 &&
+        error.response?.data?.message === 'PLANTATHOME_ERROR.NOT_AUTHORIZED');
+
+    if (isAuthError) {
+      const hadToken = Boolean(Cookies.get(AUTH_TOKEN_KEY));
       Cookies.remove(AUTH_TOKEN_KEY);
-      Router.replace(Routes.home);
+      if (hadToken && typeof window !== 'undefined') {
+        if (!sessionExpiredNotified) {
+          sessionExpiredNotified = true;
+          // Lazy import keeps toastify out of the SSR path; reset the flag so
+          // a later, separate expiry can notify again.
+          import('react-toastify').then(({ toast }) => {
+            toast.error('Your session has expired — please sign in again.');
+            setTimeout(() => {
+              sessionExpiredNotified = false;
+            }, 5000);
+          });
+        }
+        Router.replace(Routes.login);
+      }
     }
+    // 403: deliberately no logout and no navigation.
     return Promise.reject(error);
   }
 );

@@ -28,7 +28,14 @@ export function getEmailVerified(): {
   const emailVerified = Cookie.get(EMAIL_VERIFIED);
   // V1 returned `false` here (shipped with ignoreBuildErrors); cast keeps the
   // exact runtime behavior while satisfying strict TS.
-  return (emailVerified ? JSON.parse(emailVerified) : false) as any;
+  // try/catch: a corrupt/truncated cookie must degrade to "not verified", not
+  // throw — an uncaught parse here white-screens the tree (admin had the exact
+  // same bug class).
+  try {
+    return (emailVerified ? JSON.parse(emailVerified) : false) as any;
+  } catch {
+    return false as any;
+  }
 }
 
 export function getAuthCredentials(context?: any): {
@@ -42,7 +49,13 @@ export function getAuthCredentials(context?: any): {
     authCred = Cookie.get(AUTH_CRED);
   }
   if (authCred) {
-    return JSON.parse(authCred);
+    // A corrupt AUTH_CRED must read as "logged out", never throw — this runs
+    // on effectively every page via auth gates.
+    try {
+      return JSON.parse(authCred);
+    } catch {
+      return { token: null, permissions: null };
+    }
   }
   return { token: null, permissions: null };
 }

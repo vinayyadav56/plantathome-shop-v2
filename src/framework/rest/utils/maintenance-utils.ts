@@ -13,7 +13,12 @@ export function getMaintenanceDetails(): {
 } {
     const maintenanceDetails = Cookie.get(MAINTENANCE_DETAILS);
     if (maintenanceDetails) {
-        return JSON.parse(maintenanceDetails);
+        // Corrupt cookie → "unknown", never throw.
+        try {
+            return JSON.parse(maintenanceDetails);
+        } catch {
+            return { isUnderMaintenance: null, maintenance: null };
+        }
     }
     return { isUnderMaintenance: null, maintenance: null };
 }

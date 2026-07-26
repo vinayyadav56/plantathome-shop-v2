@@ -131,8 +131,10 @@ export default function MyPackagesPage() {
 
 const getLayout = (page: React.ReactElement) =>
   getSiteLayout(
-    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-1920 bg-light lg:bg-[#F8F7F2] xl:flex-row xl:py-14 xl:px-8 2xl:px-14">
-      <DashboardSidebar className="hidden shrink-0 ltr:mr-8 rtl:ml-8 xl:block xl:w-80" />
+    // See orders.tsx — the old `hidden … xl:block` removed all account nav
+    // below 1280px, including the sidebar's own mobile tab strip.
+    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-1920 bg-light lg:bg-[#F8F7F2] lg:flex-row xl:py-14 xl:px-8 2xl:px-14">
+      <DashboardSidebar className="w-full shrink-0 ltr:lg:mr-8 rtl:lg:ml-8 lg:w-80" />
       {page}
     </div>
   );

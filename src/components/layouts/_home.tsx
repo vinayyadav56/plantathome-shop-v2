@@ -59,10 +59,13 @@ export default function HomeLayout({
       {/* PahHome renders its own bottom nav on the mobile home; suppress this one there. */}
       {!pahMobile && (
         <MobileNavigation>
+          {/* Mobile header-search toggle — floats above the bottom nav now that
+              MobileNavigation renders its children again; hidden ≥md where the
+              header search is always visible. */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() => setDisplayMobileHeaderSearch((prev) => !prev)}
-            className="flex h-full items-center justify-center p-2 focus:text-accent focus:outline-0"
+            className="fixed bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-ds-btn text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
           >
             <span className="sr-only">{t('text-search')}</span>
             <SearchIcon width="17.05" height="18" />

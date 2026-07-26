@@ -9,7 +9,25 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/checkout', '/checkout/', '/profile', '/orders', '/wishlists', '/change-password', '/verify-email'],
+      disallow: [
+        '/checkout',
+        '/checkout/',
+        '/profile',
+        '/orders',
+        '/wishlists',
+        '/change-password',
+        '/verify-email',
+        // Account/utility pages that also declare meta-noindex; disallowing
+        // saves the crawl budget outright.
+        '/cards',
+        '/downloads',
+        '/reports',
+        '/questions',
+        '/my-packages',
+        '/notification',
+        '/access-denied',
+        '/refunds', // account refunds — the public policy page is /customer-refund-policies
+      ],
     },
     sitemap: `${BASE}/sitemap.xml`,
     host: BASE,

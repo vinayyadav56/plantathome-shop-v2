@@ -26,7 +26,9 @@ const STATIC_ROUTES = [
   '/track-order',
   '/terms',
   '/privacy',
-  '/refunds',
+  // '/refunds' removed: that is the ACCOUNT refunds page (its page body even
+  // declares noindex) — the public policy page is /customer-refund-policies.
+  '/customer-refund-policies',
 ];
 
 async function fetchSlugs(path: string): Promise<string[]> {
@@ -42,12 +44,50 @@ async function fetchSlugs(path: string): Promise<string[]> {
   }
 }
 
+/**
+ * Walk the Laravel paginator until a short page.
+ *
+ * PER_PAGE is 100 because the API CLAMPS limit to 100 (both ProductController
+ * and CategoryController — the category clamp exists because limit=1000 once
+ * blew PHP-FPM's memory limit mid-serialize). Which means the old single
+ * `?limit=1000` call here was actually returning 100 rows, not 1000 — the
+ * sitemap was missing ~1,500 of ~1,593 published PDPs, even worse than the
+ * audit's estimate. Ask for more than the clamp and the break-on-short-page
+ * check compares against what the API can actually return, so the loop stops
+ * after page 1 with a silent 6% sitemap.
+ * Page cap of 60 (6k rows) is a runaway guard, not a limit we expect to hit.
+ */
+async function fetchAllSlugs(resource: string, extraQuery = ''): Promise<string[]> {
+  const PER_PAGE = 100;
+  const all: string[] = [];
+  for (let page = 1; page <= 60; page++) {
+    const batch = await fetchSlugs(
+      `${resource}?limit=${PER_PAGE}&page=${page}&language=en${extraQuery}`,
+    );
+    all.push(...batch);
+    if (batch.length < PER_PAGE) break;
+  }
+  return all;
+}
+
+/**
+ * Products MUST carry the same filters the storefront listing uses
+ * (client/index.ts products.all): status publish + public visibility +
+ * hide_unpriced. Without them the sitemap advertises every DRAFT and
+ * unpriced catalogue row (prod holds ~2,675 drafts next to ~1,593 published)
+ * — thousands of URLs that render as 404/empty PDPs for the crawler.
+ */
+const PRODUCT_FILTERS =
+  `&searchJoin=and&hide_unpriced=1&search=${encodeURIComponent(
+    'status:publish;visibility:visibility_public',
+  )}`;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const [productSlugs, categorySlugs] = await Promise.all([
-    fetchSlugs('products?limit=1000&language=en'),
-    fetchSlugs('categories?limit=1000&language=en'),
+    fetchAllSlugs('products', PRODUCT_FILTERS),
+    fetchAllSlugs('categories'),
   ]);
 
   const entries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({

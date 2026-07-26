@@ -82,8 +82,13 @@ export default function OrdersPage() {
 
 const getLayout = (page: React.ReactElement) =>
   getSiteLayout(
-    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-7xl bg-light lg:bg-[#F8F7F2] xl:flex-row xl:py-14 xl:px-8 2xl:px-14">
-      <DashboardSidebar className="hidden shrink-0 ltr:mr-8 rtl:ml-8 xl:block xl:w-80" />
+    // `hidden … xl:block` used to remove the ENTIRE sidebar below 1280px, which
+    // killed its own built-in <lg pill-tab strip too — sub-xl users had zero
+    // account navigation on this page. Render it at every width and split at lg
+    // (the sidebar's internal breakpoint): <lg gets the horizontal tab strip,
+    // lg+ gets the card sidebar. Same fix as my-packages.tsx.
+    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-7xl bg-light lg:bg-[#F8F7F2] lg:flex-row xl:py-14 xl:px-8 2xl:px-14">
+      <DashboardSidebar className="w-full shrink-0 ltr:lg:mr-8 rtl:lg:ml-8 lg:w-80" />
       {page}
     </div>
   );

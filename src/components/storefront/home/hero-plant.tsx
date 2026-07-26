@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -20,6 +20,11 @@ const TOUR_SCENES = [
   '/hero-villa-exterior.jpg', // approach: glass villa in the forest
   '/hero-glasshouse-dusk.jpg', // dusk: glass walls glowing (2560px)
 ];
+
+// True once the first hero frame has painted this session (module scope on
+// purpose: survives slide cycling and route hops; only the cold-load first
+// frame skips the fade for LCP).
+let heroPainted = false;
 
 // Per-scene choreography: alternating push-in / pull-back + lateral drift, slow
 // 2s crossfades — reads like a steadicam walkthrough rather than a slideshow.
@@ -92,13 +97,24 @@ function SlideMedia({
   reduce: boolean;
 }) {
   const mv = MOVES[index % MOVES.length];
+  // LCP: the very first appearance of slide 0 must NOT fade — the 2s opacity
+  // ramp pushed the visually-complete moment of the largest element ~2s past
+  // image decode on every cold load. First paint is instant; every later
+  // slide (and slide 0 on subsequent loop cycles — heroPainted is module
+  // scoped) keeps the cinematic crossfade.
+  const instant = index === 0 && !heroPainted;
+  useEffect(() => {
+    heroPainted = true;
+  }, []);
   const common = {
     className: 'absolute inset-0 h-full w-full object-cover',
-    initial: { opacity: 0, scale: mv.scale[0], x: mv.x[0], y: mv.y[0] },
+    initial: instant
+      ? { opacity: 1, scale: mv.scale[0], x: mv.x[0], y: mv.y[0] }
+      : { opacity: 0, scale: mv.scale[0], x: mv.x[0], y: mv.y[0] },
     animate: { opacity: 1, scale: mv.scale[1], x: mv.x[1], y: mv.y[1] },
     exit: { opacity: 0 },
     transition: {
-      opacity: { duration: 2, ease: 'easeInOut' as const },
+      opacity: { duration: instant ? 0 : 2, ease: 'easeInOut' as const },
       scale: { duration: SCENE_SECONDS + 2.5, ease: 'linear' as const },
       x: { duration: SCENE_SECONDS + 2.5, ease: 'linear' as const },
       y: { duration: SCENE_SECONDS + 2.5, ease: 'linear' as const },
@@ -121,7 +137,19 @@ function SlideMedia({
       </motion.video>
     );
   }
-  return <motion.img key={index} src={slide.src} alt="" aria-hidden {...common} />;
+  return (
+    <motion.img
+      key={index}
+      src={slide.src}
+      alt=""
+      aria-hidden
+      loading="eager"
+      decoding="async"
+      // @ts-ignore — valid HTML attr; React 19 forwards it
+      fetchpriority={index === 0 ? 'high' : 'auto'}
+      {...common}
+    />
+  );
 }
 
 function TourBurns({
@@ -315,12 +343,19 @@ export function HeroPlant() {
               {headline}
             </motion.h1>
           ) : (
+            // No WordReveal here ON PURPOSE: it holds every word at
+            // translateY(115%) until hydration + up to ~1.25s of staggered
+            // reveal, so the page's most important text (and an LCP candidate)
+            // was invisible exactly when first paint happens. The headline now
+            // renders immediately; the sub-copy and CTAs below keep their
+            // entrance motion, which preserves the cinematic feel without
+            // taxing first paint.
             <h1 className="font-pahserif text-[2.4rem] font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]">
               <span className="block lg:whitespace-nowrap">
-                <WordReveal text={t('home-hero-title-1')} delay={0.1} />
+                {t('home-hero-title-1')}
               </span>
               <span className="block text-[#8FD56F]">
-                <WordReveal text={t('home-hero-title-2')} delay={0.32} />
+                {t('home-hero-title-2')}
               </span>
             </h1>
           )}

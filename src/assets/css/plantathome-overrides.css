@@ -3278,3 +3278,9 @@ html[data-density='compact'] { --density: 0.78; }
     transform: none;
   }
 }
+
+/* Fact-rotator fade on the 404 (key-swap retriggers). Static under
+   prefers-reduced-motion. */
+.pah-fade-in { animation: pah-fade-in 0.6s ease; }
+@keyframes pah-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pah-fade-in { animation: none; } }

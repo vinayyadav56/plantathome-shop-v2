@@ -119,6 +119,10 @@ const GetLayout = (page: React.ReactElement) => {
           </div>
         </div>
         <MobileNavigation>
+          {/* Floating filter button — the ONLY opener of the SEARCH_FILTER
+              drawer, and the desktop rail is hidden below md, so without this
+              sub-md users cannot filter at all. Fixed above the bottom nav;
+              hidden ≥md where the sidebar rail takes over. */}
           <motion.button
             whileTap={{ scale: 0.88 }}
             onClick={() =>
@@ -127,7 +131,7 @@ const GetLayout = (page: React.ReactElement) => {
                 view: 'SEARCH_FILTER',
               })
             }
-            className="flex items-center justify-center h-full p-2 focus:text-accent focus:outline-0"
+            className="fixed bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-ds-btn text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
           >
             <span className="sr-only">{t('text-filter')}</span>
             <FilterIcon width="17.05" height="18" />
