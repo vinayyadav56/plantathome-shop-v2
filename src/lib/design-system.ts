@@ -112,6 +112,14 @@ export const FONT_PAIRINGS: FontPairing[] = [
     stars: 4,
   },
   {
+    id: 'manrope-inter',
+    name: 'Manrope + Inter',
+    heading: `'Manrope', ${SANS}`,
+    body: `'Inter', ${SANS}`,
+    google: 'family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700',
+    stars: 5,
+  },
+  {
     id: 'cormorant-manrope',
     name: 'Cormorant Garamond + Manrope',
     heading: `'Cormorant Garamond', 'Playfair Display', ${SERIF}`,
@@ -122,10 +130,27 @@ export const FONT_PAIRINGS: FontPairing[] = [
   },
 ];
 
+/**
+ * ⚠️ THIS LIST IS THE RENDER CONTRACT. The shop resolves a persisted scheme by
+ * id and SILENTLY falls back to COLOR_SCHEMES[0] when the id is unknown — so any
+ * scheme the admin offers but the shop lacks makes the admin preview lie about
+ * what the storefront will actually render. Add schemes to BOTH copies or not at
+ * all. (`fresh-green` shipped in admin only and was invisibly downgraded here.)
+ *
+ * `pine` (#2E5E2A) is first, and therefore the default, because it is the
+ * official PlantAtHome dark green: the most-used brand hex in the storefront,
+ * already `forest.DEFAULT`/`forest.700` in the Tailwind palette, already
+ * DEFAULT_BUTTONS.primary, and 7.63:1 on white (AA body / AAA large). The
+ * previous default `forest` (#4E8B31) FAILS WCAG AA at 4.15:1 and it was the
+ * colour of every accent link on the site — so this also fixes a contrast bug.
+ * Making it the default additionally resolves the long-standing split where the
+ * default accent and the default button colour were two different greens.
+ */
 export const COLOR_SCHEMES: ColorScheme[] = [
-  { id: 'forest', name: 'Forest (default)', accent: '#4E8B31', accentSoft: '#EAF4E6', accentInk: '#2E5E2A', accentRgb: '78, 139, 49', accentInkRgb: '46, 94, 42' },
+  { id: 'pine', name: 'PlantAtHome Green (default)', accent: '#2E5E2A', accentSoft: '#E7EEE2', accentInk: '#1E4023', accentRgb: '46, 94, 42', accentInkRgb: '30, 64, 35' },
+  { id: 'fresh-green', name: 'Fresh Green', accent: '#1F6B3D', accentSoft: '#E8F5EE', accentInk: '#0D3B24', accentRgb: '31, 107, 61', accentInkRgb: '13, 59, 36' },
+  { id: 'forest', name: 'Forest (lighter — fails AA for text)', accent: '#4E8B31', accentSoft: '#EAF4E6', accentInk: '#2E5E2A', accentRgb: '78, 139, 49', accentInkRgb: '46, 94, 42' },
   { id: 'emerald', name: 'Emerald', accent: '#1B7A4B', accentSoft: '#E2F3EB', accentInk: '#125C38', accentRgb: '27, 122, 75', accentInkRgb: '18, 92, 56' },
-  { id: 'pine', name: 'Deep Pine', accent: '#2E5E2A', accentSoft: '#E7EEE2', accentInk: '#1E4023', accentRgb: '46, 94, 42', accentInkRgb: '30, 64, 35' },
   { id: 'terracotta', name: 'Terracotta', accent: '#C26B45', accentSoft: '#F3E2D8', accentInk: '#A8542F', accentRgb: '194, 107, 69', accentInkRgb: '168, 84, 47' },
 ];
 
@@ -195,6 +220,26 @@ export function resolveDesignSystem(raw: any): DesignSystem {
   const fp = FONT_PAIRINGS.find((p) => p.id === raw?.fontTheme?.id) ?? DEFAULT_FONT_PAIRING;
   const cs = COLOR_SCHEMES.find((c) => c.id === raw?.colorTheme?.id) ?? DEFAULT_COLOR_SCHEME;
   const density = raw?.density === 'compact' ? 'compact' : 'comfortable';
+
+  // Drift alarm. An id the admin saved but this app does not define is silently
+  // downgraded to the default above, which is how `fresh-green` shipped as the
+  // admin's default while the storefront rendered `forest` and nobody noticed.
+  // Fail loudly in dev rather than render a different brand than the one the
+  // operator picked.
+  if (process.env.NODE_ENV !== 'production') {
+    if (raw?.colorTheme?.id && raw.colorTheme.id !== cs.id) {
+      console.warn(
+        `[design-system] unknown colour scheme "${raw.colorTheme.id}" — falling back to "${cs.id}". ` +
+          'The admin and shop copies of design-system.ts have drifted; sync them.',
+      );
+    }
+    if (raw?.fontTheme?.id && raw.fontTheme.id !== fp.id) {
+      console.warn(
+        `[design-system] unknown font pairing "${raw.fontTheme.id}" — falling back to "${fp.id}". ` +
+          'The admin and shop copies of design-system.ts have drifted; sync them.',
+      );
+    }
+  }
   return {
     fontTheme: { id: fp.id, heading: fp.heading, body: fp.body },
     colorTheme: { id: cs.id, accent: cs.accent, accentSoft: cs.accentSoft, accentInk: cs.accentInk, accentRgb: cs.accentRgb, accentInkRgb: cs.accentInkRgb },

@@ -3203,7 +3203,22 @@ html[data-green='5'] {
 .g-light-a { background-image: linear-gradient(to bottom, var(--g-lighta-from), var(--g-lighta-to)); }
 .g-light-b { background-image: linear-gradient(to bottom, var(--g-lightb-from), var(--g-lightb-to)); }
 .g-cta { background-image: linear-gradient(to right, var(--g-cta-from), var(--g-cta-to)); }
-.g-footer { background-image: linear-gradient(to bottom, var(--g-band-via), var(--g-band-to)); }
+
+/* ── Inverse (dark) surface ──────────────────────────────────────────────
+   The footer is authored as a DARK surface: footer.tsx uses text-white/80,
+   text-white/55, border-white/[0.12], bg-white/[0.05] and #4ADE80 glows at
+   6-9% opacity. It was painted with --g-band-via/--g-band-to, which are the
+   LIGHT band washes (#D6EFE0 → #C4E8D2), so white body text landed at about
+   1.1:1 on every page of the site.
+   The footer therefore gets its own inverse-surface tokens instead of
+   borrowing the light band palette — the two have opposite ink polarity and
+   must never share variables. Stops are forest-800 → forest-900, the brand
+   ink range, which puts white/80 body text at roughly 11:1. */
+:root {
+  --surface-inverse: #16301A;      /* forest-900 — base dark surface */
+  --surface-inverse-top: #1E4023;  /* forest-800 — gradient top stop */
+}
+.g-footer { background-image: linear-gradient(to bottom, var(--surface-inverse-top), var(--surface-inverse)); }
 
 /* ── Design System: density ──────────────────────────────────────────────
    Comfortable (default) = 1; Compact tightens vertical section rhythm. The
