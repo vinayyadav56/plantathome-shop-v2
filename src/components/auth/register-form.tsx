@@ -53,6 +53,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
             <Input
               label={t('text-name')}
               {...register('name')}
+              autoComplete="name"
               variant="outline"
               className="mb-5"
               error={t(errors.name?.message!)}
@@ -61,6 +62,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
               label={t('text-email')}
               {...register('email')}
               type="email"
+              autoComplete="email"
               variant="outline"
               className="mb-5"
               error={t(errors.email?.message!)}
@@ -68,6 +70,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
             <PasswordInput
               label={t('text-password')}
               {...register('password')}
+              autoComplete="new-password"
               error={t(errors.password?.message!)}
               variant="outline"
               className="mb-5"

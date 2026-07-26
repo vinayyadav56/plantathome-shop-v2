@@ -78,9 +78,14 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
           autoCapitalize="off"
           spellCheck="false"
           aria-invalid={error ? 'true' : 'false'}
+          aria-describedby={error ? `${name}-error` : undefined}
           {...rest}
         />
-        {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
+        {error && (
+          <p id={`${name}-error`} role="alert" className="mt-2 text-xs text-red-500">
+            {error}
+          </p>
+        )}
       </div>
     );
   },

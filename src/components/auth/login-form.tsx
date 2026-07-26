@@ -68,6 +68,7 @@ export function LoginForm({ onSwitchToRegister, onForgot }: LoginFormProps = {})
               label={t('text-email')}
               {...register('email')}
               type="email"
+              autoComplete="email"
               variant="outline"
               className="mb-5"
               error={t(errors.email?.message!)}
@@ -75,6 +76,7 @@ export function LoginForm({ onSwitchToRegister, onForgot }: LoginFormProps = {})
             <PasswordInput
               label={t('text-password')}
               {...register('password')}
+              autoComplete="current-password"
               error={t(errors.password?.message!)}
               variant="outline"
               className="mb-5"
