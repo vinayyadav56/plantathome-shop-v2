@@ -55,7 +55,13 @@ test.describe('Storefront golden path', () => {
     await delhiChip.click();
     await expect(page.getByText(/Select your shopping city/i)).toBeHidden({ timeout: 10_000 });
 
-    await expect(page.locator('a[href*="/products/"]').first()).toBeVisible();
+    // The desktop home (PlantCompanyHome) links into categories/verticals, not
+    // PDPs — every a[href*="/products/"] on the home lives in the md:hidden
+    // MOBILE tree. Assert a visible route into the catalog instead; the funnel
+    // enters the PDP directly below.
+    await expect(
+      page.locator('a[href^="/c/"]:visible, a[href="/plants"]:visible').first(),
+    ).toBeVisible();
 
     // --- PDP ---
     await page.goto(`${BASE}/products/${PRODUCT}`, { waitUntil: 'networkidle' });
