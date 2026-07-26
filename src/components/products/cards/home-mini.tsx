@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { useModalAction } from '@/components/ui/modal/modal.context';
+import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
+import { useUser } from '@/framework/user';
+import { goToSignin } from '@/lib/go-to-signin';
 import usePrice from '@/lib/use-price';
+import { getCardBadge } from '@/components/products/cards/card-helpers';
 import type { Product } from '@/types';
 
 const AddToCart = dynamic(
@@ -11,17 +15,23 @@ const AddToCart = dynamic(
   { ssr: false },
 );
 
-/** Compact bestseller card for the home page (per the home reference): photo,
- *  name, single-star rating, price + square cart button. Listing/search pages
- *  keep the richer PlantAtHomeCard. */
+/** Compact bestseller card for the home page: photo + badge + heart, serif
+ *  name, single-star rating, price + square cart button. Styling matches the
+ *  full PlantAtHomeCard (listing/search pages) — this one just stays compact. */
 const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
   product,
   className = '',
 }) => {
   const [imgError, setImgError] = useState(false);
   const { openModal } = useModalAction();
+  const { isAuthorized } = useUser();
+  const { toggleWishlist } = useToggleWishlist(product.id);
+  const { inWishlist } = useInWishlist({
+    product_id: product.id,
+    enabled: isAuthorized,
+  });
 
-  const { price } = usePrice({
+  const { price, basePrice, discount } = usePrice({
     amount: product.sale_price ? product.sale_price : product.price,
     baseAmount: product.price,
   });
@@ -31,49 +41,83 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
   const count = Number((product as any).total_reviews) || 0;
   const isVariable = product.product_type?.toLowerCase() === 'variable';
   const image = product.image?.original ?? product.image?.thumbnail ?? '';
+  const badge = getCardBadge(product);
+  const sciName =
+    (product as any).scientific_name ??
+    (product.plant_attribute as any)?.scientific_name ??
+    null;
 
   function handleQuickView() {
     openModal('PRODUCT_DETAILS', product.slug);
   }
+  function handleWishlist(e: React.MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!isAuthorized) {
+      goToSignin();
+      return;
+    }
+    toggleWishlist({ product_id: product.id });
+  }
 
   return (
     <article
-      className={`group flex h-full flex-col overflow-hidden rounded-[14px] border border-kraft-200 bg-white transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(34,48,26,0.1)] ${className}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-[16px] border border-kraft-200 bg-white transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(34,48,26,0.1)] ${className}`}
     >
-      {/* photo */}
-      <button
-        type="button"
-        onClick={handleQuickView}
-        aria-label={product.name}
-        className="relative block aspect-square w-full overflow-hidden bg-[#F6F8F4]"
-      >
-        {image && !imgError ? (
-          <Image
-            src={image}
-            alt={product.name}
-            fill
-            sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 17vw"
-            onError={() => setImgError(true)}
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          />
-        ) : (
-          <div className="h-full w-full bg-[radial-gradient(130%_130%_at_30%_15%,#FBFCF8,#E9F0E3_70%,#DEE9D6)]" />
-        )}
-      </button>
+      {/* photo + badge + heart (heart is a sibling of the button — valid HTML) */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={handleQuickView}
+          aria-label={product.name}
+          className="relative block aspect-square w-full overflow-hidden bg-[#F6F8F4]"
+        >
+          {image && !imgError ? (
+            <Image
+              src={image}
+              alt={product.name}
+              fill
+              sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 17vw"
+              onError={() => setImgError(true)}
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="h-full w-full bg-[radial-gradient(130%_130%_at_30%_15%,#FBFCF8,#E9F0E3_70%,#DEE9D6)]" />
+          )}
+          {badge ? (
+            <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-forest-800 px-2 py-0.5 text-[9px] font-semibold tracking-wide text-white shadow-sm">
+              {badge}
+            </span>
+          ) : null}
+        </button>
+        <button
+          type="button"
+          onClick={handleWishlist}
+          className="absolute right-2.5 top-2.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-white shadow-sm transition hover:scale-105"
+          aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill={inWishlist ? '#C26B45' : 'none'} stroke={inWishlist ? '#C26B45' : '#1E4023'} strokeWidth="1.8" aria-hidden>
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+          </svg>
+        </button>
+      </div>
 
       {/* body */}
       <div className="flex flex-1 flex-col p-3">
         <button
           type="button"
           onClick={handleQuickView}
-          className="truncate text-left text-[13.5px] font-semibold text-forest-900"
+          className="truncate text-left font-heading text-[14.5px] font-bold text-forest-800"
         >
           {product.name}
         </button>
+        {sciName ? (
+          <p className="mt-0.5 truncate text-[11px] text-stone-500">{sciName}</p>
+        ) : null}
 
         {/* rating */}
         <div className="mt-1 flex items-center gap-1 text-[11.5px] font-medium text-stone-500">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#B58E39" stroke="#B58E39" strokeWidth="1.4" aria-hidden>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="#EAB308" stroke="#EAB308" strokeWidth="1.4" aria-hidden>
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
           </svg>
           {rating > 0 ? <span className="text-forest-900">{rating.toFixed(1)}</span> : null}
@@ -81,9 +125,19 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
         </div>
 
         {/* price + cart */}
-        <div className="mt-auto flex items-center justify-between pt-2.5">
-          <span className="text-[16.5px] font-bold leading-none text-forest-900">
-            {isVariable ? minPrice : price}
+        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
+          <span className="flex min-w-0 flex-wrap items-center gap-1.5">
+            <span className="text-[16.5px] font-bold leading-none text-forest-700">
+              {isVariable ? minPrice : price}
+            </span>
+            {!isVariable && basePrice && (
+              <del className="text-[11px] leading-none text-stone-400">{basePrice}</del>
+            )}
+            {!isVariable && discount && (
+              <span className="rounded-md bg-[#FDECEC] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#DC2626]">
+                {discount} OFF
+              </span>
+            )}
           </span>
           {isVariable ? (
             <button

@@ -11,6 +11,7 @@ import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import { useToggleWishlist } from '@/framework/wishlist';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { useModalAction } from '@/components/ui/modal/modal.context';
+import { getCardBadge } from '@/components/products/cards/card-helpers';
 import type { Product } from '@/types';
 
 /** ₹ with no decimals + en-IN grouping (matches the design). */
@@ -23,12 +24,8 @@ function imgOf(p: Product): string {
   return p?.image?.original || p?.image?.thumbnail || PLACEHOLDER;
 }
 
-function badgeOf(p: Product): string | null {
-  const t = (p?.tags || []).find((x) => /best.?sell|editor|new.?arriv|trend/i.test(`${x?.slug} ${x?.name}`));
-  if (t) return t.name;
-  if ((p as any)?.in_flash_sale) return 'Flash Deal';
-  return null;
-}
+// Badge labels come from the shared card helper so every card surface
+// (this rail, home-mini, the full listing card) labels products identically.
 
 function descOf(p: Product): string {
   const a = p?.plant_attribute;
@@ -58,8 +55,9 @@ export function ProductCard({ product }: { product: Product }) {
   const hasSale = Boolean(product?.sale_price && product.sale_price < product.price);
   const price = isVariable ? product?.min_price || product?.price : hasSale ? product.sale_price : product.price;
   const mrp = hasSale ? product.price : null;
-  const badge = badgeOf(product);
+  const badge = getCardBadge(product);
   const desc = descOf(product);
+  const offPct = mrp ? Math.round(((mrp - (price as number)) / mrp) * 100) : 0;
 
   function onWish(e: React.MouseEvent) {
     e.preventDefault();
@@ -94,7 +92,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="absolute inset-0 h-full w-full object-cover"
         />
         {badge ? (
-          <span className="absolute left-2 top-2 rounded-full bg-forest-600 px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-white shadow-[0_2px_8px_rgba(0,0,0,0.18)]">
+          <span className="absolute left-2 top-2 rounded-full bg-forest-800 px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-white shadow-[0_2px_8px_rgba(0,0,0,0.18)]">
             {badge}
           </span>
         ) : null}
@@ -110,12 +108,15 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
       </div>
       <div className="px-3 pb-3 pt-[11px]">
-        <div className="line-clamp-1 font-hanken text-[14px] font-bold leading-[1.15] text-forest-900">{product?.name}</div>
+        <div className="line-clamp-1 font-heading text-[14px] font-bold leading-[1.15] text-forest-800">{product?.name}</div>
         {desc ? <div className="mt-[3px] line-clamp-1 text-[11px] text-stone-500">{desc}</div> : <div className="mt-[3px] h-[11px]" />}
         <div className="mt-[9px] flex items-center justify-between">
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-hanken text-[16px] font-semibold tabular-nums text-forest-900">{rupee(price)}</span>
-            {mrp ? <span className="text-[12px] text-stone-400 line-through">{rupee(mrp)}</span> : null}
+          <div className="flex min-w-0 items-baseline gap-1">
+            <span className="font-hanken text-[15px] font-semibold tabular-nums text-forest-700">{rupee(price)}</span>
+            {mrp ? <span className="text-[11px] text-stone-400 line-through">{rupee(mrp)}</span> : null}
+            {offPct > 0 ? (
+              <span className="rounded bg-[#FDECEC] px-1 py-0.5 text-[9px] font-bold leading-none text-[#DC2626]">{offPct}%</span>
+            ) : null}
           </div>
           <button
             type="button"
