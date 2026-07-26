@@ -15,42 +15,42 @@
     * primary color — Design System Forest accent #4E8B31 (default; the admin
     * Design System control overrides --color-accent per the chosen scheme).
     */
-    --color-accent: 78, 139, 49;
+    --color-accent: 46, 94, 42;
 
     /*
     * Hover state color — Forest ink #2E5E2A
     */
-    --color-accent-hover: 46, 94, 42;
+    --color-accent-hover: 30, 64, 35;
 
     /*
     * shade — #a7f3d0
     */
-    --color-accent-200: 167, 243, 208;
+    --color-accent-200: 210, 224, 203;
 
     /*
     * shade — #6ee7b7
     */
-    --color-accent-300: 110, 231, 183;
+    --color-accent-300: 179, 201, 168;
 
     /*
     * shade — #34d399
     */
-    --color-accent-400: 52, 211, 153;
+    --color-accent-400: 143, 174, 128;
 
     /*
     * shade — #059669
     */
-    --color-accent-500: 5, 150, 105;
+    --color-accent-500: 78, 130, 68;
 
     /*
     * shade — #047857
     */
-    --color-accent-600: 4, 120, 87;
+    --color-accent-600: 58, 107, 51;
 
     /*
     * shade — #065f46 deep forest
     */
-    --color-accent-700: 6, 95, 70;
+    --color-accent-700: 46, 94, 42;
 
     /*
     * light color

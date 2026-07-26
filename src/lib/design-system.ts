@@ -171,6 +171,28 @@ export const CTA_INK = '#061a0b';
 
 const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
 
+/**
+ * Mix a hex colour toward white by `amount` (0-1) — derives the soft tints.
+ *
+ * The 200/300/400 rungs used to be hardcoded Pickbazar emerald (#a7f3d0 /
+ * #6ee7b7 / #34d399) while only the base and 500-700 rungs were ever repointed,
+ * so `bg-accent` rendered brand green and `bg-accent-400` rendered teal from the
+ * same "accent" family. Deriving them from the active scheme keeps the whole
+ * ramp one hue, and keeps it correct for non-green schemes like Terracotta.
+ */
+export function tintHex(hex: string, amount: number): string {
+  const m = HEX_RE.exec(hex?.trim?.() ?? '');
+  if (!m) return hex;
+  let h = m[1];
+  if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+  const n = parseInt(h, 16);
+  const f = (v: number) => Math.max(0, Math.min(255, Math.round(v + (255 - v) * amount)));
+  const r = f((n >> 16) & 255);
+  const g = f((n >> 8) & 255);
+  const b = f(n & 255);
+  return `${r}, ${g}, ${b}`;
+}
+
 /** Darken a hex color by `amount` (0-1) — used to derive hover shades. */
 export function darkenHex(hex: string, amount = 0.12): string {
   const m = HEX_RE.exec(hex?.trim?.() ?? '');
@@ -285,6 +307,11 @@ export function applyDesignSystem(raw: any, persist = true): DesignSystem {
   root.style.setProperty('--color-accent-500', ds.colorTheme.accentRgb);
   root.style.setProperty('--color-accent-600', ds.colorTheme.accentInkRgb);
   root.style.setProperty('--color-accent-700', ds.colorTheme.accentInkRgb);
+  // Soft rungs derived from the SAME accent, so the ramp is one hue end to end
+  // (these were previously left at hardcoded Pickbazar emerald).
+  root.style.setProperty('--color-accent-200', tintHex(ds.colorTheme.accent, 0.78));
+  root.style.setProperty('--color-accent-300', tintHex(ds.colorTheme.accent, 0.6));
+  root.style.setProperty('--color-accent-400', tintHex(ds.colorTheme.accent, 0.38));
   // Backend-controlled button colors (bg-ds-btn / bg-ds-cta utilities).
   root.style.setProperty('--ds-btn', ds.buttons.primary);
   root.style.setProperty('--ds-btn-hover', darkenHex(ds.buttons.primary));
