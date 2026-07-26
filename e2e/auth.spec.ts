@@ -26,9 +26,17 @@ test.describe('storefront auth', () => {
   });
 
   test('empty submit triggers client validation', async ({ page }) => {
-    await page.goto(`${BASE}/signin`, { waitUntil: 'domcontentloaded' });
-    await page.getByRole('button', { name: /^login$/i }).first().click().catch(() => {});
+    await page.goto(`${BASE}/signin`, { waitUntil: 'load' });
+    const login = page.getByRole('button', { name: /^login$/i }).first();
+    await login.click().catch(() => {});
     await page.waitForTimeout(800);
+    // A click that lands before hydration is silently swallowed (no handler
+    // wired yet) — retry once instead of failing on framework timing.
+    const body = (await page.locator('body').textContent()) ?? '';
+    if (!/required|enter|invalid|must/i.test(body)) {
+      await login.click().catch(() => {});
+      await page.waitForTimeout(800);
+    }
     await expect(page.locator('body')).toContainText(/required|enter|invalid|must/i);
   });
 
