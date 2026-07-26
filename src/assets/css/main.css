@@ -251,9 +251,9 @@
     --color-orange-900: 124, 45, 18;
 
     /*
-    Pending
+    Pending — #B45309 (--pa-warning); the old #C9A116 sat at 2.6:1 on white
     */
-    --color-pending: 201, 161, 22;
+    --color-pending: 180, 83, 9;
 
     /*
     Processing
@@ -261,9 +261,9 @@
     --color-processing: 158, 117, 0;
 
     /*
-    Complete
+    Complete — #0E7C57 (--pa-success); replaces Pickbazar teal #00A17F
     */
-    --color-complete: 0, 161, 127;
+    --color-complete: 14, 124, 87;
 
     /*
     Canceled
@@ -276,9 +276,10 @@
     --color-failed: 238, 43, 0;
 
     /*
-    Out for delivery
+    Out for delivery — #1D4ED8 (--pa-info); the old #7EAD42 read as a second
+    brand green in the order timeline
     */
-    --color-out-for-delivery: 126, 173, 66;
+    --color-out-for-delivery: 29, 78, 216;
 
     /*
     * dark base text color  -> gray-600

@@ -10,8 +10,6 @@ import { displayMobileHeaderSearchAtom } from '@/store/display-mobile-header-sea
 import { useIsHomeExperience } from '@/lib/use-is-home-experience';
 import dynamic from 'next/dynamic';
 
-const GreenPicker = dynamic(() => import('@/components/storefront/green-picker'), { ssr: false });
-
 const MobileNavigation = dynamic(() => import('./mobile-navigation'), {
   ssr: false,
 });
@@ -54,7 +52,6 @@ export default function HomeLayout({
         <Footer />
       )}
 
-      <GreenPicker />
 
       {/* PahHome renders its own bottom nav on the mobile home; suppress this one there. */}
       {!pahMobile && (
