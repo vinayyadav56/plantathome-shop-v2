@@ -37,10 +37,15 @@ export const FONT_FAMILIES: { value: string; name: string }[] = [
 
 const isSystem = (family: string) => !family || family.trim().toLowerCase() === 'system';
 
-/** Google Fonts stylesheet URL for a family (null for the System stack). */
+/** Google Fonts stylesheet URL for a family (null for the System stack).
+ *  Inter also gets 900 for the few `font-black` display stats; most other
+ *  curated families stop at 800 and css2 rejects URLs asking for weights a
+ *  family does not ship. */
 export function fontCssUrl(family: string): string | null {
   if (isSystem(family)) return null;
-  return `https://fonts.googleapis.com/css2?family=${family.trim().replace(/\s+/g, '+')}:${FONT_WEIGHTS}&display=swap`;
+  const fam = family.trim();
+  const weights = fam === 'Inter' ? `${FONT_WEIGHTS};900` : FONT_WEIGHTS;
+  return `https://fonts.googleapis.com/css2?family=${fam.replace(/\s+/g, '+')}:${weights}&display=swap`;
 }
 
 /** Full CSS font-family value for a family (quoted if multi-word) + fallback. */
@@ -53,13 +58,19 @@ export function fontStack(family: string): string {
 
 const linkId = (family: string) => 'pah-font-' + (family || 'system').trim().toLowerCase().replace(/\s+/g, '-');
 
-/** Inject the Google Fonts <link> for a family once (browser only). */
+/** Inject the Google Fonts <link> for a family once (browser only). If the
+ *  prepaint already injected this family from a stale persisted URL (e.g. an
+ *  old weight list), repoint it instead of skipping. */
 export function ensureFontLoaded(family: string): void {
   if (typeof document === 'undefined') return;
   const href = fontCssUrl(family);
   if (!href) return;
   const id = linkId(family);
-  if (document.getElementById(id)) return;
+  const existing = document.getElementById(id) as HTMLLinkElement | null;
+  if (existing) {
+    if (existing.href !== href) existing.href = href;
+    return;
+  }
   const link = document.createElement('link');
   link.id = id;
   link.rel = 'stylesheet';
@@ -95,7 +106,7 @@ export function applyTypography(family: string | undefined | null, persist = tru
  * design-system pre-paint script in the layout so the single website font wins.
  */
 export const TYPO_PREPAINT_SCRIPT = `(function(){try{
-var DEF={family:'Inter',stack:"'Inter', ${FALLBACK}",url:'https://fonts.googleapis.com/css2?family=Inter:${FONT_WEIGHTS}&display=swap'};
+var DEF={family:'Inter',stack:"'Inter', ${FALLBACK}",url:'https://fonts.googleapis.com/css2?family=Inter:${FONT_WEIGHTS};900&display=swap'};
 var d=DEF;try{var s=localStorage.getItem('${TYPO_STORAGE_KEY}');if(s){var p=JSON.parse(s);if(p&&p.stack)d=p;}}catch(e){}
 var r=document.documentElement;
 r.style.setProperty('--font-heading',d.stack);r.style.setProperty('--font-body',d.stack);r.style.setProperty('--font-eyebrow',d.stack);r.style.setProperty('--font-sans',d.stack);

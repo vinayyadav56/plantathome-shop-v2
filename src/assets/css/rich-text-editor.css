@@ -1,18 +1,13 @@
-/* react rich text editor front end design */
-.react-editor-description .ql-font-Roboto {
-  font-family: 'Roboto', sans-serif;
-}
-.react-editor-description .ql-font-Raleway {
-  font-family: 'Raleway', sans-serif;
-}
-.react-editor-description .ql-font-Lato {
-  font-family: 'Lato', sans-serif;
-}
-.react-editor-description .ql-font-Rubik {
-  font-family: 'Rubik', sans-serif;
-}
+/* react rich text editor front end design.
+   Editor-chosen fonts are deliberately flattened to the ONE website font:
+   descriptions authored in Quill's Roboto/Raleway/Lato/Rubik/OpenSans render
+   in the brand typeface instead of shipping five extra Google stylesheets. */
+.react-editor-description .ql-font-Roboto,
+.react-editor-description .ql-font-Raleway,
+.react-editor-description .ql-font-Lato,
+.react-editor-description .ql-font-Rubik,
 .react-editor-description .ql-font-OpenSans {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
 }
 .react-editor-description h1,
 .react-editor-description h2,
