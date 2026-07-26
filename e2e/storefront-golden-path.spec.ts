@@ -46,11 +46,14 @@ test.describe('Storefront golden path', () => {
 
     // City-first gate: a fresh visitor must pick a shopping city before the
     // catalog is browsable (blocking dialog, cannot be dismissed). Selecting
-    // the city IS step 1 of the golden path.
-    const cityDialog = page.getByRole('dialog').filter({ hasText: /Select your shopping city/i });
-    await expect(cityDialog).toBeVisible({ timeout: 15_000 });
-    await cityDialog.getByRole('button', { name: 'Delhi', exact: true }).first().click();
-    await expect(cityDialog).toBeHidden({ timeout: 10_000 });
+    // the city IS step 1 of the golden path. Target the city button, not the
+    // dialog wrapper — the role=dialog element is a zero-height positioning
+    // container (its fixed-position children paint the overlay), so Playwright
+    // reports it "hidden" even while the dialog is on screen.
+    const delhiChip = page.getByRole('button', { name: 'Delhi', exact: true }).first();
+    await expect(delhiChip).toBeVisible({ timeout: 20_000 });
+    await delhiChip.click();
+    await expect(page.getByText(/Select your shopping city/i)).toBeHidden({ timeout: 10_000 });
 
     await expect(page.locator('a[href*="/products/"]').first()).toBeVisible();
 

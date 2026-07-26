@@ -4,7 +4,9 @@ import { test, expect } from '@playwright/test';
 // Shop authenticates against the legacy /api (railway staging).
 // A pre-seeded throwaway customer is expected; override via env.
 const BASE = process.env.SHOP_BASE ?? 'https://plantathome-shop-staging.vercel.app';
-const EMAIL = process.env.QA_EMAIL ?? 'customer@plantathome.test';
+// Seeded 2026-07-27 via /api/register on staging (the old customer@… account's
+// password no longer matches).
+const EMAIL = process.env.QA_EMAIL ?? 'qa-customer-e2e@plantathome.test';
 const PASSWORD = process.env.QA_PASSWORD ?? 'Passw0rd!';
 
 // Pre-seed the shopping city everywhere: the blocking first-visit city dialog

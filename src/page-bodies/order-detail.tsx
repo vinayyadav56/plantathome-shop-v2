@@ -7,6 +7,7 @@ import { useRouter } from '@/compat/next-router';
 import { useOrder } from '@/framework/order';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
 import { useSettings } from '@/framework/settings';
+import PrivateRoute from '@/lib/private-route';
 
 export default function OrderPage() {
   const { query } = useRouter();
@@ -40,5 +41,8 @@ OrderPage.getLayout = getLayout;
 export function PageBody(props: any) {
   const page = <OrderPage {...props} />;
   const withLayout = (OrderPage as any).getLayout ? (OrderPage as any).getLayout(page) : page;
-  return withLayout;
+  // Account page like /orders: a guest deep-linking an order URL gets the
+  // in-place login, not an empty order shell (guest tracking lives at
+  // /track-order, which stays public). The port had dropped this guard.
+  return <PrivateRoute>{withLayout}</PrivateRoute>;
 }
