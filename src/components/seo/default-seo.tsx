@@ -40,8 +40,15 @@ const DefaultSeo = () => {
     <NextDefaultSeo
       additionalMetaTags={[
         {
+          // `maximum-scale=1` removed: it blocks pinch-zoom, which is a WCAG
+          // 1.4.4 (Resize Text) failure and a real problem for anyone reading
+          // plant care details or an address on a phone. Note the old value was
+          // also malformed — `initial-scale=1 maximum-scale=1` is missing the
+          // comma, so the second directive was being parsed as part of the
+          // first and browsers were already ignoring it. Removing it makes the
+          // intent explicit rather than accidentally-correct.
           name: 'viewport',
-          content: 'width=device-width, initial-scale=1 maximum-scale=1',
+          content: 'width=device-width, initial-scale=1',
         },
         {
           name: 'apple-mobile-web-app-capable',

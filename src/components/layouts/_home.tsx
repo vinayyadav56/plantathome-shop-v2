@@ -40,7 +40,7 @@ export default function HomeLayout({
           own app bar, so the prod header is suppressed there. */}
       {pahMobile ? <div className="hidden md:block">{headerEl}</div> : headerEl}
 
-      <main className="min-h-screen flex-1">{children}</main>
+      <main id="main-content" className="min-h-screen flex-1">{children}</main>
 
       {/* Footer: the shared footer is the DESKTOP "Grow with us" Web Home footer.
           On the phone home (<md) PahHome renders its own Mobile-Home-matched footer,

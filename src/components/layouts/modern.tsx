@@ -26,6 +26,7 @@ export default function Modern({ variables }: HomePageProps) {
         <Categories layout="modern" variables={variables.categories} />
       </div>
       <main
+        id="main-content"
         className={classNames(
           'block w-full xl:overflow-hidden ltr:xl:pl-0 ltr:xl:pr-5 rtl:xl:pr-0 rtl:xl:pl-5',
           underMaintenanceIsComing

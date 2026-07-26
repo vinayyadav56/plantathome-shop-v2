@@ -83,6 +83,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             gtag('config', 'G-KTCXX5B35N');`}
         </Script>
 
+        {/*
+          Skip link — WCAG 2.4.1 (Bypass Blocks). There was none, so a keyboard
+          or screen-reader user had to tab through the full header, search,
+          city picker and mega-nav on EVERY page before reaching content.
+          First focusable element in <body> on purpose; visually hidden until
+          focused. Targets #main-content, which the layouts set on their <main>.
+        */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-lg focus:bg-forest-700 focus:px-5 focus:py-3 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-white"
+        >
+          Skip to content
+        </a>
+
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

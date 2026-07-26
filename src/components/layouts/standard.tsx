@@ -11,7 +11,7 @@ export default function Standard({ variables }: HomePageProps) {
       <Banner layout="standard" variables={variables?.types} />
       <FilterBar variables={variables?.categories} />
       <Categories layout="standard" variables={variables?.categories} />
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <ProductGridHome
           className="px-4 pt-8 pb-20 lg:p-8"
           variables={variables?.products}
