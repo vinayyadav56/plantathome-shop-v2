@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from '@/compat/next-router';
 import { getLayout as getSiteLayout } from '@/components/layouts/layout';
@@ -10,6 +10,10 @@ import { useUser } from '@/framework/user';
 import {
   useDiagnose,
   usePlantDoctorEnabled,
+  usePlantDoctorHistory,
+  useSaveConsultation,
+  useDeleteConsultation,
+  ConsultationRecord,
   DiagnosisResponse,
   Severity,
 } from '@/framework/plant-doctor';
@@ -203,8 +207,9 @@ function makeThumb(dataUrl: string, max = 160, quality = 0.62): Promise<string> 
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Consultation history — localStorage (no server endpoint exists yet).
-   Read only after mount; shown only to signed-in users.
+   Consultation history — signed-in users read/write the server
+   (plant-doctor/consultations); localStorage remains ONLY as the signed-out
+   fallback. Everything renders strictly after mount (hydration-safe).
    ──────────────────────────────────────────────────────────────────────────── */
 
 const HISTORY_KEY = 'pah-plant-doctor-history';
@@ -238,6 +243,37 @@ function writeHistory(entries: ConsultationEntry[]) {
   } catch {
     // quota / private mode — history is a nicety, never block the diagnosis
   }
+}
+
+function worstSeverity(data: DiagnosisResponse): Severity {
+  return (data.diagnosis ?? []).reduce<Severity>(
+    (acc, d) => ((SEV_RANK[d.severity] ?? 0) > SEV_RANK[acc] ? d.severity : acc),
+    'low',
+  );
+}
+
+/** Map a server-side consultation row onto the shape the history rail renders. */
+function entryFromServer(row: ConsultationRecord): ConsultationEntry {
+  const d = row.diagnosis ?? ({} as DiagnosisResponse);
+  return {
+    id: String(row.id),
+    at: row.created_at,
+    title:
+      d.identification?.common_name || d.plant_name || row.plant_name || 'Plant check-up',
+    thumb: row.thumb ?? undefined,
+    score:
+      typeof d.overall_health_score === 'number'
+        ? d.overall_health_score
+        : row.health_score != null
+          ? row.health_score / 100
+          : 0,
+    severity:
+      row.worst_severity && row.worst_severity in SEV_RANK
+        ? row.worst_severity
+        : worstSeverity(d),
+    conditions: (d.diagnosis ?? []).map((x) => x.condition).slice(0, 3),
+    result: d,
+  };
 }
 
 function formatDate(iso: string) {
@@ -546,6 +582,8 @@ function RejectionView({ result, onReset }: { result: DiagnosisResponse; onReset
 
 function HistorySection({
   entries,
+  loading = false,
+  server = false,
   expandedId,
   onToggle,
   onOpen,
@@ -553,11 +591,13 @@ function HistorySection({
   onClear,
 }: {
   entries: ConsultationEntry[];
+  loading?: boolean;
+  server?: boolean;
   expandedId: string | null;
   onToggle: (id: string) => void;
   onOpen: (e: ConsultationEntry) => void;
   onDelete: (id: string) => void;
-  onClear: () => void;
+  onClear?: () => void;
 }) {
   return (
     <div>
@@ -573,7 +613,7 @@ function HistorySection({
             )}
           </h2>
         </div>
-        {entries.length > 0 && (
+        {entries.length > 0 && onClear && (
           <button
             onClick={onClear}
             className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#8A8A8A] transition hover:text-[#C0492B]"
@@ -590,7 +630,11 @@ function HistorySection({
             <Icon name="history" className="h-5 w-5" />
           </span>
           <p className="text-[13.5px] leading-relaxed text-[#5B5B5B]">
-            Your past check-ups will appear here after your first diagnosis on this device.
+            {loading
+              ? 'Loading your consultations…'
+              : server
+                ? 'Your past check-ups will appear here after your first diagnosis.'
+                : 'Your past check-ups will appear here after your first diagnosis on this device.'}
           </p>
         </div>
       ) : (
@@ -680,7 +724,9 @@ function HistorySection({
         </div>
       )}
       <p className="mt-4 text-[11.5px] text-[#8A8A8A]">
-        Consultations are saved privately on this device.
+        {server
+          ? 'Consultations are saved privately to your account.'
+          : 'Consultations are saved privately on this device.'}
       </p>
     </div>
   );
@@ -746,11 +792,23 @@ export default function PlantDoctorPage() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
 
-  // History is client-only (localStorage + auth) — read it strictly after
-  // mount so SSR markup never diverges (React #418 hydration class).
+  // History is client-only (auth + server fetch / localStorage fallback) —
+  // rendered strictly after mount so SSR markup never diverges (React #418
+  // hydration class). Signed-in: server rows via react-query. Signed-out:
+  // the on-device localStorage list (behind the login teaser as before).
   const [mounted, setMounted] = useState(false);
   const [history, setHistory] = useState<ConsultationEntry[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const { data: serverHistory, isLoading: historyLoading } = usePlantDoctorHistory();
+  const { mutate: saveConsultation } = useSaveConsultation();
+  const { mutate: deleteConsultation } = useDeleteConsultation();
+
+  const serverEntries = useMemo(
+    () => (serverHistory?.data ?? []).map(entryFromServer),
+    [serverHistory],
+  );
+  const entries = isAuthorized ? serverEntries : history;
 
   useEffect(() => {
     setMounted(true);
@@ -781,14 +839,29 @@ export default function PlantDoctorPage() {
       if (photo) {
         try { thumb = await makeThumb(photo); } catch { /* thumb is optional */ }
       }
-      const worst = (data.diagnosis ?? []).reduce<Severity>(
-        (acc, d) => ((SEV_RANK[d.severity] ?? 0) > SEV_RANK[acc] ? d.severity : acc),
-        'low',
-      );
+      const worst = worstSeverity(data);
+      const title =
+        data.identification?.common_name || data.plant_name || fallbackName || 'Plant check-up';
+
+      if (isAuthorized) {
+        // Signed in — persist to the account (server prunes beyond its cap).
+        // Fire-and-forget: history is a nicety, never block the diagnosis.
+        saveConsultation({
+          plant_name: title,
+          thumb,
+          diagnosis: data,
+          health_score: Math.round(
+            Math.max(0, Math.min(1, data.overall_health_score ?? 0)) * 100,
+          ),
+          worst_severity: worst,
+        });
+        return;
+      }
+
       const entry: ConsultationEntry = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         at: new Date().toISOString(),
-        title: data.identification?.common_name || data.plant_name || fallbackName || 'Plant check-up',
+        title,
         thumb,
         score: data.overall_health_score,
         severity: worst,
@@ -801,7 +874,7 @@ export default function PlantDoctorPage() {
         return next;
       });
     },
-    [],
+    [isAuthorized, saveConsultation],
   );
 
   function submit() {
@@ -864,20 +937,16 @@ export default function PlantDoctorPage() {
   }
 
   function deleteHistoryEntry(id: string) {
-    setHistory((prev) => {
-      const next = prev.filter((e) => e.id !== id);
-      writeHistory(next);
-      return next;
-    });
+    if (isAuthorized) {
+      deleteConsultation(Number(id));
+    } else {
+      setHistory((prev) => {
+        const next = prev.filter((e) => e.id !== id);
+        writeHistory(next);
+        return next;
+      });
+    }
     setExpandedId((cur) => (cur === id ? null : cur));
-  }
-
-  function clearHistory() {
-    setHistory(() => {
-      writeHistory([]);
-      return [];
-    });
-    setExpandedId(null);
   }
 
   return (
@@ -1124,18 +1193,21 @@ export default function PlantDoctorPage() {
       </section>
 
       {/* ── PREVIOUS CONSULTATIONS ──
-          Client-only (auth + localStorage) — rendered strictly after mount so
-          server and first client render always match. */}
+          Client-only (auth + server fetch / localStorage) — rendered strictly
+          after mount so server and first client render always match. Signed-in
+          users see their account history from the API; per-entry delete goes to
+          the server, so "Clear all" is local-mode only. */}
       {enabled && mounted && (
         <section className="mx-auto max-w-5xl px-5 pb-14 sm:px-8 sm:pb-20">
           {isAuthorized ? (
             <HistorySection
-              entries={history}
+              entries={entries}
+              loading={historyLoading}
+              server
               expandedId={expandedId}
               onToggle={(id) => setExpandedId((cur) => (cur === id ? null : id))}
               onOpen={openHistoryEntry}
               onDelete={deleteHistoryEntry}
-              onClear={clearHistory}
             />
           ) : (
             <HistoryLoginTeaser />
