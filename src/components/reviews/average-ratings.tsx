@@ -1,82 +1,99 @@
-import { useTranslation } from 'next-i18next';
-import RatingsBadge from '@/components/ui/rating-badge';
-import RatingProgressBar from '@/components/ui/rating-progress-bar';
 import type { RatingCount } from '@/types';
 
 type AverageRatingsProps = {
-  totalReviews?: number;
   ratings?: number;
+  totalReviews?: number;
   ratingCount?: RatingCount[];
-  title: string;
+  className?: string;
 };
 
-const AverageRatings: React.FC<AverageRatingsProps> = ({
-  title,
-  totalReviews,
-  ratings,
-  ratingCount,
-}) => {
-  const { t } = useTranslation('common');
+/* Gold star — same glyph + #FDBA12 fill as the product cards */
+const GoldStar = ({
+  filled = true,
+  className = 'h-[17px] w-[17px]',
+}: {
+  filled?: boolean;
+  className?: string;
+}) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill={filled ? '#FDBA12' : '#E8E4D8'}
+    aria-hidden
+    className={className}
+  >
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
 
-  //TODO: need to check
+const STARS = [5, 4, 3, 2, 1] as const;
+
+const AverageRatings: React.FC<AverageRatingsProps> = ({
+  ratings = 0,
+  totalReviews = 0,
+  ratingCount,
+  className = '',
+}) => {
+  // Products with no rating breakdown simply skip the summary block.
   if (!ratingCount) return null;
 
-  return (
-    <div className="p-5 md:py-12 lg:px-16">
-      <h2 className="mb-7 text-lg font-semibold tracking-tight text-heading">
-        {t('text-ratings-reviews')} {title}
-      </h2>
+  const ratingVal = Number(ratings) || 0;
+  const rows = STARS.map((star) => ({
+    star,
+    total: Number(
+      ratingCount.find((item) => Number(item.rating) === star)?.total ?? 0,
+    ),
+  }));
 
-      <div className="flex w-full flex-col divide-y divide-gray-200 divide-opacity-70 sm:flex-row sm:items-center sm:space-x-8 sm:divide-y-0 sm:divide-x rtl:sm:space-x-reverse rtl:sm:divide-x-reverse">
-        <div className="w-full pb-4 sm:w-auto sm:pb-0">
-          <RatingsBadge rating={ratings} className="mb-4" variant="large" />
-          <p className="text-base text-gray-400">
-            <span>
-              {totalReviews} {t('text-ratings')}
+  return (
+    <div
+      className={`flex w-full flex-col gap-6 sm:flex-row sm:items-center sm:gap-10 ${className}`}
+    >
+      {/* headline number + stars */}
+      <div className="shrink-0">
+        <div className="flex items-end gap-2">
+          <span className="text-[44px] font-bold leading-none text-[#184A31]">
+            {ratingVal.toFixed(1)}
+          </span>
+          <span className="pb-1 text-[15px] font-semibold text-[#8A8A8A]">
+            / 5
+          </span>
+        </div>
+        <div className="mt-2.5 flex items-center gap-1">
+          {STARS.map((star, index) => (
+            <GoldStar key={star} filled={index < Math.round(ratingVal)} />
+          ))}
+        </div>
+        <p className="mt-2 text-[14px] leading-none text-[#8A8A8A]">
+          {totalReviews.toLocaleString('en-IN')}{' '}
+          {totalReviews === 1 ? 'rating' : 'ratings'}
+        </p>
+      </div>
+
+      {/* per-star distribution — forest fill on sage track */}
+      <div className="w-full min-w-0 flex-1 space-y-2.5">
+        {rows.map(({ star, total }) => (
+          <div key={star} className="flex items-center gap-3">
+            <span className="flex w-8 shrink-0 items-center gap-1 text-[13px] font-semibold leading-none text-[#184A31]">
+              {star}
+              <GoldStar className="h-3 w-3" />
             </span>
-          </p>
-        </div>
-        <div className="w-full space-y-3 py-0.5 pt-4 sm:w-auto sm:pt-0 ltr:sm:pl-8 rtl:sm:pr-8">
-          <RatingProgressBar
-            ratingProgressItem={ratingCount.find(
-              (rating) => Number(rating.rating) === 5
-            )}
-            ratingId={5}
-            totalReviews={totalReviews!}
-          />
-          <RatingProgressBar
-            ratingProgressItem={ratingCount.find(
-              (rating) => Number(rating.rating) === 4
-            )}
-            ratingId={4}
-            totalReviews={totalReviews!}
-            colorClassName="bg-teal-500"
-          />
-          <RatingProgressBar
-            ratingProgressItem={ratingCount.find(
-              (rating) => Number(rating.rating) === 3
-            )}
-            ratingId={3}
-            totalReviews={totalReviews!}
-            colorClassName="bg-teal-400"
-          />
-          <RatingProgressBar
-            ratingProgressItem={ratingCount.find(
-              (rating) => Number(rating.rating) === 2
-            )}
-            ratingId={2}
-            totalReviews={totalReviews!}
-            colorClassName="bg-amber-500"
-          />
-          <RatingProgressBar
-            ratingProgressItem={ratingCount.find(
-              (rating) => Number(rating.rating) === 1
-            )}
-            ratingId={1}
-            totalReviews={totalReviews!}
-            colorClassName="bg-rose-500"
-          />
-        </div>
+            <div className="relative h-2 min-w-[120px] flex-1 overflow-hidden rounded-full bg-[#F3F8EC]">
+              <div
+                className="absolute inset-y-0 left-0 rounded-full bg-[#14532D]"
+                style={{
+                  width: `${
+                    totalReviews > 0
+                      ? Math.min(100, (total / totalReviews) * 100)
+                      : 0
+                  }%`,
+                }}
+              />
+            </div>
+            <span className="w-9 shrink-0 text-right text-[13px] leading-none text-[#8A8A8A]">
+              {total.toLocaleString('en-IN')}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

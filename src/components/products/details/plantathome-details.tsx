@@ -30,47 +30,17 @@ import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import PotPicker, { type SelectedPot } from './pot-picker';
 import { cartAnimation } from '@/lib/cart-animation';
 import PlantAtHomeGallery from './plantathome/gallery';
-import PlantAtHomeAccordion, { AccordionItem } from './plantathome/accordion';
-
-/** Long product descriptions collapse to a preview with a View More toggle
- *  so the details panel stays compact until the shopper opts in. */
-function ClampedDescription({ html }: { html: string }) {
-  const { t } = useTranslation('common');
-  const [open, setOpen] = useState(false);
-  // Short copy doesn't need the toggle — render it plainly.
-  const isLong = (html?.replace(/<[^>]+>/g, '') ?? '').length > 320;
-  if (!isLong) {
-    return <div className="react-editor-description" dangerouslySetInnerHTML={{ __html: html }} />;
-  }
-  return (
-    <div>
-      <div className="relative">
-        <div
-          className={`react-editor-description overflow-hidden ${open ? '' : 'max-h-[150px]'}`}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-        {!open && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent" />
-        )}
-      </div>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-semibold text-forest-700 transition-colors hover:text-forest-900"
-      >
-        {open ? t('text-view-less') : t('text-view-more')}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className={`h-3 w-3 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden>
-          <path d="m6 9 6 6 6-6" />
-        </svg>
-      </button>
-    </div>
-  );
-}
+import BundleContents from './plantathome/bundle-contents';
+import DeliveryCard from './plantathome/delivery-card';
+import StickyAtcBar from './plantathome/sticky-atc-bar';
+import { LineIcon } from '@/components/icons/line-icons';
+import { usePdpContent } from '@/lib/use-home-config';
+import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 
 /* ── small inline icons ─────────────────────────────────────────── */
-const Star = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-    <path d="M12 2l2.9 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14l-5-4.87 7.1-1.01L12 2z" />
+const GoldStar = ({ className = '' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="#FDBA12" aria-hidden>
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
   </svg>
 );
 const Bag = ({ className = '' }: { className?: string }) => (
@@ -240,14 +210,51 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
       };
       addItemToCart(generateCartItem(potProduct, selectedPot.option), qty);
     }
-    cartAnimation(e as any);
+    // The sticky bar invokes this without an event — fly-to-cart only when
+    // there is a real click source to animate from.
+    if (e) cartAnimation(e as any);
   };
 
   const navigate = (path: string) => { router.push(path); closeModal(); };
   const onAskAi = () => (isAuthorized ? openModal('ASK_AI', { product }) : goToSignin());
 
-  const ratingInt = Math.round(Number(ratings) || 5);
-  const trustCount = Number(total_reviews) > 0 ? `${total_reviews}` : '12,000+';
+  // REAL rating values only — no invented defaults (annotation-era bug: the
+  // page rendered 5 stars and "Loved by 12,000++ plant parents" for unrated
+  // products).
+  const ratingVal = Number(ratings) || 0;
+  const reviewCount = Number(total_reviews) || 0;
+
+  // Wishlist (first affordance on the PDP — same pattern as the cards)
+  const { toggleWishlist } = useToggleWishlist(id);
+  const { inWishlist } = useInWishlist({ product_id: id, enabled: isAuthorized });
+  const onWishlist = () => (isAuthorized ? toggleWishlist({ product_id: id }) : goToSignin());
+
+  // ONE source of truth for both CTAs (inline + sticky bar) so copy/state
+  // can never drift between them.
+  const ctaDisabled = !inStock || needsSelection || verticalBlocked || displayOnly;
+  const ctaLabel = displayOnly
+    ? `Out of Stock in ${shoppingCity}`
+    : verticalBlocked
+    ? 'Unavailable in your city'
+    : !inStock
+    ? 'Out of Stock'
+    : needsSelection
+    ? 'Select Options'
+    : 'Add to Cart';
+  const atcSentinelRef = React.useRef<HTMLDivElement>(null);
+
+  // Admin-configurable "What's included" list (Configuration → Product Page
+  // Sections); the shipped defaults are the fallback.
+  const pdpContent = usePdpContent();
+  const includedItems =
+    pdpContent?.included?.filter((s) => s && s.trim()).slice(0, 6) ?? [
+      `Healthy ${name}`,
+      'Premium Designer Pot',
+      'PlantAtHome Care Guide',
+      'Nutrient Feed Pack',
+      'Premium Packaging',
+      'Plant Replacement Guarantee',
+    ];
 
   /* breadcrumb crumbs */
   const firstCat = categories?.[0];
@@ -258,50 +265,19 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     { label: name },
   ];
 
-  /* accordion */
+  /* quick-glance plant chips (plant business — pet/air/light/water up front).
+     Only REAL plant_attribute values render; nothing is invented. */
   const pa = (product as any)?.plant_attribute;
-  const careSpecs: { label: string; value?: string | null }[] = pa
-    ? [
-        { label: 'Sunlight', value: pa.sunlight },
-        { label: 'Water', value: pa.water_requirement },
-        { label: 'Temperature', value: pa.temperature_range ? `${pa.temperature_range} °C` : null },
-        { label: 'Placement', value: pa.indoor_outdoor },
-        { label: 'Height', value: pa.height_range },
-        { label: 'Growth rate', value: pa.growth_rate },
-        { label: 'Native region', value: pa.native_region },
-      ].filter((s) => s.value)
-    : [];
-
-  const accordionItems: AccordionItem[] = [];
-  if (content) {
-    accordionItems.push({
-      title: 'Description',
-      content: <ClampedDescription html={content} />,
-    });
+  const quickChips: { icon: string; label: string }[] = [];
+  if (pa) {
+    if (pa.pet_friendly != null)
+      quickChips.push({ icon: 'shield', label: pa.pet_friendly ? 'Pet friendly' : 'Keep from pets' });
+    if (pa.air_purifying) quickChips.push({ icon: 'leaf', label: 'Air purifying' });
+    if (pa.sunlight) quickChips.push({ icon: 'lotus', label: String(pa.sunlight).split(/[,/]/)[0].trim() });
+    if (pa.water_requirement)
+      quickChips.push({ icon: 'droplet', label: `${String(pa.water_requirement).split(/[,/]/)[0].trim()} water` });
+    if (pa.indoor_outdoor) quickChips.push({ icon: 'box', label: pa.indoor_outdoor });
   }
-  if (careSpecs.length) {
-    accordionItems.push({
-      title: 'Plant Care',
-      content: (
-        <dl className="grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
-          {careSpecs.map((s) => (
-            <div key={s.label} className="flex justify-between gap-4 border-b border-kraft-200/60 py-1.5 last:border-0">
-              <dt className="text-forest-800">{s.label}</dt>
-              <dd className="text-right font-medium text-stone-700">{s.value}</dd>
-            </div>
-          ))}
-        </dl>
-      ),
-    });
-  }
-  accordionItems.push({
-    title: 'Size Guide',
-    content: <p>We recommend choosing the larger size for a relaxed, comfortable fit and easy repotting room.</p>,
-  });
-  accordionItems.push({
-    title: 'Shipping Information',
-    content: <p>Carefully hand-packed and dispatched within 24–48 hours. Same-day delivery available in select cities. Every plant ships with a 30-day healthy-arrival guarantee.</p>,
-  });
 
   return (
     <article className="bg-cream-100">
@@ -328,63 +304,116 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
           </>
         )}
 
-        {/* main grid */}
-        <div className="mt-7 grid gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
-          <PlantAtHomeGallery gallery={previewImages} productId={id} productName={name} badge={badge} />
+        {/* main grid — media slightly dominant; gallery pins while the info
+            column scrolls (modern PDP convention). Sticky only outside the
+            quick-view modal (the modal has its own scroll context). */}
+        <div className="mt-7 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 xl:gap-16">
+          <div className={!isModal ? 'lg:sticky lg:top-24 lg:self-start' : undefined}>
+            <PlantAtHomeGallery gallery={previewImages} productId={id} productName={name} badge={badge} />
+          </div>
 
           {/* info panel — min-w-0 is load-bearing: as a grid item its default
               min-width:auto lets the pot-picker rail's intrinsic width inflate
               the whole column (pot toggle blew out to ~1400px when the pot
               list opened); min-w-0 keeps the rail scrolling inside instead. */}
           <div className="flex min-w-0 flex-col">
-            <h1
-              className={classNames(
-                // Body font, bold — names are distinguished by weight only
-                // (same pattern as the cards).
-                'text-[1.9rem] font-bold leading-[1.1] tracking-tight text-forest-900 sm:text-[2.3rem]',
-                { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
-              )}
-              {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
-            >
-              {name}
-            </h1>
+            {/* title row + wishlist heart */}
+            <div className="flex items-start justify-between gap-3">
+              <h1
+                className={classNames(
+                  // Body font, bold — names are distinguished by weight only
+                  // (same pattern as the cards).
+                  'min-w-0 text-[1.9rem] font-bold leading-[1.1] tracking-tight text-forest-900 sm:text-[2.3rem]',
+                  { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
+                )}
+                {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
+              >
+                {name}
+              </h1>
+              <button
+                type="button"
+                onClick={onWishlist}
+                aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#ECECEC] bg-white shadow-sm transition hover:scale-105"
+              >
+                <svg viewBox="0 0 24 24" fill={inWishlist ? '#C26B45' : 'none'} stroke={inWishlist ? '#C26B45' : '#374151'} strokeWidth="1.8" className="h-[21px] w-[21px]" aria-hidden>
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </button>
+            </div>
 
-            {/* rating row */}
+            {/* botanical subline */}
+            {(pa?.scientific_name || pa?.hindi_name) && (
+              <p className="mt-1.5 text-[15px] text-[#8A8A8A]">
+                {pa?.scientific_name}
+                {pa?.scientific_name && pa?.hindi_name ? ' · ' : ''}
+                {pa?.hindi_name}
+              </p>
+            )}
+
+            {/* REAL rating anchor → scrolls to reviews; "New" pill when unrated */}
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className={`grid h-[22px] w-[22px] place-items-center rounded-[5px] ${i < ratingInt ? 'bg-forest-600' : 'bg-forest-600/25'}`}>
-                    <Star className="h-3 w-3 text-white" />
+              {reviewCount > 0 ? (
+                <a href="#reviews" className="group flex items-center gap-2">
+                  <GoldStar className="h-[18px] w-[18px]" />
+                  <span className="text-[16px] font-semibold text-gray-900">{ratingVal.toFixed(1)}</span>
+                  <span className="text-[14px] text-stone-500 underline-offset-2 group-hover:underline">
+                    ({reviewCount.toLocaleString('en-IN')} review{reviewCount === 1 ? '' : 's'})
+                  </span>
+                </a>
+              ) : (
+                <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[12px] font-semibold text-forest-800">
+                  New arrival
+                </span>
+              )}
+            </div>
+
+            {/* quick-glance plant chips */}
+            {quickChips.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {quickChips.map((c) => (
+                  <span
+                    key={c.label}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3 py-1.5 text-[12.5px] font-semibold text-[#24693E]"
+                  >
+                    <LineIcon name={c.icon} className="h-3.5 w-3.5" />
+                    {c.label}
                   </span>
                 ))}
               </div>
-              <span className="text-[15px] text-stone-500">Loved by {trustCount}+ plant parents</span>
-            </div>
+            )}
 
             {/* price row */}
-            <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span className="text-base text-forest-900/90">Sale price:</span>
+            <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
               {needsSelection ? (
-                <span className="text-2xl font-bold text-forest-900">{minPrice} – {maxPrice}</span>
+                <span className="text-[26px] font-bold leading-none text-[#14532D]">{minPrice} – {maxPrice}</span>
               ) : (
                 <>
-                  <span className="text-2xl font-bold text-forest-900">{displayPrice}</span>
-                  {displayBasePrice && <del className="text-lg text-stone-400">{displayBasePrice}</del>}
-                  {!useVendorPrice && discount && <span className="text-lg font-semibold text-clay-600">{discount} Discount</span>}
+                  <span className="text-[28px] font-bold leading-none text-[#14532D]">{displayPrice}</span>
+                  {displayBasePrice && <del className="text-[16px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>}
+                  {!useVendorPrice && discount && (
+                    <span className="rounded-[8px] bg-[#FFEAEA] px-2.5 py-1 text-[13px] font-bold leading-none text-[#D73C3C]">
+                      {discount} OFF
+                    </span>
+                  )}
                 </>
               )}
             </div>
 
             <div className="mt-5 h-px w-full bg-kraft-300/70" />
 
-            {/* description */}
+            {/* short description (the ONLY teaser — full text lives in the
+                "Plant care & details" section below the fold) */}
             {content && (
               <div className="mt-5 react-editor-description text-[15px] leading-7 text-stone-600">
                 <Truncate character={180}>{content}</Truncate>
               </div>
             )}
 
-            <div className="mt-5 h-px w-full bg-kraft-300/70" />
+            {/* bundle contents — the real bundle_items (compact in quick view) */}
+            <div className="mt-5">
+              <BundleContents product={product} compact={isModal} />
+            </div>
 
             {/* variation pickers */}
             {hasVariations &&
@@ -443,20 +472,26 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 );
               })}
 
-            {/* Size Guide — per-product image uploaded in admin; shown inline when set.
-                Plain <img> (like the pot picker) so any chart shape renders at its
-                natural aspect ratio without next/image's fixed-dimension letterboxing. */}
-            {size_guide?.original && (
-              <div className="mt-6">
-                <p className="mb-3 text-base font-semibold capitalize text-forest-900">Size guide</p>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={size_guide.original}
-                  alt={`${name} size guide`}
-                  loading="lazy"
-                  className="h-auto w-full rounded-2xl border border-kraft-300/70 bg-white"
-                />
-              </div>
+            {/* Size Guide — per-product image behind a native disclosure so the
+                info column stays compact. Plain <img> (like the pot picker) so
+                any chart shape renders at its natural aspect ratio without
+                next/image's fixed-dimension letterboxing. Hidden in the modal. */}
+            {size_guide?.original && !isModal && (
+              <details className="group mt-6 rounded-[14px] border border-[#ECECEC] bg-white">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[15px] font-semibold text-forest-900 [&::-webkit-details-marker]:hidden">
+                  Size guide
+                  <LineIcon name="chevronRight" className="h-4 w-4 text-stone-400 transition-transform group-open:rotate-90" />
+                </summary>
+                <div className="px-4 pb-4">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={size_guide.original}
+                    alt={`${name} size guide`}
+                    loading="lazy"
+                    className="h-auto w-full rounded-2xl border border-kraft-300/70 bg-white"
+                  />
+                </div>
+              </details>
             )}
 
             {/* pot picker — plants only; pots are real products added as their
@@ -470,34 +505,25 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               />
             )}
 
-            {/* vendor availability ("we'll confirm within 6h" when cost = 0) */}
-            <VendorAvailabilityNote
-              productId={id}
-              variationOptionId={isSelected ? selectedVariation?.id : null}
-            />
+            {/* ONE coherent "Delivery & availability" card — merges the ETA
+                line, the vendor-availability note, the vertical-blocked and
+                browse-only notices that used to be four scattered rows. */}
+            <div className="mt-5">
+              <DeliveryCard
+                city={customerCity}
+                etaDays={fulfillment?.eta_days ?? null}
+                fulfillmentMode={fulfillment?.fulfillment_mode ?? null}
+                product={product}
+                variationOptionId={isSelected ? selectedVariation?.id ?? null : null}
+                verticalBlocked={verticalBlocked}
+                verticalMessage={verticalMessage}
+                displayOnly={displayOnly}
+              />
+            </div>
 
-            {/* Delivery timing — local same-city vs courier (never names the vendor) */}
-            {fulfillment?.eta_days != null && customerCity && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-forest-900">
-                <span aria-hidden>🚚</span>
-                <span>
-                  {fulfillment.fulfillment_mode === 'local' ? (
-                    <>
-                      <span className="font-semibold">Local delivery</span> to {customerCity} in{' '}
-                      ~{fulfillment.eta_days} day{fulfillment.eta_days === 1 ? '' : 's'}.
-                    </>
-                  ) : (
-                    <>
-                      Ships to {customerCity} by <span className="font-semibold">courier</span> in{' '}
-                      ~{fulfillment.eta_days} day{fulfillment.eta_days === 1 ? '' : 's'}.
-                    </>
-                  )}
-                </span>
-              </div>
-            )}
-
-            {/* quantity + add to cart */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+            {/* quantity + add to cart (the div is also the sticky-bar sentinel:
+                the condensed bar appears once this row scrolls above the fold) */}
+            <div ref={atcSentinelRef} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
               <div className="flex items-center justify-between gap-2 rounded-full border border-kraft-300 px-2 py-1.5 sm:w-[140px]">
                 <button
                   type="button"
@@ -524,33 +550,49 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               <button
                 type="button"
                 onClick={handleAdd}
-                disabled={!inStock || needsSelection || verticalBlocked || displayOnly}
+                disabled={ctaDisabled}
                 className={classNames(
-                  'flex flex-1 items-center justify-center gap-2.5 rounded-full px-7 py-3.5 text-base font-semibold text-white transition',
-                  !inStock || needsSelection || verticalBlocked || displayOnly
+                  'flex flex-1 items-center justify-center gap-2.5 rounded-[14px] px-7 py-3.5 text-base font-semibold text-white transition',
+                  ctaDisabled
                     ? 'cursor-not-allowed bg-stone-300'
-                    : 'bg-ds-btn shadow-[0_14px_30px_-12px_rgba(46,94,42,0.65)] hover:bg-ds-btn-hover',
+                    : 'bg-[#14532D] shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-[#0D4324]',
                 )}
               >
                 <Bag className="h-5 w-5" />
-                {displayOnly
-                  ? `Out of Stock in ${shoppingCity}`
-                  : verticalBlocked
-                  ? 'Unavailable in your city'
-                  : !inStock
-                  ? 'Out of Stock'
-                  : needsSelection
-                  ? 'Select Options'
-                  : 'Add to Cart'}
+                {ctaLabel}
               </button>
             </div>
 
-            {/* Operations Control Center — vertical paused/unavailable in city. */}
-            {verticalBlocked ? (
-              <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                {verticalMessage}
+            {/* trust strip — modern convention: guarantees directly under the CTA */}
+            {!isModal && (
+              <div className="mt-5 grid grid-cols-3 gap-2.5">
+                {[
+                  { icon: 'shield', label: '30-day healthy-arrival guarantee' },
+                  { icon: 'box', label: 'Secure eco-friendly packaging' },
+                  { icon: 'leaf', label: 'Expert plant support' },
+                ].map((t) => (
+                  <div key={t.label} className="flex flex-col items-center gap-1.5 rounded-[14px] border border-[#ECECEC] bg-white px-2 py-3 text-center">
+                    <LineIcon name={t.icon} className="h-5 w-5 text-[#24693E]" />
+                    <span className="text-[11px] font-medium leading-snug text-stone-600">{t.label}</span>
+                  </div>
+                ))}
               </div>
-            ) : null}
+            )}
+
+            {/* What's included — admin-configured list (Product Page Sections) */}
+            {!isModal && includedItems.length > 0 && (
+              <div className="mt-4 rounded-[14px] border border-[#ECECEC] bg-white p-4">
+                <h3 className="text-[15px] font-bold text-[#184A31]">What&rsquo;s included</h3>
+                <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
+                  {includedItems.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-[13.5px] text-stone-600">
+                      <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" strokeWidth={2.4} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Ask AI */}
             {askAiEnabled && (
@@ -565,54 +607,21 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
           </div>
         </div>
 
-        {/* additional information */}
-        {accordionItems.length > 0 && (
-          <div className="mt-14 grid gap-8 border-t border-kraft-300/70 pt-12 lg:mt-20 lg:grid-cols-[0.9fr_1.6fr] lg:gap-16 lg:pt-16">
-            <h2 className="font-cormorant text-[2rem] font-semibold leading-tight text-forest-900 sm:text-[2.5rem]">
-              Additional information
-            </h2>
-            <PlantAtHomeAccordion items={accordionItems} />
-          </div>
-        )}
       </div>
 
-      {/* Sticky mobile Add-to-Cart bar (Flipkart/Amazon-style). Sits just above the
-          app's bottom navigation (h-14) and is hidden on lg+ where the inline CTA
-          is always visible. Reuses the same handler + disabled states as the inline
-          button so behaviour can't drift. */}
-      <div className="fixed inset-x-0 bottom-14 z-20 flex items-center gap-3 border-t border-kraft-300/70 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_-16px_rgba(0,0,0,0.45)] backdrop-blur md:hidden">
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[11px] uppercase tracking-wide text-stone-400">
-            {product?.name}
-          </p>
-          <p className="text-lg font-semibold leading-tight text-forest-900">
-            {displayPrice}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={!inStock || needsSelection || verticalBlocked || displayOnly}
-          aria-label="Add to cart"
-          className={classNames(
-            'flex min-h-[44px] items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold text-white transition',
-            !inStock || needsSelection || verticalBlocked
-              ? 'cursor-not-allowed bg-stone-300'
-              : 'bg-ds-btn hover:bg-ds-btn-hover',
-          )}
-        >
-          <Bag className="h-4 w-4" />
-          {displayOnly
-            ? 'Out of Stock'
-            : verticalBlocked
-            ? 'Unavailable'
-            : !inStock
-            ? 'Out of Stock'
-            : needsSelection
-            ? 'Select Options'
-            : 'Add to Cart'}
-        </button>
-      </div>
+      {/* Scroll-triggered condensed ATC bar — appears only after the inline
+          CTA leaves the viewport; same computed state/copy as the inline
+          button (single source of truth). Never renders in the quick-view. */}
+      {!isModal && (
+        <StickyAtcBar
+          sentinel={atcSentinelRef}
+          name={name}
+          priceText={needsSelection ? `${minPrice} – ${maxPrice}` : displayPrice}
+          disabled={ctaDisabled}
+          label={ctaLabel}
+          onAdd={() => handleAdd(undefined as any)}
+        />
+      )}
     </article>
   );
 };

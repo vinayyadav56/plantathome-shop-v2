@@ -18,7 +18,8 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
   const [err, setErr] = useState<Record<number, boolean>>({});
 
   const mainSrc = images[active]?.original || images[active]?.thumbnail || '';
-  const thumbs = images.slice(0, 4);
+  // Every image gets a thumb — the strip scrolls (max-h + overflow-y below).
+  const thumbs = images;
 
   // FIXED height at lg (not h-auto): the media column must not stretch to
   // match the right column — opening the pot rail made the object-cover
@@ -54,10 +55,10 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
 
       {/* vertical thumbnail strip — outer (left) side.
           The 68px thumb upsize happens at lg, NOT sm: the container is only
-          380px tall from sm to lg, and 4 thumbs + the 360 button at 68px +
-          gaps + top offset = ~428px — the strip spilled ~48px past the gallery
-          onto the content below. At lg the container is ≥620px and 68px fits.
-          max-h + overflow-y is the belt-and-braces for many-image products. */}
+          380px tall from sm to lg, and several thumbs at 68px + gaps + top
+          offset spilled past the gallery onto the content below. At lg the
+          container is ≥620px and 68px fits. max-h + overflow-y keeps
+          many-image products scrolling inside the strip. */}
       <div className="absolute left-3 top-5 z-10 flex max-h-[calc(100%-2.5rem)] flex-col gap-2 overflow-y-auto sm:left-6 sm:top-10 lg:gap-3">
         {thumbs.map((img, i) => {
           const src = img.thumbnail || img.original || '';
@@ -81,20 +82,6 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
             </button>
           );
         })}
-
-        <button
-          type="button"
-          aria-label="360 degree view"
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-forest-900 text-white shadow-[0_8px_20px_-8px_rgba(34,48,26,0.5)] transition hover:bg-forest-800 lg:h-[68px] lg:w-[68px]"
-        >
-          <span className="flex flex-col items-center gap-0.5">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 12a9 9 0 1 0 3-6.7" />
-              <path d="M3 4v4h4" />
-            </svg>
-            <span className="text-[7px] font-semibold leading-none sm:text-[7.5px]">360° View</span>
-          </span>
-        </button>
       </div>
     </div>
   );

@@ -115,6 +115,26 @@ export function useGardenServiceContent(): GardenServiceContentConfig | null {
     null) as GardenServiceContentConfig | null;
 }
 
+/** Admin-editable Product Page sections (settings.options.pdpContent). */
+export type PdpImage = { original?: string; thumbnail?: string } | string | null;
+export type PdpContentConfig = {
+  /** "What's included" list shown on every product page — replaces the
+      built-in items when non-empty (key omitted → built-ins). */
+  included?: string[];
+  /** "Styled in Real Spaces" band — heading/subtitle + up to six photo tiles. */
+  styledSpaces?: {
+    heading?: string;
+    subtitle?: string;
+    tiles?: Array<{ image?: PdpImage; caption?: string }>;
+  };
+};
+
+/** Product page CMS block (mirrors useGiftingConfig). */
+export function usePdpContent(): PdpContentConfig | null {
+  const { settings } = useSettings() as any;
+  return (settings?.pdpContent ?? null) as PdpContentConfig | null;
+}
+
 /**
  * Admin-driven homepage config from settings.options (passthrough, no API change):
  * - banners: per-banner on/off flags (default ON when unset)

@@ -8,6 +8,11 @@
  * always-rendered components = infinite hydration-suspension loop under
  * React 19 — see P2). BookDetails (books-only, never this shop) stays lazy;
  * CartCounterButton stays {ssr:false}.
+ *
+ * Modern PDP order (2026-07 reorg): details (sticky gallery + info column)
+ * → Frequently Bought Together (real data) → Plant care & details (merged
+ * description/specs/video) → Styled Spaces (admin-config) → Reviews →
+ * Q&A → You May Also Like last.
  */
 
 import Link from 'next/link';
@@ -15,6 +20,7 @@ import { getLayout } from '@/components/layouts/layout';
 import { AttributesProvider } from '@/components/products/details/attributes.context';
 import Seo from '@/components/seo/seo';
 import { useWindowSize } from '@/lib/use-window-size';
+import { useSanitizeContent } from '@/lib/sanitize-content';
 import ProductQuestions from '@/components/questions/product-questions';
 import ProductReviews from '@/components/reviews/product-reviews';
 import isEmpty from 'lodash/isEmpty';
@@ -22,20 +28,24 @@ import dynamic from 'next/dynamic';
 
 import PlantAtHomeProductDetails from '@/components/products/details/plantathome-details';
 import ProductCard from '@/components/products/cards/card';
-import AboutIncluded from '@/components/products/details/plantathome/about-included';
-import CareGuide from '@/components/products/details/plantathome/care-guide';
 import StyledSpaces from '@/components/products/details/plantathome/styled-spaces';
 import FrequentlyBoughtTogether from '@/components/products/details/plantathome/frequently-bought-together';
-import WhyPlantAtHome from '@/components/products/details/plantathome/why-plantathome';
+import PlantCareSection from '@/components/products/details/plantathome/plant-care-section';
 
 const BookDetails = dynamic(() => import('@/components/products/details/book-details'));
 const CartCounterButton = dynamic(() => import('@/components/cart/cart-counter-button'), { ssr: false });
+
+/** One container class everywhere — the old page mixed three padding systems. */
+const CONTAINER = 'mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10';
 
 const ProductPage = ({ product }: any) => {
   const { width } = useWindowSize();
   const related = (product?.related_products ?? []).filter(
     (r: any) => r.id !== product.id
   );
+  // Same sanitizer the details panel uses — PlantCareSection receives
+  // ready-to-render HTML.
+  const contentHtml = useSanitizeContent({ description: product?.description ?? '' });
 
   return (
     <>
@@ -45,27 +55,49 @@ const ProductPage = ({ product }: any) => {
         images={!isEmpty(product?.image) ? [product.image] : []}
       />
       <AttributesProvider>
-        <div className="min-h-screen overflow-x-hidden bg-[#FAF8F2]">
+        {/* overflow-x-CLIP (not hidden): hidden creates a scroll container and
+            silently disables position:sticky for every descendant — the
+            sticky gallery depends on this. */}
+        <div className="min-h-screen overflow-x-clip bg-[#FAF8F2]">
           {product.type?.slug === 'books' ? (
             <BookDetails product={product} />
           ) : (
             <>
               <PlantAtHomeProductDetails product={product} />
 
-              {/* Frequently Bought Together + Why PlantAtHome */}
+              {/* Frequently Bought Together — REAL addons/related data */}
               <section className="bg-[#FAF8F2]">
-                <div className="mx-auto grid max-w-7xl gap-5 px-5 pb-2 pt-6 sm:px-8 lg:px-16 lg:grid-cols-2">
+                <div className={`${CONTAINER} pb-2 pt-6`}>
                   <FrequentlyBoughtTogether product={product} />
-                  <WhyPlantAtHome />
                 </div>
               </section>
 
-              {/* You May Also Like */}
+              {/* Plant care & details — merged description/specs/badges/video */}
+              <section className="bg-white">
+                <div className={`${CONTAINER} py-10`} id="care">
+                  <PlantCareSection product={product} contentHtml={contentHtml || null} />
+                </div>
+              </section>
+
+              {/* Styled in Real Spaces — admin-configurable (Product Page Sections) */}
+              <StyledSpaces />
+
+              {/* social proof before related — modern PDP order */}
+              <ProductReviews
+                productId={product?.id}
+                productType={product?.type?.slug}
+                ratings={Number(product?.ratings) || 0}
+                totalReviews={Number(product?.total_reviews) || 0}
+                ratingCount={product?.rating_count}
+              />
+              <ProductQuestions productId={product?.id} shopId={product?.shop?.id} productType={product?.type?.slug} />
+
+              {/* You May Also Like — last */}
               {related.length > 0 && (
                 <section className="bg-[#FAF8F2]">
-                  <div className="mx-auto max-w-7xl px-5 py-9 sm:px-8 lg:px-16">
+                  <div className={`${CONTAINER} py-9`}>
                     <div className="mb-6 flex items-center justify-between">
-                      <h2 className="font-poppins flex items-center gap-2 text-[1.4rem] font-bold text-forest-700">
+                      <h2 className="flex items-center gap-2 text-[1.4rem] font-bold text-forest-700">
                         You May Also Like
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-forest-500"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" /><path d="M2 21c0-3 1.85-5.36 5.08-6" /></svg>
                       </h2>
@@ -82,19 +114,6 @@ const ProductPage = ({ product }: any) => {
                   </div>
                 </section>
               )}
-
-              {/* About / Video / What's Included */}
-              <AboutIncluded product={product} content={product?.description} />
-
-              {/* Care Guide */}
-              <CareGuide pa={product?.plant_attribute} />
-
-              {/* Styled in Real Spaces */}
-              <StyledSpaces />
-
-              {/* functional reviews + questions (kept) */}
-              <ProductReviews productId={product?.id} productType={product?.type?.slug} />
-              <ProductQuestions productId={product?.id} shopId={product?.shop?.id} productType={product?.type?.slug} />
             </>
           )}
         </div>
