@@ -82,6 +82,39 @@ export function useGiftingConfig(): GiftingContentConfig | null {
   return (settings?.giftingContent ?? null) as GiftingContentConfig | null;
 }
 
+/** Admin-editable Garden Service page content (settings.options.gardenServiceContent).
+    Every field overlays the built-in copy per-value — blank keeps the built-in. */
+export type GardenServiceContentConfig = {
+  hero?: {
+    image?: GiftingImage;
+    headline?: string;
+    subheadline?: string;
+  };
+  /** Up to 4 stat tiles in the band under the hero (per-index overlay). */
+  stats?: Array<{ value?: string; label?: string }>;
+  /** The 3 "How it works" steps (per-index overlay; icons stay built-in). */
+  steps?: Array<{ title?: string; body?: string; image?: GiftingImage }>;
+  /** The 4 "Everything's included" cards (per-index overlay; icons stay built-in). */
+  features?: Array<{ title?: string; body?: string }>;
+  /** Before/After photos + the 3-image strip under them (per-index overlay). */
+  gallery?: {
+    before?: GiftingImage;
+    after?: GiftingImage;
+    images?: Array<GiftingImage>;
+  };
+  /** When non-empty, replaces the built-in testimonial set. */
+  testimonials?: Array<{ quote?: string; name?: string; city?: string }>;
+  /** When non-empty, replaces the built-in FAQ set. */
+  faq?: Array<{ q?: string; a?: string }>;
+};
+
+/** Garden Service page CMS block (mirrors useGiftingConfig). */
+export function useGardenServiceContent(): GardenServiceContentConfig | null {
+  const { settings } = useSettings() as any;
+  return (settings?.gardenServiceContent ??
+    null) as GardenServiceContentConfig | null;
+}
+
 /**
  * Admin-driven homepage config from settings.options (passthrough, no API change):
  * - banners: per-banner on/off flags (default ON when unset)

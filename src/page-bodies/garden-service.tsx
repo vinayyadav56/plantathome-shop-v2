@@ -11,7 +11,11 @@ import StateCitySelect from '@/components/location/state-city-select';
 import LineIcon from '@/components/icons/line-icons';
 import { GsIcon, GoldStar } from '@/components/garden-service/icons';
 import { EXPO } from '@/components/storefront/motion';
+import { useGardenServiceContent, resolveImageUrl } from '@/lib/use-home-config';
 
+/* Admin overlay helper (same idiom as sections/hero.tsx homeHero). */
+const str = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() ? v.trim() : undefined;
 
 const PHONE = '+918000000000';
 const GARDEN_TYPES = ['Balcony', 'Terrace', 'Backyard', 'Indoor', 'Rooftop'];
@@ -35,6 +39,23 @@ const TESTIMONIALS = [
   { name: 'Rohan M.', city: 'Mumbai', quote: 'They designed a terrace garden around my budget. Setup was spotless and the plants are thriving.' },
   { name: 'Priya S.', city: 'Delhi', quote: 'Best decision. The package had everything and I can track every visit in my account.' },
 ];
+
+const DEFAULT_HERO_IMG = '/images/garden/hero.jpg';
+const DEFAULT_HERO_SUB =
+  'Balcony, terrace or backyard — we design, plant and maintain a beautiful green space tailored to you. Plants, soil, tools and a gardener who visits, all in one considered package.';
+
+const DEFAULT_STATS: Array<[string, string]> = [
+  ['2,000+', 'Gardens delivered'],
+  ['4.9 / 5', 'Average rating'],
+  ['100%', 'Plant-health guarantee'],
+  ['Same-day', 'Metro delivery'],
+];
+
+const DEFAULT_GALLERY = {
+  before: '/images/garden/before.jpg',
+  after: '/images/garden/after.jpg',
+  strip: ['/images/garden/g1.jpg', '/images/garden/g2.jpg', '/images/garden/g3.jpg'],
+};
 
 const FAQS = [
   { q: 'Do you build gardens for small balconies and apartments?', a: 'Absolutely. Most of our gardens are for balconies, terraces and small urban spaces. Every package is sized to your space.' },
@@ -224,6 +245,64 @@ export default function GardenServicePage() {
   const templates = data?.data ?? [];
   const fmt = (n: number) => '₹' + Number(n).toLocaleString('en-IN');
 
+  // Admin overlay (Configuration → Garden Service Page) — every value falls
+  // back to the built-in content when unset. Settings are SSR-prefetched, so
+  // reading during render is hydration-safe (no flash, no mounted gate).
+  const cfg = useGardenServiceContent();
+
+  const heroImg = resolveImageUrl(cfg?.hero?.image ?? null) || DEFAULT_HERO_IMG;
+  const heroHeadline = str(cfg?.hero?.headline);
+  const heroSub = str(cfg?.hero?.subheadline) ?? DEFAULT_HERO_SUB;
+
+  const statsCfg = Array.isArray(cfg?.stats) ? cfg!.stats! : [];
+  const stats = DEFAULT_STATS.map(([value, label], i) => [
+    str(statsCfg[i]?.value) ?? value,
+    str(statsCfg[i]?.label) ?? label,
+  ]);
+
+  const stepsCfg = Array.isArray(cfg?.steps) ? cfg!.steps! : [];
+  const steps = STEPS.map((s, i) => ({
+    ...s,
+    img: resolveImageUrl(stepsCfg[i]?.image ?? null) || s.img,
+    title: str(stepsCfg[i]?.title) ?? s.title,
+    text: str(stepsCfg[i]?.body) ?? s.text,
+  }));
+
+  const featuresCfg = Array.isArray(cfg?.features) ? cfg!.features! : [];
+  const included = INCLUDED.map((f, i) => ({
+    ...f,
+    title: str(featuresCfg[i]?.title) ?? f.title,
+    text: str(featuresCfg[i]?.body) ?? f.text,
+  }));
+
+  const beforeImg =
+    resolveImageUrl(cfg?.gallery?.before ?? null) || DEFAULT_GALLERY.before;
+  const afterImg =
+    resolveImageUrl(cfg?.gallery?.after ?? null) || DEFAULT_GALLERY.after;
+  const stripCfg = Array.isArray(cfg?.gallery?.images)
+    ? cfg!.gallery!.images!
+    : [];
+  const strip = DEFAULT_GALLERY.strip.map(
+    (src, i) => resolveImageUrl(stripCfg[i] ?? null) || src,
+  );
+
+  // Arrays with entries REPLACE the built-in sets; empty/absent = built-ins.
+  const testimonialsCfg = (
+    Array.isArray(cfg?.testimonials) ? cfg!.testimonials! : []
+  )
+    .map((t) => ({
+      quote: str(t?.quote) ?? '',
+      name: str(t?.name) ?? '',
+      city: str(t?.city) ?? '',
+    }))
+    .filter((t) => t.quote || t.name);
+  const testimonials = testimonialsCfg.length ? testimonialsCfg : TESTIMONIALS;
+
+  const faqCfg = (Array.isArray(cfg?.faq) ? cfg!.faq! : [])
+    .map((f) => ({ q: str(f?.q) ?? '', a: str(f?.a) ?? '' }))
+    .filter((f) => f.q && f.a);
+  const faqs = faqCfg.length ? faqCfg : FAQS;
+
   return (
     <div className="bg-[#FAF9F6]">
       <Seo
@@ -234,7 +313,7 @@ export default function GardenServicePage() {
 
       {/* ── HERO — full-bleed photo, forest scrim, lead form above the fold ── */}
       <section className="relative isolate overflow-hidden bg-[#16301A]">
-        <img src="/images/garden/hero.jpg" alt="Lush bespoke home garden" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={heroImg} alt="Lush bespoke home garden" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-[linear-gradient(100deg,rgba(8,22,11,0.95)_0%,rgba(14,36,19,0.85)_42%,rgba(22,48,26,0.45)_100%)]" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0B2012]/80 to-transparent" />
         <div
@@ -246,15 +325,17 @@ export default function GardenServicePage() {
           <div className="text-white">
             <Eyebrow dark>Bespoke home gardens</Eyebrow>
             <h1 className="mt-6 text-[34px] font-bold leading-[1.1] tracking-[-0.015em] sm:text-[46px] lg:text-[52px]">
-              A thriving garden,
-              <br />
-              designed, planted &{' '}
-              <span className="text-[#E3CE97]">cared for by experts</span>
+              {heroHeadline ?? (
+                <>
+                  A thriving garden,
+                  <br />
+                  designed, planted &{' '}
+                  <span className="text-[#E3CE97]">cared for by experts</span>
+                </>
+              )}
             </h1>
             <p className="mt-5 max-w-xl text-[16px] leading-[1.65] text-white/80 sm:text-[17px]">
-              Balcony, terrace or backyard — we design, plant and maintain a beautiful green
-              space tailored to you. Plants, soil, tools and a gardener who visits, all in one
-              considered package.
+              {heroSub}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
@@ -296,13 +377,8 @@ export default function GardenServicePage() {
       {/* ── STATS BAND ── */}
       <section className="border-b border-[#ECECEC] bg-[#F4F1EA]">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-5 py-9 text-center sm:px-8 md:grid-cols-4 md:divide-x md:divide-[#E0DBCE]">
-          {[
-            ['2,000+', 'Gardens delivered'],
-            ['4.9 / 5', 'Average rating'],
-            ['100%', 'Plant-health guarantee'],
-            ['Same-day', 'Metro delivery'],
-          ].map(([a, b]) => (
-            <div key={b} className="px-4">
+          {stats.map(([a, b], i) => (
+            <div key={i} className="px-4">
               <div className="text-[26px] font-bold leading-none tracking-[-0.01em] text-[#184A31] sm:text-[30px]">{a}</div>
               <div className="mt-2 text-[13px] text-[#8A8A8A]">{b}</div>
             </div>
@@ -318,8 +394,8 @@ export default function GardenServicePage() {
           sub="Three simple steps — you share, we design, we plant and maintain."
         />
         <div className="mt-12 grid gap-7 md:grid-cols-3">
-          {STEPS.map((s, i) => (
-            <motion.div key={s.title} {...reveal(i * 0.08)} className={`group overflow-hidden ${CARD} ${CARD_HOVER}`}>
+          {steps.map((s, i) => (
+            <motion.div key={i} {...reveal(i * 0.08)} className={`group overflow-hidden ${CARD} ${CARD_HOVER}`}>
               <div className="relative h-48 overflow-hidden bg-[#F7F5EF]">
                 <img
                   src={s.img}
@@ -353,9 +429,9 @@ export default function GardenServicePage() {
             sub="One package, zero hassle. We bring the green thumb."
           />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {INCLUDED.map((f, i) => (
+            {included.map((f, i) => (
               <motion.div
-                key={f.title}
+                key={i}
                 {...reveal(i * 0.06)}
                 className={`${CARD} ${CARD_HOVER} p-7 transition-transform duration-300 hover:-translate-y-1.5`}
               >
@@ -379,8 +455,8 @@ export default function GardenServicePage() {
         />
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {[
-            { img: '/images/garden/before.jpg', label: 'Before', chip: 'bg-[#16301A]/85 text-white/90' },
-            { img: '/images/garden/after.jpg', label: 'After', chip: 'bg-[#14532D] text-white' },
+            { img: beforeImg, label: 'Before', chip: 'bg-[#16301A]/85 text-white/90' },
+            { img: afterImg, label: 'After', chip: 'bg-[#14532D] text-white' },
           ].map((f, i) => (
             <motion.figure key={f.label} {...reveal(i * 0.08)} className={`relative overflow-hidden ${CARD}`}>
               <img src={f.img} alt={`${f.label} the garden makeover`} className="h-72 w-full object-cover sm:h-80" />
@@ -391,8 +467,8 @@ export default function GardenServicePage() {
           ))}
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 sm:gap-6">
-          {['/images/garden/g1.jpg', '/images/garden/g2.jpg', '/images/garden/g3.jpg'].map((src, i) => (
-            <motion.div key={src} {...reveal(0.1 + i * 0.06)} className="overflow-hidden rounded-[18px] border border-[#ECECEC] shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+          {strip.map((src, i) => (
+            <motion.div key={i} {...reveal(0.1 + i * 0.06)} className="overflow-hidden rounded-[18px] border border-[#ECECEC] shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
               <img src={src} alt="A recent PlantAtHome garden project" className="h-32 w-full object-cover sm:h-44" />
             </motion.div>
           ))}
@@ -497,8 +573,8 @@ export default function GardenServicePage() {
           sub="Real homes, real gardens — and owners who barely lift a finger."
         />
         <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {TESTIMONIALS.map((tm, i) => (
-            <motion.figure key={tm.name} {...reveal(i * 0.07)} className={`${CARD} ${CARD_HOVER} flex h-full flex-col p-7`}>
+          {testimonials.map((tm, i) => (
+            <motion.figure key={i} {...reveal(i * 0.07)} className={`${CARD} ${CARD_HOVER} flex h-full flex-col p-7`}>
               <div className="flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, s) => <GoldStar key={s} />)}
               </div>
@@ -527,8 +603,8 @@ export default function GardenServicePage() {
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
           <SectionHead eyebrow="Good to know" title="Questions, answered" />
           <div className="mt-10 space-y-3.5">
-            {FAQS.map((f, i) => (
-              <motion.details key={f.q} {...reveal(i * 0.04)} className={`group ${CARD} p-5 sm:p-6`}>
+            {faqs.map((f, i) => (
+              <motion.details key={i} {...reveal(i * 0.04)} className={`group ${CARD} p-5 sm:p-6`}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-[#184A31] [&::-webkit-details-marker]:hidden">
                   {f.q}
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#F3F8EC] text-[#24693E] transition-transform duration-300 group-open:rotate-180">
