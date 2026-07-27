@@ -104,6 +104,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
     baseAmount: product.price,
   });
   const { price: minPrice } = usePrice({ amount: product.min_price });
+  const { price: maxPrice } = usePrice({ amount: product.max_price });
+  const hasRange =
+    Number(product.max_price) > Number(product.min_price) && Number(product.min_price) > 0;
 
   const badge = getCardBadge(product);
   const ratingVal = Number((product as any).ratings) || 0;
@@ -221,8 +224,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
 
       </div>
 
-      {/* content (reference .content: 24px padding) */}
-      <div className="flex flex-1 flex-col p-6">
+      {/* content (reference .content: 24px padding; slightly tighter in-grid) */}
+      <div className="flex flex-1 flex-col p-5">
         {/* title row */}
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -261,8 +264,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
         </div>
 
         {/* description — Inter 17px (15px mobile), #5B5B5B, lh 1.6; 2-line
-            clamp with fixed min-height so grid rows stay aligned */}
-        <p className="mb-[22px] mt-[18px] min-h-[48px] text-[15px] leading-[1.6] text-[#5B5B5B] line-clamp-2 sm:min-h-[54px] sm:text-[17px]">
+            clamp with fixed min-height so grid rows stay aligned. Vertical
+            margins are tighter than the reference's standalone card — inside a
+            grid the full 18/22px rhythm made cards run too long. */}
+        <p className="mb-3.5 mt-2.5 min-h-[48px] text-[15px] leading-[1.6] text-[#5B5B5B] line-clamp-2 sm:min-h-[54px] sm:text-[17px]">
           {desc}
         </p>
 
@@ -270,11 +275,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
           {/* price row — 34px (28px mobile) #14532D · struck 18px #A0A0A0 ·
               chip #FFEAEA / #D73C3C */}
           <div className="flex flex-wrap items-center gap-x-[14px] gap-y-1">
-            {isVariable && (
-              <span className="text-[11px] uppercase tracking-[0.14em] text-stone-400">from</span>
-            )}
-            <span className="text-[28px] font-bold leading-none text-[#14532D] sm:text-[34px]">
-              {isVariable ? minPrice : price}
+            {/* variable products show the size range min–max */}
+            <span className={`font-bold leading-none text-[#14532D] ${isVariable && hasRange ? 'text-[22px] sm:text-[26px]' : 'text-[28px] sm:text-[34px]'}`}>
+              {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}
             </span>
             {!isVariable && basePrice && (
               <del className="text-[18px] leading-none text-[#A0A0A0]">{basePrice}</del>
@@ -289,7 +292,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           {/* delivery band — #F3F8EC / #24693E, truck + copy. 16px at the
               reference's 390px card width; steps down inside narrower grid
               cells so it never wraps. */}
-          <div className="my-5 flex items-center gap-2.5 whitespace-nowrap rounded-[12px] bg-[#F3F8EC] px-4 py-[14px] text-[14px] font-semibold leading-none text-[#24693E] sm:my-6 xl:text-[15px] min-[1450px]:text-[16px]">
+          <div className="my-4 flex items-center gap-2.5 whitespace-nowrap rounded-[12px] bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-none text-[#24693E] xl:text-[15px] min-[1450px]:text-[16px]">
             <TruckIcon />
             Free Delivery&nbsp;|&nbsp;2–4 Days
           </div>

@@ -8,17 +8,23 @@ import { useHomeConfig } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
 
 /** Icon presets selectable from the admin Why-Plants editor (iconKey).
- *  Font Awesome solids (loaded in _document) — premium filled look; the admin
- *  keys are unchanged so saved CMS cards keep working. */
+ *  Inline SVG line icons — the old Font Awesome <i> tags depended on a
+ *  stylesheet the App Router build never loads, so they rendered as empty
+ *  circles. Admin keys are unchanged so saved CMS cards keep working. */
+const whyIcon = (paths: React.ReactNode) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[22px] w-[22px]">
+    {paths}
+  </svg>
+);
 export const WHY_ICONS: Record<string, React.ReactNode> = {
-  air: <i className="fa-solid fa-wind text-[20px]" aria-hidden />,
-  stress: <i className="fa-solid fa-heart text-[20px]" aria-hidden />,
-  productivity: <i className="fa-solid fa-arrow-trend-up text-[19px]" aria-hidden />,
-  humidity: <i className="fa-solid fa-droplet text-[20px]" aria-hidden />,
-  noise: <i className="fa-solid fa-volume-xmark text-[19px]" aria-hidden />,
-  planet: <i className="fa-solid fa-earth-asia text-[20px]" aria-hidden />,
-  leaf: <i className="fa-solid fa-leaf text-[20px]" aria-hidden />,
-  heart: <i className="fa-solid fa-heart text-[20px]" aria-hidden />,
+  air: whyIcon(<><path d="M9.6 4.6A2 2 0 1 1 11 8H2" /><path d="M12.6 19.4A2 2 0 1 0 14 16H2" /><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" /></>),
+  stress: whyIcon(<path d="M19 14c1.5-1.4 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.1 3 5.5l7 7z" />),
+  productivity: whyIcon(<><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></>),
+  humidity: whyIcon(<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />),
+  noise: whyIcon(<><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></>),
+  planet: whyIcon(<><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>),
+  leaf: whyIcon(<><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" /><path d="M2 21c0-3 1.85-5.36 5.08-6" /></>),
+  heart: whyIcon(<path d="M19 14c1.5-1.4 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.1 3 5.5l7 7z" />),
 };
 
 const BENEFITS: { title: string; body: string; img: string; iconKey: string }[] = [

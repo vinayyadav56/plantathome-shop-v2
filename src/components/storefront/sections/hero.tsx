@@ -46,7 +46,7 @@ export function Hero({
   const cardB = useTransform(scrollYProgress, [0, 1], [0, 60]);
 
   return (
-    <section ref={ref} className="relative h-[72svh] min-h-[520px] w-full overflow-hidden lg:h-[78svh]">
+    <section ref={ref} className="relative h-[54svh] min-h-[440px] w-full overflow-hidden lg:h-[60svh]">
       <motion.div style={{ y: bgY, scale: bgScale }} className="absolute inset-0">
         <KenBurns images={heroScenes} interval={6} />
       </motion.div>

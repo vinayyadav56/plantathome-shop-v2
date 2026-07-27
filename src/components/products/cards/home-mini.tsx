@@ -7,7 +7,7 @@ import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
 import usePrice from '@/lib/use-price';
-import { getCardBadge } from '@/components/products/cards/card-helpers';
+import { getCardBadge, shortDescription } from '@/components/products/cards/card-helpers';
 import type { Product } from '@/types';
 
 const AddToCart = dynamic(
@@ -36,6 +36,9 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
     baseAmount: product.price,
   });
   const { price: minPrice } = usePrice({ amount: product.min_price });
+  const { price: maxPrice } = usePrice({ amount: product.max_price });
+  const hasRange =
+    Number(product.max_price) > Number(product.min_price) && Number(product.min_price) > 0;
 
   const rating = Number((product as any).ratings) || 0;
   const count = Number((product as any).total_reviews) || 0;
@@ -102,39 +105,46 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
         </button>
       </div>
 
-      {/* body */}
+      {/* body — rating sits top-right of this section (like the big card);
+          the line under the name is a short plant blurb, never "New" */}
       <div className="flex flex-1 flex-col p-3">
-        <button
-          type="button"
-          onClick={handleQuickView}
-          className="truncate text-left font-heading text-[17px] font-bold leading-[1.15] text-[#1D4D35]"
-        >
-          {product.name}
-        </button>
+        <div className="flex items-start justify-between gap-2">
+          <button
+            type="button"
+            onClick={handleQuickView}
+            className="min-w-0 truncate text-left font-heading text-[17px] font-bold leading-[1.15] text-[#1D4D35]"
+          >
+            {product.name}
+          </button>
+          {count > 0 ? (
+            <span className="flex shrink-0 items-center gap-1 pt-0.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#FDBA12" aria-hidden>
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span className="text-[12px] font-semibold leading-none text-gray-900">
+                {rating.toFixed(1)}
+              </span>
+            </span>
+          ) : null}
+        </div>
         {sciName ? (
           <p className="mt-0.5 truncate text-[11px] text-[#6B7280]">{sciName}</p>
         ) : null}
+        <p className="mt-1 line-clamp-1 text-[11.5px] leading-[1.5] text-stone-500">
+          {shortDescription(product)}
+        </p>
 
-        {/* rating */}
-        <div className="mt-1 flex items-center gap-1 text-[11.5px] font-medium text-stone-500">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="#EAB308" stroke="#EAB308" strokeWidth="1.4" aria-hidden>
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-          </svg>
-          {rating > 0 ? <span className="text-forest-900">{rating.toFixed(1)}</span> : null}
-          <span>{count > 0 ? `(${count.toLocaleString('en-IN')})` : 'New'}</span>
-        </div>
-
-        {/* price + cart */}
+        {/* price + cart — variable products show the size range min–max */}
         <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
           <span className="flex min-w-0 flex-wrap items-center gap-1.5">
-            <span className="text-[17px] font-bold leading-none text-[#14532D]">
-              {isVariable ? minPrice : price}
+            <span className="text-[15.5px] font-bold leading-none text-[#14532D]">
+              {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}
             </span>
             {!isVariable && basePrice && (
               <del className="text-[11px] font-medium leading-none text-[#9CA3AF]">{basePrice}</del>
             )}
             {!isVariable && discount && (
-              <span className="rounded-md bg-[#DC2626] px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+              <span className="rounded-md bg-[#FFEAEA] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#D73C3C]">
                 {discount} OFF
               </span>
             )}

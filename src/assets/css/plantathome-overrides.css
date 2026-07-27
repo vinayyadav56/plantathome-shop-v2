@@ -110,11 +110,20 @@ body {
   line-height: 1.6;
 }
 
+/* Headings use the BODY font sitewide — weight and color carry the hierarchy
+   (user pattern, 2026-07-27). The display serif (--font-heading) is reserved
+   for PRODUCT NAMES and deliberate brand moments via .font-display-serif or a
+   font-heading class on non-heading elements (card names are <button>s). */
 h1, h2, h3, h4, h5 {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-body) !important;
   letter-spacing: 0;
   line-height: 1.08;
   font-weight: 600;
+}
+/* Opt-in serif for headings that ARE product names (e.g. the PDP h1). Beats
+   the body rule above at equal importance via source order. */
+.font-display-serif {
+  font-family: var(--font-heading) !important;
 }
 /* Profile-picture uploader — frame the generic FileInput dropzone into a
    compact sage-tinted card matching the account "Profile Picture" reference. */

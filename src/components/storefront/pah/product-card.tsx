@@ -115,7 +115,7 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="font-hanken text-[15px] font-semibold tabular-nums text-[#14532D]">{rupee(price)}</span>
             {mrp ? <span className="text-[11px] font-medium text-[#9CA3AF] line-through">{rupee(mrp)}</span> : null}
             {offPct > 0 ? (
-              <span className="rounded bg-[#DC2626] px-1 py-0.5 text-[9px] font-bold leading-none text-white">{offPct}%</span>
+              <span className="rounded bg-[#FFEAEA] px-1 py-0.5 text-[9px] font-bold leading-none text-[#D73C3C]">{offPct}%</span>
             ) : null}
           </div>
           <button

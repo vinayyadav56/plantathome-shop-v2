@@ -339,7 +339,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
           <div className="flex min-w-0 flex-col">
             <h1
               className={classNames(
-                'font-cormorant text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-forest-900 sm:text-[3rem]',
+                // font-display-serif: PRODUCT NAMES keep the display serif even
+                // though headings sitewide use the body font.
+                'font-display-serif text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-forest-900 sm:text-[3rem]',
                 { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
               )}
               {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
