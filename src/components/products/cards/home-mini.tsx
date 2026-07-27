@@ -112,7 +112,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
           <button
             type="button"
             onClick={handleQuickView}
-            className="min-w-0 truncate text-left font-heading text-[17px] font-bold leading-[1.15] text-[#1D4D35]"
+            className="min-w-0 truncate text-left text-[15px] font-bold leading-[1.2] text-[#1D4D35]"
           >
             {product.name}
           </button>
@@ -137,7 +137,11 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
         {/* price + cart — variable products show the size range min–max */}
         <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
           <span className="flex min-w-0 flex-wrap items-center gap-1.5">
-            <span className="text-[15.5px] font-bold leading-none text-[#14532D]">
+            <span
+              className={`whitespace-nowrap leading-none text-[#14532D] ${
+                isVariable && hasRange ? 'text-[13px] font-semibold' : 'text-[15.5px] font-bold'
+              }`}
+            >
               {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}
             </span>
             {!isVariable && basePrice && (

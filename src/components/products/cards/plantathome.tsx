@@ -152,7 +152,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
       data-product-card
       whileHover={{ y: -8 }}
       transition={{ duration: 0.35 }}
-      className={`group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${className}`}
+      // container-type makes every size inside scale with the CARD's width
+      // (cqw units): full reference sizes at its native 390px, fluidly smaller
+      // in dense grids (search page cells are ~230px) — nothing truncates or
+      // wraps at any grid density.
+      className={`group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${className}`}
     >
       {/* image zone (reference .image: #F7F5EF, zoom on hover) */}
       <div className="relative">
@@ -173,13 +177,13 @@ const PlantAtHomeCard: React.FC<Props> = ({
             className="object-cover transition duration-[450ms] ease-out group-hover:scale-[1.04]"
           />
         ) : (
-          /* Designed no-image state: soft wash, line-art plant, serif heading */
-          <span className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 px-5 text-center">
-            <PlantMark className="h-16 w-16 text-forest-800/35" />
-            <span className="font-heading text-[20px] font-bold leading-tight text-forest-900/80">
+          /* Designed no-image state: soft wash, line-art plant, heading */
+          <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-5 text-center">
+            <PlantMark className="h-[clamp(44px,18cqw,64px)] w-[clamp(44px,18cqw,64px)] text-forest-800/35" />
+            <span className="text-[clamp(14px,5.6cqw,19px)] font-bold leading-tight text-forest-900/80">
               No Image Available
             </span>
-            <span className="max-w-[200px] text-[12px] leading-snug text-stone-500">
+            <span className="max-w-[200px] text-[clamp(10.5px,3.8cqw,12px)] leading-snug text-stone-500">
               We&rsquo;re working on adding a beautiful image for this plant.
             </span>
           </span>
@@ -187,11 +191,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
 
         {/* badge (reference: #1C5E3C rounded-rect, 14px/600, 18px inset) */}
         {noImage ? (
-          <span className="absolute left-[18px] top-[18px] z-10 rounded-[10px] bg-[#1C5E3C] px-[15px] py-2 text-[14px] font-semibold leading-none text-white">
+          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
             No Image
           </span>
         ) : badge ? (
-          <span className="absolute left-[18px] top-[18px] z-10 rounded-[10px] bg-[#1C5E3C] px-[15px] py-2 text-[14px] font-semibold leading-none text-white">
+          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
             {badge}
           </span>
         ) : null}
@@ -201,14 +205,15 @@ const PlantAtHomeCard: React.FC<Props> = ({
         <button
           type="button"
           onClick={handleWishlist}
-          className="absolute right-[18px] top-[18px] z-10 grid h-12 w-12 place-items-center rounded-full bg-white shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition hover:scale-110"
+          className="absolute right-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 grid h-[clamp(38px,12.4cqw,48px)] w-[clamp(38px,12.4cqw,48px)] place-items-center rounded-full bg-white shadow-[0_8px_20px_rgba(0,0,0,0.12)] transition hover:scale-110"
           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           <Heart active={inWishlist} />
         </button>
 
-        {/* Ask AI — per-plant chat (admin-toggled); overlay pill, bottom-left */}
-        {askAiEnabled && (
+        {/* Ask AI — per-plant chat (admin-toggled); overlay pill, bottom-left.
+            Hidden on no-image cards — it overlapped the placeholder copy. */}
+        {askAiEnabled && !noImage && (
           <button
             type="button"
             onClick={handleAskAi}
@@ -224,22 +229,23 @@ const PlantAtHomeCard: React.FC<Props> = ({
 
       </div>
 
-      {/* content (reference .content: 24px padding; slightly tighter in-grid) */}
-      <div className="flex flex-1 flex-col p-5">
+      {/* content (reference .content: 24px padding at full card width) */}
+      <div className="flex flex-1 flex-col p-[clamp(14px,6.2cqw,24px)]">
         {/* title row */}
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            {/* Product name — Cormorant Garamond 700, 32px (26px mobile), #184A31 */}
+            {/* Product name — same family as the body text, bold (user note:
+                weight alone distinguishes the name), #184A31 */}
             <button
               type="button"
               onClick={handleQuickView}
-              className="block w-full truncate text-left font-heading text-[26px] font-bold leading-[1.15] text-[#184A31] transition hover:text-forest-700 sm:text-[32px]"
+              className="block w-full truncate text-left text-[clamp(15.5px,6.6cqw,23px)] font-bold leading-[1.2] text-[#184A31] transition hover:text-forest-700"
             >
               {product.name}
             </button>
-            {/* Botanical name — Inter 400 16px #8A8A8A */}
+            {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
             {sciName ? (
-              <p className="mt-[5px] truncate text-[16px] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
+              <p className="mt-[5px] truncate text-[clamp(12px,4.4cqw,16px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
             ) : null}
           </div>
           <div className="shrink-0 pt-1.5 text-right">
@@ -247,16 +253,16 @@ const PlantAtHomeCard: React.FC<Props> = ({
               <>
                 <span className="flex items-center justify-end gap-1.5">
                   <GoldStar />
-                  <strong className="text-[18px] font-semibold leading-none text-gray-900">
+                  <strong className="text-[clamp(13px,4.9cqw,18px)] font-semibold leading-none text-gray-900">
                     {ratingVal.toFixed(1)}
                   </strong>
                 </span>
-                <span className="mt-[6px] block text-[15px] leading-none text-[#888888]">
+                <span className="mt-[6px] block text-[clamp(11px,4.1cqw,15px)] leading-none text-[#888888]">
                   ({reviewCount.toLocaleString('en-IN')})
                 </span>
               </>
             ) : (
-              <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[13px] font-semibold text-forest-800">
+              <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[clamp(11px,3.8cqw,13px)] font-semibold text-forest-800">
                 New
               </span>
             )}
@@ -267,23 +273,29 @@ const PlantAtHomeCard: React.FC<Props> = ({
             clamp with fixed min-height so grid rows stay aligned. Vertical
             margins are tighter than the reference's standalone card — inside a
             grid the full 18/22px rhythm made cards run too long. */}
-        <p className="mb-3.5 mt-2.5 min-h-[48px] text-[15px] leading-[1.6] text-[#5B5B5B] line-clamp-2 sm:min-h-[54px] sm:text-[17px]">
+        <p className="mb-3.5 mt-2.5 min-h-[3.2em] text-[clamp(12.5px,4.6cqw,17px)] leading-[1.6] text-[#5B5B5B] line-clamp-2">
           {desc}
         </p>
 
         <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
           {/* price row — 34px (28px mobile) #14532D · struck 18px #A0A0A0 ·
               chip #FFEAEA / #D73C3C */}
-          <div className="flex flex-wrap items-center gap-x-[14px] gap-y-1">
+          <div className="flex flex-wrap items-center gap-x-[clamp(8px,3.6cqw,14px)] gap-y-1">
             {/* variable products show the size range min–max */}
-            <span className={`font-bold leading-none text-[#14532D] ${isVariable && hasRange ? 'text-[22px] sm:text-[26px]' : 'text-[28px] sm:text-[34px]'}`}>
+            <span
+              className={`whitespace-nowrap leading-none text-[#14532D] ${
+                isVariable && hasRange
+                  ? 'text-[clamp(14px,6.2cqw,24px)] font-semibold'
+                  : 'text-[clamp(20px,9.2cqw,34px)] font-bold'
+              }`}
+            >
               {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}
             </span>
             {!isVariable && basePrice && (
-              <del className="text-[18px] leading-none text-[#A0A0A0]">{basePrice}</del>
+              <del className="text-[clamp(12px,4.9cqw,18px)] leading-none text-[#A0A0A0]">{basePrice}</del>
             )}
             {!isVariable && discount && (
-              <span className="rounded-[8px] bg-[#FFEAEA] px-3 py-1.5 text-[14px] font-bold leading-none text-[#D73C3C]">
+              <span className="rounded-[8px] bg-[#FFEAEA] px-[clamp(7px,3cqw,12px)] py-1.5 text-[clamp(10.5px,3.8cqw,14px)] font-bold leading-none text-[#D73C3C]">
                 {discount} OFF
               </span>
             )}
@@ -292,7 +304,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           {/* delivery band — #F3F8EC / #24693E, truck + copy. 16px at the
               reference's 390px card width; steps down inside narrower grid
               cells so it never wraps. */}
-          <div className="my-4 flex items-center gap-2.5 whitespace-nowrap rounded-[12px] bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-none text-[#24693E] xl:text-[15px] min-[1450px]:text-[16px]">
+          <div className="my-4 flex items-center gap-[clamp(6px,2.6cqw,12px)] whitespace-nowrap rounded-[12px] bg-[#F3F8EC] px-[clamp(10px,4.4cqw,18px)] py-[clamp(9px,3.6cqw,14px)] text-[clamp(11px,4.1cqw,16px)] font-semibold leading-none text-[#24693E]">
             <TruckIcon />
             Free Delivery&nbsp;|&nbsp;2–4 Days
           </div>
@@ -302,29 +314,29 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <button
               type="button"
               onClick={handleQuickView}
-              className="flex h-12 w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] text-[16px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0 sm:text-[18px]"
+              className="flex h-[clamp(40px,12.4cqw,48px)] w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] text-[clamp(13px,4.7cqw,18px)] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
             >
               <CartGlyph />
               Select Options
             </button>
           ) : (
-            <div className="flex gap-[15px]">
+            <div className="flex gap-[clamp(8px,3.9cqw,15px)]">
               {!inCart && (
-                <div className="flex h-12 w-[120px] shrink-0 items-center justify-around rounded-[14px] border border-[#DDDDDD]">
+                <div className="flex h-[clamp(40px,12.4cqw,48px)] w-[clamp(88px,31cqw,120px)] shrink-0 items-center justify-around rounded-[14px] border border-[#DDDDDD]">
                   <button
                     type="button"
                     aria-label="Decrease quantity"
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className="px-2 text-[28px] leading-none text-[#333333] transition hover:text-[#14532D]"
+                    className="px-1.5 text-[clamp(20px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-[#14532D]"
                   >
                     −
                   </button>
-                  <span className="text-[20px] font-semibold leading-none text-gray-900">{qty}</span>
+                  <span className="text-[clamp(15px,5.2cqw,20px)] font-semibold leading-none text-gray-900">{qty}</span>
                   <button
                     type="button"
                     aria-label="Increase quantity"
                     onClick={() => setQty((q) => q + 1)}
-                    className="px-2 text-[28px] leading-none text-[#333333] transition hover:text-[#14532D]"
+                    className="px-1.5 text-[clamp(20px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-[#14532D]"
                   >
                     +
                   </button>

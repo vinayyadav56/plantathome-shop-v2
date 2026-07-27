@@ -1,6 +1,7 @@
 import { useRouter } from '@/compat/next-router';
 import { languageMenu } from '@/lib/locals';
 import Cookies from 'js-cookie';
+import LineIcon from '@/components/icons/line-icons';
 
 /**
  * Compact inline language selector (a row of native-name pills) for the footer
@@ -43,9 +44,9 @@ export default function InlineLanguageSelect({
 
   return (
     <div className={`flex flex-wrap items-center gap-x-2.5 gap-y-1 ${className}`}>
-      <i
-        className={`fa-solid fa-language text-sm ${tone === 'dark' ? 'text-[color:var(--g-band-accent)]' : 'text-forest-600'}`}
-        aria-hidden
+      <LineIcon
+        name="language"
+        className={`h-4 w-4 ${tone === 'dark' ? 'text-[color:var(--g-band-accent)]' : 'text-forest-600'}`}
       />
       {options.map((o, i) => (
         <span key={o.id} className="flex items-center gap-2.5">

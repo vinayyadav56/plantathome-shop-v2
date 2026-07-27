@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from '@/compat/next-router';
 import { languageMenu } from '@/lib/locals';
 import Cookies from 'js-cookie';
+import LineIcon from '@/components/icons/line-icons';
 
 /**
  * First-visit language chooser. Shows ONCE — when no language preference is
@@ -68,7 +69,7 @@ export default function FirstVisitLanguageModal() {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={dismiss} aria-hidden />
       <div className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl">
         <div className="bg-[radial-gradient(120%_120%_at_30%_0%,#1E4023,#16301A)] px-6 pb-5 pt-6 text-center">
-          <i className="fa-solid fa-language mb-2 text-2xl text-[#8FD56F]" aria-hidden />
+          <LineIcon name="language" className="mx-auto mb-2 h-7 w-7 text-[#8FD56F]" />
           <div className="font-pahserif text-2xl font-semibold leading-tight text-white">Choose your language</div>
           <div className="mt-1 font-hanken text-[12.5px] text-white/70">
             अपनी भाषा चुनें · உங்கள் மொழி
@@ -90,7 +91,7 @@ export default function FirstVisitLanguageModal() {
               >
                 <span className="grid h-7 w-7 place-items-center text-lg">{o.icon}</span>
                 <span className="font-hanken text-[15px] font-semibold text-forest-900">{o.name}</span>
-                {active && <i className="fa-solid fa-check ms-auto text-forest-600" aria-hidden />}
+                {active && <LineIcon name="check" className="ms-auto h-4 w-4 text-forest-600" strokeWidth={2.4} />}
               </button>
             );
           })}

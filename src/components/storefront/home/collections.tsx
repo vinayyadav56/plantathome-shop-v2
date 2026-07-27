@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import { useCategories } from '@/framework/category';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
+import LineIcon from '@/components/icons/line-icons';
 
 // The home only needs the top-level categories. limit=1000 (CATEGORIES_PER_PAGE)
 // makes the API truncate the JSON mid-stream (server fatal while serializing),
@@ -40,7 +41,7 @@ function CollectionCard({ c }: { c: CardData }) {
           />
         ) : (
           <span className="grid h-full w-full place-items-center text-sage-400">
-            <i className="fa-solid fa-leaf text-[26px]" aria-hidden />
+            <LineIcon name="leaf" className="h-[26px] w-[26px]" />
           </span>
         )}
       </span>
@@ -98,7 +99,7 @@ export function Collections() {
           </div>
           <h2 className="m-0 flex items-center gap-[9px] font-pahserif text-[26px] font-semibold tracking-[-0.005em] text-forest-900 sm:text-[34px]">
             {homeCollections?.heading || t('home-collections-title')}
-            <i className="fa-solid fa-spa text-[23px] text-forest-500" aria-hidden />
+            <LineIcon name="lotus" className="h-[23px] w-[23px] text-forest-500" />
           </h2>
         </div>
         <Link

@@ -108,7 +108,7 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
       </div>
       <div className="px-3 pb-3 pt-[11px]">
-        <div className="line-clamp-1 font-heading text-[16px] font-bold leading-[1.15] text-[#1D4D35]">{product?.name}</div>
+        <div className="line-clamp-1 text-[14px] font-bold leading-[1.2] text-[#1D4D35]">{product?.name}</div>
         {desc ? <div className="mt-[3px] line-clamp-1 text-[11px] text-[#6B7280]">{desc}</div> : <div className="mt-[3px] h-[11px]" />}
         <div className="mt-[9px] flex items-center justify-between">
           <div className="flex min-w-0 items-baseline gap-1">
