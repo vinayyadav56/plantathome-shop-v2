@@ -211,7 +211,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
                   No {material === 'All' ? '' : material.toLowerCase() + ' '}pots available in {effectiveSize} right now.
                 </p>
               ) : (
-                <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-2">
+                <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 pe-4 overscroll-x-contain">
                   {matched.map(({ product, option }) => {
                     const active = selected?.product?.id === product.id;
                     return (
@@ -220,7 +220,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
                         type="button"
                         onClick={() => onSelect(active ? null : { product, option })}
                         className={classNames(
-                          'w-36 shrink-0 rounded-2xl border-2 p-2 text-left transition',
+                          'w-36 shrink-0 snap-start rounded-2xl border-2 p-2 text-left transition',
                           active
                             ? 'border-forest-700 bg-forest-700/[0.06] shadow-[0_4px_14px_rgba(22,48,26,0.10)]'
                             : 'border-kraft-300 bg-white hover:border-forest-500',
@@ -242,9 +242,11 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
                         <span className="mt-2 block text-[12.5px] font-semibold leading-snug text-forest-900 line-clamp-2">
                           {product.name}
                         </span>
-                        <span className="mt-0.5 flex items-center justify-between">
-                          <span className="text-[13px] font-bold text-forest-900">{rupees(optPrice(option))}</span>
-                          <span className="text-[10.5px] font-medium uppercase tracking-wide text-forest-600">
+                        {/* stacked: price + meta side-by-side overflowed the
+                            144px card ("CERAMIC · MEDIUM" spilled out) */}
+                        <span className="mt-0.5 block">
+                          <span className="block text-[13px] font-bold leading-tight text-forest-900">{rupees(optPrice(option))}</span>
+                          <span className="mt-0.5 block truncate text-[10px] font-medium uppercase tracking-wide text-forest-600">
                             {materialLabel(product)} · {effectiveSize}
                           </span>
                         </span>
