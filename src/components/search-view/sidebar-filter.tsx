@@ -67,12 +67,15 @@ function ClearFiltersButton() {
 const SidebarFilter: React.FC<{
   type?: string;
   showManufacturers?: boolean;
+  /** Category pages pin the category via the route — hide the redundant
+   *  (and conflicting) Categories section there. */
+  showCategories?: boolean;
   className?: string;
   // When rendered as an always-visible rail (e.g. the PLP from md+), switch to
   // rail mode at `md` instead of `lg` so tablets don't show the drawer-only
   // close arrow / "Show Products" button. Drawer usages keep the lg switch.
   inRail?: boolean;
-}> = ({ type, showManufacturers = true, className, inRail = false }) => {
+}> = ({ type, showManufacturers = true, showCategories = true, className, inRail = false }) => {
   const router = useRouter();
   const { isRTL } = useIsRTL();
   const { t } = useTranslation('common');
@@ -127,9 +130,11 @@ const SidebarFilter: React.FC<{
           </FieldWrapper>
         )}
 
-        <FieldWrapper title="text-categories" count={categoryCount}>
-          <CategoryFilter type={type} />
-        </FieldWrapper>
+        {showCategories && (
+          <FieldWrapper title="text-categories" count={categoryCount}>
+            <CategoryFilter type={type} />
+          </FieldWrapper>
+        )}
 
         <FieldWrapper title="text-sort-by-price" count={priceCount}>
           <PriceFilter />

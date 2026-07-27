@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from '@/compat/next-router';
 import { getLayout as getSiteLayout } from '@/components/layouts/layout';
 import Seo from '@/components/seo/seo';
+import { Routes } from '@/config/routes';
+import { useUser } from '@/framework/user';
 import {
   useDiagnose,
   usePlantDoctorEnabled,
@@ -12,15 +14,149 @@ import {
   Severity,
 } from '@/framework/plant-doctor';
 
+/* ────────────────────────────────────────────────────────────────────────────
+   Design tokens (storefront design language — matches products/cards/plantathome)
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const CARD =
+  'rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+
+const BTN_PRIMARY =
+  'inline-flex items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-[#14532D]';
 
 const SEVERITY_STYLE: Record<Severity, { label: string; cls: string; bar: string }> = {
-  low:      { label: 'Low',      cls: 'bg-sage-100 text-forest-800 border-sage-300',      bar: '#3f7d3a' },
-  medium:   { label: 'Medium',   cls: 'bg-[#FBF1DD] text-[#8A6A23] border-[#E8D4A8]',    bar: '#C79A3A' },
-  high:     { label: 'High',     cls: 'bg-[#FBE7DA] text-[#9A4F1E] border-[#E6C3A3]',    bar: '#C07035' },
-  critical: { label: 'Critical', cls: 'bg-[#FBE2DE] text-[#A23022] border-[#E9B7AE]',    bar: '#C0492B' },
+  low:      { label: 'Low',      cls: 'bg-[#F3F8EC] text-[#24693E] border-[#DCE8D3]', bar: '#2E5E2A' },
+  medium:   { label: 'Medium',   cls: 'bg-[#FBF1DD] text-[#8A6A23] border-[#E8D4A8]', bar: '#B58E39' },
+  high:     { label: 'High',     cls: 'bg-[#FBE7DA] text-[#9A4F1E] border-[#E6C3A3]', bar: '#C07035' },
+  critical: { label: 'Critical', cls: 'bg-[#FBE2DE] text-[#A23022] border-[#E9B7AE]', bar: '#C0492B' },
 };
 
+const SEV_RANK: Record<Severity, number> = { low: 0, medium: 1, high: 2, critical: 3 };
+
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Inline line icons (stroke=currentColor — Font Awesome classes never load)
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const ICON_PATHS: Record<string, React.ReactNode> = {
+  camera: (
+    <>
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
+    </>
+  ),
+  leaf: (
+    <>
+      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
+      <path d="M2 21c0-3 1.85-5.36 5.08-6" />
+    </>
+  ),
+  clipboard: (
+    <>
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+      <rect x="8" y="2" width="8" height="4" rx="1" />
+      <path d="m9 14 2 2 4-4" />
+    </>
+  ),
+  shield: (
+    <>
+      <path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z" />
+      <path d="m9 12 2 2 4-4" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v4l3 3" />
+    </>
+  ),
+  lock: (
+    <>
+      <rect x="4" y="10" width="16" height="11" rx="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  history: (
+    <>
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M3 6h18" />
+      <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </>
+  ),
+  alert: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </>
+  ),
+  check: <polyline points="20 6 9 17 4 12" />,
+  arrowRight: (
+    <>
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </>
+  ),
+  chevronDown: <polyline points="6 9 12 15 18 9" />,
+  sparkle: (
+    <>
+      <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
+      <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" />
+    </>
+  ),
+  image: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="m21 15-5-5L5 21" />
+    </>
+  ),
+};
+
+function Icon({
+  name,
+  className = 'h-4 w-4',
+  strokeWidth = 1.9,
+}: {
+  name: keyof typeof ICON_PATHS;
+  className?: string;
+  strokeWidth?: number;
+}) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      className={className}
+    >
+      {ICON_PATHS[name] ?? ICON_PATHS.leaf}
+    </svg>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Image helpers
+   ──────────────────────────────────────────────────────────────────────────── */
 
 function fileToScaledBase64(file: File, max = 1024, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -46,22 +182,106 @@ function fileToScaledBase64(file: File, max = 1024, quality = 0.82): Promise<str
   });
 }
 
+/** Tiny thumbnail for the history rail — keeps localStorage well under quota. */
+function makeThumb(dataUrl: string, max = 160, quality = 0.62): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onerror = () => reject(new Error('decode failed'));
+    img.onload = () => {
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('no canvas'));
+      ctx.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = dataUrl;
+  });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Consultation history — localStorage (no server endpoint exists yet).
+   Read only after mount; shown only to signed-in users.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const HISTORY_KEY = 'pah-plant-doctor-history';
+const HISTORY_MAX = 12;
+
+interface ConsultationEntry {
+  id: string;
+  at: string; // ISO date
+  title: string;
+  thumb?: string;
+  score: number;
+  severity: Severity;
+  conditions: string[];
+  result: DiagnosisResponse;
+}
+
+function readHistory(): ConsultationEntry[] {
+  try {
+    const raw = window.localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((e) => e && e.id && e.result) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeHistory(entries: ConsultationEntry[]) {
+  try {
+    window.localStorage.setItem(HISTORY_KEY, JSON.stringify(entries));
+  } catch {
+    // quota / private mode — history is a nicety, never block the diagnosis
+  }
+}
+
+function formatDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return '';
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Small presentational pieces
+   ──────────────────────────────────────────────────────────────────────────── */
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#B58E39]">{children}</p>
+  );
+}
+
 function HealthGauge({ score }: { score: number }) {
   const pct = Math.round(Math.max(0, Math.min(1, score)) * 100);
-  const color = pct >= 70 ? '#3f7d3a' : pct >= 40 ? '#C79A3A' : '#C0492B';
+  const color = pct >= 70 ? '#2E5E2A' : pct >= 40 ? '#B58E39' : '#C0492B';
   return (
     <div className="flex items-center gap-4">
       <div className="relative h-20 w-20 shrink-0">
         <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
-          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#EAE6DC" strokeWidth="3" />
-          <circle cx="18" cy="18" r="15.9" fill="none" stroke={color} strokeWidth="3"
-            strokeDasharray={`${pct} ${100 - pct}`} strokeLinecap="round" />
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#EFECE3" strokeWidth="3" />
+          <circle
+            cx="18" cy="18" r="15.9" fill="none" stroke={color} strokeWidth="3"
+            strokeDasharray={`${pct} ${100 - pct}`} strokeLinecap="round"
+          />
         </svg>
-        <span className="absolute inset-0 flex items-center justify-center font-cormorant text-xl font-bold text-forest-900">{pct}</span>
+        <span className="absolute inset-0 flex items-center justify-center text-xl font-bold text-[#16301A]">
+          {pct}
+        </span>
       </div>
       <div>
-        <p className="font-cormorant text-lg font-semibold text-forest-900">Overall health</p>
-        <p className="text-sm text-stone-500">
+        <p className="text-[15px] font-semibold text-[#184A31]">Overall health</p>
+        <p className="text-[13px] text-[#8A8A8A]">
           {pct >= 70 ? 'Looking good — minor care needed.' : pct >= 40 ? 'Needs attention soon.' : 'Urgent care recommended.'}
         </p>
       </div>
@@ -69,15 +289,17 @@ function HealthGauge({ score }: { score: number }) {
   );
 }
 
-function Col({ title, items, accent }: { title: string; items?: string[]; accent?: boolean }) {
+function CareList({ title, items, accent }: { title: string; items?: string[]; accent?: boolean }) {
   if (!items || items.length === 0) return null;
   return (
     <div>
-      <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-stone-400">{title}</p>
-      <ul className="mt-2 space-y-1.5">
+      <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#8A8A8A]">{title}</p>
+      <ul className="mt-2.5 space-y-2">
         {items.map((it, i) => (
-          <li key={i} className={`flex gap-2 text-[13px] leading-snug ${accent ? 'text-forest-800' : 'text-stone-600'}`}>
-            <span className={`mt-0.5 shrink-0 ${accent ? 'text-[#4ADE80]' : 'text-stone-300'}`}>•</span>
+          <li key={i} className={`flex gap-2.5 text-[13.5px] leading-relaxed ${accent ? 'text-[#184A31]' : 'text-[#5B5B5B]'}`}>
+            <span className={`mt-[3px] shrink-0 ${accent ? 'text-[#24693E]' : 'text-[#C9C4B8]'}`}>
+              <Icon name={accent ? 'check' : 'leaf'} className="h-3.5 w-3.5" strokeWidth={2.2} />
+            </span>
             <span>{it}</span>
           </li>
         ))}
@@ -86,19 +308,110 @@ function Col({ title, items, accent }: { title: string; items?: string[]; accent
   );
 }
 
+/* ── Guided 3-step strip ──────────────────────────────────────────────────── */
+
+const STEPS = [
+  {
+    icon: 'camera' as const,
+    title: 'Snap a photo',
+    copy: 'Natural light works best — focus on the affected leaves.',
+  },
+  {
+    icon: 'sparkle' as const,
+    title: 'AI examines it',
+    copy: 'Dr. Planty checks for disease, pests, watering and nutrient issues.',
+  },
+  {
+    icon: 'clipboard' as const,
+    title: 'Get your care plan',
+    copy: 'Clear fixes, prevention tips and remedies you can shop.',
+  },
+];
+
+function StepsStrip() {
+  return (
+    <div className="mx-auto mt-9 grid max-w-4xl gap-3.5 sm:grid-cols-3">
+      {STEPS.map((s, i) => (
+        <div key={s.title} className={`${CARD} relative p-5 text-left`}>
+          <span className="absolute right-4 top-4 text-[26px] font-bold leading-none text-[#EFECE3]">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#F3F8EC] text-[#24693E]">
+            <Icon name={s.icon} className="h-5 w-5" />
+          </span>
+          <p className="mt-3.5 text-[15px] font-bold text-[#184A31]">{s.title}</p>
+          <p className="mt-1 text-[12.5px] leading-relaxed text-[#8A8A8A]">{s.copy}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Friendly progress treatment while the AI works ───────────────────────── */
+
+const ANALYZE_PHASES = [
+  'Reading your photo…',
+  'Identifying the plant…',
+  'Scanning leaves for stress signals…',
+  'Checking for pests & disease…',
+  'Writing your care plan…',
+];
+
+function AnalyzingView({ preview }: { preview: string | null }) {
+  const [phase, setPhase] = useState(0);
+  useEffect(() => {
+    const t = setInterval(
+      () => setPhase((p) => Math.min(p + 1, ANALYZE_PHASES.length - 1)),
+      2100,
+    );
+    return () => clearInterval(t);
+  }, []);
+  const pct = Math.round(((phase + 1) / ANALYZE_PHASES.length) * 88);
+
+  return (
+    <div className={`${CARD} mx-auto max-w-2xl overflow-hidden`}>
+      {preview && (
+        <div className="relative h-56 w-full overflow-hidden bg-[#F7F5EF]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={preview} alt="Your plant" className="h-full w-full object-cover" />
+          {/* scan line */}
+          <span className="pointer-events-none absolute inset-x-0 top-0 h-16 animate-[pd-scan_2.4s_ease-in-out_infinite] bg-[linear-gradient(to_bottom,transparent,rgba(243,248,236,0.55),transparent)]" />
+        </div>
+      )}
+      <div className="p-8 text-center">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F3F8EC] text-[#24693E]">
+          <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#24693E]/25 border-t-[#24693E]" />
+        </span>
+        <p className="mt-4 text-[18px] font-bold text-[#184A31]">Dr. Planty is examining your plant</p>
+        <p aria-live="polite" className="mt-1.5 text-[13.5px] text-[#5B5B5B]">{ANALYZE_PHASES[phase]}</p>
+        <div className="mx-auto mt-5 h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-[#EFECE3]">
+          <span
+            className="block h-full rounded-full bg-[#14532D] transition-[width] duration-700 ease-out"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <p className="mt-3 text-[11.5px] text-[#8A8A8A]">Usually takes 5–15 seconds.</p>
+      </div>
+      <style>{`@keyframes pd-scan{0%{transform:translateY(-4rem)}55%{transform:translateY(14rem)}100%{transform:translateY(14rem)}}`}</style>
+    </div>
+  );
+}
+
+/* ── Results ──────────────────────────────────────────────────────────────── */
+
 function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset: () => void }) {
   return (
     <div className="space-y-5">
       {/* plant identity + health */}
-      <div className="rounded-2xl border border-kraft-200 bg-white p-6 shadow-[0_2px_12px_rgba(34,48,26,0.07)]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className={`${CARD} p-6 sm:p-7`}>
+        <div className="flex flex-wrap items-center justify-between gap-5">
           <div>
-            <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#4ADE80]">Diagnosis for</p>
-            <h2 className="font-cormorant mt-1 text-[2rem] font-bold leading-none text-forest-900">
+            <Eyebrow>Diagnosis report</Eyebrow>
+            <h2 className="mt-1.5 text-[1.9rem] font-bold leading-tight tracking-[-0.01em] text-[#184A31]">
               {result.identification?.common_name || result.plant_name || 'Your plant'}
             </h2>
             {(result.identification?.scientific_name || (result.identification?.confidence ?? 0) > 0) && (
-              <p className="mt-1 font-cormorant text-[15px] italic text-stone-500">
+              <p className="mt-1 text-[14px] italic text-[#8A8A8A]">
                 {result.identification?.scientific_name}
                 {typeof result.identification?.confidence === 'number' && result.identification.confidence > 0
                   ? ` · ${Math.round(result.identification.confidence * 100)}% match`
@@ -114,44 +427,56 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
       {result.diagnosis?.map((d, i) => {
         const sev = SEVERITY_STYLE[d.severity] ?? SEVERITY_STYLE.medium;
         return (
-          <div key={i} className="overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_12px_rgba(34,48,26,0.07)]">
-            {/* severity accent bar */}
+          <div key={i} className={`${CARD} overflow-hidden`}>
             <div className="h-1 w-full" style={{ background: sev.bar }} />
-            <div className="p-6">
+            <div className="p-6 sm:p-7">
               <div className="flex flex-wrap items-center gap-3">
-                <h3 className="font-cormorant text-[1.4rem] font-bold text-forest-900">{d.condition}</h3>
+                <h3 className="text-[1.15rem] font-bold text-[#184A31]">{d.condition}</h3>
                 <span className={`rounded-full border px-2.5 py-[3px] text-[10.5px] font-bold uppercase tracking-wide ${sev.cls}`}>
                   {sev.label}
                 </span>
                 {typeof d.confidence === 'number' && (
-                  <span className="text-[11.5px] text-stone-400">{Math.round(d.confidence * 100)}% confidence</span>
+                  <span className="text-[11.5px] text-[#8A8A8A]">{Math.round(d.confidence * 100)}% confidence</span>
                 )}
               </div>
-              {d.description && <p className="mt-2 text-[13.5px] leading-relaxed text-stone-600">{d.description}</p>}
+              {d.description && (
+                <p className="mt-2.5 text-[13.5px] leading-relaxed text-[#5B5B5B]">{d.description}</p>
+              )}
 
-              <div className="mt-5 grid gap-5 sm:grid-cols-3">
-                <Col title="Likely causes" items={d.causes} />
-                <Col title="What to do" items={d.solutions} accent />
-                <Col title="Prevent next time" items={d.preventive_measures} />
+              <div className="mt-6 grid gap-6 sm:grid-cols-3">
+                <CareList title="Likely causes" items={d.causes} />
+                <CareList title="What to do" items={d.solutions} accent />
+                <CareList title="Prevent next time" items={d.preventive_measures} />
               </div>
 
               {d.products_recommended && d.products_recommended.length > 0 && (
-                <div className="mt-5 border-t border-kraft-100 pt-4">
-                  <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-stone-400">Recommended remedies</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-6 border-t border-[#EFECE3] pt-4">
+                  <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#8A8A8A]">
+                    Recommended remedies
+                  </p>
+                  <div className="mt-2.5 flex flex-wrap gap-2">
                     {d.products_recommended.map((p) => (
-                      <Link key={p} href={`/plants/search?text=${encodeURIComponent(p)}`}
-                        className="rounded-full border border-forest-700/25 bg-sage-100 px-3 py-1 text-[12px] font-medium text-forest-800 transition hover:bg-forest-700 hover:text-white">
+                      <Link
+                        key={p}
+                        href={`/plants/search?text=${encodeURIComponent(p)}`}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#24693E] transition hover:bg-[#14532D] hover:text-white"
+                      >
                         {p}
+                        <Icon name="arrowRight" className="h-3 w-3" strokeWidth={2.2} />
                       </Link>
                     ))}
                   </div>
                 </div>
               )}
               {d.vet_consultation_needed && (
-                <p className="mt-4 rounded-xl bg-[#FBE2DE] px-4 py-2.5 text-[13px] text-[#A23022]">
-                  ⚠️ May need an in-person expert.{' '}
-                  <Link href="/garden-service" className="font-semibold underline">Book a garden visit →</Link>
+                <p className="mt-5 flex items-start gap-2.5 rounded-[14px] border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3 text-[13px] text-[#A23022]">
+                  <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    This may need an in-person expert.{' '}
+                    <Link href="/garden-service" className="font-semibold underline underline-offset-2">
+                      Book a garden visit
+                    </Link>
+                  </span>
                 </p>
               )}
             </div>
@@ -159,32 +484,38 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
         );
       })}
 
-      {/* immediate + long term */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="relative overflow-hidden rounded-2xl bg-[#0c1e12] p-6 text-white">
-          <div className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-overlay" style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }} />
-          <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[radial-gradient(ellipse,rgba(74,222,128,0.18)_0%,transparent_70%)]" />
-          <p className="relative text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#86EFAC]">Do this now</p>
-          <p className="relative mt-2 text-[13.5px] leading-relaxed text-white/85">{result.immediate_action}</p>
+      {/* immediate (dark forest band) + long term */}
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="relative overflow-hidden rounded-[22px] bg-[#16301A] p-6 text-white sm:p-7">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-overlay"
+            style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }}
+          />
+          <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-[radial-gradient(ellipse,rgba(231,238,226,0.16)_0%,transparent_70%)]" />
+          <p className="relative text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#B58E39]">Do this now</p>
+          <p className="relative mt-2.5 text-[14px] leading-relaxed text-white/80">{result.immediate_action}</p>
         </div>
-        <div className="rounded-2xl border border-kraft-200 bg-white p-6 shadow-[0_2px_12px_rgba(34,48,26,0.07)]">
-          <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-stone-400">Long-term care</p>
-          <p className="mt-2 text-[13.5px] leading-relaxed text-stone-600">{result.long_term_care}</p>
+        <div className={`${CARD} p-6 sm:p-7`}>
+          <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#8A8A8A]">Long-term care</p>
+          <p className="mt-2.5 text-[14px] leading-relaxed text-[#5B5B5B]">{result.long_term_care}</p>
         </div>
       </div>
 
       {/* actions */}
       <div className="flex flex-wrap items-center gap-4 pt-1">
-        <button onClick={onReset}
-          className="inline-flex items-center gap-2 rounded-[13px] bg-[#4ADE80] px-6 py-3 font-hanken text-[13.5px] font-bold text-[#061a0b] transition hover:bg-[#22c55e] active:scale-[0.97]">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>
+        <button onClick={onReset} className={BTN_PRIMARY}>
+          <Icon name="refresh" className="h-4 w-4" strokeWidth={2.1} />
           Diagnose another plant
         </button>
-        <Link href="/garden-service" className="font-hanken text-[13px] font-medium text-forest-700 underline underline-offset-2">
-          Need a real gardener? Book a visit →
+        <Link
+          href="/garden-service"
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#24693E] underline underline-offset-4 transition hover:text-[#14532D]"
+        >
+          Need a real gardener? Book a visit
+          <Icon name="arrowRight" className="h-3.5 w-3.5" strokeWidth={2.2} />
         </Link>
       </div>
-      <p className="text-[11.5px] text-stone-400">
+      <p className="text-[11.5px] text-[#8A8A8A]">
         Dr. Planty is AI-powered and can be wrong. For valuable or severely affected plants, consult a horticulturist.
       </p>
     </div>
@@ -193,30 +524,216 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
 
 function RejectionView({ result, onReset }: { result: DiagnosisResponse; onReset: () => void }) {
   return (
-    <div className="mx-auto max-w-xl rounded-2xl border border-kraft-200 bg-white p-8 text-center shadow-[0_2px_12px_rgba(34,48,26,0.07)]">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-forest-200 bg-sage-50 text-forest-600">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" />
-          <path d="M2 21c0-3 1.85-5.4 5.08-6" />
-        </svg>
-      </div>
-      <h2 className="mt-4 font-cormorant text-[1.8rem] font-bold text-forest-900">We couldn't find a plant in that photo</h2>
-      <p className="mt-3 text-[13.5px] leading-relaxed text-stone-600">
+    <div className={`${CARD} mx-auto max-w-xl p-8 text-center sm:p-10`}>
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
+        <Icon name="image" className="h-7 w-7" strokeWidth={1.7} />
+      </span>
+      <h2 className="mt-5 text-[1.5rem] font-bold leading-tight text-[#184A31]">
+        We couldn&rsquo;t find a plant in that photo
+      </h2>
+      <p className="mt-3 text-[13.5px] leading-relaxed text-[#5B5B5B]">
         {result.rejection_reason || 'Please upload a clear, well-lit photo of the plant or the affected leaf.'}
       </p>
-      <button onClick={onReset}
-        className="mt-6 inline-flex items-center gap-2 rounded-[13px] bg-[#4ADE80] px-6 py-3 font-hanken text-[13.5px] font-bold text-[#061a0b] transition hover:bg-[#22c55e]">
+      <button onClick={onReset} className={`${BTN_PRIMARY} mt-6`}>
+        <Icon name="camera" className="h-4 w-4" />
         Try another photo
       </button>
     </div>
   );
 }
 
+/* ── Previous consultations ───────────────────────────────────────────────── */
+
+function HistorySection({
+  entries,
+  expandedId,
+  onToggle,
+  onOpen,
+  onDelete,
+  onClear,
+}: {
+  entries: ConsultationEntry[];
+  expandedId: string | null;
+  onToggle: (id: string) => void;
+  onOpen: (e: ConsultationEntry) => void;
+  onDelete: (id: string) => void;
+  onClear: () => void;
+}) {
+  return (
+    <div>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <Eyebrow>Your history</Eyebrow>
+          <h2 className="mt-1.5 flex items-center gap-2.5 text-[1.5rem] font-bold tracking-[-0.01em] text-[#184A31]">
+            Previous consultations
+            {entries.length > 0 && (
+              <span className="rounded-full bg-[#F3F8EC] px-2.5 py-1 text-[12px] font-semibold text-[#24693E]">
+                {entries.length}
+              </span>
+            )}
+          </h2>
+        </div>
+        {entries.length > 0 && (
+          <button
+            onClick={onClear}
+            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-[#8A8A8A] transition hover:text-[#C0492B]"
+          >
+            <Icon name="trash" className="h-3.5 w-3.5" />
+            Clear all
+          </button>
+        )}
+      </div>
+
+      {entries.length === 0 ? (
+        <div className={`${CARD} mt-5 flex items-center gap-4 p-6`}>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#F3F8EC] text-[#24693E]">
+            <Icon name="history" className="h-5 w-5" />
+          </span>
+          <p className="text-[13.5px] leading-relaxed text-[#5B5B5B]">
+            Your past check-ups will appear here after your first diagnosis on this device.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {entries.map((e) => {
+            const sev = SEVERITY_STYLE[e.severity] ?? SEVERITY_STYLE.medium;
+            const open = expandedId === e.id;
+            const pct = Math.round(Math.max(0, Math.min(1, e.score)) * 100);
+            return (
+              <article key={e.id} className={`${CARD} flex flex-col overflow-hidden`}>
+                <button
+                  type="button"
+                  onClick={() => onToggle(e.id)}
+                  className="flex w-full items-center gap-3.5 p-4 text-left"
+                  aria-expanded={open}
+                >
+                  {e.thumb ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={e.thumb}
+                      alt=""
+                      className="h-14 w-14 shrink-0 rounded-[14px] object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-[#F7F5EF] text-[#24693E]/50">
+                      <Icon name="leaf" className="h-6 w-6" />
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[11.5px] text-[#8A8A8A]">{formatDate(e.at)}</span>
+                    <span className="mt-0.5 block truncate text-[14.5px] font-bold text-[#184A31]">
+                      {e.title}
+                    </span>
+                    <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      <span className={`rounded-full border px-2 py-[2px] text-[10px] font-bold uppercase tracking-wide ${sev.cls}`}>
+                        {sev.label}
+                      </span>
+                      <span className="text-[11px] text-[#8A8A8A]">Health {pct}</span>
+                    </span>
+                  </span>
+                  <span className={`shrink-0 text-[#8A8A8A] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+                    <Icon name="chevronDown" className="h-4 w-4" strokeWidth={2.1} />
+                  </span>
+                </button>
+
+                {open && (
+                  <div className="border-t border-[#EFECE3] px-4 pb-4 pt-3.5">
+                    {e.conditions.length > 0 && (
+                      <ul className="space-y-1.5">
+                        {e.conditions.map((c, i) => (
+                          <li key={i} className="flex gap-2 text-[12.5px] leading-snug text-[#5B5B5B]">
+                            <span className="mt-[3px] shrink-0 text-[#24693E]">
+                              <Icon name="check" className="h-3 w-3" strokeWidth={2.4} />
+                            </span>
+                            {c}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {e.result.immediate_action && (
+                      <p className="mt-2.5 text-[12px] leading-relaxed text-[#8A8A8A] line-clamp-2">
+                        {e.result.immediate_action}
+                      </p>
+                    )}
+                    <div className="mt-3.5 flex items-center gap-3">
+                      <button
+                        onClick={() => onOpen(e)}
+                        className="inline-flex items-center gap-1.5 rounded-[12px] bg-[#14532D] px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-[#0D4324]"
+                      >
+                        Open full report
+                        <Icon name="arrowRight" className="h-3 w-3" strokeWidth={2.2} />
+                      </button>
+                      <button
+                        onClick={() => onDelete(e.id)}
+                        className="inline-flex items-center gap-1 text-[12px] text-[#8A8A8A] transition hover:text-[#C0492B]"
+                        aria-label="Remove from history"
+                      >
+                        <Icon name="trash" className="h-3.5 w-3.5" />
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
+      <p className="mt-4 text-[11.5px] text-[#8A8A8A]">
+        Consultations are saved privately on this device.
+      </p>
+    </div>
+  );
+}
+
+function HistoryLoginTeaser() {
+  return (
+    <div className={`${CARD} relative overflow-hidden p-7 sm:p-8`}>
+      <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-[radial-gradient(ellipse,rgba(231,238,226,0.9)_0%,transparent_70%)]" />
+      <div className="relative flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
+          <Icon name="lock" className="h-5 w-5" strokeWidth={1.8} />
+        </span>
+        <div className="flex-1">
+          <h2 className="text-[1.15rem] font-bold text-[#184A31]">
+            Log in to keep your consultation history
+          </h2>
+          <p className="mt-1 text-[13.5px] leading-relaxed text-[#5B5B5B]">
+            Sign in and every diagnosis is saved here — revisit past check-ups and track how your
+            plants recover over time.
+          </p>
+        </div>
+        <Link
+          href={Routes.login}
+          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-[#14532D] px-6 py-3 text-[13.5px] font-semibold text-white transition hover:bg-[#0D4324]"
+        >
+          Sign in
+          <Icon name="arrowRight" className="h-3.5 w-3.5" strokeWidth={2.2} />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Page
+   ──────────────────────────────────────────────────────────────────────────── */
+
+const SYMPTOM_CHIPS = [
+  'Yellowing leaves',
+  'Brown spots',
+  'Drooping / wilting',
+  'White powder on leaves',
+  'Pests visible',
+  'Leaves falling off',
+];
+
 export default function PlantDoctorPage() {
   const { locale } = useRouter();
   const { data: flag } = usePlantDoctorEnabled();
   const enabled = flag?.data?.enabled ?? true;
   const { mutate, isLoading } = useDiagnose();
+  const { isAuthorized } = useUser();
 
   const [preview, setPreview] = useState<string | null>(null);
   const [imageB64, setImageB64] = useState<string | null>(null);
@@ -226,24 +743,21 @@ export default function PlantDoctorPage() {
   const [error, setError] = useState<string | null>(null);
   const [drag, setDrag] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
 
-  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setError(null);
-    try {
-      const b64 = await fileToScaledBase64(file);
-      setImageB64(b64);
-      setPreview(`data:image/jpeg;base64,${b64}`);
-    } catch {
-      setError('Could not read that image. Try a different photo.');
-    }
-  }
+  // History is client-only (localStorage + auth) — read it strictly after
+  // mount so SSR markup never diverges (React #418 hydration class).
+  const [mounted, setMounted] = useState(false);
+  const [history, setHistory] = useState<ConsultationEntry[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  async function onDrop(e: React.DragEvent) {
-    e.preventDefault();
-    setDrag(false);
-    const file = e.dataTransfer.files?.[0];
+  useEffect(() => {
+    setMounted(true);
+    setHistory(readHistory());
+  }, []);
+
+  const handleFile = useCallback(async (file: File | undefined | null) => {
     if (!file || !file.type.startsWith('image/')) return;
     setError(null);
     try {
@@ -253,7 +767,42 @@ export default function PlantDoctorPage() {
     } catch {
       setError('Could not read that image. Try a different photo.');
     }
+  }, []);
+
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDrag(false);
+    void handleFile(e.dataTransfer.files?.[0]);
   }
+
+  const saveToHistory = useCallback(
+    async (data: DiagnosisResponse, photo: string | null, fallbackName: string) => {
+      let thumb: string | undefined;
+      if (photo) {
+        try { thumb = await makeThumb(photo); } catch { /* thumb is optional */ }
+      }
+      const worst = (data.diagnosis ?? []).reduce<Severity>(
+        (acc, d) => ((SEV_RANK[d.severity] ?? 0) > SEV_RANK[acc] ? d.severity : acc),
+        'low',
+      );
+      const entry: ConsultationEntry = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        at: new Date().toISOString(),
+        title: data.identification?.common_name || data.plant_name || fallbackName || 'Plant check-up',
+        thumb,
+        score: data.overall_health_score,
+        severity: worst,
+        conditions: (data.diagnosis ?? []).map((d) => d.condition).slice(0, 3),
+        result: data,
+      };
+      setHistory((prev) => {
+        const next = [entry, ...prev].slice(0, HISTORY_MAX);
+        writeHistory(next);
+        return next;
+      });
+    },
+    [],
+  );
 
   function submit() {
     setError(null);
@@ -261,15 +810,29 @@ export default function PlantDoctorPage() {
       setError('Add a photo or describe the symptoms.');
       return;
     }
+    const fallbackName = plantName.trim();
+    const photo = preview;
     mutate(
-      { image_base64: imageB64 ?? undefined, symptoms: symptoms.trim() || undefined, plant_name: plantName.trim() || undefined, language: locale || 'en' },
       {
-        onSuccess: (res) => setResult(res.data),
+        image_base64: imageB64 ?? undefined,
+        symptoms: symptoms.trim() || undefined,
+        plant_name: fallbackName || undefined,
+        language: locale || 'en',
+      },
+      {
+        onSuccess: (res) => {
+          setResult(res.data);
+          if (res.data?.is_plant !== false) {
+            void saveToHistory(res.data, photo, fallbackName);
+          }
+        },
         onError: (e: any) => {
           const status = e?.response?.status;
-          setError(status === 503
-            ? 'Plant Doctor is taking a break right now. Please try later.'
-            : "We couldn't complete the diagnosis. Please try again.");
+          setError(
+            status === 503
+              ? 'Plant Doctor is taking a break right now. Please try later.'
+              : "We couldn't complete the diagnosis. Please try again.",
+          );
         },
       },
     );
@@ -279,10 +842,46 @@ export default function PlantDoctorPage() {
     setResult(null); setPreview(null); setImageB64(null);
     setSymptoms(''); setPlantName('');
     if (fileRef.current) fileRef.current.value = '';
+    if (cameraRef.current) cameraRef.current.value = '';
+  }
+
+  function toggleSymptom(chip: string) {
+    setSymptoms((prev) => {
+      if (prev.includes(chip)) {
+        return prev
+          .replace(`${chip}. `, '')
+          .replace(chip, '')
+          .trim();
+      }
+      return prev ? `${prev.replace(/\s+$/, '')} ${chip}. ` : `${chip}. `;
+    });
+  }
+
+  function openHistoryEntry(entry: ConsultationEntry) {
+    setResult(entry.result);
+    setError(null);
+    mainRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function deleteHistoryEntry(id: string) {
+    setHistory((prev) => {
+      const next = prev.filter((e) => e.id !== id);
+      writeHistory(next);
+      return next;
+    });
+    setExpandedId((cur) => (cur === id ? null : cur));
+  }
+
+  function clearHistory() {
+    setHistory(() => {
+      writeHistory([]);
+      return [];
+    });
+    setExpandedId(null);
   }
 
   return (
-    <div className="bg-[#F8F7F2]">
+    <div className="bg-[#FAF9F6]">
       <Seo
         title="Plant Doctor — instant AI plant health diagnosis"
         description="Snap a photo of an unwell plant and get an instant AI diagnosis — disease, pests, watering or nutrient issues — with clear fixes and remedies available in India."
@@ -290,26 +889,30 @@ export default function PlantDoctorPage() {
       />
 
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden border-b border-kraft-200">
-        {/* background */}
-        <div className="absolute inset-0 bg-[linear-gradient(160deg,#e8f0e2_0%,#f0ede4_55%,#F8F7F2_100%)]" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay" style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }} />
-        <div className="pointer-events-none absolute -right-20 -top-20 h-[360px] w-[360px] rounded-full bg-[radial-gradient(ellipse,rgba(74,222,128,0.13)_0%,transparent_65%)]" />
+      <section className="relative overflow-hidden border-b border-[#ECECEC]">
+        <div className="absolute inset-0 bg-[linear-gradient(160deg,#F3F8EC_0%,#FAF9F6_55%,#F4F1EA_100%)]" />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay"
+          style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }}
+        />
+        <div className="pointer-events-none absolute -right-24 -top-24 h-[380px] w-[380px] rounded-full bg-[radial-gradient(ellipse,rgba(36,105,62,0.10)_0%,transparent_65%)]" />
 
-        <div className="relative mx-auto max-w-5xl px-5 py-12 text-center sm:px-8 sm:py-16">
-          {/* eyebrow */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-forest-600/20 bg-white/70 px-4 py-1.5 backdrop-blur-sm">
+        <div className="relative mx-auto max-w-5xl px-5 pb-12 pt-12 text-center sm:px-8 sm:pb-14 sm:pt-16">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-[#ECECEC] bg-white/80 px-4 py-1.5 backdrop-blur-sm">
             <span className="relative flex h-[7px] w-[7px] shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ADE80] opacity-60" />
-              <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-[#4ADE80]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#24693E] opacity-50" />
+              <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-[#24693E]" />
             </span>
-            <span className="font-hanken text-[10.5px] font-bold uppercase tracking-[0.2em] text-forest-700">AI Plant Doctor</span>
+            <span className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-[#B58E39]">
+              AI Plant Doctor
+            </span>
           </div>
 
-          <h1 className="font-cormorant mt-5 text-[2.6rem] font-bold leading-[1.05] tracking-[-0.015em] text-forest-900 sm:text-[3.8rem]">
-            Is your plant unwell?<br className="hidden sm:block" /> Find out in seconds.
+          <h1 className="mt-6 text-[2.3rem] font-bold leading-[1.08] tracking-[-0.02em] text-[#184A31] sm:text-[3.4rem]">
+            Is your plant unwell?
+            <br className="hidden sm:block" /> Find out in seconds.
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl font-hanken text-[15px] leading-relaxed text-stone-600">
+          <p className="mx-auto mt-4 max-w-2xl text-[15px] leading-relaxed text-[#5B5B5B]">
             Upload a photo of the leaves or describe the symptoms. Dr. Planty checks for disease,
             pests, over/under-watering and nutrient issues — and tells you exactly how to fix it.
           </p>
@@ -317,134 +920,228 @@ export default function PlantDoctorPage() {
           {/* trust chips */}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             {[
-              { icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden><path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z" /><path d="m9 12 2 2 4-4" /></svg>), label: 'AI-powered diagnosis' },
-              { icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 3" /></svg>), label: 'Results in seconds' },
-              { icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5" aria-hidden><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>), label: 'Photo not stored' },
+              { icon: 'shield' as const, label: 'AI-powered diagnosis' },
+              { icon: 'clock' as const, label: 'Results in seconds' },
+              { icon: 'lock' as const, label: 'Photo not stored' },
             ].map((c) => (
-              <span key={c.label} className="inline-flex items-center gap-1.5 rounded-full border border-kraft-200 bg-white/80 px-3.5 py-1.5 font-hanken text-[12px] text-forest-700">
-                <span className="text-[#4ADE80]">{c.icon}</span>
+              <span
+                key={c.label}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#ECECEC] bg-white/85 px-3.5 py-1.5 text-[12px] font-medium text-[#24693E]"
+              >
+                <Icon name={c.icon} className="h-3.5 w-3.5" strokeWidth={1.8} />
                 {c.label}
               </span>
             ))}
           </div>
+
+          {/* guided 3 steps */}
+          <StepsStrip />
         </div>
       </section>
 
       {/* ── MAIN ── */}
-      <section className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-12">
+      <section ref={mainRef} className="mx-auto max-w-5xl scroll-mt-24 px-5 py-10 sm:px-8 sm:py-14">
         {!enabled ? (
-          <div className="rounded-2xl border border-kraft-200 bg-white p-10 text-center shadow-sm">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-sage-100 text-forest-600">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" /></svg>
-            </div>
-            <p className="font-cormorant text-2xl font-bold text-forest-900">Plant Doctor is coming soon</p>
-            <p className="mt-2 text-[13.5px] text-stone-500">We're putting the finishing touches on it. Check back shortly.</p>
+          <div className={`${CARD} p-10 text-center`}>
+            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
+              <Icon name="leaf" className="h-7 w-7" strokeWidth={1.7} />
+            </span>
+            <p className="text-[1.4rem] font-bold text-[#184A31]">Plant Doctor is coming soon</p>
+            <p className="mt-2 text-[13.5px] text-[#8A8A8A]">
+              We&rsquo;re putting the finishing touches on it. Check back shortly.
+            </p>
           </div>
+        ) : isLoading ? (
+          <AnalyzingView preview={preview} />
         ) : result ? (
-          result.is_plant === false
-            ? <RejectionView result={result} onReset={reset} />
-            : <DiagnosisView result={result} onReset={reset} />
+          result.is_plant === false ? (
+            <RejectionView result={result} onReset={reset} />
+          ) : (
+            <DiagnosisView result={result} onReset={reset} />
+          )
         ) : (
-          <div className="grid gap-8 lg:grid-cols-2">
-
-            {/* ── upload zone ── */}
-            <div>
-              <label
-                htmlFor="pd-file"
-                onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-                onDragLeave={() => setDrag(false)}
-                onDrop={onDrop}
-                className={`group flex aspect-[4/3] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 bg-white text-center transition-all duration-200 ${
-                  drag
-                    ? 'border-[#4ADE80] bg-[#4ADE80]/5 shadow-[0_0_0_4px_rgba(74,222,128,0.15)]'
-                    : 'border-kraft-200 hover:border-forest-400 hover:shadow-[0_4px_20px_rgba(34,48,26,0.1)]'
-                }`}
-              >
-                {preview ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={preview} alt="Your plant" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="px-8">
-                    <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-forest-200 bg-sage-50 text-forest-500 transition-colors group-hover:border-forest-400 group-hover:text-forest-700">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7" aria-hidden>
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                        <circle cx="12" cy="13" r="4" />
-                      </svg>
-                    </span>
-                    <span className="mt-4 block font-cormorant text-[1.3rem] font-bold text-forest-900">Add a photo of your plant</span>
-                    <span className="mt-1 block font-hanken text-[12.5px] text-stone-400">Tap to upload · drag & drop · or take a picture</span>
-                  </span>
-                )}
-              </label>
-              <input id="pd-file" ref={fileRef} type="file" accept="image/*" capture="environment" onChange={onPick} className="hidden" />
-              {preview && (
-                <button
-                  onClick={() => { setPreview(null); setImageB64(null); if (fileRef.current) fileRef.current.value = ''; }}
-                  className="mt-2 font-hanken text-[12px] text-stone-400 underline underline-offset-2 transition hover:text-stone-600"
+          <div className={`${CARD} p-5 sm:p-8`}>
+            <div className="grid gap-8 lg:grid-cols-2">
+              {/* ── upload zone ── */}
+              <div>
+                <label
+                  htmlFor="pd-file"
+                  onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+                  onDragLeave={() => setDrag(false)}
+                  onDrop={onDrop}
+                  className={`group relative flex aspect-[4/3] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[18px] border-2 border-dashed text-center transition-all duration-200 ${
+                    drag
+                      ? 'border-[#24693E] bg-[#F3F8EC] shadow-[0_0_0_4px_rgba(36,105,62,0.12)]'
+                      : preview
+                        ? 'border-transparent'
+                        : 'border-[#DCE8D3] bg-[#FAF9F6] hover:border-[#24693E]/60 hover:bg-[#F3F8EC]/60'
+                  }`}
                 >
-                  Remove photo
-                </button>
-              )}
-            </div>
+                  {preview ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={preview} alt="Your plant" className="h-full w-full rounded-[16px] object-cover" />
+                      <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-gradient-to-t from-black/55 to-transparent px-4 pb-3 pt-8 text-[12px] font-semibold text-white">
+                        <Icon name="camera" className="h-3.5 w-3.5" />
+                        Tap to change photo
+                      </span>
+                    </>
+                  ) : (
+                    <span className="px-8">
+                      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-white text-[#24693E] shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-transform duration-200 group-hover:scale-105">
+                        <Icon name="camera" className="h-7 w-7" strokeWidth={1.6} />
+                      </span>
+                      <span className="mt-4 block text-[17px] font-bold text-[#184A31]">
+                        Add a photo of your plant
+                      </span>
+                      <span className="mt-1 block text-[12.5px] text-[#8A8A8A]">
+                        Tap to upload or drag &amp; drop
+                      </span>
+                    </span>
+                  )}
+                </label>
+                <input
+                  id="pd-file"
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => void handleFile(e.target.files?.[0])}
+                  className="hidden"
+                />
+                <input
+                  id="pd-camera"
+                  ref={cameraRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={(e) => void handleFile(e.target.files?.[0])}
+                  className="hidden"
+                />
 
-            {/* ── form ── */}
-            <div className="flex flex-col">
-              <label className="font-hanken text-[13px] font-semibold text-forest-900">
-                Plant name <span className="font-normal text-stone-400">(optional)</span>
-              </label>
-              <input
-                value={plantName}
-                onChange={(e) => setPlantName(e.target.value)}
-                placeholder="e.g. Money Plant, Tulsi, Snake Plant"
-                className="mt-1.5 rounded-xl border border-kraft-200 bg-white px-4 py-2.5 font-hanken text-[13.5px] text-forest-900 shadow-[0_1px_4px_rgba(34,48,26,0.06)] outline-none placeholder:text-stone-400 focus:border-[#4ADE80]/70 focus:ring-2 focus:ring-[#4ADE80]/20"
-              />
-
-              <label className="mt-5 font-hanken text-[13px] font-semibold text-forest-900">
-                What's wrong? <span className="font-normal text-stone-400">(optional)</span>
-              </label>
-              <textarea
-                value={symptoms}
-                onChange={(e) => setSymptoms(e.target.value)}
-                rows={5}
-                placeholder="e.g. Leaves turning yellow with brown spots, drooping despite regular watering…"
-                className="mt-1.5 resize-none rounded-xl border border-kraft-200 bg-white px-4 py-2.5 font-hanken text-[13.5px] text-forest-900 shadow-[0_1px_4px_rgba(34,48,26,0.06)] outline-none placeholder:text-stone-400 focus:border-[#4ADE80]/70 focus:ring-2 focus:ring-[#4ADE80]/20"
-              />
-
-              {error && (
-                <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 h-4 w-4 shrink-0 text-[#A23022]" aria-hidden><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
-                  <p className="font-hanken text-[13px] text-[#A23022]">{error}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <button
+                    type="button"
+                    onClick={() => cameraRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12px] font-semibold text-[#24693E] transition hover:bg-[#E7EEE2]"
+                  >
+                    <Icon name="camera" className="h-3.5 w-3.5" />
+                    Use camera
+                  </button>
+                  {preview && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPreview(null); setImageB64(null);
+                        if (fileRef.current) fileRef.current.value = '';
+                        if (cameraRef.current) cameraRef.current.value = '';
+                      }}
+                      className="text-[12px] text-[#8A8A8A] underline underline-offset-2 transition hover:text-[#5B5B5B]"
+                    >
+                      Remove photo
+                    </button>
+                  )}
                 </div>
-              )}
 
-              <button
-                onClick={submit}
-                disabled={isLoading}
-                className="mt-6 inline-flex items-center justify-center gap-2.5 rounded-[13px] bg-[#4ADE80] px-7 py-3.5 font-hanken text-[14px] font-bold text-[#061a0b] shadow-[0_0_28px_rgba(74,222,128,0.22)] transition duration-200 hover:bg-[#22c55e] active:scale-[0.98] disabled:opacity-60"
-              >
-                {isLoading ? (
-                  <>
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#061a0b]/30 border-t-[#061a0b]" />
-                    Dr. Planty is examining…
-                  </>
-                ) : (
-                  <>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
-                      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" />
-                      <path d="M2 21c0-3 1.85-5.4 5.08-6" />
-                    </svg>
-                    Diagnose my plant
-                  </>
+                {/* photo tips */}
+                <ul className="mt-4 space-y-1.5 rounded-[14px] bg-[#F7F5EF] px-4 py-3">
+                  {['Use natural light — avoid flash', 'Focus on the affected leaves', 'Include the whole plant if you can'].map((t) => (
+                    <li key={t} className="flex items-center gap-2 text-[12px] text-[#5B5B5B]">
+                      <span className="text-[#24693E]">
+                        <Icon name="check" className="h-3 w-3" strokeWidth={2.4} />
+                      </span>
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* ── form ── */}
+              <div className="flex flex-col">
+                <label htmlFor="pd-name" className="text-[13px] font-semibold text-[#184A31]">
+                  Plant name <span className="font-normal text-[#8A8A8A]">(optional)</span>
+                </label>
+                <input
+                  id="pd-name"
+                  value={plantName}
+                  onChange={(e) => setPlantName(e.target.value)}
+                  placeholder="e.g. Money Plant, Tulsi, Snake Plant"
+                  className="mt-1.5 rounded-[14px] border border-[#ECECEC] bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
+                />
+
+                <label htmlFor="pd-symptoms" className="mt-5 text-[13px] font-semibold text-[#184A31]">
+                  What&rsquo;s wrong? <span className="font-normal text-[#8A8A8A]">(optional)</span>
+                </label>
+                {/* quick symptom chips */}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {SYMPTOM_CHIPS.map((chip) => {
+                    const active = symptoms.includes(chip);
+                    return (
+                      <button
+                        key={chip}
+                        type="button"
+                        onClick={() => toggleSymptom(chip)}
+                        aria-pressed={active}
+                        className={`rounded-full border px-3 py-1.5 text-[12px] font-medium transition ${
+                          active
+                            ? 'border-[#14532D] bg-[#14532D] text-white'
+                            : 'border-[#ECECEC] bg-white text-[#5B5B5B] hover:border-[#24693E]/50 hover:text-[#24693E]'
+                        }`}
+                      >
+                        {chip}
+                      </button>
+                    );
+                  })}
+                </div>
+                <textarea
+                  id="pd-symptoms"
+                  value={symptoms}
+                  onChange={(e) => setSymptoms(e.target.value)}
+                  rows={4}
+                  placeholder="e.g. Leaves turning yellow with brown spots, drooping despite regular watering…"
+                  className="mt-2.5 resize-none rounded-[14px] border border-[#ECECEC] bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
+                />
+
+                {error && (
+                  <div className="mt-3 flex items-start gap-2.5 rounded-[14px] border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3">
+                    <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-[#A23022]" strokeWidth={1.8} />
+                    <p className="text-[13px] text-[#A23022]">{error}</p>
+                  </div>
                 )}
-              </button>
 
-              <p className="mt-3 font-hanken text-[11.5px] text-stone-400">
-                Your photo is used only for this diagnosis and is not stored. Results are AI-generated guidance.
-              </p>
+                <button onClick={submit} disabled={isLoading} className={`${BTN_PRIMARY} mt-6`}>
+                  <Icon name="leaf" className="h-4 w-4" strokeWidth={2} />
+                  Diagnose my plant
+                </button>
+
+                <p className="mt-3 text-[11.5px] leading-relaxed text-[#8A8A8A]">
+                  Your photo is used only for this diagnosis and is not stored on our servers.
+                  Results are AI-generated guidance.
+                </p>
+              </div>
             </div>
           </div>
         )}
       </section>
+
+      {/* ── PREVIOUS CONSULTATIONS ──
+          Client-only (auth + localStorage) — rendered strictly after mount so
+          server and first client render always match. */}
+      {enabled && mounted && (
+        <section className="mx-auto max-w-5xl px-5 pb-14 sm:px-8 sm:pb-20">
+          {isAuthorized ? (
+            <HistorySection
+              entries={history}
+              expandedId={expandedId}
+              onToggle={(id) => setExpandedId((cur) => (cur === id ? null : id))}
+              onOpen={openHistoryEntry}
+              onDelete={deleteHistoryEntry}
+              onClear={clearHistory}
+            />
+          ) : (
+            <HistoryLoginTeaser />
+          )}
+        </section>
+      )}
     </div>
   );
 }

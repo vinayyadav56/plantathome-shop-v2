@@ -2,15 +2,21 @@
 
 import { useRouter } from '@/compat/next-router';
 import Link from 'next/link';
+import { useAtom } from 'jotai';
+import StickyBox from 'react-sticky-box';
 import { getLayout as getSiteLayout } from '@/components/layouts/layout';
 import Seo from '@/components/seo/seo';
 import { Image } from '@/components/ui/image';
 import { Grid } from '@/components/products/grid';
+import SidebarFilter from '@/components/search-view/sidebar-filter';
+import { FilterIcon } from '@/components/icons/filter-icon';
 import ErrorMessage from '@/components/ui/error-message';
 import { useCategory } from '@/framework/category';
 import { useProducts } from '@/framework/product';
 import { PRODUCTS_PER_PAGE } from '@/framework/client/variables';
+import { useHomeConfig } from '@/lib/use-home-config';
 import { productPlaceholder } from '@/lib/placeholders';
+import { drawerAtom } from '@/store/drawer-atom';
 import type { Product } from '@/types';
 
 
@@ -22,9 +28,12 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 
 export default function CategoryPage() {
   const { query } = useRouter();
-  const slug = query?.slug as string;
+  const { slug: slugParam, ...restQuery } = (query ?? {}) as any;
+  const slug = slugParam as string;
+  const [, setDrawerView] = useAtom(drawerAtom);
 
   const { category, isLoading: loadingCategory, error } = useCategory({ slug });
+  const { homeCollections } = useHomeConfig();
 
   const typeSlug = (category?.type as any)?.slug;
   const typeName = (category?.type as any)?.name;
@@ -37,17 +46,31 @@ export default function CategoryPage() {
     error: productsError,
   } = useProducts({
     limit: PRODUCTS_PER_PAGE,
+    orderBy: 'created_at',
+    sortedBy: 'DESC',
+    // Sidebar filters (price/tags/sort…) flow through the URL query, exactly
+    // like the search page — but the category itself is pinned by the route.
+    ...restQuery,
     categories: slug,
     ...(typeSlug && { type: typeSlug }),
   });
 
   if (error) return <ErrorMessage message={error.message} />;
 
+  // Hero image resolves through the SAME chain as the homepage collection
+  // tiles (admin CMS card image → category.image), so the two always match;
+  // the wide banner_image stays as an extra fallback.
+  const cmsCard = homeCollections?.cards?.find((c: any) => c.categorySlug === slug);
+  const cmsImage =
+    typeof (cmsCard as any)?.image === 'string'
+      ? (cmsCard as any).image
+      : (cmsCard as any)?.image?.original;
   const banner =
-    category?.banner_image?.original ||
-    category?.banner_image?.thumbnail ||
+    cmsImage ||
     category?.image?.original ||
     category?.image?.thumbnail ||
+    category?.banner_image?.original ||
+    category?.banner_image?.thumbnail ||
     productPlaceholder;
 
   const children = category?.children ?? [];
@@ -143,7 +166,7 @@ export default function CategoryPage() {
       )}
 
       {/* ── PRODUCTS ── */}
-      <section className="mx-auto min-h-[40vh] max-w-7xl border-t border-kraft-200 px-5 py-10 sm:px-8 lg:px-16 xl:py-14">
+      <section className="mx-auto min-h-[40vh] max-w-1920 border-t border-kraft-200 px-5 py-10 sm:px-8 lg:px-16 xl:py-14">
         {/* section header */}
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
@@ -161,17 +184,37 @@ export default function CategoryPage() {
           )}
         </div>
 
-        <Grid
-          products={products as Product[] | undefined}
-          loadMore={loadMore}
-          isLoading={isLoading}
-          isLoadingMore={isLoadingMore}
-          hasMore={hasMore}
-          error={productsError}
-          column="auto"
-          gridClassName="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
-          categoryName={category?.name}
-        />
+        {/* filter rail + grid — the same layout and card density as the
+            search page, so the two listing surfaces feel identical */}
+        <div className="flex w-full md:gap-6 lg:gap-10">
+          <div className="hidden w-72 shrink-0 md:block lg:w-80">
+            <StickyBox offsetTop={140} offsetBottom={30}>
+              <SidebarFilter inRail showCategories={false} type={typeSlug} />
+            </StickyBox>
+          </div>
+          <div className="min-w-0 flex-1">
+            <Grid
+              products={products as Product[] | undefined}
+              loadMore={loadMore}
+              isLoading={isLoading}
+              isLoadingMore={isLoadingMore}
+              hasMore={hasMore}
+              error={productsError}
+              column="five"
+              categoryName={category?.name}
+            />
+          </div>
+        </div>
+
+        {/* Floating filter button (sub-md) — same drawer as the search page */}
+        <button
+          type="button"
+          onClick={() => setDrawerView({ display: true, view: 'SEARCH_FILTER' })}
+          className="fixed bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-ds-btn text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
+        >
+          <span className="sr-only">Filters</span>
+          <FilterIcon width="17.05" height="18" />
+        </button>
       </section>
     </div>
   );
