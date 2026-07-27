@@ -20,10 +20,10 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
   const mainSrc = images[active]?.original || images[active]?.thumbnail || '';
   const thumbs = images.slice(0, 4);
 
+  // FIXED height at lg (not h-auto): the media column must not stretch to
+  // match the right column — opening the pot rail made the object-cover
+  // image blow up/distort (worst in the quick-view modal).
   return (
-    {/* FIXED height at lg (not h-auto): the media column must not stretch to
-        match the right column — opening the pot rail made the object-cover
-        image blow up/distort (worst in the quick-view modal). */}
     <div className="relative h-[300px] w-full self-start sm:h-[380px] lg:h-[620px]">
       {/* Full rectangular image — no decorative curve/border, fills the right side.
           All gallery images are stacked + preloaded, so switching thumbnails is an
