@@ -45,6 +45,8 @@ interface Props {
   counterClass?: string;
   variation?: any;
   disabled?: boolean;
+  /** Units added per click (a card-level quantity stepper feeds this). */
+  quantity?: number;
 }
 
 export const AddToCart = ({
@@ -54,6 +56,7 @@ export const AddToCart = ({
   counterClass,
   variation,
   disabled,
+  quantity = 1,
 }: Props) => {
   const { t } = useTranslation('common');
   const {
@@ -76,7 +79,7 @@ export const AddToCart = ({
     if (item?.language !== language) {
       updateCartLanguage(item?.language);
     }
-    addItemToCart(item, 1);
+    addItemToCart(item, Math.max(1, Math.floor(quantity)));
     track('add_to_cart', {
       label: item?.name,
       value: Number(item?.price) || undefined,
