@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from '@/compat/next-router';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   getStoredCity,
@@ -97,9 +98,19 @@ export default function LocationGate() {
     setMustPick(false);
   }
 
+  // Auth/utility pages never require a shopping city — the blocking picker
+  // was covering the Log in / Sign up buttons for first-time visitors sent to
+  // /signin (e.g. from the plant-doctor history teaser). The gate re-arms the
+  // moment they navigate to any shopping surface (mustPick stays true).
+  const { asPath } = useRouter();
+  const path = (asPath || '').split('?')[0];
+  const exemptRoute = ['/signin', '/verify-email', '/access-denied'].some(
+    (p) => path === p || path.startsWith(`${p}/`),
+  );
+
   return (
     <CityPickerDialog
-      open={mustPick}
+      open={mustPick && !exemptRoute}
       blocking
       title="Select your shopping city"
       subtitle="Plants, pots and prices are specific to your city. You can change it anytime from the top of the page."
