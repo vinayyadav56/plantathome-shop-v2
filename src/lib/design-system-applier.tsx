@@ -7,7 +7,7 @@ import { applyTypography } from '@/lib/typography';
 /**
  * Applies the admin-configured Design System (accent / density / buttons) AND the
  * website fonts (settings.options.typography.fontFamily body + .headingFontFamily
- * display serif, defaults Inter + Playfair Display) to the storefront at runtime,
+ * display serif, defaults Inter + Cormorant Garamond) to the storefront at runtime,
  * persisting both for the next load's pre-paint scripts. Renders nothing.
  *
  * The two are applied in ONE effect so the typography is ALWAYS set LAST, after
@@ -24,7 +24,7 @@ export default function DesignSystemApplier() {
   useEffect(() => {
     // Design system first (sets its own font pairing) …
     applyDesignSystem(designSystem, true);
-    // … then the website fonts win (Inter body + Playfair headings by default).
+    // … then the website fonts win (Inter body + Cormorant headings by default).
     // Re-runs whenever the design system OR either font changes.
     applyTypography(fontFamily, headingFontFamily, true);
   }, [JSON.stringify(designSystem ?? null), fontFamily, headingFontFamily]);

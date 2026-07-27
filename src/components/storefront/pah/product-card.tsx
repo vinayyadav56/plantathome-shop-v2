@@ -108,14 +108,14 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
       </div>
       <div className="px-3 pb-3 pt-[11px]">
-        <div className="line-clamp-1 font-heading text-[14px] font-bold leading-[1.15] text-forest-800">{product?.name}</div>
-        {desc ? <div className="mt-[3px] line-clamp-1 text-[11px] text-stone-500">{desc}</div> : <div className="mt-[3px] h-[11px]" />}
+        <div className="line-clamp-1 font-heading text-[16px] font-bold leading-[1.15] text-[#1D4D35]">{product?.name}</div>
+        {desc ? <div className="mt-[3px] line-clamp-1 text-[11px] text-[#6B7280]">{desc}</div> : <div className="mt-[3px] h-[11px]" />}
         <div className="mt-[9px] flex items-center justify-between">
           <div className="flex min-w-0 items-baseline gap-1">
-            <span className="font-hanken text-[15px] font-semibold tabular-nums text-forest-700">{rupee(price)}</span>
-            {mrp ? <span className="text-[11px] text-stone-400 line-through">{rupee(mrp)}</span> : null}
+            <span className="font-hanken text-[15px] font-semibold tabular-nums text-[#14532D]">{rupee(price)}</span>
+            {mrp ? <span className="text-[11px] font-medium text-[#9CA3AF] line-through">{rupee(mrp)}</span> : null}
             {offPct > 0 ? (
-              <span className="rounded bg-[#FDECEC] px-1 py-0.5 text-[9px] font-bold leading-none text-[#DC2626]">{offPct}%</span>
+              <span className="rounded bg-[#DC2626] px-1 py-0.5 text-[9px] font-bold leading-none text-white">{offPct}%</span>
             ) : null}
           </div>
           <button

@@ -169,7 +169,7 @@ export default function CategoryPage() {
           hasMore={hasMore}
           error={productsError}
           column="auto"
-          gridClassName="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+          gridClassName="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
           categoryName={category?.name}
         />
       </section>

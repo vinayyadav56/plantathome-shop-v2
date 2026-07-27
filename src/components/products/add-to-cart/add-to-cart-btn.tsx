@@ -93,14 +93,14 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
           onClick={onClick}
           disabled={disabled}
           className={cn(
-            'flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-ds-btn px-5 text-[13px] font-semibold text-white transition duration-200 hover:bg-ds-btn-hover focus:outline-0',
+            'flex h-11 w-full items-center justify-center gap-2 rounded-[10px] bg-ds-btn px-5 text-[16px] font-semibold text-white transition duration-200 hover:bg-ds-btn-hover focus:outline-0 sm:h-12 sm:text-[18px]',
             {
               'cursor-not-allowed !bg-stone-300 !text-stone-500 hover:!bg-stone-300':
                 disabled,
             }
           )}
         >
-          <CartIcon className="h-4 w-4" />
+          <CartIcon className="h-[18px] w-[18px]" />
           <span>{t('text-add-cart')}</span>
         </button>
       );

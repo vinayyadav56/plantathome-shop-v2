@@ -2,7 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 
 // Two admin-switchable font axes (Settings → Design System):
 // --font-sans = the body font (default Inter), --font-heading = the display
-// serif (default Playfair Display; "Same as body" collapses headings onto the
+// serif (default Cormorant Garamond; "Same as body" collapses headings onto the
 // body stack). Only `mono` stays monospace.
 const SANS = [
   'var(--font-sans)',
@@ -19,7 +19,7 @@ const SANS = [
 
 const HEADING = [
   'var(--font-heading)',
-  '"Playfair Display"',
+  '"Cormorant Garamond"',
   'Georgia',
   '"Times New Roman"',
   'serif',
@@ -54,7 +54,7 @@ module.exports = {
       fontFamily: {
         // TWO axes, both admin-controlled (Settings → Design System):
         // --font-sans = the body font (default Inter) and --font-heading = the
-        // display serif (default Playfair Display; "Same as body" collapses it).
+        // display serif (default Cormorant Garamond; "Same as body" collapses it).
         // Display/heading aliases point at --font-heading; body-scale aliases
         // stay on --font-sans. Only `mono` is a real fixed face.
         body: SANS,

@@ -11,7 +11,7 @@
 
 export const TYPO_STORAGE_KEY = 'pah-font-family';
 export const DEFAULT_FONT = 'Inter';
-export const DEFAULT_HEADING_FONT = 'Playfair Display';
+export const DEFAULT_HEADING_FONT = 'Cormorant Garamond';
 
 /** Weights requested from Google Fonts for whichever family is selected. */
 const FONT_WEIGHTS = 'wght@300;400;500;600;700;800';
@@ -44,8 +44,8 @@ const SERIF_FALLBACK = "Georgia, 'Times New Roman', Times, serif";
 /** Curated HEADING families the admin can pick (must match the admin list).
  *  The '' sentinel means "same as the body font" — no serif, one face sitewide. */
 export const HEADING_FONT_FAMILIES: { value: string; name: string }[] = [
-  { value: 'Playfair Display', name: 'Playfair Display (default)' },
-  { value: 'Cormorant Garamond', name: 'Cormorant Garamond' },
+  { value: 'Cormorant Garamond', name: 'Cormorant Garamond (default)' },
+  { value: 'Playfair Display', name: 'Playfair Display' },
   { value: 'Lora', name: 'Lora' },
   { value: 'Merriweather', name: 'Merriweather' },
   { value: '', name: 'Same as body font' },
@@ -121,7 +121,7 @@ export function ensureFontLoaded(family: string, hrefOverride?: string | null): 
 /** Apply the website fonts via CSS vars + persist for the next load's
  *  pre-paint script. Browser only. Two axes:
  *  - body family → --font-body / --font-sans / --font-eyebrow (default Inter)
- *  - heading family → --font-heading (default Playfair Display; the '' sentinel
+ *  - heading family → --font-heading (default Cormorant Garamond; the '' sentinel
  *    or "Same as body" collapses headings back onto the body stack)
  *  headingFamily === undefined/null means "not configured" → serif default;
  *  '' means the admin explicitly chose one face sitewide. */
@@ -167,7 +167,7 @@ export function applyTypography(
 
 /**
  * Inline pre-paint script (string). Reads the persisted fonts (default Inter
- * body + Playfair Display headings) and writes the font CSS vars + injects the
+ * body + Cormorant Garamond headings) and writes the font CSS vars + injects the
  * font <link>s BEFORE first paint, so there is no flash of the previous/
  * design-system font. Must be placed AFTER the design-system pre-paint script
  * in the layout so these values win.

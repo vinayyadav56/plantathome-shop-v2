@@ -76,9 +76,12 @@ export function Grid({
       <div
         className={cn(
           {
-            'grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(220px,1fr))]':
+            // Single column on small phones: the card's typography spec
+            // (Cormorant 24px names, 28px prices) is designed for the
+            // full-width mobile card — a 2-up grid truncates everything.
+            'grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]':
               column === 'auto',
-            'grid grid-cols-2 gap-3 gap-y-6 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
+            'grid grid-cols-1 gap-4 gap-y-6 xs:grid-cols-2 xs:gap-3 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
               column === 'five' || column === 'six',
           },
           gridClassName,

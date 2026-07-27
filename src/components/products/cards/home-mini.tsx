@@ -107,12 +107,12 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
         <button
           type="button"
           onClick={handleQuickView}
-          className="truncate text-left font-heading text-[14.5px] font-bold text-forest-800"
+          className="truncate text-left font-heading text-[17px] font-bold leading-[1.15] text-[#1D4D35]"
         >
           {product.name}
         </button>
         {sciName ? (
-          <p className="mt-0.5 truncate text-[11px] text-stone-500">{sciName}</p>
+          <p className="mt-0.5 truncate text-[11px] text-[#6B7280]">{sciName}</p>
         ) : null}
 
         {/* rating */}
@@ -127,14 +127,14 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
         {/* price + cart */}
         <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
           <span className="flex min-w-0 flex-wrap items-center gap-1.5">
-            <span className="text-[16.5px] font-bold leading-none text-forest-700">
+            <span className="text-[17px] font-bold leading-none text-[#14532D]">
               {isVariable ? minPrice : price}
             </span>
             {!isVariable && basePrice && (
-              <del className="text-[11px] leading-none text-stone-400">{basePrice}</del>
+              <del className="text-[11px] font-medium leading-none text-[#9CA3AF]">{basePrice}</del>
             )}
             {!isVariable && discount && (
-              <span className="rounded-md bg-[#FDECEC] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#DC2626]">
+              <span className="rounded-md bg-[#DC2626] px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
                 {discount} OFF
               </span>
             )}
