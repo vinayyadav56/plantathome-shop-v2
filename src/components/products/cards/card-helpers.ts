@@ -52,8 +52,12 @@ export function stripHtml(html: string | null | undefined): string {
 }
 
 /** One/two-line supporting copy: real description first, then a synthesized
- *  line from plant attributes, then the category. Never throws, may be ''. */
+ *  line from plant attributes, then the category. Never throws, may be ''.
+ *  List payloads omit the full HTML description but carry the server-built
+ *  `description_preview` — prefer it so cards always match the admin copy. */
 export function shortDescription(product: Product): string {
+  const preview = (product as any)?.description_preview;
+  if (preview && String(preview).trim()) return String(preview).trim();
   const plain = stripHtml((product as any)?.description);
   if (plain) return plain;
   const a = product?.plant_attribute;
