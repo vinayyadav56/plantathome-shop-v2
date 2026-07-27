@@ -11,11 +11,12 @@ import { Agentation } from 'agentation';
  * `agentation-mcp` server (http://localhost:4747), which exposes them to the
  * coding agent via MCP.
  *
- * OPT-IN: visit any page with `?agentation=1` to enable (persists in this
- * browser via localStorage), `?agentation=0` to disable. Without opt-in the
- * component polls localhost:4747 on every staging page view, and for anyone
- * not running the local relay the browser logs an unsuppressable CORS/loopback
- * error per poll — which broke the zero-console-error QA gate sitewide.
+ * DEFAULT ON for staging/localhost (the owner uses it to annotate staging).
+ * `?agentation=0` disables it in this browser (persists via localStorage),
+ * `?agentation=1` re-enables. Note: without the local relay running, the
+ * toolbar's localhost:4747 polls log unsuppressable CORS/loopback console
+ * errors — the QA specs therefore pre-seed `pah-agentation=off` themselves so
+ * the zero-console-error gates stay meaningful.
  *
  * Mounted-state gate (not next/dynamic): renders null on the server AND on the
  * client's first hydration pass, so there is no SSR/client mismatch — dynamic
@@ -28,11 +29,12 @@ export default function AgentationToolbar() {
   useEffect(() => {
     try {
       const q = new URLSearchParams(window.location.search).get('agentation');
-      if (q === '1') localStorage.setItem('pah-agentation', 'on');
-      if (q === '0') localStorage.removeItem('pah-agentation');
-      setEnabled(localStorage.getItem('pah-agentation') === 'on');
+      if (q === '1') localStorage.removeItem('pah-agentation');
+      if (q === '0') localStorage.setItem('pah-agentation', 'off');
+      setEnabled(localStorage.getItem('pah-agentation') !== 'off');
     } catch {
-      /* storage unavailable → stay disabled */
+      /* storage unavailable → default enabled (hostname gate still applies) */
+      setEnabled(true);
     }
   }, []);
 

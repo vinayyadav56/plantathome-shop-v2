@@ -47,6 +47,10 @@ for (const [name, path, contentRe] of PAGES) {
   test(`prod smoke: ${name} (${path})`, async ({ browser }) => {
     const ctx = await browser.newContext();
     const page: Page = await ctx.newPage();
+    // Staging-only: the Agentation toolbar is default-on for humans; its
+    // localhost:4747 polls log CORS console errors, so tests switch it off.
+    // (No-op on prod, where the toolbar never mounts.)
+    await page.addInitScript(() => localStorage.setItem('pah-agentation', 'off'));
 
     const consoleErrors: string[] = [];
     const pageErrors: string[] = [];

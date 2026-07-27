@@ -11,9 +11,14 @@ const PASSWORD = process.env.QA_PASSWORD ?? 'Passw0rd!';
 
 // Pre-seed the shopping city everywhere: the blocking first-visit city dialog
 // otherwise sits over the page and intercepts every Login click. Its own
-// behaviour is covered in the golden-path spec.
+// behaviour is covered in the golden-path spec. Also switch OFF the staging
+// Agentation toolbar — it is default-on for humans, but its localhost:4747
+// polls log CORS console errors that would poison assertions.
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem('pah_customer_city', 'Delhi'));
+  await page.addInitScript(() => {
+    localStorage.setItem('pah_customer_city', 'Delhi');
+    localStorage.setItem('pah-agentation', 'off');
+  });
 });
 
 test.describe('storefront auth', () => {

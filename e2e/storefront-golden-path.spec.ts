@@ -37,6 +37,12 @@ const rupees = (t: string | null | undefined): number =>
   Number(String(t ?? '').replace(/[^0-9.]/g, '')) || 0;
 
 test.describe('Storefront golden path', () => {
+  // The staging Agentation toolbar is default-on for humans; its localhost:4747
+  // polls log CORS console errors, so tests switch it off per context.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('pah-agentation', 'off'));
+  });
+
   test('home -> PDP -> pot -> cart -> guest checkout -> verify 200', async ({ page }) => {
     const errors = attachConsoleGuard(page);
 
@@ -159,7 +165,10 @@ test.describe('Storefront golden path', () => {
   // sit over every page — its own behaviour is covered by the funnel test above.
   for (const path of ['/', '/categories', '/c/indoor', '/plants/search', `/products/${PRODUCT}`]) {
     test(`no console errors on ${path}`, async ({ page }) => {
-      await page.addInitScript(() => localStorage.setItem('pah_customer_city', 'Delhi'));
+      await page.addInitScript(() => {
+        localStorage.setItem('pah_customer_city', 'Delhi');
+        localStorage.setItem('pah-agentation', 'off');
+      });
       const errors = attachConsoleGuard(page);
       const resp = await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle' });
       expect(resp?.status(), `${path} HTTP`).toBeLessThan(400);
