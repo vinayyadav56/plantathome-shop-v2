@@ -28,6 +28,30 @@ export type HomeCollectionsConfig = {
   }>;
 };
 
+/** Admin-editable "Six worlds" verticals band (settings.options.verticalsBand). */
+export type VerticalsBandConfig = {
+  eyebrow?: string;
+  heading?: string;
+  subtitle?: string;
+  tiles?: Array<{
+    typeSlug?: string;
+    tagline?: string;
+    image?: { original?: string; thumbnail?: string } | string | null;
+    order?: number;
+    comingSoon?: boolean;
+  }>;
+};
+
+/** Admin-editable desktop hero — image + copy + chips + the two overlay stat
+    cards (settings.options.homeHero). Exactly two stat cards are rendered. */
+export type HomeHeroConfig = {
+  image?: { original?: string; thumbnail?: string } | string | null;
+  headline?: string;
+  subheadline?: string;
+  chips?: string[];
+  statCards?: Array<{ value?: string; label?: string }>;
+};
+
 /** Admin-editable Corporate Gifting page content (settings.options.giftingContent). */
 export type GiftingImage =
   | { original?: string; thumbnail?: string }
@@ -75,6 +99,9 @@ export function useHomeConfig() {
     whyPlants: (settings?.whyPlants ?? null) as WhyPlantsConfig | null,
     homeCollections: (settings?.homeCollections ??
       null) as HomeCollectionsConfig | null,
+    verticalsBand: (settings?.verticalsBand ??
+      null) as VerticalsBandConfig | null,
+    homeHero: (settings?.homeHero ?? null) as HomeHeroConfig | null,
   };
 }
 

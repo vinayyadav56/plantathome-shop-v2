@@ -6,9 +6,16 @@ import { useTranslation } from 'next-i18next';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
-import { useBannerEnabled } from '@/lib/use-home-config';
+import {
+  useBannerEnabled,
+  useHomeConfig,
+  resolveImageUrl,
+} from '@/lib/use-home-config';
 
 const EXPO = [0.22, 1, 0.36, 1] as const;
+
+const str = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() ? v.trim() : undefined;
 
 /**
  * "All our worlds" — every vertical (type) as an editorial tile on the home.
@@ -20,21 +27,37 @@ const EXPO = [0.22, 1, 0.36, 1] as const;
 export function VerticalsBand() {
   const { t } = useTranslation('common');
   const enabled = useBannerEnabled('verticals');
+  // Admin overlay (Configuration → Six Worlds & Hero): per-field override of
+  // the header copy + per-tile tagline/image/order; built-ins when unset.
+  // Settings are SSR-prefetched on the home → stable on first paint.
+  const { verticalsBand } = useHomeConfig();
   // Same options as the SSR prefetch → dehydrated cache hit, no skeleton flash.
   const { types, isLoading } = useTypes({ limit: TYPES_PER_PAGE } as any);
   if (!enabled) return null;
 
-  const list = (types ?? []).map((ty: any) => {
+  const tileFor = (slug: string) =>
+    (verticalsBand?.tiles ?? []).find((tile) => tile?.typeSlug === slug);
+
+  const list = (types ?? []).map((ty: any, i: number) => {
     const meta = getVerticalMeta(ty.slug, ty.name);
+    const cfg = tileFor(ty.slug);
     return {
       slug: ty.slug,
       name: ty.name ?? meta.label,
-      tagline: meta.tagline,
-      img: meta.scenes[0],
+      tagline: str(cfg?.tagline) ?? meta.tagline,
+      img: resolveImageUrl(cfg?.image ?? null) || meta.scenes[0],
       href: meta.shopPath ?? meta.path,
-      comingSoon: Boolean(meta.comingSoon),
+      comingSoon:
+        typeof cfg?.comingSoon === 'boolean'
+          ? cfg.comingSoon
+          : Boolean(meta.comingSoon),
+      // Configured tiles sort by their admin `order` (ahead of unconfigured
+      // ones, which keep their API order). With no config every key is
+      // 1000 + i → identical order to before (sort is stable).
+      sortKey: typeof cfg?.order === 'number' ? cfg.order : 1000 + i,
     };
   });
+  list.sort((a: any, b: any) => a.sortKey - b.sortKey);
 
   return (
     <section className="border-t border-kraft-200/60 bg-white">
@@ -49,13 +72,13 @@ export function VerticalsBand() {
         >
           <div>
             <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">
-              {t('home-verticals-eyebrow')}
+              {str(verticalsBand?.eyebrow) ?? t('home-verticals-eyebrow')}
             </div>
             <h2 className="m-0 font-pahserif text-[26px] font-semibold leading-[1.05] tracking-[-0.005em] text-forest-900 sm:text-[34px]">
-              {t('home-verticals-title')}
+              {str(verticalsBand?.heading) ?? t('home-verticals-title')}
             </h2>
             <p className="mt-2 max-w-xl font-hanken text-[13.5px] leading-[1.55] text-stone-500 sm:text-[14.5px] md:max-w-none md:whitespace-nowrap md:text-[12px] lg:max-w-xl lg:whitespace-normal lg:text-[14.5px]">
-              {t('home-verticals-sub')}
+              {str(verticalsBand?.subtitle) ?? t('home-verticals-sub')}
             </p>
           </div>
           <Link

@@ -5,6 +5,18 @@ import { Icon } from '../icons';
 import { Magnetic, WordReveal, KenBurns, EXPO } from '../motion';
 import { VideoModal } from './video-modal';
 import { useSettings } from '@/framework/settings';
+import { useHomeConfig, resolveImageUrl } from '@/lib/use-home-config';
+
+const str = (v: unknown): string | undefined =>
+  typeof v === 'string' && v.trim() ? v.trim() : undefined;
+
+// Built-in chips + overlay stat cards — the values the admin config
+// (Configuration → Six Worlds & Hero) overrides per-field.
+const DEFAULT_CHIPS = ['Same-day delivery', '30-day guarantee', 'Hand-picked'];
+const DEFAULT_STATS = [
+  { value: '12k+', label: 'happy customers across India' },
+  { value: '4.9 / 5', label: '12,000+ reviews' },
+] as const;
 
 export function Hero({
   scenes,
@@ -28,9 +40,35 @@ export function Hero({
   tourSubtitle?: string;
 }) {
   const { settings } = useSettings();
-  // admin → Storefront Media can override the hero background with one image
-  const heroImage = (settings as any)?.sectionMedia?.heroImage;
+  // Admin overlay (Configuration → Six Worlds & Hero) — per-field, each value
+  // falls back to the current hardcoded/prop value when unset. Settings are
+  // SSR-prefetched, so reading during render is hydration-safe (no flash).
+  const { homeHero } = useHomeConfig();
+  // Hero image precedence: Six Worlds & Hero image → Storefront Media
+  // heroImage → the built-in scenes (untouched when nothing is configured).
+  const cfgHeroImage = resolveImageUrl(homeHero?.image ?? null);
+  const heroImage =
+    cfgHeroImage || (settings as any)?.sectionMedia?.heroImage;
   const heroScenes = heroImage ? [heroImage] : scenes;
+
+  const cfgHeadline = str(homeHero?.headline);
+  const cfgSub = str(homeHero?.subheadline);
+  const cfgChips = (Array.isArray(homeHero?.chips) ? homeHero!.chips! : [])
+    .map((c) => str(c))
+    .filter(Boolean) as string[];
+  const chips = cfgChips.length ? cfgChips : DEFAULT_CHIPS;
+  const statCfg = Array.isArray(homeHero?.statCards)
+    ? homeHero!.statCards!
+    : [];
+  // Exactly two stat cards render; each field overrides independently.
+  const statA = {
+    value: str(statCfg[0]?.value) ?? DEFAULT_STATS[0].value,
+    label: str(statCfg[0]?.label) ?? DEFAULT_STATS[0].label,
+  };
+  const statB = {
+    value: str(statCfg[1]?.value) ?? DEFAULT_STATS[1].value,
+    label: str(statCfg[1]?.label) ?? DEFAULT_STATS[1].label,
+  };
 
   const [tour, setTour] = React.useState(false);
   const ref = React.useRef<HTMLElement>(null);
@@ -67,10 +105,17 @@ export function Hero({
         </motion.span>
 
         <h1 className="max-w-4xl font-serif text-[2.8rem] font-semibold leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-[5.75rem]">
-          <WordReveal text={titleA} delay={0.15} />
-          <span className="block text-goldlight">
-            <WordReveal text={titleB} delay={0.45} />
-          </span>
+          {cfgHeadline ? (
+            // Admin headline replaces the whole two-line title.
+            <WordReveal text={cfgHeadline} delay={0.15} />
+          ) : (
+            <>
+              <WordReveal text={titleA} delay={0.15} />
+              <span className="block text-goldlight">
+                <WordReveal text={titleB} delay={0.45} />
+              </span>
+            </>
+          )}
         </h1>
 
         <motion.p
@@ -79,7 +124,7 @@ export function Hero({
           transition={{ delay: 0.7, duration: 0.7, ease: EXPO }}
           className="mt-6 max-w-xl text-[14px] leading-7 text-white/90 sm:text-lg"
         >
-          {sub}
+          {cfgSub ?? sub}
         </motion.p>
 
         <motion.div
@@ -107,7 +152,7 @@ export function Hero({
           transition={{ delay: 1, duration: 0.8 }}
           className="mt-10 flex flex-wrap gap-2.5"
         >
-          {['Same-day delivery', '30-day guarantee', 'Hand-picked'].map((t) => (
+          {chips.map((t) => (
             <span
               key={t}
               className="rounded-md border border-white/20 bg-white/5 px-4 py-2 text-[11px] font-medium text-white/90 backdrop-blur-md"
@@ -122,8 +167,8 @@ export function Hero({
         style={{ y: cardA, opacity: fade }}
         className="absolute right-8 top-[27%] z-10 hidden w-52 rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-xl lg:block"
       >
-        <div className="font-heading text-3xl font-black text-white">12k+</div>
-        <div className="mt-1 text-xs text-white/80">happy customers across India</div>
+        <div className="font-heading text-3xl font-black text-white">{statA.value}</div>
+        <div className="mt-1 text-xs text-white/80">{statA.label}</div>
       </motion.div>
       <motion.div
         style={{ y: cardB, opacity: fade }}
@@ -133,8 +178,8 @@ export function Hero({
           <Icon.star className="h-5 w-5" />
         </span>
         <div>
-          <div className="font-heading text-lg font-extrabold text-white">4.9 / 5</div>
-          <div className="text-[11px] text-white/75">12,000+ reviews</div>
+          <div className="font-heading text-lg font-extrabold text-white">{statB.value}</div>
+          <div className="text-[11px] text-white/75">{statB.label}</div>
         </div>
       </motion.div>
 
