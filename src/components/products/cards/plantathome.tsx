@@ -76,8 +76,6 @@ const CartGlyph = () => (
   </svg>
 );
 
-import { plantFeatures, FeatureGlyph } from '@/components/products/cards/plant-features';
-
 type Props = { product: Product; className?: string; priority?: boolean };
 
 const PlantAtHomeCard: React.FC<Props> = ({
@@ -121,7 +119,6 @@ const PlantAtHomeCard: React.FC<Props> = ({
     (product.plant_attribute as any)?.scientific_name ??
     null;
   const desc = shortDescription(product);
-  const features = plantFeatures(product);
   const inCart =
     mounted && !isVariable && isInCart(generateCartItem(product as any, undefined as any)?.id);
 
@@ -276,32 +273,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
             clamp with fixed min-height so grid rows stay aligned. Vertical
             margins are tighter than the reference's standalone card — inside a
             grid the full 18/22px rhythm made cards run too long. */}
-        <p className="mb-2.5 mt-2.5 min-h-[3.2em] text-[clamp(12.5px,4.6cqw,17px)] leading-[1.6] text-[#5B5B5B] line-clamp-2">
+        <p className="mb-3.5 mt-2.5 min-h-[3.2em] text-[clamp(12.5px,4.6cqw,17px)] leading-[1.6] text-[#5B5B5B] line-clamp-2">
           {desc}
         </p>
-
-        {/* Features — the reference card's 2×3 icon grid, mapped to plant
-            data. Rendered only for values that exist (the catalogue is full
-            of ''/None placeholders — those must never become a row). */}
-        {features.length >= 2 && (
-          <div className="mb-3.5">
-            <span className="text-[clamp(10px,3.6cqw,12px)] font-semibold uppercase tracking-[0.08em] text-stone-400">
-              Features
-            </span>
-            <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1.5">
-              {features.map((f) => (
-                <span
-                  key={f.key}
-                  className="flex min-w-0 items-center gap-1.5 text-[clamp(11px,4cqw,13.5px)] leading-snug text-[#5B5B5B]"
-                  title={`${f.title}: ${f.label}`}
-                >
-                  <FeatureGlyph name={f.icon} />
-                  <span className="truncate">{f.label}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
           {/* price row — 34px (28px mobile) #14532D · struck 18px #A0A0A0 ·

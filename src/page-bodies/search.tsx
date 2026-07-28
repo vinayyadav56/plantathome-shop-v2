@@ -60,10 +60,6 @@ export default function SearchPage() {
   if (error) return <ErrorMessage message={error.message} />;
   return (
     <div className="w-full">
-      {/* Reference layout: the availability headline leads the page. */}
-      <h1 className="mb-5 text-2xl font-bold tracking-tight text-heading lg:text-[28px]">
-        “{(((paginatorInfo as any)?.total ?? 0) as number).toLocaleString('en-IN')}” Plants Available
-      </h1>
       <FeaturedPlants />
       <div className="flex flex-col items-center justify-between mb-7 md:flex-row">
         {/* //FIXME: */}
@@ -121,7 +117,7 @@ export default function SearchPage() {
           isLoadingMore={isLoadingMore}
           hasMore={hasMore}
           error={error}
-          variant="listing"
+          column={layout === 'compact' ? 'five' : 'six'}
         />
       </div>
     </div>
