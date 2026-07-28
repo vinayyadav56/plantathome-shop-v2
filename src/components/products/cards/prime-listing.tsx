@@ -144,7 +144,11 @@ const PrimeListingCard: React.FC<Props> = ({ product, className = '', priority =
               <span className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-stone-400">
                 Features
               </span>
-              <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 lg:grid-cols-3">
+              {/* Two columns, never three: our values ("Bright Indirect",
+                  "Moderate water") are longer than the reference's car specs
+                  and ellipsize at 3-up. Full labels beat matching the column
+                  count. */}
+              <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-2">
                 {features.map((f) => (
                   <span
                     key={f.key}
