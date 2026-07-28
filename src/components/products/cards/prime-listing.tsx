@@ -164,9 +164,12 @@ const PrimeListingCard: React.FC<Props> = ({ product, className = '', priority =
           )}
         </div>
 
-        {/* bottom row — BIG price left, black "View Details →" right */}
-        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
-          <span className="min-w-0 truncate text-[22px] font-extrabold tracking-tight text-[#14532D] lg:text-[24px]">
+        {/* bottom row — BIG price left, black "View Details →" right. flex-wrap,
+            never truncate: a range plus the store's .00 fractions can outgrow
+            the row, and an ellipsized price is the one unforgivable cut — the
+            button wraps below instead (3rd appearance of this bug class). */}
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-x-3 gap-y-2.5 pt-5">
+          <span className="min-w-0 text-[20px] font-extrabold tracking-tight text-[#14532D] lg:text-[22px]">
             {priceLabel}
           </span>
           <button
