@@ -199,8 +199,11 @@ const SidebarFilter: React.FC<{
         <div className="flex h-full items-center justify-center rounded border border-forest-900/15 px-4">
           <ClearFiltersButton />
         </div>
+        {/* flex-1, NOT w-full: Button carries shrink-0, so a 100%-wide child
+            next to "Clear all" overflowed the drawer and clipped the label at
+            390px. flex-1 gives it the leftover track instead. */}
         <Button
-          className="w-full"
+          className="min-w-0 flex-1"
           onClick={() => closeSidebar({ display: false, view: '' })}
         >
           {t('filter-show-products')}

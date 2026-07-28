@@ -48,7 +48,7 @@ export function StickyAtcBar({
           <p className="truncate text-[13px] font-semibold leading-tight text-[#184A31]">
             {name}
           </p>
-          <p className="text-[17px] font-bold leading-tight text-[#14532D]">
+          <p className="text-[15px] font-bold leading-tight text-[#14532D]">
             {priceText}
           </p>
         </div>

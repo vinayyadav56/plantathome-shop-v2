@@ -132,7 +132,10 @@ const GetLayout = (page: React.ReactElement) => {
       <>
         {/* very-light white-green wash (was a cream #FBF8F2 mid-stop) */}
         <div className="w-full bg-[linear-gradient(180deg,#FFFFFF_0%,#F6FAF7_48%,#EFF4EC_100%)]">
-          <div className="flex w-full min-h-screen px-5 py-10 mx-auto max-w-1920 rtl:space-x-reverse md:space-x-6 lg:space-x-10 xl:py-14 xl:px-16">
+          {/* Full-bleed listing: no max-width cap, slim gutters — the grid
+              should use the whole viewport (user: "too much space on the
+              left/right side"). */}
+          <div className="flex w-full min-h-screen px-4 py-10 sm:px-5 rtl:space-x-reverse md:space-x-6 lg:space-x-8 lg:px-6 xl:py-14 xl:px-8">
             <div className="hidden w-72 shrink-0 md:block lg:w-80">
               <StickyBox offsetTop={140} offsetBottom={30}>
                 <SidebarFilter inRail />

@@ -33,7 +33,7 @@ export default function CareGuide({ pa }: { pa?: PlantAttribute | null }) {
   return (
     <section className="bg-[#FAF8F2]">
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
-        <h2 className="font-poppins mb-6 text-[1.4rem] font-bold text-forest-700">Care Guide</h2>
+        <h2 className="font-poppins mb-5 text-[15px] font-bold uppercase tracking-[0.08em] text-forest-700">Care Guide</h2>
         <div className="grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 shadow-[0_10px_30px_-20px_rgba(34,48,26,0.25)] sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
           {items.map((it, i) => (
             <div

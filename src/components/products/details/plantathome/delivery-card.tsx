@@ -41,14 +41,14 @@ export function DeliveryCard(props: {
 
   return (
     <div className="rounded-[14px] border border-[#ECECEC] bg-white p-4">
-      <h3 className="text-[15px] font-bold text-[#184A31]">
+      <h3 className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#184A31]">
         Delivery &amp; availability
       </h3>
 
       {/* ETA — local same-city vs courier (never names the vendor) */}
       {showEta && (
-        <div className="mt-3 flex items-start gap-2.5 text-sm text-[#184A31]">
-          <LineIcon name="truck" className="mt-0.5 h-5 w-5 shrink-0 text-[#24693E]" />
+        <div className="mt-3 flex items-start gap-2.5 text-[13px] text-[#184A31]">
+          <LineIcon name="truck" className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#24693E]" />
           <span>
             {fulfillmentMode === 'local' ? (
               <>

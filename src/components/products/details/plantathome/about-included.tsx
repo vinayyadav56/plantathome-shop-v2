@@ -31,7 +31,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
       <div className="mx-auto grid max-w-7xl gap-5 px-5 py-8 sm:px-8 lg:grid-cols-3">
         {/* About */}
         <div className="rounded-2xl bg-white p-6 shadow-[0_12px_34px_-22px_rgba(34,48,26,0.28)]">
-          <h3 className="font-poppins text-[1.2rem] font-bold text-forest-700">About {name}</h3>
+          <h3 className="font-poppins text-[13px] font-bold uppercase tracking-[0.08em] text-forest-700">About {name}</h3>
           <p className="mt-3 text-[13.5px] leading-7 text-stone-600">
             {text ||
               `At PlantAtHome, each ${name} is hand-picked and delivered in a premium pot to elevate your space — nurtured to arrive healthy, lush and ready to thrive.`}
@@ -58,7 +58,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
 
         {/* What's Included */}
         <div className="rounded-2xl bg-white p-6 shadow-[0_12px_34px_-22px_rgba(34,48,26,0.28)]">
-          <h3 className="font-poppins text-[1.2rem] font-bold text-forest-700">What&apos;s Included</h3>
+          <h3 className="font-poppins text-[13px] font-bold uppercase tracking-[0.08em] text-forest-700">What&apos;s Included</h3>
           <ul className="mt-4 space-y-2.5">
             {INCLUDED(name).map((it) => (
               <li key={it} className="flex items-center gap-2.5 text-[13.5px] text-stone-700">

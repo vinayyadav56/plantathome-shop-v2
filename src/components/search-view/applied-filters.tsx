@@ -56,9 +56,9 @@ const AppliedFilters: React.FC = () => {
       ).toLocaleString('en-IN')}`,
     });
   }
-  if (typeof router.query.text === 'string' && router.query.text.length) {
-    chips.push({ param: 'text', value: router.query.text, label: `“${router.query.text}”` });
-  }
+  // NO chip for `text`: the search input right below already shows the term
+  // with its own clear ×, so a chip would put two × marks for one filter
+  // (user-reported "double cross marks").
 
   if (!chips.length) return null;
 

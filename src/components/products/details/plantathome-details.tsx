@@ -285,7 +285,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
         {/* breadcrumb */}
         {!isModal && (
           <>
-            <nav className="flex flex-wrap items-center gap-2 text-[15px]">
+            <nav className="flex flex-wrap items-center gap-2 text-[12.5px]">
               {crumbs.map((c, i) => {
                 const last = i === crumbs.length - 1;
                 return (
@@ -321,9 +321,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             <div className="flex items-start justify-between gap-3">
               <h1
                 className={classNames(
-                  // Body font, bold — names are distinguished by weight only
-                  // (same pattern as the cards).
-                  'min-w-0 text-[1.9rem] font-bold leading-[1.1] tracking-tight text-forest-900 sm:text-[2.3rem]',
+                  // Myntra-scale: small, quiet name — weight and colour carry
+                  // the hierarchy, not size (annotation: "small fonts").
+                  'min-w-0 text-[19px] font-semibold leading-snug tracking-tight text-forest-900 sm:text-[22px]',
                   { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
                 )}
                 {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
@@ -344,7 +344,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* botanical subline */}
             {(pa?.scientific_name || pa?.hindi_name) && (
-              <p className="mt-1.5 text-[15px] text-[#8A8A8A]">
+              <p className="mt-1 text-[13px] text-[#8A8A8A]">
                 {pa?.scientific_name}
                 {pa?.scientific_name && pa?.hindi_name ? ' · ' : ''}
                 {pa?.hindi_name}
@@ -355,14 +355,14 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             <div className="mt-3 flex flex-wrap items-center gap-3">
               {reviewCount > 0 ? (
                 <a href="#reviews" className="group flex items-center gap-2">
-                  <GoldStar className="h-[18px] w-[18px]" />
-                  <span className="text-[16px] font-semibold text-gray-900">{ratingVal.toFixed(1)}</span>
-                  <span className="text-[14px] text-stone-500 underline-offset-2 group-hover:underline">
+                  <GoldStar className="h-[15px] w-[15px]" />
+                  <span className="text-[13.5px] font-semibold text-gray-900">{ratingVal.toFixed(1)}</span>
+                  <span className="text-[12.5px] text-stone-500 underline-offset-2 group-hover:underline">
                     ({reviewCount.toLocaleString('en-IN')} review{reviewCount === 1 ? '' : 's'})
                   </span>
                 </a>
               ) : (
-                <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[12px] font-semibold text-forest-800">
+                <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[11px] font-semibold text-forest-800">
                   New arrival
                 </span>
               )}
@@ -374,7 +374,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 {quickChips.map((c) => (
                   <span
                     key={c.label}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3 py-1.5 text-[12.5px] font-semibold text-[#24693E]"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-2.5 py-1 text-[11.5px] font-semibold text-[#24693E]"
                   >
                     <LineIcon name={c.icon} className="h-3.5 w-3.5" />
                     {c.label}
@@ -386,13 +386,13 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* price row */}
             <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
               {needsSelection ? (
-                <span className="text-[26px] font-bold leading-none text-[#14532D]">{minPrice} – {maxPrice}</span>
+                <span className="text-[20px] font-bold leading-none text-[#14532D]">{minPrice} – {maxPrice}</span>
               ) : (
                 <>
-                  <span className="text-[28px] font-bold leading-none text-[#14532D]">{displayPrice}</span>
-                  {displayBasePrice && <del className="text-[16px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>}
+                  <span className="text-[22px] font-bold leading-none text-[#14532D]">{displayPrice}</span>
+                  {displayBasePrice && <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>}
                   {!useVendorPrice && discount && (
-                    <span className="rounded-[8px] bg-[#FFEAEA] px-2.5 py-1 text-[13px] font-bold leading-none text-[#D73C3C]">
+                    <span className="rounded-[8px] bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
                       {discount} OFF
                     </span>
                   )}
@@ -405,7 +405,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* short description (the ONLY teaser — full text lives in the
                 "Plant care & details" section below the fold) */}
             {content && (
-              <div className="mt-5 react-editor-description text-[15px] leading-7 text-stone-600">
+              <div className="mt-5 react-editor-description text-[13.5px] leading-6 text-stone-600">
                 <Truncate character={180}>{content}</Truncate>
               </div>
             )}
@@ -423,8 +423,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 const selected = attributes[groupName];
                 return (
                   <div key={groupName} className="mt-6">
-                    <p className="mb-3 text-base font-semibold capitalize text-forest-900">
-                      {`Product ${groupName.replace(/-/g, ' ')}`}
+                    <p className="mb-2.5 text-[12px] font-bold uppercase tracking-[0.08em] text-forest-900">
+                      {`Select ${groupName.replace(/-/g, ' ')}`}
                     </p>
                     {color ? (
                       <div className="flex flex-wrap items-center gap-3">
@@ -456,7 +456,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                               type="button"
                               onClick={() => setAttributes((p: any) => ({ ...p, [groupName]: o.value }))}
                               className={classNames(
-                                'min-w-[3.25rem] rounded-full border px-5 py-2 text-sm font-medium transition',
+                                'min-w-[3.25rem] rounded-full border px-4 py-1.5 text-[13px] font-medium transition',
                                 active
                                   ? 'border-forest-700 bg-forest-700 text-white'
                                   : 'border-kraft-300 bg-transparent text-forest-900 hover:border-forest-500',
@@ -478,7 +478,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 next/image's fixed-dimension letterboxing. Hidden in the modal. */}
             {size_guide?.original && !isModal && (
               <details className="group mt-6 rounded-[14px] border border-[#ECECEC] bg-white">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[15px] font-semibold text-forest-900 [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-semibold text-forest-900 [&::-webkit-details-marker]:hidden">
                   Size guide
                   <LineIcon name="chevronRight" className="h-4 w-4 text-stone-400 transition-transform group-open:rotate-90" />
                 </summary>
@@ -534,7 +534,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14" /></svg>
                 </button>
-                <span className="min-w-[1.5rem] text-center text-base font-semibold text-forest-900">
+                <span className="min-w-[1.5rem] text-center text-[14px] font-semibold text-forest-900">
                   {String(qty).padStart(2, '0')}
                 </span>
                 <button
@@ -552,7 +552,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 onClick={handleAdd}
                 disabled={ctaDisabled}
                 className={classNames(
-                  'flex flex-1 items-center justify-center gap-2.5 rounded-[14px] px-7 py-3.5 text-base font-semibold text-white transition',
+                  'flex flex-1 items-center justify-center gap-2.5 rounded-[14px] px-7 py-3.5 text-[14px] font-bold uppercase tracking-[0.04em] text-white transition',
                   ctaDisabled
                     ? 'cursor-not-allowed bg-stone-300'
                     : 'bg-[#14532D] shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-[#0D4324]',
@@ -582,10 +582,10 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* What's included — admin-configured list (Product Page Sections) */}
             {!isModal && includedItems.length > 0 && (
               <div className="mt-4 rounded-[14px] border border-[#ECECEC] bg-white p-4">
-                <h3 className="text-[15px] font-bold text-[#184A31]">What&rsquo;s included</h3>
+                <h3 className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-[13.5px] text-stone-600">
+                    <li key={item} className="flex items-start gap-2 text-[13px] text-stone-600">
                       <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" strokeWidth={2.4} />
                       {item}
                     </li>
@@ -599,7 +599,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               <button
                 type="button"
                 onClick={onAskAi}
-                className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-forest-600/30 bg-white/50 px-4 py-2 text-sm font-semibold text-forest-800 transition hover:border-forest-600 hover:bg-white"
+                className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-forest-600/30 bg-white/50 px-4 py-2 text-[13px] font-semibold text-forest-800 transition hover:border-forest-600 hover:bg-white"
               >
                 <Spark className="h-4 w-4 text-clay-600" /> Ask AI about this plant
               </button>

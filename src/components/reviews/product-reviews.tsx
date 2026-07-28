@@ -157,7 +157,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
               Customer voices
             </p>
-            <h2 className="mt-2.5 text-[24px] font-bold leading-tight text-[#184A31] sm:text-[28px]">
+            <h2 className="mt-2 text-[15px] font-bold uppercase leading-tight tracking-[0.08em] text-[#184A31]">
               {t('text-product-reviews')}{' '}
               <span className="font-semibold text-[#8A8A8A]">
                 ({total.toLocaleString('en-IN')})

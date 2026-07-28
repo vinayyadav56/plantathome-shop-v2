@@ -166,7 +166,8 @@ export default function CategoryPage() {
       )}
 
       {/* ── PRODUCTS ── */}
-      <section className="mx-auto min-h-[40vh] max-w-1920 border-t border-kraft-200 px-5 py-10 sm:px-8 lg:px-16 xl:py-14">
+      {/* Full-bleed listing (matches /search): no max-width cap, slim gutters */}
+      <section className="min-h-[40vh] border-t border-kraft-200 px-4 py-10 sm:px-5 lg:px-6 xl:px-8 xl:py-14">
         {/* section header */}
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>

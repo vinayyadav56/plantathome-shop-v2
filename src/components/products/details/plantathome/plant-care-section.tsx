@@ -127,7 +127,7 @@ export function PlantCareSection({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold tracking-tight text-[#184A31] sm:text-[28px]">
+      <h2 className="text-[15px] font-bold uppercase tracking-[0.08em] text-[#184A31]">
         Plant care &amp; details
       </h2>
 
@@ -137,7 +137,7 @@ export function PlantCareSection({
           <div className="min-w-0">
             {contentHtml && (
               <div
-                className="react-editor-description text-[15px] leading-7 text-[#5B5B5B]"
+                className="react-editor-description text-[13.5px] leading-6 text-[#5B5B5B]"
                 dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
             )}
