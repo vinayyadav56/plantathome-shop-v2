@@ -2,6 +2,7 @@ import Slider from '@/components/ui/forms/range-slider';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
+import { useFilterFacets } from '@/framework/product';
 
 const defaultPriceRange = [0, 1000];
 const formatInr = (v: number | string) =>
@@ -10,6 +11,17 @@ const formatInr = (v: number | string) =>
 const PriceFilter = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
+  // Real catalogue bounds + distribution — the hardcoded 0–2000 slider ceiling
+  // hid every product above ₹2,000 from price filtering.
+  const { data: facets } = useFilterFacets();
+  const bounds = facets?.facets?.price;
+  const sliderMin = Math.floor(bounds?.min ?? 0);
+  const sliderMax = Math.ceil(bounds?.max ?? 2000);
+  const histogram = bounds?.histogram ?? [];
+  const maxBucket = useMemo(
+    () => Math.max(1, ...histogram.map((b) => b.count)),
+    [histogram],
+  );
   const selectedValues = useMemo(
     () =>
       router.query.price
@@ -44,11 +56,34 @@ const PriceFilter = () => {
   return (
     <>
       <span className="sr-only">{t('text-sort-by-price')}</span>
+      {histogram.length > 0 && (
+        <div
+          className="mb-1 flex h-11 items-end gap-[3px] px-0.5"
+          aria-hidden
+        >
+          {histogram.map((b, i) => {
+            const inRange =
+              Number(state[0] || sliderMin) <= b.to &&
+              Number(state[1] || sliderMax) >= b.from;
+            return (
+              <div
+                key={i}
+                className={
+                  inRange
+                    ? 'flex-1 rounded-t-[3px] bg-[#7FB07A] transition-colors'
+                    : 'flex-1 rounded-t-[3px] bg-stone-200 transition-colors'
+                }
+                style={{ height: `${15 + Math.round((b.count / maxBucket) * 85)}%` }}
+              />
+            );
+          })}
+        </div>
+      )}
       <Slider
         allowCross={false}
         range
-        min={0}
-        max={2000}
+        min={sliderMin}
+        max={sliderMax}
         //@ts-ignore
         defaultValue={state}
         //@ts-ignore

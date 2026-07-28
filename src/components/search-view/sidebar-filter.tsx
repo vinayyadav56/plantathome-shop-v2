@@ -7,6 +7,10 @@ import PriceFilter from '@/components/search-view/price-filter';
 import CategoryFilter from '@/components/search-view/category-filter-view';
 import TagFilter from '@/components/search-view/tag-filter-view';
 import ManufacturerFilter from '@/components/search-view/manufacturer-filter-view';
+import {
+  FacetFilterView, PlacementFilterView, PetFriendlyFilterView, SizeFilterView,
+  usePlantFilterCounts,
+} from '@/components/search-view/plant-filter-views';
 import classNames from 'classnames';
 import { useAtom } from 'jotai';
 import { drawerAtom } from '@/store/drawer-atom';
@@ -45,6 +49,13 @@ function ClearFiltersButton() {
       tags,
       manufacturer,
       text,
+      // botanical filters
+      sunlight,
+      water,
+      placement,
+      growth,
+      pet_friendly,
+      sizes,
       ...rest
     } = router.query;
     router.push({
@@ -84,6 +95,7 @@ const SidebarFilter: React.FC<{
   const tagCount = useParamCount('tags');
   const manufacturerCount = useParamCount('manufacturer');
   const priceCount = useParamCount('price') ? 1 : 0;
+  const plantCounts = usePlantFilterCounts();
 
   return (
     <div
@@ -138,6 +150,27 @@ const SidebarFilter: React.FC<{
 
         <FieldWrapper title="text-sort-by-price" count={priceCount}>
           <PriceFilter />
+        </FieldWrapper>
+
+        {/* Botanical facets — options + counts from products/filter-facets.
+            Sections with no catalogue values render nothing (see the views). */}
+        <FieldWrapper title="text-size" count={plantCounts.sizes}>
+          <SizeFilterView />
+        </FieldWrapper>
+        <FieldWrapper title="text-placement" count={plantCounts.placement}>
+          <PlacementFilterView />
+        </FieldWrapper>
+        <FieldWrapper title="text-sunlight" count={plantCounts.sunlight}>
+          <FacetFilterView param="sunlight" facetKey="sunlight" />
+        </FieldWrapper>
+        <FieldWrapper title="text-watering" count={plantCounts.water}>
+          <FacetFilterView param="water" facetKey="water_requirement" />
+        </FieldWrapper>
+        <FieldWrapper title="text-growth-rate" count={plantCounts.growth} defaultOpen={false}>
+          <FacetFilterView param="growth" facetKey="growth_rate" />
+        </FieldWrapper>
+        <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
+          <PetFriendlyFilterView />
         </FieldWrapper>
 
         {/* Secondary filters start collapsed — declutters the panel and defers

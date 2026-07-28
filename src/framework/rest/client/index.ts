@@ -121,6 +121,12 @@ class Client {
       min_price,
       max_price,
       tags,
+      sunlight,
+      water,
+      placement,
+      growth,
+      pet_friendly,
+      sizes,
       ...params
     }: Partial<ProductQueryOptions>) =>
       HttpClient.get<ProductPaginator>(API_ENDPOINTS.PRODUCTS, {
@@ -140,10 +146,25 @@ class Client {
           min_price,
           max_price,
           tags,
+          // Botanical facets — filtered through the plantAttribute relation
+          // ('in' fields server-side, so comma-joined multi-values work).
+          // pet_friendly is boolean; the API coerces true/1/yes and DROPS
+          // anything unparseable rather than 500ing under MySQL STRICT.
+          'plantAttribute.sunlight': sunlight,
+          'plantAttribute.water_requirement': water,
+          'plantAttribute.indoor_outdoor': placement,
+          'plantAttribute.growth_rate': growth,
+          'plantAttribute.pet_friendly': pet_friendly,
+          // The Size axis (Small/Medium/Large) lives on variations.
+          'variations.value': sizes,
           status: 'publish',
           visibility: 'visibility_public',
         }),
       }),
+    /** Filter-rail options: distinct attribute values + counts + the price
+     *  histogram, scoped exactly like the public list. */
+    filterFacets: () =>
+      HttpClient.get<import('@/types').FilterFacets>(API_ENDPOINTS.PRODUCTS_FILTER_FACETS),
     popular: (params: Partial<PopularProductQueryOptions>) =>
       HttpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS_POPULAR, params),
 

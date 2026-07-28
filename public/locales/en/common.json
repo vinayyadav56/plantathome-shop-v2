@@ -693,5 +693,11 @@
   "text-resend": "Resend",
   "text-send-code": "Send code",
   "add-secondary-email-helper": "Add a second email and verify it with a code.",
-  "contact-otp-sent-helper": "Enter the 6-digit code we emailed to {{email}}."
+  "contact-otp-sent-helper": "Enter the 6-digit code we emailed to {{email}}.",
+  "text-size": "Size",
+  "text-placement": "Placement",
+  "text-sunlight": "Sunlight",
+  "text-watering": "Watering",
+  "text-growth-rate": "Growth Rate",
+  "text-pet-friendly": "Pet Friendly"
 }

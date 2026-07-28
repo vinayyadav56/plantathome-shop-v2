@@ -24,6 +24,19 @@ import { toast } from 'react-toastify';
 import { useRouter } from '@/compat/next-router';
 import { useCustomerCity } from '@/lib/use-customer-city';
 
+/**
+ * Filter-rail options (distinct values + counts + price histogram) from
+ * GET products/filter-facets. Cached 5 min; a 404 from an older API build is
+ * treated as "no facets" so the rail's static sections still render.
+ */
+export function useFilterFacets() {
+  return useQuery<import('@/types').FilterFacets, Error>(
+    [API_ENDPOINTS.PRODUCTS_FILTER_FACETS],
+    () => client.products.filterFacets(),
+    { staleTime: 5 * 60 * 1000, retry: false },
+  );
+}
+
 export function useProducts(options?: Partial<ProductQueryOptions>) {
   const { locale } = useRouter();
   // City-first storefront: scope every product query to the shopper's selected

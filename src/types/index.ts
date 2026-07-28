@@ -46,6 +46,13 @@ export interface SearchParamOptions {
   shop_id: string;
   min_price: string;
   max_price: string;
+  // Botanical facets (dotted = Prettus relation fields, passed through verbatim)
+  'plantAttribute.sunlight': string;
+  'plantAttribute.water_requirement': string;
+  'plantAttribute.indoor_outdoor': string;
+  'plantAttribute.growth_rate': string;
+  'plantAttribute.pet_friendly': string;
+  'variations.value': string;
   rating: string;
   question: string;
   notice: string;
@@ -113,6 +120,27 @@ export interface ProductQueryOptions extends QueryOptions {
   searchQuery: string;
   text: string;
   visibility: string;
+  // Botanical filter params (comma-joined multi-values; see client.products.all)
+  sunlight: string;
+  water: string;
+  placement: string;
+  growth: string;
+  pet_friendly: string;
+  sizes: string;
+}
+
+/** GET products/filter-facets — the server's filter-rail option source. */
+export interface FilterFacets {
+  total: number;
+  facets: {
+    sunlight: { value: string; count: number }[];
+    water_requirement: { value: string; count: number }[];
+    indoor_outdoor: { value: string; count: number }[];
+    growth_rate: { value: string; count: number }[];
+    difficulty_level: { value: string; count: number }[];
+    pet_friendly: { true: number; false: number };
+    price: { min: number; max: number; histogram: { from: number; to: number; count: number }[] };
+  };
 }
 
 export interface PopularProductQueryOptions extends QueryOptions {

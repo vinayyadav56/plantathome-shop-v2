@@ -34,7 +34,8 @@ const FeaturedPlants = dynamic(
 
 
 export default function SearchPage() {
-  const { query } = useRouter();
+  const router = useRouter();
+  const { query } = router;
   const { searchType, ...restQuery }: any = query;
   const {
     products,
@@ -70,8 +71,30 @@ export default function SearchPage() {
             paginatorInfo?.total ?? 0
           }
         />
-        <div className="max-w-xs mt-4 md:mt-0">
-          <Sorting variant="dropdown" />
+        <div className="mt-4 flex items-center gap-3 md:mt-0">
+          {/* "Show: N" — the reference layout's page-size control. Writes the
+              `limit` URL param, which rides restQuery into useProducts. */}
+          <label className="flex items-center gap-1.5 text-sm text-body">
+            Show:
+            <select
+              value={typeof query.limit === 'string' ? query.limit : String(PRODUCTS_PER_PAGE)}
+              onChange={(e) => {
+                const q: Record<string, any> = { ...query };
+                if (e.target.value === String(PRODUCTS_PER_PAGE)) delete q.limit;
+                else q.limit = e.target.value;
+                router.push({ pathname: router.pathname, query: q });
+              }}
+              className="rounded-lg border border-forest-900/15 bg-white px-2 py-1.5 text-sm font-semibold text-heading focus:outline-none"
+              aria-label="Products per page"
+            >
+              {[PRODUCTS_PER_PAGE, 40, 60].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </label>
+          <div className="max-w-xs">
+            <Sorting variant="dropdown" />
+          </div>
         </div>
       </div>
       {/* keepPreviousData keeps the old cards mounted during a filter/sort/city

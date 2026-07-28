@@ -1,5 +1,6 @@
 export const API_ENDPOINTS = {
   PRODUCTS: '/products',
+  PRODUCTS_FILTER_FACETS: '/products/filter-facets',
   PRODUCTS_POPULAR: '/popular-products',
   PRODUCTS_REVIEWS: '/reviews',
   PRODUCTS_REVIEWS_ABUSE_REPORT: '/abusive_reports',

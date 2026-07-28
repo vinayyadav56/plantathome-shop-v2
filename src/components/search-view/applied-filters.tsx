@@ -29,6 +29,23 @@ const AppliedFilters: React.FC = () => {
         );
     }
   });
+  // Botanical filters: facet values are already display-cased ("Bright
+  // Indirect"), so no prettify; sizes/placement likewise.
+  (['sunlight', 'water', 'growth', 'sizes'] as const).forEach((param) => {
+    const raw = router.query[param];
+    if (typeof raw === 'string' && raw.length) {
+      raw
+        .split(',')
+        .filter(Boolean)
+        .forEach((value) => chips.push({ param, value, label: value }));
+    }
+  });
+  if (typeof router.query.placement === 'string' && router.query.placement) {
+    chips.push({ param: 'placement', value: router.query.placement, label: router.query.placement });
+  }
+  if (router.query.pet_friendly === 'true') {
+    chips.push({ param: 'pet_friendly', value: 'true', label: 'Pet friendly' });
+  }
   if (typeof router.query.price === 'string' && router.query.price.length) {
     const [min, max] = router.query.price.split(',');
     chips.push({
@@ -47,7 +64,7 @@ const AppliedFilters: React.FC = () => {
 
   function removeChip(chip: Chip) {
     const query: Record<string, any> = { ...router.query };
-    if (chip.param === 'price' || chip.param === 'text') {
+    if (['price', 'text', 'placement', 'pet_friendly'].includes(chip.param)) {
       delete query[chip.param];
     } else {
       const rest = String(query[chip.param])
