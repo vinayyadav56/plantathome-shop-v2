@@ -71,15 +71,16 @@ export const AddToCart = ({
   // Display-only city (no nursery supply): everything is browse-only.
   const { displayOnly } = useCitySupply();
   const item = generateCartItem(data, variation);
-  const handleAddClick = (
-    e: React.MouseEvent<HTMLButtonElement | MouseEvent>
+  const addToCart = (
+    e: React.MouseEvent<HTMLButtonElement | MouseEvent>,
+    qty: number
   ) => {
     e.stopPropagation();
     // Check language and update
     if (item?.language !== language) {
       updateCartLanguage(item?.language);
     }
-    addItemToCart(item, Math.max(1, Math.floor(quantity)));
+    addItemToCart(item, qty);
     track('add_to_cart', {
       label: item?.name,
       value: Number(item?.price) || undefined,
@@ -89,6 +90,18 @@ export const AddToCart = ({
       cartAnimation(e);
     }
   };
+
+  // The card's stepper picks the INITIAL quantity, so the Add button honours it.
+  const handleAddClick = (
+    e: React.MouseEvent<HTMLButtonElement | MouseEvent>
+  ) => addToCart(e, Math.max(1, Math.floor(quantity)));
+
+  // Once the item is in the cart the counter's + must step by exactly one, to
+  // mirror its − (which removes one). Reusing the Add handler here made every
+  // + add the stepper's quantity again — 3 → 6 → 9 against a − of one.
+  const handleIncrementClick = (
+    e: React.MouseEvent<HTMLButtonElement | MouseEvent>
+  ) => addToCart(e, 1);
   const handleRemoveClick = (e: any) => {
     e.stopPropagation();
     removeItemFromCart(item.id);
@@ -165,7 +178,7 @@ export const AddToCart = ({
       <Counter
         value={getItemFromCart(item.id).quantity as number}
         onDecrement={handleRemoveClick}
-        onIncrement={handleAddClick}
+        onIncrement={handleIncrementClick}
         variant={(counterVariant || variant) as any}
         className={counterClass}
         disabled={outOfStock || displayOnly}
