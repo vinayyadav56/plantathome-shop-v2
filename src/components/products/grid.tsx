@@ -6,8 +6,6 @@ import ProductLoader from '@/components/ui/loaders/product-loader';
 import { EmptyProducts } from '@/components/ui/empty-products';
 import rangeMap from '@/lib/range-map';
 import ProductCard from '@/components/products/cards/card';
-// STATIC import (house rule: next/dynamic of always-rendered cards hydration-loops).
-import PrimeListingCard from '@/components/products/cards/prime-listing';
 import ErrorMessage from '@/components/ui/error-message';
 import { useProducts } from '@/framework/product';
 import { PRODUCTS_PER_PAGE } from '@/framework/client/variables';
@@ -18,8 +16,12 @@ interface Props {
   sortedBy?: string;
   orderBy?: string;
   column?: 'five' | 'six' | 'auto';
-  /** 'listing' = the reference-design large 2-up card (search/category pages);
-   *  default keeps the compact PlantAtHome card everywhere else. */
+  /** 'listing' = the reference layout's LARGE 2-up grid (search/category
+   *  pages). The card itself is ALWAYS the one canonical PlantAtHome card —
+   *  its container-query type spec scales up to the approved maximums in the
+   *  wide cells, so the listing gets big cards with the exact same design,
+   *  fonts and copy as everywhere else. (A separate listing-only card was
+   *  tried and rejected: it diverged from the approved card spec.) */
   variant?: 'default' | 'listing';
   shopId?: string;
   gridClassName?: string;
@@ -102,25 +104,17 @@ export function Grid({
           ? rangeMap(limit, (i) => (
               <ProductLoader key={i} uniqueKey={`product-${i}`} />
             ))
-          : products?.map((product, index) =>
-              variant === 'listing' ? (
-                <PrimeListingCard
-                  product={product}
-                  key={product.id}
-                  priority={index < 3}
-                />
-              ) : (
-                <ProductCard
-                  product={product}
-                  key={product.id}
-                  // mark the first row's images as LCP candidates so next/image
-                  // preloads them (clears the dev "detected as LCP" hint + helps
-                  // Core Web Vitals); the desktop grid is up to 4-up, so cover the
-                  // whole first row. Deeper images stay lazy.
-                  priority={index < 4}
-                />
-              ),
-            )}
+          : products?.map((product, index) => (
+              <ProductCard
+                product={product}
+                key={product.id}
+                // mark the first row's images as LCP candidates so next/image
+                // preloads them (clears the dev "detected as LCP" hint + helps
+                // Core Web Vitals); the listing grid is 2-3-up and the default
+                // grid up to 4-up — cover the whole first row either way.
+                priority={index < 4}
+              />
+            ))}
       </div>
       {hasMore && (
         <div
