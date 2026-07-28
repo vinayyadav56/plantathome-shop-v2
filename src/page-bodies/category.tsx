@@ -200,7 +200,7 @@ export default function CategoryPage() {
               isLoadingMore={isLoadingMore}
               hasMore={hasMore}
               error={productsError}
-              column="five"
+              variant="listing"
               categoryName={category?.name}
             />
           </div>

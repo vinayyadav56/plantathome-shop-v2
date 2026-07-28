@@ -6,6 +6,8 @@ import ProductLoader from '@/components/ui/loaders/product-loader';
 import { EmptyProducts } from '@/components/ui/empty-products';
 import rangeMap from '@/lib/range-map';
 import ProductCard from '@/components/products/cards/card';
+// STATIC import (house rule: next/dynamic of always-rendered cards hydration-loops).
+import PrimeListingCard from '@/components/products/cards/prime-listing';
 import ErrorMessage from '@/components/ui/error-message';
 import { useProducts } from '@/framework/product';
 import { PRODUCTS_PER_PAGE } from '@/framework/client/variables';
@@ -16,6 +18,9 @@ interface Props {
   sortedBy?: string;
   orderBy?: string;
   column?: 'five' | 'six' | 'auto';
+  /** 'listing' = the reference-design large 2-up card (search/category pages);
+   *  default keeps the compact PlantAtHome card everywhere else. */
+  variant?: 'default' | 'listing';
   shopId?: string;
   gridClassName?: string;
   products: Product[] | undefined;
@@ -39,6 +44,7 @@ export function Grid({
   hasMore,
   limit = PRODUCTS_PER_PAGE,
   column = 'auto',
+  variant = 'default',
   categoryName,
 }: Props) {
   const { t } = useTranslation('common');
@@ -75,15 +81,20 @@ export function Grid({
     <div className={cn('w-full', className)}>
       <div
         className={cn(
-          {
-            // Single column on small phones: the card's typography spec
-            // (Cormorant 24px names, 28px prices) is designed for the
-            // full-width mobile card — a 2-up grid truncates everything.
-            'grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]':
-              column === 'auto',
-            'grid grid-cols-1 gap-4 gap-y-6 xs:grid-cols-2 xs:gap-3 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
-              column === 'five' || column === 'six',
-          },
+          variant === 'listing'
+            ? // Reference layout: LARGE cards, 2-up beside the rail (3-up only
+              // on very wide screens) — the card's big price + Features grid
+              // are designed for this width, not a 4-up dense grid.
+              'grid grid-cols-1 gap-5 md:grid-cols-2 lg:gap-6 2xl:grid-cols-3'
+            : {
+                // Single column on small phones: the card's typography spec
+                // (Cormorant 24px names, 28px prices) is designed for the
+                // full-width mobile card — a 2-up grid truncates everything.
+                'grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]':
+                  column === 'auto',
+                'grid grid-cols-1 gap-4 gap-y-6 xs:grid-cols-2 xs:gap-3 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
+                  column === 'five' || column === 'six',
+              },
           gridClassName,
         )}
       >
@@ -91,17 +102,25 @@ export function Grid({
           ? rangeMap(limit, (i) => (
               <ProductLoader key={i} uniqueKey={`product-${i}`} />
             ))
-          : products?.map((product, index) => (
-              <ProductCard
-                product={product}
-                key={product.id}
-                // mark the first row's images as LCP candidates so next/image
-                // preloads them (clears the dev "detected as LCP" hint + helps
-                // Core Web Vitals); the desktop grid is up to 4-up, so cover the
-                // whole first row. Deeper images stay lazy.
-                priority={index < 4}
-              />
-            ))}
+          : products?.map((product, index) =>
+              variant === 'listing' ? (
+                <PrimeListingCard
+                  product={product}
+                  key={product.id}
+                  priority={index < 3}
+                />
+              ) : (
+                <ProductCard
+                  product={product}
+                  key={product.id}
+                  // mark the first row's images as LCP candidates so next/image
+                  // preloads them (clears the dev "detected as LCP" hint + helps
+                  // Core Web Vitals); the desktop grid is up to 4-up, so cover the
+                  // whole first row. Deeper images stay lazy.
+                  priority={index < 4}
+                />
+              ),
+            )}
       </div>
       {hasMore && (
         <div
