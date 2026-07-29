@@ -26,7 +26,7 @@ export const CustomDisclosure: React.FC<DisclosureProps> = ({
       {({ open }) => (
         <>
           <HeadlessDisclosure.Button className="flex w-full items-center justify-between focus:outline-0 focus:ring-1 focus:ring-accent focus:ring-opacity-40">
-            <span className="flex items-center gap-2 font-bold text-heading">
+            <span className="flex items-center gap-2 text-[13px] font-medium leading-none text-heading">
               {t(title)}
               {count ? (
                 <span className="grid h-[18px] min-w-[18px] place-items-center rounded-full bg-accent px-1 text-[10px] font-bold leading-none text-white">

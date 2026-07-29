@@ -218,9 +218,14 @@ const PlantAtHomeCard: React.FC<Props> = ({
             type="button"
             onClick={handleAskAi}
             aria-label={`Ask AI about ${product.name}`}
-            className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-[#0D3B2E] px-3 py-2 text-[12px] font-bold text-white shadow-[0_6px_18px_-6px_rgba(0,0,0,0.6)] ring-1 ring-[#8FD56F]/60 transition hover:scale-[1.04] hover:ring-[#8FD56F]"
+            /* Was a solid dark-green pill ringed in bright lime — two more greens on top of a photo
+               of a green plant, competing with the primary CTA below for attention it does not
+               deserve. This is a secondary, optional action, so it now reads as one: a neutral
+               glass chip that sits on ANY photograph, with no colour of its own. Hover raises the
+               contrast rather than the scale, so the card does not jitter under the cursor. */
+            className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#DCC07A" aria-hidden>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
               <path d="M12 2l1.9 5.6L19.5 9.5 13.9 11.4 12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2z" />
             </svg>
             Ask AI
@@ -236,33 +241,40 @@ const PlantAtHomeCard: React.FC<Props> = ({
           <div className="min-w-0">
             {/* Product name — same family as the body text, bold (user note:
                 weight alone distinguishes the name), #184A31 */}
+            {/* Type spec given exactly: weight 500, 0.9rem, line-height 1. Fixed, not a clamp —
+                the previous clamp scaled the name from 15.5px to 23px with card width, which is
+                what made it read as oversized in the grid. */}
             <button
               type="button"
               onClick={handleQuickView}
-              className="block w-full truncate text-left text-[clamp(15.5px,6.6cqw,23px)] font-bold leading-[1.2] text-[#184A31] transition hover:text-forest-700"
+              className="block w-full truncate text-left text-[0.9rem] font-medium leading-none text-[#184A31] transition hover:text-forest-700"
             >
               {product.name}
             </button>
             {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
             {sciName ? (
-              <p className="mt-[5px] truncate text-[clamp(12px,4.4cqw,16px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
+              <p className="mt-[5px] truncate text-[clamp(10.5px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
             ) : null}
           </div>
-          <div className="shrink-0 pt-1.5 text-right">
+          {/* The chip is inline-flex, so it sat on the BASELINE of this container's default line
+              box — the leading above that baseline pushed it ~7px below the name it labels, which
+              no amount of padding tweaking would have fixed cleanly. leading-none collapses the
+              line box to the chip's own height so it aligns with the name's first line. */}
+          <div className="shrink-0 text-right leading-none">
             {reviewCount > 0 ? (
               <>
                 <span className="flex items-center justify-end gap-1.5">
                   <GoldStar />
-                  <strong className="text-[clamp(13px,4.9cqw,18px)] font-semibold leading-none text-gray-900">
+                  <strong className="text-[clamp(11.5px,3.6cqw,13px)] font-semibold leading-none text-gray-900">
                     {ratingVal.toFixed(1)}
                   </strong>
                 </span>
-                <span className="mt-[6px] block text-[clamp(11px,4.1cqw,15px)] leading-none text-[#888888]">
+                <span className="mt-[6px] block text-[clamp(10px,3.2cqw,11px)] leading-none text-[#888888]">
                   ({reviewCount.toLocaleString('en-IN')})
                 </span>
               </>
             ) : (
-              <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[clamp(11px,3.8cqw,13px)] font-semibold text-forest-800">
+              <span className="inline-flex items-center rounded-full bg-sage-100 px-2 py-0.5 text-[11px] font-medium leading-none text-forest-800">
                 New
               </span>
             )}
@@ -273,7 +285,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             clamp with fixed min-height so grid rows stay aligned. Vertical
             margins are tighter than the reference's standalone card — inside a
             grid the full 18/22px rhythm made cards run too long. */}
-        <p className="mb-3.5 mt-2.5 min-h-[3.2em] text-[clamp(12.5px,4.6cqw,17px)] leading-[1.6] text-[#5B5B5B] line-clamp-2">
+        <p className="mb-3.5 mt-2.5 min-h-[3.2em] text-[clamp(11px,3.4cqw,12.5px)] leading-[1.45] text-[#5B5B5B] line-clamp-2">
           {desc}
         </p>
 
@@ -285,8 +297,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <span
               className={`whitespace-nowrap leading-none text-[#14532D] ${
                 isVariable && hasRange
-                  ? 'text-[clamp(14px,6.2cqw,24px)] font-semibold'
-                  : 'text-[clamp(20px,9.2cqw,34px)] font-bold'
+                  ? 'text-[clamp(13px,4.4cqw,16px)] font-semibold'
+                  : 'text-[clamp(15px,5.4cqw,19px)] font-bold'
               }`}
             >
               {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}

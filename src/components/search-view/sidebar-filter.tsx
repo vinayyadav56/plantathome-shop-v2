@@ -20,7 +20,7 @@ import Button from '@/components/ui/button';
 import AppliedFilters from '@/components/search-view/applied-filters';
 
 const FieldWrapper = ({ children, title, count, defaultOpen }: any) => (
-  <div className="border-b border-forest-900/10 py-5 last:border-0">
+  <div className="border-b border-forest-900/10 py-3 last:border-0">
     <CustomDisclosure title={title} count={count} defaultOpen={defaultOpen}>
       {children}
     </CustomDisclosure>
@@ -68,7 +68,7 @@ function ClearFiltersButton() {
   }
   return (
     <button
-      className="text-sm font-semibold text-body transition-colors hover:text-[#175840] focus:text-[#175840] focus:outline-0 lg:m-0"
+      className="text-[13px] font-medium text-body transition-colors hover:text-[#175840] focus:text-[#175840] focus:outline-0 lg:m-0"
       onClick={clearFilters}
     >
       {t('text-clear-all')}
@@ -105,7 +105,7 @@ const SidebarFilter: React.FC<{
         className
       )}
     >
-      <div className={classNames('sticky top-0 z-10 flex items-center justify-between rounded-tl-xl rounded-tr-xl border-b border-forest-900/10 bg-white px-5 py-6', inRail ? 'md:static' : 'lg:static')}>
+      <div className={classNames('sticky top-0 z-10 flex items-center justify-between rounded-tl-xl rounded-tr-xl border-b border-forest-900/10 bg-white px-5 py-4', inRail ? 'md:static' : 'lg:static')}>
         <div className="flex items-center space-x-3 rtl:space-x-reverse lg:space-x-0">
           <button
             className={classNames('text-body focus:outline-0', inRail ? 'md:hidden' : 'lg:hidden')}
@@ -120,7 +120,7 @@ const SidebarFilter: React.FC<{
             <span className="sr-only">{t('text-close')}</span>
           </button>
 
-          <h3 className="text-xl font-semibold text-forest-900 lg:text-2xl">
+          <h3 className="text-base font-semibold text-forest-900 lg:text-lg">
             {t('text-filter')}
           </h3>
         </div>
