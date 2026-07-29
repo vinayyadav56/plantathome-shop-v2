@@ -20,7 +20,7 @@ import Button from '@/components/ui/button';
 import AppliedFilters from '@/components/search-view/applied-filters';
 
 const FieldWrapper = ({ children, title, count, defaultOpen }: any) => (
-  <div className="border-b border-forest-900/10 py-3 last:border-0">
+  <div className="border-b border-forest-900/10 pb-2 last:border-0">
     <CustomDisclosure title={title} count={count} defaultOpen={defaultOpen}>
       {children}
     </CustomDisclosure>
@@ -131,7 +131,7 @@ const SidebarFilter: React.FC<{
       {/* active filters at a glance — one removable chip per value */}
       <AppliedFilters />
 
-      <div className="flex-1 px-5">
+      <div className="flex-1 space-y-2 px-5">
         <FieldWrapper title="text-search">
           <Search variant="minimal" label="search" />
         </FieldWrapper>
