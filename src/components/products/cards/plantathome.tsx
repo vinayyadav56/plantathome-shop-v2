@@ -24,7 +24,7 @@ const AddToCart = dynamic(
        geometry exactly so swapping in data causes no layout shift ─────── */
 export const PlantAtHomeCardSkeleton: React.FC = () => (
   <div className="flex h-full flex-col overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
-    <div className="aspect-square w-full animate-pulse bg-[#F7F5EF]" />
+    <div className="aspect-[25/24] w-full animate-pulse bg-[#F7F5EF]" />
     <div className="flex flex-1 flex-col p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -164,7 +164,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
         type="button"
         onClick={handleQuickView}
         aria-label={`View ${product.name}`}
-        className="relative block aspect-square w-full overflow-hidden bg-[#F7F5EF] text-left"
+        className="relative block aspect-[25/24] w-full overflow-hidden bg-[#F7F5EF] text-left"
       >
         {!noImage ? (
           <Image
@@ -285,7 +285,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             clamp with fixed min-height so grid rows stay aligned. Vertical
             margins are tighter than the reference's standalone card — inside a
             grid the full 18/22px rhythm made cards run too long. */}
-        <p className="mb-3.5 mt-2.5 min-h-[3.2em] text-[clamp(11px,3.4cqw,12.5px)] leading-[1.45] text-[#5B5B5B] line-clamp-2">
+        <p className="mb-[0.275rem] mt-[0.1rem] min-h-[3.2em] text-[clamp(11px,3.4cqw,12.5px)] leading-[1.3] text-[#5B5B5B] line-clamp-2">
           {desc}
         </p>
 
