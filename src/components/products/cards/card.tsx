@@ -14,6 +14,7 @@ interface ProductCardProps {
   cardType?: any;
   // preload this card's image (LCP candidates in the first grid row)
   priority?: boolean;
+  layout?: 'grid' | 'list';
 }
 const ProductCard: React.FC<ProductCardProps> = ({
   product,

@@ -1,6 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
+
+const Chevron = ({ dir }: { dir: 'prev' | 'next' }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[18px] w-[18px]">
+    <path d={dir === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6'} />
+  </svg>
+);
 
 type GalleryImage = { original?: string; thumbnail?: string; id?: string | number };
 
@@ -16,6 +22,11 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
   const images = (gallery?.length ? gallery : [{ original: '', thumbnail: '' }]) as GalleryImage[];
   const [active, setActive] = useState(0);
   const [err, setErr] = useState<Record<number, boolean>>({});
+  const touchX = useRef<number | null>(null);
+
+  // Wraps both ways, so neither arrow is ever a dead end.
+  const go = (delta: number) =>
+    setActive((i) => (i + delta + images.length) % images.length);
 
   const mainSrc = images[active]?.original || images[active]?.thumbnail || '';
   // Every image gets a thumb — the strip scrolls (max-h + overflow-y below).
@@ -29,7 +40,24 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
       {/* Full rectangular image — no decorative curve/border, fills the right side.
           All gallery images are stacked + preloaded, so switching thumbnails is an
           instant opacity swap (no reload flash / fluctuation). */}
-      <div className="absolute inset-0 overflow-hidden bg-gradient-to-br from-[#E9F0E2] via-[#F1F3E8] to-[#F6F2E6]">
+      <div
+        className="absolute inset-0 overflow-hidden bg-gradient-to-br from-[#E9F0E2] via-[#F1F3E8] to-[#F6F2E6]"
+        // Swipe to change photo on touch devices. Plain touch handlers rather
+        // than a carousel library: the images are already stacked and
+        // cross-faded, so all a swipe has to do is move an index.
+        onTouchStart={(e) => {
+          touchX.current = e.touches[0].clientX;
+        }}
+        onTouchEnd={(e) => {
+          const start = touchX.current;
+          touchX.current = null;
+          if (start === null || images.length < 2) return;
+          const dx = e.changedTouches[0].clientX - start;
+          // 40px threshold — below that it's a tap or a vertical scroll that
+          // drifted sideways, not a deliberate swipe.
+          if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+        }}
+      >
         {images.map((img, i) => {
           const src = img.original || img.thumbnail || '';
           if (!src || err[i]) return null;
@@ -83,6 +111,27 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
           );
         })}
       </div>
+
+      {/* Prev / next — paired in the bottom-right rather than the usual
+          centred-on-each-edge placement, because the thumbnail rail owns the
+          left edge at every breakpoint and a centred left arrow would sit on
+          top of it. Shown on touch and pointer alike: swiping is invisible
+          affordance, and on desktop there is nothing to swipe with. */}
+      {images.length > 1 && (
+        <div className="absolute bottom-4 right-3 z-10 flex gap-2 sm:bottom-6 sm:right-6">
+          {(['prev', 'next'] as const).map((dir) => (
+            <button
+              key={dir}
+              type="button"
+              onClick={() => go(dir === 'prev' ? -1 : 1)}
+              aria-label={dir === 'prev' ? 'Previous image' : 'Next image'}
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/40 bg-white/85 text-forest-900 shadow-[0_6px_16px_-6px_rgba(34,48,26,0.5)] backdrop-blur-md transition hover:bg-white sm:h-10 sm:w-10"
+            >
+              <Chevron dir={dir} />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -11,7 +11,7 @@ import { useAskAiEnabled } from '@/framework/ask-ai';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
-import { getCardBadge, shortDescription } from '@/components/products/cards/card-helpers';
+import { getCardBadge, plantQuickFacts, shortDescription } from '@/components/products/cards/card-helpers';
 import { PlantMark } from '@/components/storefront/logo-mark';
 import type { Product } from '@/types';
 
@@ -36,8 +36,12 @@ export const PlantAtHomeCardSkeleton: React.FC = () => (
       <div className="mt-4 h-4 w-full animate-pulse rounded bg-stone-200/60" />
       <div className="mt-2 h-4 w-2/3 animate-pulse rounded bg-stone-200/50" />
       <div className="mt-auto pt-5">
-        <div className="h-8 w-32 animate-pulse rounded bg-stone-200/70" />
-        <div className="mt-6 h-12 w-full animate-pulse rounded-[14px] bg-stone-200/70" />
+        <div className="flex gap-1.5">
+          <div className="h-[19px] w-20 animate-pulse rounded-full bg-stone-200/60" />
+          <div className="h-[19px] w-16 animate-pulse rounded-full bg-stone-200/60" />
+        </div>
+        <div className="mt-[11px] h-8 w-32 animate-pulse rounded bg-stone-200/70" />
+        <div className="mt-[13px] h-12 w-full animate-pulse rounded-[14px] bg-stone-200/70" />
       </div>
     </div>
   </div>
@@ -57,16 +61,6 @@ const GoldStar = () => (
   </svg>
 );
 
-/* ─── Truck (reference .delivery i) ────────────────────────────── */
-const TruckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-5 w-5 shrink-0">
-    <path d="M1 3h15v13H1z" />
-    <path d="M16 8h4l3 3v5h-7V8z" />
-    <circle cx="5.5" cy="18.5" r="2.5" />
-    <circle cx="18.5" cy="18.5" r="2.5" />
-  </svg>
-);
-
 /* ─── Cart icon for the CTA ────────────────────────────────────── */
 const CartGlyph = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[18px] w-[18px]">
@@ -76,13 +70,21 @@ const CartGlyph = () => (
   </svg>
 );
 
-type Props = { product: Product; className?: string; priority?: boolean };
+type Props = {
+  product: Product;
+  className?: string;
+  priority?: boolean;
+  /** 'list' turns the card on its side: image column left, content right. */
+  layout?: 'grid' | 'list';
+};
 
 const PlantAtHomeCard: React.FC<Props> = ({
   product,
   className = '',
   priority = false,
+  layout = 'grid',
 }) => {
+  const isList = layout === 'list';
   const [imgError, setImgError] = useState(false);
   const [qty, setQty] = useState(1);
   const [mounted, setMounted] = useState(false);
@@ -119,6 +121,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
     (product.plant_attribute as any)?.scientific_name ??
     null;
   const desc = shortDescription(product);
+  const facts = plantQuickFacts(product);
   const inCart =
     mounted && !isVariable && isInCart(generateCartItem(product as any, undefined as any)?.id);
 
@@ -156,15 +159,19 @@ const PlantAtHomeCard: React.FC<Props> = ({
       // (cqw units): full reference sizes at its native 390px, fluidly smaller
       // in dense grids (search page cells are ~230px) — nothing truncates or
       // wraps at any grid density.
-      className={`group flex h-full flex-col overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${className}`}
+      className={`group flex h-full overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${
+        isList ? 'flex-row items-stretch' : 'flex-col'
+      } ${className}`}
     >
       {/* image zone (reference .image: #F7F5EF, zoom on hover) */}
-      <div className="relative">
+      <div className={isList ? 'relative w-[40%] max-w-[250px] shrink-0' : 'relative'}>
       <button
         type="button"
         onClick={handleQuickView}
         aria-label={`View ${product.name}`}
-        className="relative block aspect-[25/24] w-full overflow-hidden bg-[#F7F5EF] text-left"
+        className={`relative block w-full overflow-hidden bg-[#F7F5EF] text-left ${
+          isList ? 'h-full min-h-[170px]' : 'aspect-[25/24]'
+        }`}
       >
         {!noImage ? (
           <Image
@@ -234,8 +241,16 @@ const PlantAtHomeCard: React.FC<Props> = ({
 
       </div>
 
-      {/* content (reference .content: 24px padding at full card width) */}
-      <div className="flex flex-1 flex-col p-[clamp(14px,6.2cqw,24px)]">
+      {/* content (reference .content: 24px padding at full card width).
+          In list mode this column becomes its own query container, so the
+          cqw-based type scale inside sizes off the CONTENT width rather than
+          the full row — a list card is wide, and without this every clamp
+          would pin to its maximum. */}
+      <div
+        className={`flex flex-1 flex-col p-[clamp(14px,6.2cqw,24px)] ${
+          isList ? 'min-w-0 [container-type:inline-size]' : ''
+        }`}
+      >
         {/* title row */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -289,10 +304,34 @@ const PlantAtHomeCard: React.FC<Props> = ({
           {desc}
         </p>
 
-        <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className={`mt-auto ${isList ? 'max-w-[340px]' : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Plant facts — replaced the "Free Delivery | 2–4 Days" band, which
+              read identically on every card (so it distinguished nothing) while
+              costing a full row of height and stretching the card's proportions.
+              These say something per-plant instead, and sit ABOVE the price.
+              Capped at 3 and never wrapped so a card can't grow a second row.
+              No reserved min-height: this whole block is mt-auto, so the CTAs
+              line up across a grid row whether or not a product has attributes,
+              and an empty strip would just be the dead space we removed. */}
+          {facts.length > 0 && (
+            <div className="mb-[clamp(7px,2.8cqw,11px)] flex flex-nowrap items-center gap-1.5 overflow-hidden">
+              {facts.slice(0, 3).map((f) => (
+                <span
+                  key={f.label}
+                  className="truncate whitespace-nowrap rounded-full bg-[#F3F8EC] px-[clamp(6px,2.4cqw,9px)] py-[4px] text-[clamp(9px,2.9cqw,11px)] font-medium leading-none text-[#24693E]"
+                >
+                  {f.label}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* price row — 34px (28px mobile) #14532D · struck 18px #A0A0A0 ·
-              chip #FFEAEA / #D73C3C */}
-          <div className="flex flex-wrap items-center gap-x-[clamp(8px,3.6cqw,14px)] gap-y-1">
+              chip #FFEAEA / #D73C3C. Sits directly on top of the CTA. */}
+          <div className="mb-[clamp(9px,3.4cqw,13px)] flex flex-wrap items-center gap-x-[clamp(8px,3.6cqw,14px)] gap-y-1">
             {/* variable products show the size range min–max */}
             <span
               className={`whitespace-nowrap leading-none text-[#14532D] ${
@@ -311,14 +350,6 @@ const PlantAtHomeCard: React.FC<Props> = ({
                 {discount} OFF
               </span>
             )}
-          </div>
-
-          {/* delivery band — #F3F8EC / #24693E, truck + copy. 16px at the
-              reference's 390px card width; steps down inside narrower grid
-              cells so it never wraps. */}
-          <div className="my-4 flex items-center gap-[clamp(6px,2.6cqw,12px)] whitespace-nowrap rounded-[12px] bg-[#F3F8EC] px-[clamp(10px,4.4cqw,18px)] py-[clamp(9px,3.6cqw,14px)] text-[clamp(11px,4.1cqw,16px)] font-semibold leading-none text-[#24693E]">
-            <TruckIcon />
-            Free Delivery&nbsp;|&nbsp;2–4 Days
           </div>
 
           {/* footer — qty stepper + Add to Cart (reference .footer) */}

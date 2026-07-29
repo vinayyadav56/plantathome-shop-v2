@@ -36,6 +36,26 @@ export function getCardBadge(product: Product): string | null {
   return null;
 }
 
+/** Quick-glance plant facts (pet / air / light / water / placement), in the
+ *  order a plant shopper cares about. Only REAL plant_attribute values are
+ *  returned — nothing is invented, so a product with no attributes yields [].
+ *
+ *  Shared by the PDP's chip row and the product card, which previously each
+ *  had their own copy of this list. */
+export function plantQuickFacts(product: Product): { icon: string; label: string }[] {
+  const pa = (product as any)?.plant_attribute;
+  if (!pa) return [];
+  const facts: { icon: string; label: string }[] = [];
+  const head = (v: unknown) => String(v).split(/[,/]/)[0].trim();
+  if (pa.pet_friendly != null)
+    facts.push({ icon: 'shield', label: pa.pet_friendly ? 'Pet friendly' : 'Keep from pets' });
+  if (pa.air_purifying) facts.push({ icon: 'leaf', label: 'Air purifying' });
+  if (pa.sunlight) facts.push({ icon: 'lotus', label: head(pa.sunlight) });
+  if (pa.water_requirement) facts.push({ icon: 'droplet', label: `${head(pa.water_requirement)} water` });
+  if (pa.indoor_outdoor) facts.push({ icon: 'box', label: pa.indoor_outdoor });
+  return facts;
+}
+
 /** Quill descriptions are HTML — flatten to plain text for the 2-line clamp. */
 export function stripHtml(html: string | null | undefined): string {
   if (!html) return '';

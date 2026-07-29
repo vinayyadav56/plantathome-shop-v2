@@ -45,16 +45,18 @@ function Thumb({ src, fallback }: { src: string; fallback: JSX.Element }) {
 export function CategoryRow() {
   const { categories: raw, isLoading } = useCategories({ limit: HOME_CATEGORIES_LIMIT, parent: 'null' } as any);
   const { homeCategories } = useHomeConfig();
-  const categories = applyCuration(raw ?? [], homeCategories).slice(0, 5);
+  // Six slots, not five: the row was shrunk (annotation) specifically to make
+  // room for another vertical's card. Which six is admin curation's call.
+  const categories = applyCuration(raw ?? [], homeCategories).slice(0, 6);
 
   return (
     <section className="relative z-[5]">
       <div className="mx-auto max-w-none px-5 sm:px-8 lg:px-16">
-        <div className="pah-rail [--rail-w:46%] md:[--rail-w:calc((100%_-_40px)/5)] lg:[--rail-w:calc((100%_-_48px)/5)] grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5 lg:gap-3">
+        <div className="pah-rail [--rail-w:46%] md:[--rail-w:calc((100%_-_40px)/6)] lg:[--rail-w:calc((100%_-_60px)/6)] grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3">
 
           {isLoading && categories.length === 0
-            ? Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-[84px] animate-pulse rounded-[14px] bg-white/60" />
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-[76px] animate-pulse rounded-[14px] bg-white/60" />
               ))
             : categories.map((c: any, i: number) => {
                 const img = c.image?.original ?? c.image?.thumbnail ?? '';
@@ -64,18 +66,18 @@ export function CategoryRow() {
                     initial={{ y: 20 }}
                     whileInView={{ y: 0 }}
                     viewport={{ once: true, margin: '-20px' }}
-                    transition={{ duration: 0.5, delay: (i % 5) * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.5, delay: (i % 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Link
                       href={`/c/${c.slug}`}
-                      className="group flex h-[84px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[70px] lg:h-[84px]"
+                      className="group flex h-[76px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[68px] lg:h-[76px]"
                     >
                       {/* text — left */}
-                      <div className="flex min-w-0 flex-1 flex-col justify-center p-3 md:p-2.5 lg:p-3">
-                        <p className="line-clamp-2 font-hanken text-[14px] font-bold leading-snug text-forest-900 md:text-[11.5px] lg:text-[14px]">
+                      <div className="flex min-w-0 flex-1 flex-col justify-center p-2.5 md:p-2 lg:p-2.5">
+                        <p className="line-clamp-2 font-hanken text-[13px] font-bold leading-tight text-forest-900 md:text-[11px] lg:text-[13px]">
                           {c.name}
                         </p>
-                        <p className="mt-1.5 flex items-center gap-1 font-hanken text-[12px] font-semibold text-forest-900 transition-colors duration-200 group-hover:text-forest-700 md:mt-1 md:text-[10px] lg:mt-1.5 lg:text-[12px]">
+                        <p className="mt-1 flex items-center gap-1 font-hanken text-[11px] font-semibold leading-none text-forest-900 transition-colors duration-200 group-hover:text-forest-700 md:text-[9.5px] lg:text-[11px]">
                           Shop Now
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-[10px] w-[10px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden>
                             <path d="M5 12h13M13 6l6 6-6 6" />
@@ -84,7 +86,7 @@ export function CategoryRow() {
                       </div>
 
                       {/* product photo — right */}
-                      <div className="h-full w-[42%] shrink-0 overflow-hidden rounded-r-[14px]">
+                      <div className="h-full w-[38%] shrink-0 overflow-hidden rounded-r-[14px]">
                         <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
                       </div>
                     </Link>

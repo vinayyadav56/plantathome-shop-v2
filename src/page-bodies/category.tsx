@@ -9,6 +9,7 @@ import Seo from '@/components/seo/seo';
 import { Image } from '@/components/ui/image';
 import { Grid } from '@/components/products/grid';
 import SidebarFilter from '@/components/search-view/sidebar-filter';
+import ListingToolbar, { useListingView } from '@/components/search-view/listing-toolbar';
 import { FilterIcon } from '@/components/icons/filter-icon';
 import ErrorMessage from '@/components/ui/error-message';
 import { useCategory } from '@/framework/category';
@@ -31,6 +32,7 @@ export default function CategoryPage() {
   const { slug: slugParam, ...restQuery } = (query ?? {}) as any;
   const slug = slugParam as string;
   const [, setDrawerView] = useAtom(drawerAtom);
+  const [view, setView] = useListingView();
 
   const { category, isLoading: loadingCategory, error } = useCategory({ slug });
   const { homeCollections } = useHomeConfig();
@@ -169,7 +171,7 @@ export default function CategoryPage() {
       {/* Full-bleed listing (matches /search): no max-width cap, slim gutters */}
       <section className="min-h-[40vh] border-t border-kraft-200 px-4 py-10 sm:px-5 lg:px-6 xl:px-8 xl:py-14">
         {/* section header */}
-        <div className="mb-8 flex items-end justify-between gap-4">
+        <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="font-hanken text-[10.5px] font-bold uppercase tracking-[0.2em] text-gold">
               {category?.name ?? 'Products'}
@@ -178,11 +180,6 @@ export default function CategoryPage() {
               Shop the collection.
             </h2>
           </div>
-          {productCount > 0 && (
-            <span className="shrink-0 font-hanken text-[13px] text-stone-400">
-              {productCount}{hasMore ? '+' : ''} plants
-            </span>
-          )}
         </div>
 
         {/* filter rail + grid — the same layout and card density as the
@@ -190,10 +187,19 @@ export default function CategoryPage() {
         <div className="flex w-full md:gap-6 lg:gap-10">
           <div className="hidden w-72 shrink-0 md:block lg:w-80">
             <StickyBox offsetTop={140} offsetBottom={30}>
-              <SidebarFilter inRail showCategories={false} type={typeSlug} />
+              {/* showSort={false}: sorting lives in the toolbar above the grid
+                  now, where shoppers expect it. Two sort controls on one page
+                  that write the same URL params is a way to confuse people. */}
+              <SidebarFilter inRail showCategories={false} showSort={false} type={typeSlug} />
             </StickyBox>
           </div>
           <div className="min-w-0 flex-1">
+            <ListingToolbar
+              view={view}
+              onViewChange={setView}
+              count={productCount}
+              hasMore={hasMore}
+            />
             <Grid
               products={products as Product[] | undefined}
               loadMore={loadMore}
@@ -201,7 +207,7 @@ export default function CategoryPage() {
               isLoadingMore={isLoadingMore}
               hasMore={hasMore}
               error={productsError}
-              column="five"
+              column={view === 'list' ? 'list' : 'five'}
               categoryName={category?.name}
             />
           </div>

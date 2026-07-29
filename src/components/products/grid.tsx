@@ -15,7 +15,7 @@ interface Props {
   limit?: number;
   sortedBy?: string;
   orderBy?: string;
-  column?: 'five' | 'six' | 'auto';
+  column?: 'five' | 'six' | 'auto' | 'list';
   shopId?: string;
   gridClassName?: string;
   products: Product[] | undefined;
@@ -83,6 +83,9 @@ export function Grid({
               column === 'auto',
             'grid grid-cols-1 gap-4 gap-y-6 xs:grid-cols-2 xs:gap-3 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
               column === 'five' || column === 'six',
+            // List view: one full-width row per product. The card lays itself
+            // out horizontally off its own `layout` prop.
+            'flex flex-col gap-4': column === 'list',
           },
           gridClassName,
         )}
@@ -100,6 +103,7 @@ export function Grid({
                 // Core Web Vitals); the desktop grid is up to 4-up, so cover the
                 // whole first row. Deeper images stay lazy.
                 priority={index < 4}
+                layout={column === 'list' ? 'list' : 'grid'}
               />
             ))}
       </div>

@@ -4,6 +4,7 @@ import { goToSignin } from '@/lib/go-to-signin';
 import Link from 'next/link';
 import { useRouter } from '@/compat/next-router';
 import classNames from 'classnames';
+import { plantQuickFacts } from '@/components/products/cards/card-helpers';
 import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 
@@ -266,18 +267,10 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   ];
 
   /* quick-glance plant chips (plant business — pet/air/light/water up front).
-     Only REAL plant_attribute values render; nothing is invented. */
+     Only REAL plant_attribute values render; nothing is invented. Shared with
+     the product card so both surfaces state the same facts. */
   const pa = (product as any)?.plant_attribute;
-  const quickChips: { icon: string; label: string }[] = [];
-  if (pa) {
-    if (pa.pet_friendly != null)
-      quickChips.push({ icon: 'shield', label: pa.pet_friendly ? 'Pet friendly' : 'Keep from pets' });
-    if (pa.air_purifying) quickChips.push({ icon: 'leaf', label: 'Air purifying' });
-    if (pa.sunlight) quickChips.push({ icon: 'lotus', label: String(pa.sunlight).split(/[,/]/)[0].trim() });
-    if (pa.water_requirement)
-      quickChips.push({ icon: 'droplet', label: `${String(pa.water_requirement).split(/[,/]/)[0].trim()} water` });
-    if (pa.indoor_outdoor) quickChips.push({ icon: 'box', label: pa.indoor_outdoor });
-  }
+  const quickChips = plantQuickFacts(product as any);
 
   return (
     <article className="bg-cream-100">
@@ -317,19 +310,29 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               the whole column (pot toggle blew out to ~1400px when the pot
               list opened); min-w-0 keeps the rail scrolling inside instead. */}
           <div className="flex min-w-0 flex-col">
-            {/* title row + wishlist heart */}
+            {/* title row + wishlist heart. The "New arrival" pill sits inline
+                with the name rather than in the rating row below it — it labels
+                the product, so it belongs next to what it labels. It wraps to
+                its own line on narrow columns instead of squeezing the name. */}
             <div className="flex items-start justify-between gap-3">
-              <h1
-                className={classNames(
-                  // Myntra-scale: small, quiet name — weight and colour carry
-                  // the hierarchy, not size (annotation: "small fonts").
-                  'min-w-0 text-[19px] font-medium leading-snug tracking-tight text-forest-900 sm:text-[22px]',
-                  { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                <h1
+                  className={classNames(
+                    // Myntra-scale: small, quiet name — weight and colour carry
+                    // the hierarchy, not size (annotation: "small fonts").
+                    'min-w-0 text-[19px] font-medium leading-snug tracking-tight text-forest-900 sm:text-[22px]',
+                    { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
+                  )}
+                  {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
+                >
+                  {name}
+                </h1>
+                {reviewCount === 0 && (
+                  <span className="shrink-0 rounded-full bg-sage-100 px-2.5 py-1 text-[11px] font-medium leading-none text-forest-800">
+                    New arrival
+                  </span>
                 )}
-                {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
-              >
-                {name}
-              </h1>
+              </div>
               <button
                 type="button"
                 onClick={onWishlist}
@@ -351,9 +354,11 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </p>
             )}
 
-            {/* REAL rating anchor → scrolls to reviews; "New" pill when unrated */}
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              {reviewCount > 0 ? (
+            {/* REAL rating anchor → scrolls to reviews. Unrated products show
+                the "New arrival" pill up in the title row instead, so this row
+                renders nothing at all rather than an empty 12px gap. */}
+            {reviewCount > 0 && (
+              <div className="mt-3 flex flex-wrap items-center gap-3">
                 <a href="#reviews" className="group flex items-center gap-2">
                   <GoldStar className="h-[15px] w-[15px]" />
                   <span className="text-[13.5px] font-semibold text-gray-900">{ratingVal.toFixed(1)}</span>
@@ -361,12 +366,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     ({reviewCount.toLocaleString('en-IN')} review{reviewCount === 1 ? '' : 's'})
                   </span>
                 </a>
-              ) : (
-                <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[11px] font-semibold text-forest-800">
-                  New arrival
-                </span>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* quick-glance plant chips */}
             {quickChips.length > 0 && (

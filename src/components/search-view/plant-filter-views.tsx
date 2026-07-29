@@ -134,11 +134,17 @@ export function PetFriendlyFilterView() {
             : 'relative h-6 w-11 shrink-0 rounded-full bg-stone-300 transition-colors'
         }
       >
+        {/* left-0.5 is load-bearing. Without an explicit `left` an absolutely
+            positioned box falls back to its STATIC position, and a button is
+            text-align:center by default — so the knob started mid-track, which
+            put OFF at the right edge (reading as ON) and pushed ON clean out of
+            the track, leaving a solid pill with no knob at all.
+            Track 44 - knob 20 - 2px inset each side = 20px of travel. */}
         <span
           className={
             on
-              ? 'absolute top-0.5 h-5 w-5 translate-x-[22px] rounded-full bg-white shadow transition-transform'
-              : 'absolute top-0.5 h-5 w-5 translate-x-0.5 rounded-full bg-white shadow transition-transform'
+              ? 'absolute left-0.5 top-0.5 h-5 w-5 translate-x-5 rounded-full bg-white shadow transition-transform'
+              : 'absolute left-0.5 top-0.5 h-5 w-5 translate-x-0 rounded-full bg-white shadow transition-transform'
           }
         />
       </button>

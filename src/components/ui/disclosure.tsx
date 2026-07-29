@@ -25,7 +25,10 @@ export const CustomDisclosure: React.FC<DisclosureProps> = ({
     <HeadlessDisclosure defaultOpen={defaultOpen} {...props}>
       {({ open }) => (
         <>
-          <HeadlessDisclosure.Button className="flex w-full items-center justify-between focus:outline-0 focus:ring-1 focus:ring-accent focus:ring-opacity-40">
+          {/* focus-VISIBLE, not focus: with plain `focus:` the accent ring stayed
+              painted after every mouse click, so opening or closing any filter
+              section left what looked like a stray border around its heading. */}
+          <HeadlessDisclosure.Button className="flex w-full items-center justify-between rounded-sm focus:outline-0 focus-visible:ring-1 focus-visible:ring-accent focus-visible:ring-opacity-40">
             <span className="flex items-center gap-2 text-[13px] font-medium leading-none text-heading">
               {t(title)}
               {count ? (
