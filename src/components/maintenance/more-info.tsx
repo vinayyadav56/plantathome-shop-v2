@@ -58,7 +58,7 @@ const MoreInfo = ({
       <div className="p-5 pt-12 md:p-10">
         <div className="mb-12 text-center md:mb-24">
           {aboutUsTitle ? (
-            <h2 className="mb-5 text-3xl font-bold">{aboutUsTitle}</h2>
+            <h2 className="mb-5 text-3xl font-medium">{aboutUsTitle}</h2>
           ) : (
             ''
           )}
@@ -73,7 +73,7 @@ const MoreInfo = ({
 
         <div className="mb-14 md:mb-32">
           {contactUsTitle ? (
-            <h2 className="mb-5 text-center text-3xl font-bold">
+            <h2 className="mb-5 text-center text-3xl font-medium">
               {contactUsTitle}
             </h2>
           ) : (
@@ -87,7 +87,7 @@ const MoreInfo = ({
             <div className="text-[rgb(191 187 199)] mb-4 text-3xl">
               <MapPinNew className="mx-auto" />
             </div>
-            <h3 className="mb-3 text-base font-bold">{t('text-address')}</h3>
+            <h3 className="mb-3 text-base font-medium">{t('text-address')}</h3>
             {contactDetails?.location?.formattedAddress ? (
               <Link
                 href={`https://www.google.com/maps/place/${contactDetails?.location?.formattedAddress}`}
@@ -105,7 +105,7 @@ const MoreInfo = ({
             <div className="text-[rgb(191 187 199)] mb-4 text-3xl">
               <MobileIconNew className="mx-auto" />
             </div>
-            <h3 className="mb-3 text-base font-bold">
+            <h3 className="mb-3 text-base font-medium">
               {t('text-contact-number')}
             </h3>
             {contactDetails?.contact ? (
@@ -123,7 +123,7 @@ const MoreInfo = ({
             <div className="text-[rgb(191 187 199)] mb-4 text-3xl">
               <HomeIconNew className="mx-auto" />
             </div>
-            <h3 className="mb-3 text-base font-bold">{t('text-website')}</h3>
+            <h3 className="mb-3 text-base font-medium">{t('text-website')}</h3>
             {contactDetails?.website ? (
               <Link
                 target="_blank"

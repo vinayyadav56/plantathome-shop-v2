@@ -33,7 +33,7 @@ export default function OrderList({
   return (
     <div className="h-[80vh] min-h-[670px] w-full ltr:pr-5 rtl:pl-5 md:w-1/3 md:shrink-0 ltr:lg:pr-8 rtl:lg:pl-8">
       <div className="flex h-full flex-col bg-white pb-5 md:border md:border-border-200">
-        <h3 className="py-5 px-5 text-xl font-semibold text-heading">
+        <h3 className="py-5 px-5 text-xl font-medium text-heading">
           {t('profile-sidebar-orders')}
         </h3>
         <Scrollbar className="w-full" style={{ height: 'calc(100% - 80px)' }}>

@@ -17,7 +17,7 @@ const CategoryCard: React.FC<CategoryItemProps> = ({ item, onClick }) => {
       role="button"
     >
       <div className="relative z-10 flex h-full flex-1 flex-col">
-        <h3 className="mb-1 text-lg font-semibold text-heading">{item.name}</h3>
+        <h3 className="mb-1 text-lg font-medium text-heading">{item.name}</h3>
         <span className="text-s text-body">
           {item?.children?.length
             ? `${item?.children?.length} ${

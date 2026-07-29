@@ -350,7 +350,7 @@ export function HeroPlant() {
             // renders immediately; the sub-copy and CTAs below keep their
             // entrance motion, which preserves the cinematic feel without
             // taxing first paint.
-            <h1 className="font-pahserif text-[2.4rem] font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]">
+            <h1 className="font-pahserif text-[2.4rem] font-medium leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]">
               <span className="block lg:whitespace-nowrap">
                 {t('home-hero-title-1')}
               </span>

@@ -36,7 +36,7 @@ const ProfileUpdateEmail = ({ user }: { user: User }) => {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></svg>
             </span>
             <div>
-              <h3 className="text-[16px] font-bold text-forest-900">{t('text-email')}</h3>
+              <h3 className="text-[16px] font-medium text-forest-900">{t('text-email')}</h3>
               <p className="text-[13px] text-stone-500">{t('update-email-subtitle')}</p>
             </div>
           </div>

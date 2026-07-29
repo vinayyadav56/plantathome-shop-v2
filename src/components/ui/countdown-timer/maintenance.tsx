@@ -99,7 +99,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   return (
     <>
       {title ? (
-        <h4 className="text-xl font-semibold text-muted-black">{title}</h4>
+        <h4 className="text-xl font-medium text-muted-black">{title}</h4>
       ) : (
         ''
       )}

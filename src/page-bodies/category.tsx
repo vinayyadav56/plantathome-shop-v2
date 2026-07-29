@@ -132,7 +132,7 @@ export default function CategoryPage() {
           </div>
 
           {/* H1 */}
-          <h1 className="font-pahserif text-[2.6rem] font-bold leading-tight tracking-[-0.015em] text-white sm:text-[3.4rem] lg:text-[4rem]">
+          <h1 className="font-pahserif text-[2.6rem] font-medium leading-tight tracking-[-0.015em] text-white sm:text-[3.4rem] lg:text-[4rem]">
             {category?.name ?? (loadingCategory ? 'Loading…' : 'Category')}
           </h1>
 
@@ -174,7 +174,7 @@ export default function CategoryPage() {
             <p className="font-hanken text-[10.5px] font-bold uppercase tracking-[0.2em] text-gold">
               {category?.name ?? 'Products'}
             </p>
-            <h2 className="mt-1.5 font-pahserif text-[2rem] font-bold leading-none tracking-[-0.01em] text-forest-900 sm:text-[2.6rem]">
+            <h2 className="mt-1.5 font-pahserif text-[2rem] font-medium leading-none tracking-[-0.01em] text-forest-900 sm:text-[2.6rem]">
               Shop the collection.
             </h2>
           </div>

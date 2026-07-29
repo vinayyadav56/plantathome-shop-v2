@@ -46,7 +46,7 @@ const FlashSaleCard: React.FC<FlashSaleCardProps> = ({
         />
       </div>
       {flashSale?.title ? (
-        <h2 className="mb-3 text-base font-semibold text-muted-black md:text-lg">
+        <h2 className="mb-3 text-base font-medium text-muted-black md:text-lg">
           {flashSale?.title?.length > 50
             ? flashSale?.title?.substring(0, 50) + '...'
             : flashSale?.title}

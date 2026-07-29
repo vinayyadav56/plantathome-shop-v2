@@ -62,7 +62,7 @@ export function RitualVideo() {
         <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-goldlight">
           The PlantAtHome ritual
         </p>
-        <h2 className="font-serif text-5xl font-semibold leading-[1] text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] sm:text-6xl lg:text-7xl">
+        <h2 className="font-serif text-5xl font-medium leading-[1] text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.4)] sm:text-6xl lg:text-7xl">
           <WordReveal text="More than a store. A botanical ritual." />
         </h2>
         <p className="mt-5 max-w-md text-base leading-7 text-white/90">

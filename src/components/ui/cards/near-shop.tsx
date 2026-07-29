@@ -52,7 +52,7 @@ const NearShopCard: React.FC<ShopCardProps> = ({ shop }) => {
               />
             </div>
             <div>
-              <h4 className="text-lg font-bold text-heading group-hover:text-accent">
+              <h4 className="text-lg font-medium text-heading group-hover:text-accent">
                 {shop?.name}
               </h4>
               <span className="line-clamp-1 mt-1.5 text-sm text-body">

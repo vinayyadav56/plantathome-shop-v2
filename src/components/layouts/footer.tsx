@@ -215,7 +215,7 @@ const Footer = () => {
         {/* link columns */}
         {cols.map((col) => (
           <div key={col.title}>
-            <h4 className="mb-5 text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#86EFAC]">
+            <h4 className="mb-5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">
               {col.title}
             </h4>
             <ul className="flex flex-col gap-3">

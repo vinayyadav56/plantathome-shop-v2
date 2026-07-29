@@ -69,7 +69,7 @@ export function StoryVideo() {
           <span className="mb-5 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white backdrop-blur-md">
             Our story
           </span>
-          <h2 className="font-serif text-6xl font-semibold leading-[1] text-white sm:text-7xl lg:text-8xl">
+          <h2 className="font-serif text-6xl font-medium leading-[1] text-white sm:text-7xl lg:text-8xl">
             <WordReveal text="From wild greenhouses to your living room." />
           </h2>
           <p className="mt-6 max-w-xl text-base leading-7 text-white/80 sm:text-lg">

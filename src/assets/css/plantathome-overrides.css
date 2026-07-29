@@ -2973,3 +2973,11 @@ html[data-density='compact'] { --density: 0.78; }
 .pah-fade-in { animation: pah-fade-in 0.6s ease; }
 @keyframes pah-fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .pah-fade-in { animation: none; } }
+
+/* ── Headings are weight 500, storefront-wide ──────────────────────────────
+   Deliberately NOT !important. The 184 heading tags that carried font-bold /
+   font-semibold were rewritten to font-medium at source, so this only has to
+   catch headings that specify no weight at all — and a heading that genuinely
+   needs a different weight can still say so with a utility class, which is the
+   behaviour an !important here would have taken away. */
+h1, h2, h3, h4, h5, h6 { font-weight: 500; }

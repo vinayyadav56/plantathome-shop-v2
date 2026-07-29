@@ -193,7 +193,7 @@ const Fluorine: React.FC<FluorineProps> = ({
       <div className="p-4">
         <h2
           className={classNames(
-            'mb-2 gap-2 text-lg font-semibold text-muted-black',
+            'mb-2 gap-2 text-lg font-medium text-muted-black',
             product?.is_external ? 'flex items-center' : 'truncate'
           )}
         >

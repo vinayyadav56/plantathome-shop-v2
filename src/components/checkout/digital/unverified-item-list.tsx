@@ -20,7 +20,7 @@ const UnverifiedItemList = ({ hideTitle = false }: { hideTitle?: boolean }) => {
         {isEmpty ? (
           <div className="mb-4 flex h-full flex-col items-center justify-center">
             <EmptyCartIcon width={140} height={176} />
-            <h4 className="mt-6 text-base font-semibold">
+            <h4 className="mt-6 text-base font-medium">
               {t('text-no-products')}
             </h4>
           </div>

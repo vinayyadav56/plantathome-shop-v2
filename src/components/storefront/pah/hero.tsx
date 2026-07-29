@@ -63,7 +63,7 @@ export function Hero() {
           <span className="mb-3.5 inline-flex items-center gap-[7px] rounded-full border border-[#86E0A3]/60 bg-[#0F1E12]/[0.55] px-[13px] py-[5px] font-hanken text-[10px] font-bold uppercase tracking-[0.18em] text-white">
             <span className="h-1.5 w-1.5 rounded-full bg-[#4ADE80] shadow-[0_0_6px_#4ADE80]" />{t('m-hero-badge')}
           </span>
-          <h1 className="m-0 whitespace-nowrap font-hanken text-[30px] font-extrabold leading-[1.12] tracking-[-0.02em] text-white">
+          <h1 className="m-0 whitespace-nowrap font-hanken text-[30px] font-medium leading-[1.12] tracking-[-0.02em] text-white">
             {t('m-hero-title-1')}<br /><span className="text-[#5FE08A]">{t('m-hero-title-2')}</span>
           </h1>
 

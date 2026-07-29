@@ -36,7 +36,7 @@ export function Testimonials() {
           Reviews
         </p>
       </FadeUp>
-      <h2 className="mx-auto mb-10 max-w-2xl text-center font-cormorant text-4xl font-semibold not-italic text-forest sm:mb-14 sm:text-5xl lg:text-6xl">
+      <h2 className="mx-auto mb-10 max-w-2xl text-center font-cormorant text-4xl font-medium not-italic text-forest sm:mb-14 sm:text-5xl lg:text-6xl">
         <WordReveal text="Plant parents, in their words" />
       </h2>
       <div className="pah-rail [--rail-w:82%] md:[--rail-w:55%] lg:[--rail-w:calc((100%_-_48px)/3)] grid gap-4 md:gap-6">

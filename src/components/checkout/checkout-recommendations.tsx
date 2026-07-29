@@ -34,7 +34,7 @@ export function CheckoutRecommendations() {
               <b.icon className="h-5 w-5" />
             </span>
             <div>
-              <h3 className="font-heading text-sm font-bold text-forest">{b.t}</h3>
+              <h3 className="font-heading text-sm font-medium text-forest">{b.t}</h3>
               <p className="mt-0.5 text-xs leading-5 text-[#5e6d61]">{b.d}</p>
             </div>
           </div>
@@ -47,7 +47,7 @@ export function CheckoutRecommendations() {
           <p className="mb-1.5 text-xs font-bold uppercase tracking-[0.25em] text-gold">
             Add a little extra
           </p>
-          <h2 className="font-heading text-2xl font-extrabold text-forest sm:text-3xl">
+          <h2 className="font-heading text-2xl font-medium text-forest sm:text-3xl">
             You may also like
           </h2>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">

@@ -25,7 +25,7 @@ const ProfileAddOrUpdateContact = () => {
 
   return (
     <div className="flex min-h-screen flex-col justify-center bg-light p-5 sm:p-8 md:min-h-0 md:rounded-xl">
-      <h1 className="mb-5 text-center text-sm font-semibold text-heading sm:mb-6">
+      <h1 className="mb-5 text-center text-sm font-medium text-heading sm:mb-6">
         {contact ? t('text-update') : t('text-add-new')}{' '}
         {t('text-contact-number')}
       </h1>

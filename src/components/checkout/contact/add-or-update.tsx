@@ -33,7 +33,7 @@ export default function AddOrUpdateContact() {
   }
   return (
     <div className="flex flex-col justify-center min-h-screen p-5 bg-light sm:p-8 md:min-h-0 md:rounded-xl">
-      <h1 className="mb-5 text-sm font-semibold text-center text-heading sm:mb-6">
+      <h1 className="mb-5 text-sm font-medium text-center text-heading sm:mb-6">
         {contactNumber ? t('text-update') : t('text-add-new')}{' '}
         {t('text-contact-number')}
       </h1>

@@ -57,7 +57,7 @@ const ShopSidebar: React.FC<ShopSidebarProps> = ({
         </div>
 
         <div className="w-full">
-          <h3 className="text-base font-semibold text-heading">{shop?.name}</h3>
+          <h3 className="text-base font-medium text-heading">{shop?.name}</h3>
 
           <button
             className="text-sm font-semibold transition text-accent hover:text-accent-hover"
@@ -95,7 +95,7 @@ const ShopSidebar: React.FC<ShopSidebarProps> = ({
                     <div className="text-sm text-gray-400">
                       Since {dayjs(shop?.created_at).format('YYYY')}
                     </div>
-                    <h3 className="mb-2 overflow-hidden text-lg font-semibold truncate text-heading">
+                    <h3 className="mb-2 overflow-hidden text-lg font-medium truncate text-heading">
                       {shop?.name}
                     </h3>
 

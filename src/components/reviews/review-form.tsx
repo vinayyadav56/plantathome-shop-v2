@@ -64,7 +64,7 @@ export default function ReviewForm() {
           />
         </div>
         <div className="ltr:pl-6 rtl:pr-6">
-          <h3 className="mb-2 text-base font-semibold leading-[1.65em] text-heading">
+          <h3 className="mb-2 text-base font-medium leading-[1.65em] text-heading">
             {data?.name}
           </h3>
         </div>

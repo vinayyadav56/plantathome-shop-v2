@@ -26,7 +26,7 @@ export function BestSellers() {
       <div className="mb-1 px-5">
         <div className="mb-[5px] font-hanken text-[9.5px] font-bold uppercase tracking-[0.2em] text-forest-600">{t('m-bestsellers-eyebrow')}</div>
         <div className="flex items-center justify-between gap-3">
-          <h2 className="flex items-center gap-1.5 font-hanken text-[18px] font-extrabold tracking-[-0.01em] text-forest-900">
+          <h2 className="flex items-center gap-1.5 font-hanken text-[18px] font-medium tracking-[-0.01em] text-forest-900">
             {t('m-bestsellers-title')}
             <i className="fa-solid fa-leaf text-[15px] text-forest-500" aria-hidden />
           </h2>

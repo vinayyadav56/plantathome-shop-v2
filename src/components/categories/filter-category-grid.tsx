@@ -107,7 +107,7 @@ const FilterCategoryGrid: React.FC<FilterCategoryGridProps> = ({
             </div>
           </Scrollbar>
         ) : (
-          <h3 className="px-2 pt-2 mb-8 text-2xl font-semibold text-heading">
+          <h3 className="px-2 pt-2 mb-8 text-2xl font-medium text-heading">
             {t('text-all-categories')}
           </h3>
         )}

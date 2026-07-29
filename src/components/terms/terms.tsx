@@ -78,7 +78,7 @@ export const TermsItems = ({
       name={makeTitleToDOMId(item?.title)}
       className="mb-7 md:mb-10"
     >
-      <h2 className="mb-4 text-lg font-bold text-heading md:text-xl lg:text-2xl">
+      <h2 className="mb-4 text-lg font-medium text-heading md:text-xl lg:text-2xl">
         {item?.title}
       </h2>
       {content ? (

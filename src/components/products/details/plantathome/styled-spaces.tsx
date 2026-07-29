@@ -42,7 +42,7 @@ export default function StyledSpaces() {
   return (
     <section className="bg-[#FAF8F2]">
       <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8">
-        <h2 className="text-[15px] font-bold uppercase tracking-[0.08em] text-[#184A31]">{heading}</h2>
+        <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">{heading}</h2>
         {subtitle && <p className="mt-1 text-[14px] text-[#5B5B5B]">{subtitle}</p>}
         <div className="relative mt-5">
           {/* horizontally scrollable tile rail — arrows scroll it */}

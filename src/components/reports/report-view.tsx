@@ -67,7 +67,7 @@ const MyReports: React.FC = () => {
     return (
       <div className="flex w-full flex-col">
         <div className="mb-8 flex items-center justify-center sm:mb-10">
-          <h1 className="text-center text-lg font-semibold text-forest-900 sm:text-xl">
+          <h1 className="text-center text-lg font-medium text-forest-900 sm:text-xl">
             {t('profile-sidebar-my-reports')}
           </h1>
         </div>
@@ -81,7 +81,7 @@ const MyReports: React.FC = () => {
     return (
       <div className="flex w-full flex-col">
         <div className="mb-8 flex items-center justify-between sm:mb-10">
-          <h1 className="ml-auto text-center text-lg font-semibold text-forest-900 sm:text-xl">
+          <h1 className="ml-auto text-center text-lg font-medium text-forest-900 sm:text-xl">
             {t('profile-sidebar-my-reports')}
           </h1>
         </div>
@@ -95,7 +95,7 @@ const MyReports: React.FC = () => {
 
   return (
     <div className="flex w-full flex-col">
-      <h3 className="mb-8 text-center text-2xl font-semibold text-forest-900">
+      <h3 className="mb-8 text-center text-2xl font-medium text-forest-900">
         {t('profile-sidebar-my-reports')}
       </h3>
       <Table

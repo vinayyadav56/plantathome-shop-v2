@@ -15,7 +15,7 @@ export default function OrderSummaryCard({ order, loading }: { order: any; loadi
     <div className="flex flex-col gap-4 rounded-2xl border border-[#E7E5DC] bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
       <div>
         <div className="flex items-center gap-2">
-          <h2 className="text-base font-semibold text-forest-900">
+          <h2 className="text-base font-medium text-forest-900">
             Order #{order?.tracking_number}
           </h2>
           {loading ? <SpinnerLoader /> : null}

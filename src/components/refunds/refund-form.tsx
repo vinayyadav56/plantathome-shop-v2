@@ -65,7 +65,7 @@ const CreateRefund = () => {
 
   return (
     <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-light py-6 px-5 sm:p-8 md:h-auto md:min-h-0 md:max-w-[480px] md:rounded-xl">
-      <h1 className="mb-5 text-lg font-semibold text-center text-heading sm:mb-6">
+      <h1 className="mb-5 text-lg font-medium text-center text-heading sm:mb-6">
         {t('text-add-new')} {t('text-refund')}
       </h1>
 

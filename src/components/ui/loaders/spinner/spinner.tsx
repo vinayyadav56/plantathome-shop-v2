@@ -24,7 +24,7 @@ const Spinner = (props: Props) => {
           <span className={styles.loading} />
 
           {showText && (
-            <h3 className="text-lg font-semibold italic text-body">{text}</h3>
+            <h3 className="text-lg font-medium italic text-body">{text}</h3>
           )}
         </span>
       )}

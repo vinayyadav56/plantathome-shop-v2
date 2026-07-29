@@ -157,7 +157,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
               Customer voices
             </p>
-            <h2 className="mt-2 text-[15px] font-bold uppercase leading-tight tracking-[0.08em] text-[#184A31]">
+            <h2 className="mt-2 text-[15px] font-medium uppercase leading-tight tracking-[0.08em] text-[#184A31]">
               {t('text-product-reviews')}{' '}
               <span className="font-semibold text-[#8A8A8A]">
                 ({total.toLocaleString('en-IN')})
@@ -248,7 +248,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             <span className="text-[#24693E]/35">
               <LeafGlyph />
             </span>
-            <h3 className="mt-4 text-[17px] font-bold text-[#184A31]">
+            <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-reviews-found')}
             </h3>
             <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#8A8A8A]">

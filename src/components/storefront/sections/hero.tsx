@@ -104,7 +104,7 @@ export function Hero({
           <Icon.spark className="h-3.5 w-3.5 text-goldlight" /> {eyebrow}
         </motion.span>
 
-        <h1 className="max-w-4xl font-serif text-[2.8rem] font-semibold leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-[5.75rem]">
+        <h1 className="max-w-4xl font-serif text-[2.8rem] font-medium leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-[5.75rem]">
           {cfgHeadline ? (
             // Admin headline replaces the whole two-line title.
             <WordReveal text={cfgHeadline} delay={0.15} />

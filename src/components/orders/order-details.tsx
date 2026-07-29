@@ -118,7 +118,7 @@ const OrderDetails = ({ order, loadingStatus }: Props) => {
   return (
     <div className="flex w-full flex-col border border-border-200 bg-white lg:w-2/3">
       <div className="flex flex-col items-center p-5 md:flex-row md:justify-between">
-        <h2 className="mb-2 flex text-sm font-semibold text-heading md:text-lg">
+        <h2 className="mb-2 flex text-sm font-medium text-heading md:text-lg">
           {t('text-order-details')} <span className="px-2">-</span>{' '}
           {tracking_number}
         </h2>

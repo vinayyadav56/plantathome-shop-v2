@@ -38,7 +38,7 @@ const SavedCardViewHeader: React.FC<Props> = ({
   return (
     <>
       <div className="mb-8 flex items-center justify-between sm:mb-10">
-        <h1 className="text-center text-lg font-semibold text-heading sm:text-xl">
+        <h1 className="text-center text-lg font-medium text-heading sm:text-xl">
           {t('profile-sidebar-my-cards')}
         </h1>
         <div className="flex items-center gap-4">

@@ -63,7 +63,7 @@ export default function PlantCareDetails({
   return (
     <section className="border-b border-border-200 border-opacity-70 px-5 py-8 lg:px-16 lg:py-12">
       <div className="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 className="font-heading text-lg font-bold tracking-tight text-forest md:text-2xl">
+        <h2 className="font-heading text-lg font-medium tracking-tight text-forest md:text-2xl">
           Plant care &amp; details
         </h2>
         {a.scientific_name && (
@@ -120,13 +120,13 @@ export default function PlantCareDetails({
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {a.benefits && a.benefits.toLowerCase() !== 'none' && (
             <div className="rounded-2xl bg-mintsoft p-5">
-              <h3 className="font-heading text-sm font-bold text-forest">Benefits</h3>
+              <h3 className="font-heading text-sm font-medium text-forest">Benefits</h3>
               <p className="mt-1.5 text-sm leading-6 text-body">{a.benefits}</p>
             </div>
           )}
           {a.medicinal_uses && a.medicinal_uses.toLowerCase() !== 'none' && (
             <div className="rounded-2xl bg-mintsoft p-5">
-              <h3 className="font-heading text-sm font-bold text-forest">
+              <h3 className="font-heading text-sm font-medium text-forest">
                 Medicinal uses
               </h3>
               <p className="mt-1.5 text-sm leading-6 text-body">

@@ -28,7 +28,7 @@ const OrderListMobile: React.FC<OrdersWithLoaderProps> = ({
   return (
     <div className="flex w-full flex-col md:hidden">
       <div className="flex h-full w-full flex-col px-0 pb-5">
-        <h3 className="pb-5 text-xl font-semibold text-heading">
+        <h3 className="pb-5 text-xl font-medium text-heading">
           {t('profile-sidebar-orders')}
         </h3>
         <Collapse

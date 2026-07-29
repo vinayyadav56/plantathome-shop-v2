@@ -103,7 +103,7 @@ export default function OrderItemsCard({
 
   return (
     <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
-      <h3 className="text-base font-semibold text-forest-900">
+      <h3 className="text-base font-medium text-forest-900">
         Order Items ({products.length})
       </h3>
       <ul className="mt-1 divide-y divide-[#F0EEE5]">

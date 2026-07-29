@@ -23,7 +23,7 @@ export default function SubscribeToNewsletter({
   return (
     <div className="flex flex-col">
       {title ? (
-        <h3 className="mt-3 mb-7 text-xl font-semibold text-heading">
+        <h3 className="mt-3 mb-7 text-xl font-medium text-heading">
           {t(title)}
         </h3>
       ) : (

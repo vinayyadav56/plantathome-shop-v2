@@ -82,7 +82,7 @@ export const ProfileAddressGrid: React.FC<AddressesProps> = ({
     <div className={className}>
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h3 className="text-[16px] font-bold text-forest-900">{label}</h3>
+          <h3 className="text-[16px] font-medium text-forest-900">{label}</h3>
           <p className="text-[13px] text-stone-500">{t('addresses-subtitle')}</p>
         </div>
         <button

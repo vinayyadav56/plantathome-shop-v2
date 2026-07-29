@@ -323,7 +323,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 className={classNames(
                   // Myntra-scale: small, quiet name — weight and colour carry
                   // the hierarchy, not size (annotation: "small fonts").
-                  'min-w-0 text-[19px] font-semibold leading-snug tracking-tight text-forest-900 sm:text-[22px]',
+                  'min-w-0 text-[19px] font-medium leading-snug tracking-tight text-forest-900 sm:text-[22px]',
                   { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
                 )}
                 {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
@@ -582,7 +582,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* What's included — admin-configured list (Product Page Sections) */}
             {!isModal && includedItems.length > 0 && (
               <div className="mt-4 rounded-[14px] border border-[#ECECEC] bg-white p-4">
-                <h3 className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
+                <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-[13px] text-stone-600">

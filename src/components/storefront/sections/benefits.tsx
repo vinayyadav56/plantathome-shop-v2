@@ -40,7 +40,7 @@ export function Benefits() {
               <Icon.leaf className="h-3.5 w-3.5" /> Science-backed benefits
             </span>
           </FadeUp>
-          <h2 className="mt-5 font-serif text-4xl font-semibold leading-[1.05] text-forest-900 sm:text-5xl">
+          <h2 className="mt-5 font-serif text-4xl font-medium leading-[1.05] text-forest-900 sm:text-5xl">
             <WordReveal text="Why every home needs " />
             <span className="text-forest-700">plants</span>
           </h2>
@@ -60,7 +60,7 @@ export function Benefits() {
                 <span className="grid h-14 w-14 place-items-center rounded-full bg-sage-100 text-forest-700 transition-colors group-hover:bg-forest-700 group-hover:text-white">
                   <b.icon className="h-6 w-6" />
                 </span>
-                <h3 className="mt-5 font-serif text-xl font-semibold text-forest-900">
+                <h3 className="mt-5 font-serif text-xl font-medium text-forest-900">
                   {b.title}
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-stone-600">{b.text}</p>

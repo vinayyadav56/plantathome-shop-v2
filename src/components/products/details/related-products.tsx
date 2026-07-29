@@ -16,7 +16,7 @@ const RelatedProducts = ({
 
   return (
     <>
-      <h2 className="mb-6 text-[15px] font-bold uppercase tracking-[0.08em] text-heading">
+      <h2 className="mb-6 text-[15px] font-medium uppercase tracking-[0.08em] text-heading">
         {t('text-related-products')}
       </h2>
       <div

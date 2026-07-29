@@ -137,7 +137,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         {/* promo */}
         <div className="overflow-hidden rounded-2xl border border-forest-900/10 bg-sage-100/70">
           <div className="px-5 pt-5">
-            <h3 className="font-pahserif text-[20px] font-semibold leading-tight text-forest-900">{t('promo-title')}</h3>
+            <h3 className="font-pahserif text-[20px] font-medium leading-tight text-forest-900">{t('promo-title')}</h3>
             <p className="mt-2 text-[13px] leading-snug text-stone-600">{t('promo-sub')}</p>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}

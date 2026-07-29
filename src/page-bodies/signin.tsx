@@ -53,7 +53,7 @@ function SignInPage() {
               Plant <span className="text-[#8FD56F]">atHome</span>
             </Link>
             <div>
-              <h2 className="font-pahserif text-[40px] font-bold leading-[1.05] tracking-[-0.02em]">
+              <h2 className="font-pahserif text-[40px] font-medium leading-[1.05] tracking-[-0.02em]">
                 {t('signin-hero-line-1')}
                 <br />
                 <span className="text-[#8FD56F]">{t('signin-hero-line-2')}</span>
@@ -73,7 +73,7 @@ function SignInPage() {
               Plant <span className="ml-1 text-forest-600">atHome</span>
             </Link>
 
-            <h1 className="font-pahserif text-[28px] font-bold text-forest-900">
+            <h1 className="font-pahserif text-[28px] font-medium text-forest-900">
               {mode === 'login' ? t('signin-welcome') : t('signin-create-account')}
             </h1>
             <p className="mb-7 mt-1 text-[14px] text-stone-500">

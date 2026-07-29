@@ -99,7 +99,7 @@ const NotFound: React.FC<NotFoundProps> = ({
         <p className="mb-3 mt-8 text-xs font-semibold uppercase tracking-[0.22em] text-stone-500">
           {isDefault ? 'Error 404' : t(title)}
         </p>
-        <h1 className="mx-auto mb-4 max-w-xl text-2xl font-bold leading-snug text-forest-900 sm:text-3xl">
+        <h1 className="mx-auto mb-4 max-w-xl text-2xl font-medium leading-snug text-forest-900 sm:text-3xl">
           {isDefault
             ? 'This page seems to have wandered off the garden path.'
             : t(subTitle)}

@@ -75,7 +75,7 @@ function VerticalSection({ type }: { type: Type }) {
     <section className="border-t border-kraft-200/60 py-9 first:border-t-0 lg:py-11">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h2 className="m-0 font-pahserif text-[24px] font-semibold tracking-[-0.005em] text-forest-900 sm:text-[30px]">
+          <h2 className="m-0 font-pahserif text-[24px] font-medium tracking-[-0.005em] text-forest-900 sm:text-[30px]">
             {type.name ?? meta.label}
           </h2>
           <p className="mt-1 font-hanken text-[13px] text-stone-500">

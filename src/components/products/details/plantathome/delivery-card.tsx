@@ -41,7 +41,7 @@ export function DeliveryCard(props: {
 
   return (
     <div className="rounded-[14px] border border-[#ECECEC] bg-white p-4">
-      <h3 className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#184A31]">
+      <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         Delivery &amp; availability
       </h3>
 

@@ -69,7 +69,7 @@ export default function LocationBasedShopForm({
         className
       )}
     >
-      {/* <h1 className="mb-4 text-center text-lg font-semibold text-heading sm:mb-6">
+      {/* <h1 className="mb-4 text-center text-lg font-medium text-heading sm:mb-6">
         Search Shop Address Location
       </h1> */}
       <Form<FormValues> onSubmit={onSubmit} className="flex h-full gap-2.5">

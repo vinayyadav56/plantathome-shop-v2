@@ -99,7 +99,7 @@ const ShortDetails: React.FC<ShortDetailsProps> = ({ product, isSticky }) => {
 
         <div className="flex flex-col justify-center overflow-hidden px-8 ltr:mr-auto rtl:ml-auto">
           <h3
-            className="cursor-pointer truncate text-lg font-semibold tracking-tight text-heading transition-colors hover:text-accent lg:text-xl"
+            className="cursor-pointer truncate text-lg font-medium tracking-tight text-heading transition-colors hover:text-accent lg:text-xl"
             onClick={() => navigate(Routes.product(slug))}
             // onClick={() => navigate(Routes.product(slug, router?.asPath.slice(1)))}
             title={name}

@@ -13,7 +13,7 @@ export default function DeliveryAddressCard({ order }: { order: any }) {
 
   return (
     <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
-      <h3 className="mb-3 text-base font-semibold text-forest-900">Delivery Address</h3>
+      <h3 className="mb-3 text-base font-medium text-forest-900">Delivery Address</h3>
 
       <div className="flex gap-2.5">
         <MapPinIcon className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[var(--ds-accent,#4E8B31)]" />

@@ -62,7 +62,7 @@ const ProfileForm = ({ user }: { user: User }) => {
 
           {/* header */}
           <div className="mb-7">
-            <h2 className="font-pahserif text-[24px] font-semibold text-forest-900">
+            <h2 className="font-pahserif text-[24px] font-medium text-forest-900">
               {t('profile-info-title')}
             </h2>
             <p className="mt-1 text-[13.5px] text-stone-500">{t('profile-info-subtitle')}</p>

@@ -16,7 +16,7 @@ const AccessDeniedPage = () => {
         />
       </div>
 
-      <h3 className="mt-5 text-center text-xl font-bold text-sub-heading sm:mt-10 md:text-2xl 3xl:text-3xl">
+      <h3 className="mt-5 text-center text-xl font-medium text-sub-heading sm:mt-10 md:text-2xl 3xl:text-3xl">
         {t('text-access-denied')}
       </h3>
       <p className="mt-2 text-center text-sm text-body 3xl:text-xl">

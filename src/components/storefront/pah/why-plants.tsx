@@ -33,7 +33,7 @@ export function WhyPlants() {
           {t('m-why-eyebrow')}
         </span>
         <div className="mx-auto mt-2.5 h-0.5 w-[42px] rounded-full bg-forest-500" />
-        <h2 className="font-pahserif mt-3 text-[30px] font-bold leading-[1.04] tracking-[-0.01em] text-forest-900">{t('m-why-title')}</h2>
+        <h2 className="font-pahserif mt-3 text-[30px] font-medium leading-[1.04] tracking-[-0.01em] text-forest-900">{t('m-why-title')}</h2>
         <p className="mt-2.5 text-[12.5px] leading-[1.55] text-stone-500">{t('m-why-subtitle')} <strong className="font-bold text-forest-700">{t('m-why-subtitle-strong')}</strong></p>
       </div>
       {/* carousel */}
@@ -43,7 +43,7 @@ export function WhyPlants() {
             <div className="relative h-[96px] bg-cream-100"><CardImg src={b.img} alt={b.title} /></div>
             <div className="absolute left-1/2 top-[96px] grid h-[46px] w-[46px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-sage-200 bg-white text-forest-700 shadow-[0_5px_14px_rgba(20,40,24,0.14)]">{b.icon}</div>
             <div className="px-[11px] pb-4 pt-[29px] text-center">
-              <h3 className="text-[13px] font-bold leading-[1.2] text-forest-900">{b.title}</h3>
+              <h3 className="text-[13px] font-medium leading-[1.2] text-forest-900">{b.title}</h3>
               <div className="mx-auto mb-[9px] mt-2 h-0.5 w-[22px] rounded-full bg-forest-500" />
               <p className="text-[10.5px] leading-[1.5] text-stone-500">{b.body}</p>
             </div>

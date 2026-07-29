@@ -73,7 +73,7 @@ export function GiftingBand() {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-forest-600"><path d="M7 20s-1-7 4-11c0 0 2 4-1 7" /><path d="M12 20c0-6 4-10 9-10 0 6-4 10-9 10Z" /></svg>
             {t('home-gift-eyebrow')}
           </span>
-          <h2 className="font-cormorant mt-4 text-[2.4rem] font-semibold leading-[1.0] tracking-[-0.02em] text-forest-900 sm:text-[56px]">
+          <h2 className="font-cormorant mt-4 text-[2.4rem] font-medium leading-[1.0] tracking-[-0.02em] text-forest-900 sm:text-[56px]">
             {t('home-gift-title-1')}<br />{t('home-gift-title-2')} <span className="text-forest-600">{t('home-gift-title-3')}</span>
           </h2>
           <div className="mt-4 flex max-w-[472px] items-center gap-[13px]">

@@ -19,7 +19,7 @@ const NewsLetter = () => {
       </div>
       <div className="mb-8 text-center md:mb-16">
         {title ? (
-          <h2 className="mb-3 text-2xl font-bold text-black md:text-4xl">
+          <h2 className="mb-3 text-2xl font-medium text-black md:text-4xl">
             {title}
           </h2>
         ) : (

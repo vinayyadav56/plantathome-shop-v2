@@ -30,7 +30,7 @@ const StipeElementViewHeader: React.FC<Props> = ({
   return (
     <>
       <div className="mb-8 flex items-center justify-between sm:mb-10">
-        <h1 className="text-center text-lg font-semibold text-heading sm:text-xl">
+        <h1 className="text-center text-lg font-medium text-heading sm:text-xl">
           {t('profile-new-cards')}
         </h1>
         {Boolean(settings?.StripeCardOnly) && (

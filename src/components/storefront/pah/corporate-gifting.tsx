@@ -40,7 +40,7 @@ export function CorporateGifting() {
           <i className="fa-solid fa-seedling" aria-hidden style={{ fontSize: '11px', color: '#3A6B33' }} />
           {t('m-gift-eyebrow')}
         </span>
-        <h2 className="font-pahserif mt-[14px] text-[30px] font-semibold leading-[1.06] tracking-[-0.01em] text-forest-900">{t('m-gift-title-1')} <span className="text-forest-600">{t('m-gift-title-2')}</span></h2>
+        <h2 className="font-pahserif mt-[14px] text-[30px] font-medium leading-[1.06] tracking-[-0.01em] text-forest-900">{t('m-gift-title-1')} <span className="text-forest-600">{t('m-gift-title-2')}</span></h2>
         <div className="mt-[13px] flex items-center justify-center gap-[10px]">
           <div className="h-px w-[58px] bg-kraft-300" />
           <i className="fa-solid fa-seedling" aria-hidden style={{ fontSize: '12px', color: '#4E8244' }} />

@@ -24,7 +24,7 @@ export function VerticalShowcase() {
               One home, three worlds
             </p>
           </FadeUp>
-          <h2 className="mx-auto max-w-2xl font-serif text-4xl font-semibold leading-tight text-forest sm:text-5xl lg:text-6xl">
+          <h2 className="mx-auto max-w-2xl font-serif text-4xl font-medium leading-tight text-forest sm:text-5xl lg:text-6xl">
             <WordReveal text="Everything to grow your green life." />
           </h2>
         </div>
@@ -49,7 +49,7 @@ export function VerticalShowcase() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-deep via-deep/25 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                      <h3 className="font-heading text-2xl font-black">{t.name}</h3>
+                      <h3 className="font-heading text-2xl font-medium">{t.name}</h3>
                       <p className="mt-1 max-w-xs text-sm text-white/80">
                         {meta.tagline}
                       </p>

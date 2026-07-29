@@ -106,7 +106,7 @@ export function WhyPlants() {
             <i className="fa-solid fa-seedling text-[13px] text-forest-500" aria-hidden />
             {t('home-why-eyebrow')}
           </span>
-          <h2 className="font-pahserif mt-4 text-[30px] font-bold not-italic leading-[1.05] tracking-[-0.012em] text-forest-900 sm:text-[42px]">
+          <h2 className="font-pahserif mt-4 text-[30px] font-medium not-italic leading-[1.05] tracking-[-0.012em] text-forest-900 sm:text-[42px]">
             {heading}
           </h2>
           <p className="mx-auto mt-3 max-w-xl font-hanken text-[14px] leading-[1.55] text-stone-500 sm:text-[15.5px]">
@@ -149,7 +149,7 @@ export function WhyPlants() {
               </div>
 
               <div className="px-5 pb-6 pt-9 text-center md:px-3 md:pb-4 md:pt-7 lg:px-5 lg:pb-6 lg:pt-9">
-                <h3 className="font-hanken text-[16px] font-bold leading-[1.2] text-forest-900 transition-colors duration-300 group-hover:text-forest-700 md:text-[12.5px] lg:text-[16px]">
+                <h3 className="font-hanken text-[16px] font-medium leading-[1.2] text-forest-900 transition-colors duration-300 group-hover:text-forest-700 md:text-[12.5px] lg:text-[16px]">
                   {b.title}
                 </h3>
                 {/* animated divider — grows + turns green on hover */}

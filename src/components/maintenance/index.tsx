@@ -113,7 +113,7 @@ const MaintenanceMode = ({
         <div className="relative mt-8 lg:mt-16">
           <div>
             {data?.title ? (
-              <h1 className="mb-4 text-xl font-bold tracking-tight text-black lg:mb-8 lg:text-6xl">
+              <h1 className="mb-4 text-xl font-medium tracking-tight text-black lg:mb-8 lg:text-6xl">
                 {data?.title}
               </h1>
             ) : (

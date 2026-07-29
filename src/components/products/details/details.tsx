@@ -160,7 +160,7 @@ const Details: React.FC<Props> = ({
             <div className="flex w-full items-start justify-between space-x-8 rtl:space-x-reverse">
               <h1
                 className={classNames(
-                  `text-lg font-semibold tracking-tight text-heading md:text-xl xl:text-2xl`,
+                  `text-lg font-medium tracking-tight text-heading md:text-xl xl:text-2xl`,
                   {
                     'cursor-pointer transition-colors hover:text-accent':
                       isModal,
@@ -278,7 +278,7 @@ const Details: React.FC<Props> = ({
         name="details"
         className="border-b border-border-200 border-opacity-70 px-5 py-4 lg:px-16 lg:py-14"
       >
-        <h2 className="mb-4 text-lg font-semibold tracking-tight text-heading md:mb-6">
+        <h2 className="mb-4 text-lg font-medium tracking-tight text-heading md:mb-6">
           {t('text-details')}
         </h2>
         {content ? (

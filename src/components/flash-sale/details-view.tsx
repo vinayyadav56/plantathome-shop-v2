@@ -62,7 +62,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       </>
       <div className={twMerge(classNames('bg-white py-10', containerClass))}>
         {flashSale?.title ? (
-          <h3 className="mb-4 text-xl font-semibold text-muted-black lg:text-2xl">
+          <h3 className="mb-4 text-xl font-medium text-muted-black lg:text-2xl">
             {flashSale?.title}
           </h3>
         ) : (

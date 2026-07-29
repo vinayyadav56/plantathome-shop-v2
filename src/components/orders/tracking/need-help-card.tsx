@@ -14,7 +14,7 @@ export default function NeedHelpCard({ settings }: { settings: any }) {
       id="need-help"
       className="scroll-mt-24 rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6"
     >
-      <h3 className="mb-2 text-base font-semibold text-forest-900">Need Help?</h3>
+      <h3 className="mb-2 text-base font-medium text-forest-900">Need Help?</h3>
       <p className="mb-4 text-[13px] leading-relaxed text-[#8C8A81]">
         We&rsquo;re here for you. Reach out to our support team for any assistance.
       </p>

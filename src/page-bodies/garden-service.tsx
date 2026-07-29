@@ -112,7 +112,7 @@ function SectionHead({
     <motion.div {...reveal()} className="mx-auto max-w-[720px] text-center">
       <Eyebrow dark={dark}>{eyebrow}</Eyebrow>
       <h2
-        className={`mt-4 text-[28px] font-bold leading-[1.12] tracking-[-0.01em] sm:text-[38px] ${
+        className={`mt-4 text-[28px] font-medium leading-[1.12] tracking-[-0.01em] sm:text-[38px] ${
           dark ? 'text-white' : 'text-[#16301A]'
         }`}
       >
@@ -151,7 +151,7 @@ function LeadForm() {
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#F3F8EC] text-[#24693E]">
           <GsIcon name="shieldCheck" className="h-7 w-7" />
         </div>
-        <h3 className="mt-4 text-xl font-bold text-[#184A31]">Request received</h3>
+        <h3 className="mt-4 text-xl font-medium text-[#184A31]">Request received</h3>
         <p className="mt-2 text-[15px] leading-[1.6] text-[#5B5B5B]">
           Our garden experts will call you within one business day to design your free plan.
         </p>
@@ -168,7 +168,7 @@ function LeadForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={`${CARD} p-6 sm:p-7`}>
-      <h3 className="text-[21px] font-bold leading-tight text-[#184A31]">Get your free garden plan</h3>
+      <h3 className="text-[21px] font-medium leading-tight text-[#184A31]">Get your free garden plan</h3>
       <p className="mt-1.5 text-[13.5px] text-[#8A8A8A]">No cost, no obligation. We’ll call you within a day.</p>
 
       <div className="mt-6 space-y-4">
@@ -324,7 +324,7 @@ export default function GardenServicePage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16 lg:py-24">
           <div className="text-white">
             <Eyebrow dark>Bespoke home gardens</Eyebrow>
-            <h1 className="mt-6 text-[34px] font-bold leading-[1.1] tracking-[-0.015em] sm:text-[46px] lg:text-[52px]">
+            <h1 className="mt-6 text-[34px] font-medium leading-[1.1] tracking-[-0.015em] sm:text-[46px] lg:text-[52px]">
               {heroHeadline ?? (
                 <>
                   A thriving garden,
@@ -411,7 +411,7 @@ export default function GardenServicePage() {
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#F3F8EC] text-[#24693E]">
                     <GsIcon name={s.icon} className="h-5 w-5" />
                   </span>
-                  <h3 className="text-[18px] font-bold leading-snug text-[#184A31]">{s.title}</h3>
+                  <h3 className="text-[18px] font-medium leading-snug text-[#184A31]">{s.title}</h3>
                 </div>
                 <p className="mt-3.5 text-[14px] leading-[1.65] text-[#5B5B5B]">{s.text}</p>
               </div>
@@ -438,7 +438,7 @@ export default function GardenServicePage() {
                 <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#F3F8EC] text-[#24693E]">
                   <GsIcon name={f.icon} className="h-6 w-6" />
                 </span>
-                <h3 className="mt-5 text-[16.5px] font-bold leading-snug text-[#184A31]">{f.title}</h3>
+                <h3 className="mt-5 text-[16.5px] font-medium leading-snug text-[#184A31]">{f.title}</h3>
                 <p className="mt-2 text-[14px] leading-[1.65] text-[#5B5B5B]">{f.text}</p>
               </motion.div>
             ))}
@@ -509,7 +509,7 @@ export default function GardenServicePage() {
                       </span>
                     )}
 
-                    <h3 className="text-[21px] font-bold leading-tight text-[#184A31]">{t.name}</h3>
+                    <h3 className="text-[21px] font-medium leading-tight text-[#184A31]">{t.name}</h3>
                     {t.tagline ? <p className="mt-1.5 text-[13.5px] text-[#8A8A8A]">{t.tagline}</p> : null}
 
                     <div className="mt-5 flex items-baseline gap-2">
@@ -631,7 +631,7 @@ export default function GardenServicePage() {
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-[#8FD56F]/25 bg-[#8FD56F]/10 text-[#8FD56F]">
             <LineIcon name="leaf" className="h-7 w-7" />
           </span>
-          <h2 className="mt-6 text-[28px] font-bold leading-[1.15] tracking-[-0.01em] text-white sm:text-[36px]">
+          <h2 className="mt-6 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-white sm:text-[36px]">
             Ready for a garden you’ll actually keep alive?
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-[15px] leading-[1.65] text-white/75">

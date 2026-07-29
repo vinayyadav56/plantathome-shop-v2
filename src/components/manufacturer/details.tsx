@@ -26,7 +26,7 @@ const Details: React.FC<ManufacturerProps> = ({ manufacturer }) => {
 
         {name && (
           <h3
-            className="mt-5 w-full truncate text-center text-xl font-bold text-heading 2xl:text-2xl"
+            className="mt-5 w-full truncate text-center text-xl font-medium text-heading 2xl:text-2xl"
             title={name}
           >
             {name}

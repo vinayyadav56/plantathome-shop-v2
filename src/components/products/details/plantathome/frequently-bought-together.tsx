@@ -58,7 +58,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
 
   return (
     <div className="rounded-[22px] border border-[#ECECEC] bg-white p-6 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
-      <h3 className="text-[13px] font-bold uppercase tracking-[0.08em] text-[#184A31]">
+      <h3 className="text-[13px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         Frequently Bought Together
       </h3>
 

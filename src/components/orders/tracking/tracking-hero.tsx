@@ -42,7 +42,7 @@ export default function TrackingHero({ trackingNumber }: { trackingNumber?: stri
           </ol>
         </nav>
 
-        <h1 className="text-4xl font-semibold tracking-tight text-forest-900 sm:text-5xl">
+        <h1 className="text-4xl font-medium tracking-tight text-forest-900 sm:text-5xl">
           Track Your Order
         </h1>
         <p className="mt-3 max-w-xs text-[15px] leading-relaxed text-[#6F6D64]">

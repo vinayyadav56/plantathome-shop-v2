@@ -69,7 +69,7 @@ export default function ParcelShipments({ tracking }: ParcelShipmentsProps) {
 
   return (
     <div className="mb-8">
-      <h2 className="mb-4 text-xl font-bold text-forest-900">
+      <h2 className="mb-4 text-xl font-medium text-forest-900">
         {shipments.length > 1 ? `Your parcels (${shipments.length})` : 'Your shipment'}
       </h2>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -81,7 +81,7 @@ export default function ParcelShipments({ tracking }: ParcelShipmentsProps) {
               className="rounded border border-border-200 px-5 py-4 shadow-sm"
             >
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-forest-900">
+                <h3 className="text-sm font-medium text-forest-900">
                   {shipments.length > 1 ? `Parcel ${idx + 1} of ${shipments.length}` : 'Parcel'}
                   <span className="ml-2 text-xs font-normal text-body-dark">
                     {s.fulfillment_mode === 'courier' ? 'Courier' : 'Local delivery'}

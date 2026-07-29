@@ -42,7 +42,7 @@ const Collapse: React.FC<CollapseProps> = ({
         onClick={() => setExpanded(isOpen ? false : i)}
         className="py-4 px-5 rounded cursor-pointer flex items-center justify-between transition-colors"
       >
-        <h2 className="text-sm md:text-base font-semibold leading-relaxed text-heading">
+        <h2 className="text-sm md:text-base font-medium leading-relaxed text-heading">
           {t(title)}
         </h2>
         {isOpen ? (

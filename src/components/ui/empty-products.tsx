@@ -57,7 +57,7 @@ export function EmptyProducts({
         </svg>
       </div>
 
-      <h3 className="font-heading mt-6 text-[1.6rem] font-bold not-italic leading-tight text-forest-900 sm:text-[2rem]">
+      <h3 className="font-heading mt-6 text-[1.6rem] font-medium not-italic leading-tight text-forest-900 sm:text-[2rem]">
         {heading}
       </h3>
       <p className="mt-3 max-w-md text-[14px] leading-relaxed text-stone-500 sm:text-[15px]">{sub}</p>

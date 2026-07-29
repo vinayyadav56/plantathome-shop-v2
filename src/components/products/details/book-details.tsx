@@ -131,7 +131,7 @@ const BookDetails: React.FC<Props> = ({ product, isModal = false }) => {
             <div className="flex w-full items-start justify-between space-x-5 rtl:space-x-reverse lg:space-x-8">
               <div className="flex flex-col items-start">
                 {name && (
-                  <h1 className="text-xl font-bold tracking-tight text-heading lg:text-2xl xl:text-3xl">
+                  <h1 className="text-xl font-medium tracking-tight text-heading lg:text-2xl xl:text-3xl">
                     {name}
                   </h1>
                 )}
@@ -285,7 +285,7 @@ const BookDetails: React.FC<Props> = ({ product, isModal = false }) => {
       </div>
 
       <Element name="details" className="pt-5 lg:pt-14">
-        <h2 className="mb-4 text-xl font-bold tracking-tight text-heading md:mb-6 lg:text-3xl">
+        <h2 className="mb-4 text-xl font-medium tracking-tight text-heading md:mb-6 lg:text-3xl">
           {t('text-details')}
         </h2>
         {content ? (

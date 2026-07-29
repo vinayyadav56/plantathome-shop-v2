@@ -443,7 +443,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
         <div className="flex flex-wrap items-center justify-between gap-5">
           <div>
             <Eyebrow>Diagnosis report</Eyebrow>
-            <h2 className="mt-1.5 text-[1.9rem] font-bold leading-tight tracking-[-0.01em] text-[#184A31]">
+            <h2 className="mt-1.5 text-[1.9rem] font-medium leading-tight tracking-[-0.01em] text-[#184A31]">
               {result.identification?.common_name || result.plant_name || 'Your plant'}
             </h2>
             {(result.identification?.scientific_name || (result.identification?.confidence ?? 0) > 0) && (
@@ -467,7 +467,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
             <div className="h-1 w-full" style={{ background: sev.bar }} />
             <div className="p-6 sm:p-7">
               <div className="flex flex-wrap items-center gap-3">
-                <h3 className="text-[1.15rem] font-bold text-[#184A31]">{d.condition}</h3>
+                <h3 className="text-[1.15rem] font-medium text-[#184A31]">{d.condition}</h3>
                 <span className={`rounded-full border px-2.5 py-[3px] text-[10.5px] font-bold uppercase tracking-wide ${sev.cls}`}>
                   {sev.label}
                 </span>
@@ -564,7 +564,7 @@ function RejectionView({ result, onReset }: { result: DiagnosisResponse; onReset
       <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
         <Icon name="image" className="h-7 w-7" strokeWidth={1.7} />
       </span>
-      <h2 className="mt-5 text-[1.5rem] font-bold leading-tight text-[#184A31]">
+      <h2 className="mt-5 text-[1.5rem] font-medium leading-tight text-[#184A31]">
         We couldn&rsquo;t find a plant in that photo
       </h2>
       <p className="mt-3 text-[13.5px] leading-relaxed text-[#5B5B5B]">
@@ -604,7 +604,7 @@ function HistorySection({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <Eyebrow>Your history</Eyebrow>
-          <h2 className="mt-1.5 flex items-center gap-2.5 text-[1.5rem] font-bold tracking-[-0.01em] text-[#184A31]">
+          <h2 className="mt-1.5 flex items-center gap-2.5 text-[1.5rem] font-medium tracking-[-0.01em] text-[#184A31]">
             Previous consultations
             {entries.length > 0 && (
               <span className="rounded-full bg-[#F3F8EC] px-2.5 py-1 text-[12px] font-semibold text-[#24693E]">
@@ -741,7 +741,7 @@ function HistoryLoginTeaser() {
           <Icon name="lock" className="h-5 w-5" strokeWidth={1.8} />
         </span>
         <div className="flex-1">
-          <h2 className="text-[1.15rem] font-bold text-[#184A31]">
+          <h2 className="text-[1.15rem] font-medium text-[#184A31]">
             Log in to keep your consultation history
           </h2>
           <p className="mt-1 text-[13.5px] leading-relaxed text-[#5B5B5B]">
@@ -977,7 +977,7 @@ export default function PlantDoctorPage() {
             </span>
           </div>
 
-          <h1 className="mt-6 text-[2.3rem] font-bold leading-[1.08] tracking-[-0.02em] text-[#184A31] sm:text-[3.4rem]">
+          <h1 className="mt-6 text-[2.3rem] font-medium leading-[1.08] tracking-[-0.02em] text-[#184A31] sm:text-[3.4rem]">
             Is your plant unwell?
             <br className="hidden sm:block" /> Find out in seconds.
           </h1>

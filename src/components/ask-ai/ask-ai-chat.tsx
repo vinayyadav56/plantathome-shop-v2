@@ -64,7 +64,7 @@ export default function AskAiChat() {
           <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-forest-600">
             <Sparkle className="h-3.5 w-3.5" /> Ask AI
           </div>
-          <h3 className="truncate text-[15px] font-semibold text-forest-900">{product.name}</h3>
+          <h3 className="truncate text-[15px] font-medium text-forest-900">{product.name}</h3>
         </div>
         <button
           type="button"

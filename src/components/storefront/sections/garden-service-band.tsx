@@ -27,7 +27,7 @@ export function GardenServiceBand() {
             <span className="inline-flex items-center text-xs font-bold uppercase tracking-[0.22em] text-gold">
               New · Home Garden Service
             </span>
-            <h2 className="mt-4 font-cormorant text-4xl font-semibold not-italic leading-tight text-white sm:text-5xl">
+            <h2 className="mt-4 font-cormorant text-4xl font-medium not-italic leading-tight text-white sm:text-5xl">
               Want a garden built &amp; cared for at home?
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-6 text-white/80 sm:text-base sm:leading-7">

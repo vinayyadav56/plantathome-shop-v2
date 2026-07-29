@@ -24,7 +24,7 @@ const NotFound: React.FC<Props> = ({ className, text }) => {
         </svg>
       </div>
       {text && (
-        <h3 className="my-7 w-full text-center font-pahserif text-xl font-semibold text-forest-900">
+        <h3 className="my-7 w-full text-center font-pahserif text-xl font-medium text-forest-900">
           {t(text)}
         </h3>
       )}

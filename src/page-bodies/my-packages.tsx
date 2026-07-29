@@ -28,7 +28,7 @@ function PackageCard({ pkg }: { pkg: GardenPackage }) {
     <div className="rounded-2xl border border-kraft-200 bg-white p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-bold text-forest-900">{pkg.name}</h3>
+          <h3 className="text-lg font-medium text-forest-900">{pkg.name}</h3>
           {pkg.description && <p className="mt-1 text-sm text-stone-500">{pkg.description}</p>}
         </div>
         <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_BADGE[pkg.status] || 'bg-[#F8F7F2] text-stone-600'}`}>
@@ -82,7 +82,7 @@ function PackageCard({ pkg }: { pkg: GardenPackage }) {
       {/* Visit history */}
       {(completedVisits.length > 0 || upcoming.length > 0) && (
         <div className="mt-5 border-t border-kraft-200 pt-4">
-          <h4 className="text-sm font-semibold text-stone-600">Visit schedule</h4>
+          <h4 className="text-sm font-medium text-stone-600">Visit schedule</h4>
           <ul className="mt-2 space-y-2">
             {upcoming.map((v) => (
               <li key={v.id} className="flex items-center gap-3 text-sm">
@@ -109,14 +109,14 @@ export default function MyPackagesPage() {
 
   return (
     <div className="w-full">
-      <h1 className="mb-6 font-pahserif text-2xl font-bold text-forest-900">My Garden Packages</h1>
+      <h1 className="mb-6 font-pahserif text-2xl font-medium text-forest-900">My Garden Packages</h1>
 
       {isLoading ? (
         <div className="rounded-2xl border border-kraft-200 bg-white p-10 text-center text-stone-500">Loading your packages…</div>
       ) : packages.length === 0 ? (
         <div className="rounded-2xl border border-kraft-200 bg-white p-10 text-center">
           <div className="text-4xl">🌱</div>
-          <h3 className="mt-3 text-lg font-bold text-forest-900">No packages yet</h3>
+          <h3 className="mt-3 text-lg font-medium text-forest-900">No packages yet</h3>
           <p className="mt-1 text-stone-500">Want a garden built and cared for at home? Get a free plan tailored to your space.</p>
           <a href="/garden-service" className="pa-btn pa-btn-primary mt-5">Explore garden service →</a>
         </div>

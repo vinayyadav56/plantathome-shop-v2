@@ -73,7 +73,7 @@ export default function CourierTrackingMap({ tracking }: { tracking?: string }) 
   return (
     <div className="rounded-2xl border border-gray-200 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-800">Out for delivery</h3>
+        <h3 className="text-sm font-medium text-gray-800">Out for delivery</h3>
         {eta && <span className="text-xs font-medium text-emerald-700">≈ {eta.duration} · {eta.distance} away</span>}
       </div>
       <GoogleMap

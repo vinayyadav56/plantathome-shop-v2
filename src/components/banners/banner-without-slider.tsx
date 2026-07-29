@@ -39,7 +39,7 @@ const BannerWithoutSlider: React.FC<BannerProps> = ({ banners, layout }) => {
         >
           <h1
             className={cn(
-              'text-2xl font-bold tracking-tight text-heading md:text-3xl lg:text-4xl xl:text-5xl',
+              'text-2xl font-medium tracking-tight text-heading md:text-3xl lg:text-4xl xl:text-5xl',
               {
                 '!text-accent': layout === 'minimal',
               }

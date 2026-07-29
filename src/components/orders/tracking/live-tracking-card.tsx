@@ -255,7 +255,7 @@ export default function LiveTrackingCard({
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E7E5DC] bg-white shadow-sm">
       <div className="flex items-center justify-between px-5 pb-4 pt-5 sm:px-6">
-        <h3 className="text-base font-semibold text-forest-900">Live Tracking</h3>
+        <h3 className="text-base font-medium text-forest-900">Live Tracking</h3>
         <div className="flex items-center gap-2 text-xs text-[#9B998F]">
           {updatedLabel ? <span>Last updated: {updatedLabel}</span> : null}
           <button

@@ -55,7 +55,7 @@ export default function CorporatePanel() {
       ) : tiers.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-kraft-200 bg-white p-10 text-center">
           <div className="text-4xl">🎁</div>
-          <h3 className="mt-3 font-pahserif text-lg font-bold text-forest-900">
+          <h3 className="mt-3 font-pahserif text-lg font-medium text-forest-900">
             Corporate gifting, made effortless
           </h3>
           <p className="mt-1 text-stone-500">
@@ -86,7 +86,7 @@ export default function CorporatePanel() {
                     PREMIUM
                   </div>
                 )}
-                <h3 className="font-pahserif text-xl font-bold text-forest-900">
+                <h3 className="font-pahserif text-xl font-medium text-forest-900">
                   {t.name}
                 </h3>
                 <p className="mt-1 text-sm text-stone-500">{t.tagline}</p>
@@ -118,7 +118,7 @@ export default function CorporatePanel() {
           </div>
 
           <div className="mt-10 rounded-2xl border border-kraft-200 bg-white p-6 text-center sm:p-8">
-            <h3 className="font-pahserif text-xl font-bold text-forest-900">
+            <h3 className="font-pahserif text-xl font-medium text-forest-900">
               Need custom branding or bulk quantities?
             </h3>
             <p className="mx-auto mt-1 max-w-xl text-sm text-stone-500">

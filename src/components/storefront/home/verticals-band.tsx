@@ -74,7 +74,7 @@ export function VerticalsBand() {
             <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">
               {str(verticalsBand?.eyebrow) ?? t('home-verticals-eyebrow')}
             </div>
-            <h2 className="m-0 font-pahserif text-[26px] font-semibold leading-[1.05] tracking-[-0.005em] text-forest-900 sm:text-[34px]">
+            <h2 className="m-0 font-pahserif text-[26px] font-medium leading-[1.05] tracking-[-0.005em] text-forest-900 sm:text-[34px]">
               {str(verticalsBand?.heading) ?? t('home-verticals-title')}
             </h2>
             <p className="mt-2 max-w-xl font-hanken text-[13.5px] leading-[1.55] text-stone-500 sm:text-[14.5px] md:max-w-none md:whitespace-nowrap md:text-[12px] lg:max-w-xl lg:whitespace-normal lg:text-[14.5px]">
@@ -133,7 +133,7 @@ export function VerticalsBand() {
 
                   <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5 md:p-4 lg:p-5">
                     <div className="min-w-0">
-                      <h3 className="m-0 font-pahserif text-[23px] font-semibold leading-none text-white md:text-[19px] lg:text-[23px]">
+                      <h3 className="m-0 font-pahserif text-[23px] font-medium leading-none text-white md:text-[19px] lg:text-[23px]">
                         {v.name}
                       </h3>
                       <p className="mt-1.5 line-clamp-1 font-hanken text-[12.5px] text-white/75">

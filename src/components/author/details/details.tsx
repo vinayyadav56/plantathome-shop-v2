@@ -37,7 +37,7 @@ const AuthorDetails: React.FC<Props> = ({ author }) => {
       <div className="flex flex-col items-start md:w-1/2">
         <div className="w-full">
           {name && (
-            <h1 className="mb-5 text-2xl font-bold uppercase text-heading lg:text-4xl">
+            <h1 className="mb-5 text-2xl font-medium uppercase text-heading lg:text-4xl">
               {name}
             </h1>
           )}

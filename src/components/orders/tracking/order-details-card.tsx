@@ -64,7 +64,7 @@ export default function OrderDetailsCard({ order }: { order: any }) {
 
   return (
     <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
-      <h3 className="mb-3 text-base font-semibold text-forest-900">Order Details</h3>
+      <h3 className="mb-3 text-base font-medium text-forest-900">Order Details</h3>
 
       <dl>
         <Row label="Order Number">{order?.tracking_number}</Row>

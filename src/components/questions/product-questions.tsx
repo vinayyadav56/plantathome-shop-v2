@@ -130,7 +130,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
             <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
               Plant Q&amp;A
             </p>
-            <h2 className="mt-2.5 text-[24px] font-bold leading-tight text-[#184A31] sm:text-[28px]">
+            <h2 className="mt-2.5 text-[24px] font-medium leading-tight text-[#184A31] sm:text-[28px]">
               {t('text-question-answers')}{' '}
               <span className="font-semibold text-[#8A8A8A]">
                 ({total.toLocaleString('en-IN')})
@@ -224,7 +224,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
                 <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
               </svg>
             </span>
-            <h3 className="mt-4 text-[17px] font-bold text-[#184A31]">
+            <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-question-found')}
             </h3>
             <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#8A8A8A]">

@@ -16,7 +16,7 @@ const PageBanner = ({ title, breadcrumbTitle }: PageBannerProps) => {
     <div className="flex w-full justify-center border-b border-kraft-200/70 bg-[#F0EDE4] py-16 md:min-h-[230px] lg:min-h-[260px]">
       <div className="relative flex w-full flex-col items-center justify-center px-5">
         {title ? (
-          <h1 className="m-0 mb-3 text-center font-pahserif text-[30px] font-semibold leading-[1.08] tracking-[-0.01em] text-forest-900 md:mb-4 md:text-[36px] lg:text-[42px]">
+          <h1 className="m-0 mb-3 text-center font-pahserif text-[30px] font-medium leading-[1.08] tracking-[-0.01em] text-forest-900 md:mb-4 md:text-[36px] lg:text-[42px]">
             {title}
           </h1>
         ) : (

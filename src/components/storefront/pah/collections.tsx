@@ -36,7 +36,7 @@ export function Collections() {
   return (
     <div className="mb-7">
       <div className="mb-3.5 mt-1.5 flex items-center justify-between gap-3 px-5">
-        <h2 className="flex items-center gap-1.5 font-hanken text-[18px] font-extrabold tracking-[-0.01em] text-forest-900">
+        <h2 className="flex items-center gap-1.5 font-hanken text-[18px] font-medium tracking-[-0.01em] text-forest-900">
           {t('m-collections-title')}
           <i className="fa-solid fa-leaf text-[15px] text-forest-500" aria-hidden />
         </h2>

@@ -62,7 +62,7 @@ export function VideoModal({
               <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur">
                 <Icon.play className="h-3 w-3" /> The tour
               </span>
-              <h3 className="font-heading text-2xl font-black text-white drop-shadow sm:text-3xl">
+              <h3 className="font-heading text-2xl font-medium text-white drop-shadow sm:text-3xl">
                 {title}
               </h3>
               <p className="mt-1 max-w-md text-sm text-white/80">{subtitle}</p>

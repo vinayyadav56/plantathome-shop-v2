@@ -35,7 +35,7 @@ export function StorefrontCategoryCard({
         <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-deep/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-3.5">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="font-heading text-[15px] font-bold leading-tight text-white">
+            <h3 className="font-heading text-[15px] font-medium leading-tight text-white">
               {category?.name}
             </h3>
             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/15 text-white backdrop-blur transition group-hover:bg-gold">

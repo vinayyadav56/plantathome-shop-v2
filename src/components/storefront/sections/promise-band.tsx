@@ -14,7 +14,7 @@ export function PromiseBand({ items }: { items: PromiseItem[] }) {
                 <span className="grid h-14 w-14 place-items-center rounded-2xl border border-goldlight/20 bg-white/10 text-goldlight">
                   <I className="h-7 w-7" />
                 </span>
-                <h3 className="font-heading text-xl font-bold text-white">{b.t}</h3>
+                <h3 className="font-heading text-xl font-medium text-white">{b.t}</h3>
                 <p className="text-sm leading-6 text-white/70">{b.d}</p>
               </div>
             </FadeUp>

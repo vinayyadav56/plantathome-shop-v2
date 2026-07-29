@@ -34,7 +34,7 @@ export default function UspBand() {
               <Icon className="h-6 w-6" />
             </span>
             <div>
-              <h4 className="text-sm font-semibold text-forest-900">{title}</h4>
+              <h4 className="text-sm font-medium text-forest-900">{title}</h4>
               <p className="mt-1 text-[13px] leading-relaxed text-[#8C8A81]">{text}</p>
             </div>
           </div>

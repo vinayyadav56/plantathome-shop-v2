@@ -24,7 +24,7 @@ export default function TrackOrderPage() {
             <path d="M5 8h14l-1 11a2 2 0 01-2 2H8a2 2 0 01-2-2L5 8z" /><path d="M9 8V6a3 3 0 016 0v2" /><circle cx="12" cy="14" r="2" />
           </svg>
         </div>
-        <h1 className="font-pahserif text-2xl font-bold text-forest-900">Track Your Order</h1>
+        <h1 className="font-pahserif text-2xl font-medium text-forest-900">Track Your Order</h1>
         <p className="mt-1.5 text-sm text-stone-500">
           Enter your order tracking number to see its current status and delivery
           progress.

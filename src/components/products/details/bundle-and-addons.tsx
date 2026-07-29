@@ -47,7 +47,7 @@ export default function BundleAndAddons({ product }: { product: Product }) {
       {/* Bundle contents */}
       {isBundle && bundleItems.length > 0 && (
         <div>
-          <h3 className="font-serif text-2xl font-semibold text-forest-900">What&apos;s inside this bundle</h3>
+          <h3 className="font-serif text-2xl font-medium text-forest-900">What&apos;s inside this bundle</h3>
           <div className="mt-4 space-y-3">
             {bundleItems.map((p) => (
               <Link
@@ -77,7 +77,7 @@ export default function BundleAndAddons({ product }: { product: Product }) {
       {/* Buy together — pots / planters */}
       {addons.length > 0 && (
         <div>
-          <h3 className="font-serif text-2xl font-semibold text-forest-900">Complete the look</h3>
+          <h3 className="font-serif text-2xl font-medium text-forest-900">Complete the look</h3>
           <p className="mt-1 text-sm text-stone-600">Add a pot or planter to buy together — or skip it, your choice.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {addons.map((p) => {

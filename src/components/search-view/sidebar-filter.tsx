@@ -120,7 +120,7 @@ const SidebarFilter: React.FC<{
             <span className="sr-only">{t('text-close')}</span>
           </button>
 
-          <h3 className="text-base font-semibold text-forest-900 lg:text-lg">
+          <h3 className="text-base font-medium text-forest-900 lg:text-lg">
             {t('text-filter')}
           </h3>
         </div>

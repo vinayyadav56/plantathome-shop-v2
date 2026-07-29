@@ -127,7 +127,7 @@ export function PlantCareSection({
 
   return (
     <div>
-      <h2 className="text-[15px] font-bold uppercase tracking-[0.08em] text-[#184A31]">
+      <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         Plant care &amp; details
       </h2>
 
@@ -145,7 +145,7 @@ export function PlantCareSection({
               <div className={`${contentHtml ? 'mt-5' : ''} space-y-4`}>
                 {benefits && (
                   <div className="rounded-[14px] bg-[#F3F8EC] p-5">
-                    <h3 className="text-sm font-bold text-[#184A31]">Benefits</h3>
+                    <h3 className="text-sm font-medium text-[#184A31]">Benefits</h3>
                     <p className="mt-1.5 text-sm leading-6 text-[#5B5B5B]">
                       {benefits}
                     </p>
@@ -153,7 +153,7 @@ export function PlantCareSection({
                 )}
                 {medicinal && (
                   <div className="rounded-[14px] bg-[#F3F8EC] p-5">
-                    <h3 className="text-sm font-bold text-[#184A31]">
+                    <h3 className="text-sm font-medium text-[#184A31]">
                       Medicinal uses
                     </h3>
                     <p className="mt-1.5 text-sm leading-6 text-[#5B5B5B]">

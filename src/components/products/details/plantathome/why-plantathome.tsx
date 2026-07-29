@@ -23,7 +23,7 @@ const ITEMS = [
 export default function WhyPlantAtHome() {
   return (
     <div className="rounded-2xl bg-white p-4 shadow-[0_12px_34px_-22px_rgba(34,48,26,0.28)] sm:p-5">
-      <h3 className="font-poppins text-[13px] font-bold uppercase tracking-[0.08em] text-forest-700">Why PlantAtHome?</h3>
+      <h3 className="font-poppins text-[13px] font-medium uppercase tracking-[0.08em] text-forest-700">Why PlantAtHome?</h3>
       <div className="mt-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {ITEMS.map((it) => (
           <div key={it.title} className="flex flex-col items-center gap-1.5 text-center">

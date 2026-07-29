@@ -60,7 +60,7 @@ function EnquiryForm() {
     return (
       <div className="rounded-2xl bg-white p-8 text-center shadow-xl ring-1 ring-kraft-200">
         <div className="mb-3 text-4xl">🎁</div>
-        <h3 className="font-cormorant text-2xl font-semibold text-forest-900">Enquiry received!</h3>
+        <h3 className="font-cormorant text-2xl font-medium text-forest-900">Enquiry received!</h3>
         <p className="mt-2 text-sm text-stone-600">Our corporate gifting team will reach out with a tailored proposal.</p>
       </div>
     );
@@ -70,7 +70,7 @@ function EnquiryForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="rounded-2xl bg-white p-6 shadow-xl ring-1 ring-kraft-200 sm:p-8">
-      <h3 className="font-cormorant text-2xl font-semibold text-forest-900">Get a custom gifting quote</h3>
+      <h3 className="font-cormorant text-2xl font-medium text-forest-900">Get a custom gifting quote</h3>
       <p className="mt-1 text-sm text-stone-500">Tell us your needs — we’ll tailor a proposal & pricing.</p>
       <div className="mt-5 space-y-3">
         <input {...register('company', { required: true })} placeholder="Company name *" className={inputCls} />
@@ -149,7 +149,7 @@ export default function CorporateGiftingPage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:py-24">
           <div className="text-white">
             <span className="font-jost inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] backdrop-blur">🎁 Corporate Gifting</span>
-            <h1 className="font-cormorant mt-5 text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.015em] sm:text-6xl">Gift something that <span className="italic text-sage-300">grows</span></h1>
+            <h1 className="font-cormorant mt-5 text-[2.6rem] font-medium leading-[1.02] tracking-[-0.015em] sm:text-6xl">Gift something that <span className="italic text-sage-300">grows</span></h1>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-cream-50/90">
               Memorable, sustainable plant gifts for clients and teams — custom branded, delivered in bulk across India. Buy a ready hamper or get a tailored quote.
             </p>
@@ -165,12 +165,12 @@ export default function CorporateGiftingPage() {
       {/* AUDIENCE */}
       <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
         <p className="text-center font-jost text-[11px] font-semibold uppercase tracking-[0.22em] text-forest-600">Corporate & bulk</p>
-        <h2 className="font-cormorant mt-2 text-center text-4xl font-semibold text-forest-900 sm:text-5xl">Perfect for every occasion</h2>
+        <h2 className="font-cormorant mt-2 text-center text-4xl font-medium text-forest-900 sm:text-5xl">Perfect for every occasion</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {AUDIENCE.map((a) => (
             <div key={a.title} className="rounded-2xl border border-kraft-200 bg-white p-7 shadow-[0_6px_20px_rgba(5,16,8,0.06)] transition-shadow hover:shadow-[0_12px_30px_rgba(5,16,8,0.1)]">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sage-100 text-2xl">{a.icon}</div>
-              <h3 className="mt-4 font-cormorant text-2xl font-semibold text-forest-900">{a.title}</h3>
+              <h3 className="mt-4 font-cormorant text-2xl font-medium text-forest-900">{a.title}</h3>
               <p className="mt-1.5 text-sm leading-relaxed text-stone-600">{a.text}</p>
             </div>
           ))}
@@ -181,7 +181,7 @@ export default function CorporateGiftingPage() {
       <section id="tiers" className="bg-forest-900 py-16 text-white lg:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <p className="text-center font-jost text-[11px] font-semibold uppercase tracking-[0.22em] text-sage-300">Ready to gift</p>
-          <h2 className="font-cormorant mt-2 text-center text-4xl font-semibold sm:text-5xl">Curated gift hampers</h2>
+          <h2 className="font-cormorant mt-2 text-center text-4xl font-medium sm:text-5xl">Curated gift hampers</h2>
           <p className="mx-auto mt-3 max-w-2xl text-center text-cream-50/75">Buy online, or request a custom quote for bulk & branding.</p>
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
             {tiers.map((t) => {
@@ -189,7 +189,7 @@ export default function CorporateGiftingPage() {
               return (
                 <div key={t.id} className={`relative flex flex-col rounded-2xl p-7 ring-1 ${highlight ? 'bg-white/[0.07] ring-2 ring-ds-cta' : 'bg-white/5 ring-white/10'}`}>
                   {t.badge && <div className="mb-3 inline-flex w-fit rounded-full bg-ds-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-ds-cta-ink">{t.badge}</div>}
-                  <h3 className="font-cormorant text-2xl font-semibold">{t.name}</h3>
+                  <h3 className="font-cormorant text-2xl font-medium">{t.name}</h3>
                   <p className="mt-1 text-sm text-cream-50/65">{t.tagline}</p>
                   <div className="mt-4 font-cormorant text-4xl font-semibold">From {fmt(t.suggested_price)}<span className="text-sm font-normal text-cream-50/55"> /gift</span></div>
                   <ul className="mt-5 flex-1 space-y-2 text-sm">
@@ -211,7 +211,7 @@ export default function CorporateGiftingPage() {
       {gallery.length > 0 && (
         <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
           <p className="text-center font-jost text-[11px] font-semibold uppercase tracking-[0.22em] text-forest-600">{cms?.galleryEyebrow || 'Our work'}</p>
-          <h2 className="font-cormorant mt-2 text-center text-4xl font-semibold text-forest-900 sm:text-5xl">{cms?.galleryHeading || 'Gifting we’ve delivered'}</h2>
+          <h2 className="font-cormorant mt-2 text-center text-4xl font-medium text-forest-900 sm:text-5xl">{cms?.galleryHeading || 'Gifting we’ve delivered'}</h2>
           {gallerySubtitle && (
             <p className="mx-auto mt-3 max-w-2xl text-center text-stone-600">{gallerySubtitle}</p>
           )}
@@ -234,12 +234,12 @@ export default function CorporateGiftingPage() {
       {/* WHY */}
       <section className="bg-white">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
-          <h2 className="font-cormorant text-center text-4xl font-semibold text-forest-900 sm:text-5xl">Why plant gifts work</h2>
+          <h2 className="font-cormorant text-center text-4xl font-medium text-forest-900 sm:text-5xl">Why plant gifts work</h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {WHY.map((f) => (
               <div key={f.title} className="rounded-2xl border border-kraft-200 bg-cream-50 p-6">
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sage-100 text-xl">{f.icon}</div>
-                <h3 className="mt-3.5 font-cormorant text-xl font-semibold text-forest-900">{f.title}</h3>
+                <h3 className="mt-3.5 font-cormorant text-xl font-medium text-forest-900">{f.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-stone-600">{f.text}</p>
               </div>
             ))}
@@ -250,7 +250,7 @@ export default function CorporateGiftingPage() {
       {/* FAQ */}
       <section className="bg-cream-50 py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
-          <h2 className="font-cormorant text-center text-4xl font-semibold text-forest-900 sm:text-5xl">Questions, answered</h2>
+          <h2 className="font-cormorant text-center text-4xl font-medium text-forest-900 sm:text-5xl">Questions, answered</h2>
           <div className="mt-8 space-y-3">
             {FAQS.map((f) => (
               <details key={f.q} className="group rounded-xl border border-kraft-200 bg-white p-5">
@@ -268,7 +268,7 @@ export default function CorporateGiftingPage() {
       {/* FINAL CTA */}
       <section className="bg-forest-800 py-14 text-center text-white lg:py-16">
         <div className="mx-auto max-w-3xl px-5">
-          <h2 className="font-cormorant text-4xl font-semibold sm:text-5xl">Gifting at scale, made effortless</h2>
+          <h2 className="font-cormorant text-4xl font-medium sm:text-5xl">Gifting at scale, made effortless</h2>
           <p className="mt-3 text-cream-50/85">Tell us your occasion and quantity — we’ll handle the rest.</p>
           <a href="#quote" className="font-jost mt-6 inline-flex rounded-xl bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</a>
         </div>

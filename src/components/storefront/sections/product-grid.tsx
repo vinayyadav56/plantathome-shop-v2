@@ -41,7 +41,7 @@ export function ProductGrid({
                 {eyebrow}
               </p>
             </FadeUp>
-            <h2 className="max-w-xl font-cormorant text-4xl font-bold not-italic leading-tight text-forest-900 sm:text-5xl">
+            <h2 className="max-w-xl font-cormorant text-4xl font-medium not-italic leading-tight text-forest-900 sm:text-5xl">
               <WordReveal text={title} />
             </h2>
           </div>

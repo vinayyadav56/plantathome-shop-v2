@@ -145,7 +145,7 @@ const RefundView: React.FC = () => {
   return (
     <Card className="self-stretch w-full min-h-screen overflow-hidden lg:min-h-0">
       <div className="flex items-center justify-center mb-8 sm:mb-10">
-        <h3 className="text-lg font-semibold text-center text-forest-900 sm:text-xl">
+        <h3 className="text-lg font-medium text-center text-forest-900 sm:text-xl">
           {t('text-my-refunds')}
         </h3>
       </div>

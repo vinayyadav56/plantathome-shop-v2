@@ -36,7 +36,7 @@ export default function NotifyLogsPage() {
 
   return (
     <Card className="w-full shadow-none sm:shadow flex flex-col">
-      <h1 className="font-pahserif text-xl font-semibold text-forest-900 sm:text-xl mb-8 sm:mb-10">
+      <h1 className="font-pahserif text-xl font-medium text-forest-900 sm:text-xl mb-8 sm:mb-10">
         {t('profile-sidebar-notifications')}
       </h1>
       {data?.isLoading ? (
