@@ -2928,6 +2928,16 @@ html[data-density='compact'] { --density: 0.78; }
   .ds-section-y { padding-top: calc(5.5rem * var(--density)); padding-bottom: calc(5.5rem * var(--density)); }
 }
 
+/* Product-card footer. Side by side the qty stepper claims ~88px minimum, so
+   in a two-up grid on a phone the Add-to-Cart button was left with ~60px and
+   truncated to "A…". Below 230px of CARD width they stack instead — a real
+   container query, so it keys off the card, not the viewport, and behaves the
+   same wherever the card is placed. */
+@container (max-width: 230px) {
+  .pah-card-actions { flex-direction: column; align-items: stretch; }
+  .pah-card-actions > * { width: 100%; flex: none; }
+}
+
 /* PDP quick-fact chips: one row that scrolls rather than wrapping to two or
    three, which pushed everything below it (and the pot picker) down the page.
    Scrollbar hidden — the chips themselves signal the overflow. */

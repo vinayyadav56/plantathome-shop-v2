@@ -300,7 +300,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             clamp with fixed min-height so grid rows stay aligned. Vertical
             margins are tighter than the reference's standalone card — inside a
             grid the full 18/22px rhythm made cards run too long. */}
-        <p className="mb-[0.275rem] mt-[0.1rem] min-h-[3.2em] text-[clamp(11px,3.4cqw,12.5px)] leading-[1.3] text-[#5B5B5B] line-clamp-2">
+        <p className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(11px,3.4cqw,12.5px)] leading-[1.3] text-[#5B5B5B] line-clamp-2">
           {desc}
         </p>
 
@@ -363,7 +363,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
               Select Options
             </button>
           ) : (
-            <div className="flex gap-[clamp(8px,3.9cqw,15px)]">
+            <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
               {!inCart && (
                 <div className="flex h-[clamp(40px,12.4cqw,48px)] w-[clamp(88px,31cqw,120px)] shrink-0 items-center justify-around rounded-[14px] border border-[#DDDDDD]">
                   <button
