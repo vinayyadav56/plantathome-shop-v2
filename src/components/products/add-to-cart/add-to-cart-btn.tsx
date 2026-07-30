@@ -93,15 +93,20 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
           onClick={onClick}
           disabled={disabled}
           className={cn(
-            'flex h-12 w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] px-4 text-[16px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0 sm:text-[18px]',
+            // Sized in cqw against the CARD, like everything else inside it.
+            // Fixed h-12/16px/px-4 was built for a full-width mobile card; in a
+            // two-up grid "Add To Shopping Cart" burst straight out of the card.
+            // The clamp bounds keep it sane if this ever renders outside a
+            // container, where cqw falls back to the viewport.
+            'flex h-[clamp(38px,12.4cqw,48px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.8cqw,10px)] rounded-[14px] bg-[#14532D] px-[clamp(6px,2.6cqw,16px)] text-[clamp(11px,4.2cqw,18px)] font-semibold leading-none text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0',
             {
               'cursor-not-allowed !bg-stone-300 !text-stone-500 hover:!bg-stone-300':
                 disabled,
             }
           )}
         >
-          <CartIcon className="h-[18px] w-[18px]" />
-          <span>{t('text-add-cart')}</span>
+          <CartIcon className="h-[clamp(13px,4.4cqw,18px)] w-[clamp(13px,4.4cqw,18px)] shrink-0" />
+          <span className="truncate">{t('text-add-cart')}</span>
         </button>
       );
     case 'homeMini':
