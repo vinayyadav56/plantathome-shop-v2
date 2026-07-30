@@ -1,4 +1,5 @@
 import ContentLoader from 'react-content-loader';
+import { skeletonTint } from '@/components/ui/loaders/skeleton-tint';
 
 const AuthorLoader = (props: any) => (
   <ContentLoader
@@ -6,8 +7,7 @@ const AuthorLoader = (props: any) => (
     width={360}
     height={260}
     viewBox="0 0 360 260"
-    backgroundColor="#e0e0e0"
-    foregroundColor="#cecece"
+    {...skeletonTint}
     style={{ width: '100%' }}
     {...props}
   >

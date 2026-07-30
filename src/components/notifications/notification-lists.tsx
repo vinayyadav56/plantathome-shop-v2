@@ -1,3 +1,4 @@
+import { BrandSpinner } from '@/components/ui/plant-loader';
 import { NotifyLogs } from '@/types';
 import Link from '@/components/ui/link';
 import { Routes } from '@/config/routes';
@@ -84,7 +85,7 @@ const NotificationLists: React.FC<NotificationListsProps> = ({
                 ? t('text-mark-as-read')
                 : t('text-marked-as-read')}
               {currentButtonLoading ? (
-                <span className="h-4 w-4 ltr:ml-2 rtl:mr-2 rounded-full border-2 border-transparent border-t-2 border-t-current animate-spin" />
+                <BrandSpinner className="h-4 w-4 ltr:ml-2 rtl:mr-2" />
               ) : (
                 ''
               )}

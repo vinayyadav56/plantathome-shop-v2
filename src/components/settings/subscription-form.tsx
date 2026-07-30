@@ -1,3 +1,4 @@
+import { BrandSpinner } from '@/components/ui/plant-loader';
 import type { SubmitHandler } from 'react-hook-form';
 import { useTranslation } from 'next-i18next';
 import { SendIcon } from '@/components/icons/send-icon';
@@ -45,12 +46,7 @@ export default function SubscriptionForm({
               />
               <button className="absolute top-1/2 -mt-2 ltr:right-3 rtl:left-3">
                 {loading ? (
-                  <span
-                    className="flex h-5 w-5 shrink-0 animate-spin rounded-full border-[3px] border-t-[3px] border-gray-300 text-accent ltr:ml-2 rtl:mr-2"
-                    style={{
-                      borderTopColor: 'currentcolor',
-                    }}
-                  />
+                  <BrandSpinner className="h-5 w-5 text-accent ltr:ml-2 rtl:mr-2" />
                 ) : (
                   <SendIcon className="text-gray-500 transition-colors hover:text-accent" />
                 )}

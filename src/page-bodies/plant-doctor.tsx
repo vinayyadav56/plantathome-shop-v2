@@ -1,5 +1,6 @@
 'use client';
 
+import { BrandSpinner } from '@/components/ui/plant-loader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from '@/compat/next-router';
@@ -416,7 +417,7 @@ function AnalyzingView({ preview }: { preview: string | null }) {
       )}
       <div className="p-8 text-center">
         <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#F3F8EC] text-[#24693E]">
-          <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#24693E]/25 border-t-[#24693E]" />
+          <BrandSpinner className="h-5 w-5" />
         </span>
         <p className="mt-4 text-[18px] font-bold text-[#184A31]">Dr. Planty is examining your plant</p>
         <p aria-live="polite" className="mt-1.5 text-[13.5px] text-[#5B5B5B]">{ANALYZE_PHASES[phase]}</p>

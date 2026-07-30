@@ -1,4 +1,5 @@
 import ContentLoader from 'react-content-loader';
+import { skeletonTint } from '@/components/ui/loaders/skeleton-tint';
 
 const BakeryCategoryLoader = (props: any) => (
   <ContentLoader
@@ -6,8 +7,7 @@ const BakeryCategoryLoader = (props: any) => (
     width={1000}
     height={120}
     viewBox="0 0 1000 120"
-    backgroundColor="#f3f3f3"
-    foregroundColor="#ecebeb"
+    {...skeletonTint}
     {...props}
   >
     <circle cx="74" cy="45" r="36" />

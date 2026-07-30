@@ -1,4 +1,5 @@
 import ContentLoader from 'react-content-loader';
+import { skeletonTint } from '@/components/ui/loaders/skeleton-tint';
 
 const CategoriesLoader = (props: any) => (
   <ContentLoader
@@ -6,8 +7,7 @@ const CategoriesLoader = (props: any) => (
     width={'100%'}
     height={'100%'}
     viewBox="0 0 400 320"
-    backgroundColor="#e0e0e0"
-    foregroundColor="#cecece"
+    {...skeletonTint}
     {...props}
   >
     <circle cx="13" cy="14" r="10" />

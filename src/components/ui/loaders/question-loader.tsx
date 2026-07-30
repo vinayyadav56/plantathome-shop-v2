@@ -1,4 +1,5 @@
 import ContentLoader from 'react-content-loader';
+import { skeletonTint } from '@/components/ui/loaders/skeleton-tint';
 
 const QuestionLoader = (props: any) => (
   <ContentLoader
@@ -6,8 +7,7 @@ const QuestionLoader = (props: any) => (
     width={'100%'}
     height={'100%'}
     viewBox="0 0 900 180"
-    backgroundColor="#f3f3f3"
-    foregroundColor="#ecebeb"
+    {...skeletonTint}
     {...props}
   >
     <rect x="0" y="0" rx="0" ry="0" width="40" height="40" />

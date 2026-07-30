@@ -2928,44 +2928,85 @@ html[data-density='compact'] { --density: 0.78; }
   .ds-section-y { padding-top: calc(5.5rem * var(--density)); padding-bottom: calc(5.5rem * var(--density)); }
 }
 
-/* ── Brand loading mark (PlantLoader) ────────────────────────────────────
-   Keyframes live here rather than in the component because the loader renders
-   during Suspense — i.e. while the JS bundle is still arriving — so the
-   animation must be pure CSS to actually run when it is needed.
-   Under prefers-reduced-motion the mark renders complete and static: still
-   informative, no motion. */
-.pah-leaf-stem {
-  stroke-dasharray: 32;
-  stroke-dashoffset: 32;
-  animation: pah-leaf-grow 1.6s ease-out infinite;
+/* ── Brand loading marks ─────────────────────────────────────────────────
+   Keyframes live here rather than in the component because these render during
+   Suspense — i.e. while the JS bundle is still arriving — so the animation must
+   be pure CSS to actually run when it is needed.
+
+   Every dash value below is expressed against pathLength="1", which the SVG
+   normalises the real geometry to. Before that, the dash lengths were literal
+   user units guessed at 60 while the blades actually measure 51.7 and 46.9 —
+   so the stroke finished early and the unfurl visibly popped. Normalising means
+   the `d` attributes can be redrawn at any time without re-tuning this file. */
+
+/* The paths draw themselves ONCE (`both` holds the finished state); the group
+   carries the perpetual motion. Splitting the two is what stopped the mark
+   erasing and redrawing on every cycle, which read as flicker, not growth. */
+.pah-leaf-stem,
+.pah-leaf-blade {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pah-leaf-draw 0.75s cubic-bezier(0.22, 0.8, 0.3, 1) both;
 }
 .pah-leaf-blade {
-  stroke-dasharray: 60;
-  stroke-dashoffset: 60;
   transform-origin: 24px 30px;
-  animation: pah-leaf-unfurl 1.6s ease-out infinite;
+  animation-name: pah-leaf-unfurl;
 }
-.pah-leaf-blade--r { animation-delay: 0.25s; }
-.pah-leaf-blade--l { animation-delay: 0.5s; }
+.pah-leaf-blade--r { animation-delay: 0.18s; }
+.pah-leaf-blade--l { animation-delay: 0.34s; }
 
-@keyframes pah-leaf-grow {
-  0%        { stroke-dashoffset: 32; }
-  45%, 100% { stroke-dashoffset: 0; }
+/* Alive, not busy: a slow breathe with a whisper of sway, so a loader that
+   stays up for 10s never looks frozen but never nags either. */
+.pah-leaf-breathe {
+  transform-origin: 24px 46px;
+  animation: pah-leaf-breathe 2.8s ease-in-out 1s infinite;
+}
+
+@keyframes pah-leaf-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
 }
 @keyframes pah-leaf-unfurl {
-  0%   { stroke-dashoffset: 60; opacity: 0; transform: scale(0.85) rotate(-6deg); }
-  55%  { stroke-dashoffset: 0;  opacity: 1; transform: scale(1) rotate(0deg); }
-  100% { stroke-dashoffset: 0;  opacity: 1; transform: scale(1) rotate(0deg); }
+  from { stroke-dashoffset: 1; opacity: 0; transform: scale(0.82) rotate(-7deg); }
+  to   { stroke-dashoffset: 0; opacity: 1; transform: scale(1) rotate(0deg); }
 }
+@keyframes pah-leaf-breathe {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50%      { transform: scale(1.035) rotate(1.2deg); }
+}
+
+/* Fade in only after 150ms, so a response that arrives quickly never flashes a
+   loader on its way past. `both` keeps it invisible during the delay. */
+.pah-loader-appear { animation: pah-loader-appear 0.22s ease-out 0.15s both; }
+.pah-loader-appear--now { animation-delay: 0s; }
+@keyframes pah-loader-appear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Inline tier: a ring in the caller's own colour. Faint track, solid head. */
+.pah-ring {
+  border-color: currentColor;
+  border-top-color: transparent;
+  opacity: 0.85;
+  animation: pah-ring-spin 0.7s linear infinite;
+}
+@keyframes pah-ring-spin { to { transform: rotate(360deg); } }
 
 @media (prefers-reduced-motion: reduce) {
   .pah-leaf-stem,
-  .pah-leaf-blade {
+  .pah-leaf-blade,
+  .pah-leaf-breathe,
+  .pah-loader-appear {
     animation: none;
     stroke-dashoffset: 0;
     opacity: 1;
     transform: none;
   }
+  /* The ring keeps turning: it is the only cue that an inline action is still
+     running, and a frozen ring is indistinguishable from a stuck button. Slowed
+     right down so it reads as steady rather than urgent. */
+  .pah-ring { animation-duration: 2s; }
 }
 
 /* Fact-rotator fade on the 404 (key-swap retriggers). Static under

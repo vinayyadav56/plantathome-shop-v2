@@ -1,4 +1,5 @@
 import ContentLoader from 'react-content-loader';
+import { skeletonTint } from '@/components/ui/loaders/skeleton-tint';
 
 const ManufacturerLoader = (props: any) => (
   <ContentLoader
@@ -6,8 +7,7 @@ const ManufacturerLoader = (props: any) => (
     width={280}
     height={120}
     viewBox="0 0 280 120"
-    backgroundColor="#e0e0e0"
-    foregroundColor="#cecece"
+    {...skeletonTint}
     {...props}
   >
     <circle cx="50" cy="50" r="50" />

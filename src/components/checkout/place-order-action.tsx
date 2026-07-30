@@ -1,3 +1,4 @@
+import { BrandSpinner } from '@/components/ui/plant-loader';
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import isEmpty from 'lodash/isEmpty';
@@ -286,9 +287,7 @@ export const PlaceOrderAction: React.FC<{
         disabled={!isAllRequiredFieldSelected || !!isLoading || pincodeBlocked || !!cityStock}
       >
         {isLoading ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 1s linear infinite' }}>
-            <path d="M21 12a9 9 0 11-6.219-8.56" />
-          </svg>
+          <BrandSpinner className="h-5 w-5" />
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>

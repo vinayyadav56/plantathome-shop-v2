@@ -1,11 +1,11 @@
 import ContentLoader from 'react-content-loader';
+import { skeletonTint } from '@/components/ui/loaders/skeleton-tint';
 import rangeMap from '@/lib/range-map';
 
 const NotifyLoader = ({ ...props }) => (
   <ContentLoader
     speed={2}
-    backgroundColor="#F1F2F4"
-    foregroundColor="#ecebeb"
+    {...skeletonTint}
     {...props}
   >
     {rangeMap(4, (i) => (
@@ -28,8 +28,7 @@ const NotifySingleContentLoader = ({ ...props }) => {
   return (
     <ContentLoader
       speed={2}
-      backgroundColor="#F1F2F4"
-      foregroundColor="#ecebeb"
+      {...skeletonTint}
       {...props}
     >
       {rangeMap(15, (i) => (
