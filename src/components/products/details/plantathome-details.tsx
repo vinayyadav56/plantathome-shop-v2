@@ -194,12 +194,12 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
    * crowd the label it now shares a row with.
    */
   const priceBlock = needsSelection ? (
-    <span className="text-[20px] font-bold leading-none text-[#14532D]">
+    <span className="whitespace-nowrap text-[15px] font-bold leading-none text-[#14532D] sm:text-[17px] lg:text-[20px]">
       {minPrice} – {maxPrice}
     </span>
   ) : (
     <>
-      <span className="text-[22px] font-bold leading-none text-[#14532D]">{displayPrice}</span>
+      <span className="whitespace-nowrap text-[17px] font-bold leading-none text-[#14532D] sm:text-[19px] lg:text-[22px]">{displayPrice}</span>
       {displayBasePrice && (
         <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>
       )}
@@ -328,8 +328,21 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             column scrolls (modern PDP convention). Sticky only outside the
             quick-view modal (the modal has its own scroll context). */}
         <div className="mt-7 grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 xl:gap-16">
-          <div className={!isModal ? 'lg:sticky lg:top-24 lg:self-start' : undefined}>
+          <div className={classNames('relative', !isModal && 'lg:sticky lg:top-24 lg:self-start')}>
             <PlantAtHomeGallery gallery={previewImages} productId={id} productName={name} badge={badge} />
+            {/* Over the image, matching where the wishlist heart sits on every
+                product card. It used to share the title row, where it also ate
+                width from the product name. */}
+            <button
+              type="button"
+              onClick={onWishlist}
+              aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+              className="absolute right-3 top-3 z-[2] grid h-10 w-10 place-items-center rounded-full border border-black/5 bg-white/90 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:right-4 sm:top-4 sm:h-11 sm:w-11"
+            >
+              <svg viewBox="0 0 24 24" fill={inWishlist ? '#C26B45' : 'none'} stroke={inWishlist ? '#C26B45' : '#374151'} strokeWidth="1.8" className="h-[19px] w-[19px] sm:h-[21px] sm:w-[21px]" aria-hidden>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
           </div>
 
           {/* info panel — min-w-0 is load-bearing: as a grid item its default
@@ -360,16 +373,6 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   </span>
                 )}
               </div>
-              <button
-                type="button"
-                onClick={onWishlist}
-                aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-                className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#ECECEC] bg-white shadow-sm transition hover:scale-105"
-              >
-                <svg viewBox="0 0 24 24" fill={inWishlist ? '#C26B45' : 'none'} stroke={inWishlist ? '#C26B45' : '#374151'} strokeWidth="1.8" className="h-[21px] w-[21px]" aria-hidden>
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
-              </button>
             </div>
 
             {/* botanical subline */}
@@ -398,11 +401,11 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* quick-glance plant chips — Ask AI rides along as the last pill */}
             {(quickChips.length > 0 || askAiEnabled) && (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
+              <div className="pah-chip-row mt-3 flex items-center gap-1.5 overflow-x-auto sm:gap-2">
                 {quickChips.map((c) => (
                   <span
                     key={c.label}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-2.5 py-1 text-[11.5px] font-semibold text-[#24693E]"
+                    className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-[#F3F8EC] px-2 py-1 text-[11px] font-semibold text-[#24693E] sm:gap-1.5 sm:px-2.5 sm:text-[11.5px]"
                   >
                     <LineIcon name={c.icon} className="h-3.5 w-3.5" />
                     {c.label}
@@ -418,7 +421,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   <button
                     type="button"
                     onClick={onAskAi}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-clay-500/40 bg-white px-2.5 py-1 text-[11.5px] font-bold text-clay-700 transition hover:border-clay-600 hover:bg-clay-50"
+                    className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-clay-500/40 bg-white px-2 py-1 text-[11px] font-bold text-clay-700 transition hover:border-clay-600 hover:bg-clay-50 sm:gap-1.5 sm:px-2.5 sm:text-[11.5px]"
                   >
                     <Spark className="h-3.5 w-3.5 text-clay-600" /> Ask AI
                   </button>
@@ -468,14 +471,14 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 const selected = attributes[groupName];
                 return (
                   <div key={groupName} className="mt-5">
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-                      <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-forest-900">
+                    <div className="mb-2 flex items-center justify-between gap-x-3">
+                      <p className="shrink-0 whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900 sm:text-[12px]">
                         {`Select ${groupName.replace(/-/g, ' ')}`}
                       </p>
                       {/* first picker only — repeating the price above every
                           group would read as a different price per group. */}
                       {groupIndex === 0 && (
-                        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="flex min-w-0 items-center justify-end gap-x-2 whitespace-nowrap">
                           {priceBlock}
                         </span>
                       )}

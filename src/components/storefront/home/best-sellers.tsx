@@ -67,7 +67,7 @@ export function BestSellers({
           >
             {t('home-bestsellers-eyebrow')}
           </div>
-          <h2 className="m-0 font-pahserif text-[26px] font-medium leading-[1.05] tracking-[-0.005em] text-forest-900 sm:text-[34px]">
+          <h2 className="m-0 font-pahserif text-[21px] font-medium leading-[1.1] tracking-[-0.005em] text-forest-900 xs:text-[24px] sm:text-[28px] lg:text-[34px]">
             {headingLabel ? `Our Most Loved ${headingLabel}` : t('home-bestsellers-title')}
           </h2>
         </div>

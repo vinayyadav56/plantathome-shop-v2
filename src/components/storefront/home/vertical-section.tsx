@@ -137,7 +137,7 @@ export function VerticalSection({
                 <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">
                   {label ?? t('home-collections-eyebrow')}
                 </div>
-                <h2 className="m-0 flex items-center gap-[9px] font-pahserif text-[26px] font-medium tracking-[-0.005em] text-forest-900 sm:text-[34px]">
+                <h2 className="m-0 flex items-center gap-[9px] font-pahserif text-[21px] font-medium leading-[1.1] tracking-[-0.005em] text-forest-900 xs:text-[24px] sm:text-[28px] lg:text-[34px]">
                   {t('home-collections-title')}
                   <LineIcon name="lotus" className="h-[23px] w-[23px] text-forest-500" />
                 </h2>

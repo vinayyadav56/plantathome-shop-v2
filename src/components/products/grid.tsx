@@ -76,12 +76,15 @@ export function Grid({
       <div
         className={cn(
           {
-            // Single column on small phones: the card's typography spec
-            // (Cormorant 24px names, 28px prices) is designed for the
-            // full-width mobile card — a 2-up grid truncates everything.
-            'grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]':
+            // Two-up on phones too. The note that used to live here said a 2-up
+            // grid "truncates everything" because the card's type was specced
+            // for a full-width mobile card — that predates the card gaining
+            // [container-type:inline-size], which makes every size inside it a
+            // cqw clamp against the CARD's width. Halve the card and the name,
+            // price, chips and badges scale themselves.
+            'grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] sm:gap-4':
               column === 'auto',
-            'grid grid-cols-1 gap-4 gap-y-6 xs:grid-cols-2 xs:gap-3 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
+            'grid grid-cols-2 gap-3 gap-y-5 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
               column === 'five' || column === 'six',
             // List view: one full-width row per product. The card lays itself
             // out horizontally off its own `layout` prop.

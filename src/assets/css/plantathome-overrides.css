@@ -2928,6 +2928,17 @@ html[data-density='compact'] { --density: 0.78; }
   .ds-section-y { padding-top: calc(5.5rem * var(--density)); padding-bottom: calc(5.5rem * var(--density)); }
 }
 
+/* PDP quick-fact chips: one row that scrolls rather than wrapping to two or
+   three, which pushed everything below it (and the pot picker) down the page.
+   Scrollbar hidden — the chips themselves signal the overflow. */
+.pah-chip-row {
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.pah-chip-row::-webkit-scrollbar { display: none; }
+
 /* ── Brand loading marks ─────────────────────────────────────────────────
    Keyframes live here rather than in the component because these render during
    Suspense — i.e. while the JS bundle is still arriving — so the animation must
