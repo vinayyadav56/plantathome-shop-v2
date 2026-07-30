@@ -184,6 +184,33 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const inStock = !(selectedVariation?.is_disable);
   const needsSelection = hasVariations && !isSelected;
 
+  /**
+   * The price, rendered in one of two places: inline with the first variation
+   * picker's label when the product has variations, or in its own row when it
+   * does not. Defined once so the two positions can never drift.
+   *
+   * Slightly smaller in the range state (20px vs 22px) because "₹359.00 –
+   * ₹929.00" is roughly twice the width of a single price and would otherwise
+   * crowd the label it now shares a row with.
+   */
+  const priceBlock = needsSelection ? (
+    <span className="text-[20px] font-bold leading-none text-[#14532D]">
+      {minPrice} – {maxPrice}
+    </span>
+  ) : (
+    <>
+      <span className="text-[22px] font-bold leading-none text-[#14532D]">{displayPrice}</span>
+      {displayBasePrice && (
+        <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>
+      )}
+      {!useVendorPrice && discount && (
+        <span className="rounded-[8px] bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
+          {discount} OFF
+        </span>
+      )}
+    </>
+  );
+
   /* cart */
   const { addItemToCart, updateCartLanguage, language } = useCart();
   // Display-only city (no nursery supply): browse-only, add-to-cart gated.
@@ -384,22 +411,21 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </div>
             )}
 
-            {/* price row */}
-            <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
-              {needsSelection ? (
-                <span className="text-[20px] font-bold leading-none text-[#14532D]">{minPrice} – {maxPrice}</span>
-              ) : (
-                <>
-                  <span className="text-[22px] font-bold leading-none text-[#14532D]">{displayPrice}</span>
-                  {displayBasePrice && <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>}
-                  {!useVendorPrice && discount && (
-                    <span className="rounded-[8px] bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
-                      {discount} OFF
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
+            {/*
+              Price sits on the SAME ROW as the first variation picker's label
+              (label left, price right) rather than in a row of its own further
+              up. Selecting a size is what changes the price, so putting them on
+              one line makes that cause and effect visible instead of leaving the
+              reader to connect two separate blocks.
+
+              Products with no variations keep the standalone row — there is no
+              picker to pair it with.
+            */}
+            {!hasVariations && (
+              <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                {priceBlock}
+              </div>
+            )}
 
             <div className="mt-5 h-px w-full bg-kraft-300/70" />
 
@@ -418,15 +444,24 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* variation pickers */}
             {hasVariations &&
-              Object.keys(variations).map((groupName) => {
+              Object.keys(variations).map((groupName, groupIndex) => {
                 const options = variations[groupName] as any[];
                 const color = isColorGroup(groupName, options);
                 const selected = attributes[groupName];
                 return (
                   <div key={groupName} className="mt-6">
-                    <p className="mb-2.5 text-[12px] font-bold uppercase tracking-[0.08em] text-forest-900">
-                      {`Select ${groupName.replace(/-/g, ' ')}`}
-                    </p>
+                    <div className="mb-2.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                      <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-forest-900">
+                        {`Select ${groupName.replace(/-/g, ' ')}`}
+                      </p>
+                      {/* first picker only — repeating the price above every
+                          group would read as a different price per group. */}
+                      {groupIndex === 0 && (
+                        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                          {priceBlock}
+                        </span>
+                      )}
+                    </div>
                     {color ? (
                       <div className="flex flex-wrap items-center gap-3">
                         {options.map((o) => {
