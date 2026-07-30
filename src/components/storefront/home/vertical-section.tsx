@@ -159,15 +159,21 @@ export function VerticalSection({
               not full-bleed — running to the screen edge lined the cards up with
               nothing and broke that symmetry.
 
-              The widths are fractional (…/6.5, not /7) so a card is always half
-              visible at the right. That half-card is what says "this scrolls":
-              a whole number of cards ends flush and reads as a hard cut with a
-              dead gap after it, which is the thing to avoid.
+              The widths are fractional (…/6.5, not /7) so when a row DOES
+              overflow, a card is left half visible at the right — that half card
+              is what says "this scrolls", with no fade or arrow needed.
+
+              `[&>*]:!grow` is what stops that becoming a dead gap on short rows.
+              .pah-rail pins every child to `flex: 0 0 var(--rail-w)`; adding
+              flex-grow means a row with fewer cards than fit stretches them to
+              fill the width exactly, while an overflowing row has no free space
+              to distribute and keeps its half-card peek. One rule, both cases —
+              no gap either way.
 
               No `justify-center`: these rows are unbounded, so overflow is the
               normal case, and centring a scrolling rail clips its leading cards.
             */}
-            <div className="pah-rail grid grid-cols-2 gap-[18px] [--rail-w:31%] sm:grid-cols-3 sm:[--rail-w:calc((100%_-_54px)/3.5)] md:[--rail-w:calc((100%_-_72px)/5.5)] lg:[--rail-w:calc((100%_-_90px)/6.5)]">
+            <div className="pah-rail grid grid-cols-2 gap-[18px] [&>*]:!grow [--rail-w:31%] sm:grid-cols-3 sm:[--rail-w:calc((100%_-_54px)/3.5)] md:[--rail-w:calc((100%_-_72px)/5.5)] lg:[--rail-w:calc((100%_-_90px)/6.5)]">
               {isLoading && cards.length === 0
                 ? Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex flex-col items-center gap-3">
