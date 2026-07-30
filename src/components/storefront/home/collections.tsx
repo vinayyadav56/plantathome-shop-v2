@@ -29,11 +29,10 @@ function CollectionCard({ c }: { c: CardData }) {
       href={`/c/${c.slug}`}
       className="group flex cursor-pointer flex-col items-center text-center"
     >
-      {/* Half diameter: the circle is capped at 50% of its grid cell and
-          centred, rather than the grid being re-columned. Keeping the column
-          count means the number of collections per row stays a CMS decision
-          (homeCollections.count) instead of becoming a side effect of sizing. */}
-      <span className="relative mx-auto block aspect-square w-1/2 overflow-hidden rounded-full border-[3px] border-white bg-sage-100 shadow-[0_2px_10px_rgba(34,48,26,0.10)] ring-1 ring-kraft-200 transition duration-300 group-hover:shadow-[0_10px_26px_rgba(34,48,26,0.16)] group-hover:ring-forest-300">
+      {/* Fills its cell. The half-size comes from narrowing the RAIL (below) —
+          shrinking the circle inside a full-width cell just left the gap
+          behind, which is exactly what it looked like. */}
+      <span className="relative block aspect-square w-full overflow-hidden rounded-full border-[3px] border-white bg-sage-100 shadow-[0_2px_10px_rgba(34,48,26,0.10)] ring-1 ring-kraft-200 transition duration-300 group-hover:shadow-[0_10px_26px_rgba(34,48,26,0.16)] group-hover:ring-forest-300">
         {c.image && !err ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -116,13 +115,21 @@ export function Collections() {
           </svg>
         </Link>
       </div>
-      <div className="pah-rail [--rail-w:31%] grid grid-cols-2 gap-[18px] sm:grid-cols-3 sm:[--rail-w:23%] md:[--rail-w:19%] lg:[--rail-w:calc((100%_-_72px)/5)]">
+      {/*
+        Half-size circles come from narrowing the RAIL, not from shrinking the
+        circle inside a full-width cell — .pah-rail is `display:flex !important`
+        and sizes every child to --rail-w, so a smaller circle in an unchanged
+        cell just turns the difference into a gap.
+
+        Capping the rail's width scales the cells and the gaps together, so the
+        row stays evenly spaced at any size. Left full-width below sm, where the
+        circles are already small and a narrower rail would shrink them twice.
+      */}
+      <div className="pah-rail [--rail-w:31%] mx-auto grid grid-cols-2 gap-[18px] sm:max-w-[480px] sm:grid-cols-3 sm:[--rail-w:23%] md:max-w-[560px] md:[--rail-w:19%] lg:max-w-[680px] lg:[--rail-w:calc((100%_-_72px)/5)]">
         {isLoading && cards.length === 0
           ? Array.from({ length: count }).map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-3">
-                {/* Matches the real circle's half diameter, so the skeleton
-                    does not collapse to a smaller ring on load. */}
-                <div className="mx-auto aspect-square w-1/2 animate-pulse rounded-full bg-sage-100" />
+                <div className="aspect-square w-full animate-pulse rounded-full bg-sage-100" />
                 <div className="h-3.5 w-2/3 animate-pulse rounded bg-sage-100" />
               </div>
             ))
