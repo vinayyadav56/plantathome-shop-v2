@@ -29,7 +29,11 @@ function CollectionCard({ c }: { c: CardData }) {
       href={`/c/${c.slug}`}
       className="group flex cursor-pointer flex-col items-center text-center"
     >
-      <span className="relative block aspect-square w-full overflow-hidden rounded-full border-[3px] border-white bg-sage-100 shadow-[0_2px_10px_rgba(34,48,26,0.10)] ring-1 ring-kraft-200 transition duration-300 group-hover:shadow-[0_10px_26px_rgba(34,48,26,0.16)] group-hover:ring-forest-300">
+      {/* Half diameter: the circle is capped at 50% of its grid cell and
+          centred, rather than the grid being re-columned. Keeping the column
+          count means the number of collections per row stays a CMS decision
+          (homeCollections.count) instead of becoming a side effect of sizing. */}
+      <span className="relative mx-auto block aspect-square w-1/2 overflow-hidden rounded-full border-[3px] border-white bg-sage-100 shadow-[0_2px_10px_rgba(34,48,26,0.10)] ring-1 ring-kraft-200 transition duration-300 group-hover:shadow-[0_10px_26px_rgba(34,48,26,0.16)] group-hover:ring-forest-300">
         {c.image && !err ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -116,7 +120,9 @@ export function Collections() {
         {isLoading && cards.length === 0
           ? Array.from({ length: count }).map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-3">
-                <div className="aspect-square w-full animate-pulse rounded-full bg-sage-100" />
+                {/* Matches the real circle's half diameter, so the skeleton
+                    does not collapse to a smaller ring on load. */}
+                <div className="mx-auto aspect-square w-1/2 animate-pulse rounded-full bg-sage-100" />
                 <div className="h-3.5 w-2/3 animate-pulse rounded bg-sage-100" />
               </div>
             ))
