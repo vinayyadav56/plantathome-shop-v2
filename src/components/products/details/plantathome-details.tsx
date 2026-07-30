@@ -396,9 +396,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </div>
             )}
 
-            {/* quick-glance plant chips */}
-            {quickChips.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+            {/* quick-glance plant chips — Ask AI rides along as the last pill */}
+            {(quickChips.length > 0 || askAiEnabled) && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
                 {quickChips.map((c) => (
                   <span
                     key={c.label}
@@ -408,6 +408,21 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     {c.label}
                   </span>
                 ))}
+                {/*
+                  Ask AI used to be the LAST element in this column — below the
+                  pot picker, so nobody saw it without scrolling past everything
+                  that matters. Here it is visible on arrival AND costs no extra
+                  height, because this row already wraps.
+                */}
+                {askAiEnabled && (
+                  <button
+                    type="button"
+                    onClick={onAskAi}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-clay-500/40 bg-white px-2.5 py-1 text-[11.5px] font-bold text-clay-700 transition hover:border-clay-600 hover:bg-clay-50"
+                  >
+                    <Spark className="h-3.5 w-3.5 text-clay-600" /> Ask AI
+                  </button>
+                )}
               </div>
             )}
 
@@ -427,18 +442,21 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </div>
             )}
 
-            <div className="mt-5 h-px w-full bg-kraft-300/70" />
+            <div className="mt-4 h-px w-full bg-kraft-300/70" />
 
             {/* short description (the ONLY teaser — full text lives in the
                 "Plant care & details" section below the fold) */}
             {content && (
-              <div className="mt-5 react-editor-description text-[13.5px] leading-6 text-stone-600">
-                <Truncate character={180}>{content}</Truncate>
+              <div className="mt-4 react-editor-description text-[13.5px] leading-6 text-stone-600">
+                {/* 120 not 180: three teaser lines plus a Read more pushed the
+                    pot picker below the fold, and the full text is a section
+                    away under "Plant care & details" anyway. */}
+                <Truncate character={120}>{content}</Truncate>
               </div>
             )}
 
             {/* bundle contents — the real bundle_items (compact in quick view) */}
-            <div className="mt-5">
+            <div className="mt-4">
               <BundleContents product={product} compact={isModal} />
             </div>
 
@@ -449,8 +467,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 const color = isColorGroup(groupName, options);
                 const selected = attributes[groupName];
                 return (
-                  <div key={groupName} className="mt-6">
-                    <div className="mb-2.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                  <div key={groupName} className="mt-5">
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
                       <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-forest-900">
                         {`Select ${groupName.replace(/-/g, ' ')}`}
                       </p>
@@ -630,16 +648,6 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </div>
             )}
 
-            {/* Ask AI */}
-            {askAiEnabled && (
-              <button
-                type="button"
-                onClick={onAskAi}
-                className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-forest-600/30 bg-white/50 px-4 py-2 text-[13px] font-semibold text-forest-800 transition hover:border-forest-600 hover:bg-white"
-              >
-                <Spark className="h-4 w-4 text-clay-600" /> Ask AI about this plant
-              </button>
-            )}
           </div>
         </div>
 

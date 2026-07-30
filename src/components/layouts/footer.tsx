@@ -149,7 +149,7 @@ const Footer = () => {
 
       {/* ── newsletter band ── */}
       <div className="relative z-[1] border-b border-white/[0.09]">
-        <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 py-12 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:px-16 lg:py-[52px]">
+        <div className="mx-auto flex max-w-5xl flex-col gap-6 px-5 py-8 sm:gap-8 sm:py-12 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:px-16 lg:py-[52px]">
           <div className="flex-1">
             <div className="inline-flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.06] px-3.5 py-1.5">
               <span className="relative flex h-[7px] w-[7px] shrink-0">
@@ -172,7 +172,7 @@ const Footer = () => {
       </div>
 
       {/* ── main grid: brand + link columns ── */}
-      <div className="relative z-[1] mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-10 px-5 py-12 sm:px-8 md:grid-cols-4 md:gap-x-6 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:px-16 lg:pb-[46px] lg:pt-[54px]">
+      <div className="relative z-[1] mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-7 px-5 py-8 sm:gap-y-10 sm:py-12 sm:px-8 md:grid-cols-4 md:gap-x-6 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:px-16 lg:pb-[46px] lg:pt-[54px]">
 
         {/* brand column */}
         <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:max-w-[300px]">
@@ -237,7 +237,7 @@ const Footer = () => {
 
       {/* ── sustainability badge strip ── */}
       <div className="relative z-[1] border-t border-white/[0.08]">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-3 px-5 py-5 sm:px-8 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2.5 px-5 py-3.5 sm:gap-3 sm:py-5 sm:px-8 lg:px-16">
           {BADGES.map((b) => (
             <span
               key={b.label}
@@ -252,7 +252,7 @@ const Footer = () => {
 
       {/* ── bottom bar ── */}
       <div className="relative z-[1] border-t border-white/[0.07]">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-5 py-5 text-[12.5px] sm:flex-row sm:px-8 lg:px-16">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-5 py-3.5 text-[12.5px] sm:gap-4 sm:py-5 sm:flex-row sm:px-8 lg:px-16">
           <span className="text-white/40">© {year} {t('footer-copyright')}</span>
           <InlineLanguageSelect tone="dark" className="order-first sm:order-none" />
           <div className="flex flex-wrap items-center gap-5">
