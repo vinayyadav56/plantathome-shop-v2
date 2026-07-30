@@ -5,7 +5,11 @@ import { useTranslation } from 'next-i18next';
 import { useCategories } from '@/framework/category';
 import LineIcon from '@/components/icons/line-icons';
 import BestSellers from '@/components/storefront/home/best-sellers';
-import type { HomeSection } from '@/lib/use-home-config';
+import {
+  resolveImageUrl,
+  useHomeConfig,
+  type HomeSection,
+} from '@/lib/use-home-config';
 
 /**
  * One homepage block for one vertical: a category row, then that vertical's
@@ -82,11 +86,37 @@ export function VerticalSection({
     home: 1,
   } as any);
 
+  /**
+   * Photos an admin uploaded against a category in the old Collections screen
+   * (`homeCollections.cards[].image`).
+   *
+   * These are HAND-PICKED overrides — someone chose a nicer crop than the
+   * category's own image — so they must keep winning. Reading only
+   * `category.image` silently replaced every one of them with the un-curated
+   * original, which looked exactly like the uploads had been thrown away.
+   *
+   * Keyed by slug, so an upload follows its category into whichever vertical
+   * section that category now belongs to.
+   */
+  const { homeCollections } = useHomeConfig();
+  const uploadedImage = React.useMemo(() => {
+    const map = new Map<string, string>();
+    for (const card of homeCollections?.cards ?? []) {
+      const url = resolveImageUrl(card?.image as any);
+      if (card?.categorySlug && url) map.set(card.categorySlug, url);
+    }
+    return map;
+  }, [homeCollections]);
+
   const cards: CardData[] = (categories ?? [])
     .map((c: any) => ({
       slug: c.slug,
       name: c.name,
-      image: c.image?.original ?? c.image?.thumbnail ?? '',
+      image:
+        uploadedImage.get(c.slug) ||
+        c.image?.original ||
+        c.image?.thumbnail ||
+        '',
     }))
     .filter((c: CardData) => c.slug && c.name);
 
