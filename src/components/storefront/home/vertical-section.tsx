@@ -154,12 +154,20 @@ export function VerticalSection({
             </div>
 
             {/*
-              NO `justify-center` here, deliberately. The old single section
-              could centre because its count was capped at 6 so the rail could
-              never overflow; these rows are unbounded, overflow is now the
+              Sits INSIDE the section gutter, so the first card lines up with the
+              heading and with every other section on the page. It is deliberately
+              not full-bleed — running to the screen edge lined the cards up with
+              nothing and broke that symmetry.
+
+              The widths are fractional (…/6.5, not /7) so a card is always half
+              visible at the right. That half-card is what says "this scrolls":
+              a whole number of cards ends flush and reads as a hard cut with a
+              dead gap after it, which is the thing to avoid.
+
+              No `justify-center`: these rows are unbounded, so overflow is the
               normal case, and centring a scrolling rail clips its leading cards.
             */}
-            <div className="pah-rail -mx-5 grid grid-cols-2 gap-[18px] px-5 [--rail-w:31%] sm:-mx-8 sm:grid-cols-3 sm:px-8 sm:[--rail-w:15.5%] md:[--rail-w:13%] lg:-mx-16 lg:px-16 lg:[--rail-w:calc((100%_-_72px)/7)]">
+            <div className="pah-rail grid grid-cols-2 gap-[18px] [--rail-w:31%] sm:grid-cols-3 sm:[--rail-w:calc((100%_-_54px)/3.5)] md:[--rail-w:calc((100%_-_72px)/5.5)] lg:[--rail-w:calc((100%_-_90px)/6.5)]">
               {isLoading && cards.length === 0
                 ? Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex flex-col items-center gap-3">
