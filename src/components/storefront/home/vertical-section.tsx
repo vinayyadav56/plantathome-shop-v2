@@ -1,0 +1,159 @@
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import { useTranslation } from 'next-i18next';
+import { useCategories } from '@/framework/category';
+import LineIcon from '@/components/icons/line-icons';
+import BestSellers from '@/components/storefront/home/best-sellers';
+import type { HomeSection } from '@/lib/use-home-config';
+
+/**
+ * One homepage block for one vertical: a category row, then that vertical's
+ * most-loved products.
+ *
+ * Replaces a single hardcoded "Shop Our Best Collections" section that could
+ * show at most six cards and — the actual bug — was fetched with no vertical
+ * filter, so it mixed Plants, Tools and FarmBox categories into one row.
+ *
+ * Nothing here knows the name of a vertical. It takes a config row and renders,
+ * so adding Seeds later is one admin row and zero code.
+ *
+ * Used by BOTH homepage trees (desktop `storefront/home`, mobile
+ * `storefront/pah`), which are otherwise separate component trees — one
+ * implementation is why a change lands on both instead of drifting.
+ */
+
+const CATEGORY_LIMIT_CAP = 100; // API clamps here too; limit=1000 truncates the JSON mid-stream
+
+type CardData = { slug: string; name: string; image?: string };
+
+/** Round photo with a white ring, name beneath. */
+function CategoryCard({ c }: { c: CardData }) {
+  const [err, setErr] = React.useState(false);
+  return (
+    <Link
+      href={`/c/${c.slug}`}
+      className="group flex cursor-pointer flex-col items-center text-center"
+    >
+      <span className="relative block aspect-square w-full overflow-hidden rounded-full border-[3px] border-white bg-sage-100 shadow-[0_2px_10px_rgba(34,48,26,0.10)] ring-1 ring-kraft-200 transition duration-300 group-hover:shadow-[0_10px_26px_rgba(34,48,26,0.16)] group-hover:ring-forest-300">
+        {c.image && !err ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={c.image}
+            alt={c.name}
+            loading="lazy"
+            onError={() => setErr(true)}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
+          />
+        ) : (
+          <span className="grid h-full w-full place-items-center text-sage-400">
+            <LineIcon name="leaf" className="h-[26px] w-[26px]" />
+          </span>
+        )}
+      </span>
+      <span className="mt-3 font-hanken text-[14px] font-bold leading-tight text-forest-900 transition-colors group-hover:text-forest-700">
+        {c.name}
+      </span>
+    </Link>
+  );
+}
+
+export function VerticalSection({
+  section,
+  label,
+}: {
+  section: HomeSection;
+  /** Vertical's display name, resolved by the caller from `types`. */
+  label?: string;
+}) {
+  const { t } = useTranslation('common');
+
+  const limit = Math.min(
+    Math.max(Number(section.maxCategories) || 12, 1),
+    CATEGORY_LIMIT_CAP,
+  );
+
+  // `home: 1` is the whole point — flagged + active categories of THIS vertical,
+  // already ordered by homepage_sort_order server-side so every consumer agrees.
+  const { categories, isLoading } = useCategories({
+    type: section.typeSlug,
+    parent: 'null',
+    limit,
+    home: 1,
+  } as any);
+
+  const cards: CardData[] = (categories ?? [])
+    .map((c: any) => ({
+      slug: c.slug,
+      name: c.name,
+      image: c.image?.original ?? c.image?.thumbnail ?? '',
+    }))
+    .filter((c: CardData) => c.slug && c.name);
+
+  const showCategories = section.showCategories !== false && (isLoading || cards.length > 0);
+  const showProducts = section.showProducts !== false;
+
+  // Nothing to render → render NOTHING, not an empty shell. A heading with no
+  // content below it is what makes a disabled section leave a blank band.
+  if (!showCategories && !showProducts) return null;
+
+  return (
+    <section className="g-light-a">
+      <div className="mx-auto max-w-none px-5 pb-[40px] pt-[40px] sm:px-8 lg:px-16 lg:pb-[52px] lg:pt-[48px]">
+        {showCategories ? (
+          <>
+            <div className="mb-[26px] flex items-end justify-between gap-4">
+              <div>
+                <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">
+                  {label ?? t('home-collections-eyebrow')}
+                </div>
+                <h2 className="m-0 flex items-center gap-[9px] font-pahserif text-[26px] font-medium tracking-[-0.005em] text-forest-900 sm:text-[34px]">
+                  {t('home-collections-title')}
+                  <LineIcon name="lotus" className="h-[23px] w-[23px] text-forest-500" />
+                </h2>
+              </div>
+              <Link
+                href={`/${section.typeSlug}/search`}
+                className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap text-[14px] font-semibold text-forest-700"
+              >
+                {t('home-collections-view-all')}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M5 12h13M13 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </div>
+
+            {/*
+              NO `justify-center` here, deliberately. The old single section
+              could centre because its count was capped at 6 so the rail could
+              never overflow; these rows are unbounded, overflow is now the
+              normal case, and centring a scrolling rail clips its leading cards.
+            */}
+            <div className="pah-rail [--rail-w:31%] grid grid-cols-2 gap-[18px] sm:grid-cols-3 sm:[--rail-w:15.5%] md:[--rail-w:13%] lg:[--rail-w:calc((100%_-_72px)/7)]">
+              {isLoading && cards.length === 0
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="flex flex-col items-center gap-3">
+                      <div className="aspect-square w-full animate-pulse rounded-full bg-sage-100" />
+                      <div className="h-3 w-2/3 animate-pulse rounded bg-sage-100" />
+                    </div>
+                  ))
+                : cards.map((c) => <CategoryCard key={c.slug} c={c} />)}
+            </div>
+          </>
+        ) : null}
+
+        {showProducts ? (
+          <div className={showCategories ? 'mt-[44px]' : ''}>
+            <BestSellers
+              typeSlug={section.typeSlug}
+              limit={Number(section.maxProducts) || 10}
+              headingLabel={label}
+            />
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+export default VerticalSection;

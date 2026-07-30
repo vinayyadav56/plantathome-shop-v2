@@ -28,6 +28,25 @@ export type HomeCollectionsConfig = {
   }>;
 };
 
+/**
+ * One homepage block per vertical (settings.options.homeSections).
+ *
+ * Supersedes homeCollections: that was a single section, capped at six cards,
+ * curated by one global slug list and fetched with no vertical filter — so it
+ * mixed categories from every vertical into one row. WHICH categories appear is
+ * no longer here at all; it is on the category (show_on_homepage), so a new one
+ * reaches the homepage without a settings edit.
+ */
+export type HomeSection = {
+  typeSlug: string;
+  enabled?: boolean;
+  showCategories?: boolean;
+  showProducts?: boolean;
+  maxCategories?: number;
+  maxProducts?: number;
+  order?: number;
+};
+
 /** Admin-editable "Six worlds" verticals band (settings.options.verticalsBand). */
 export type VerticalsBandConfig = {
   eyebrow?: string;
@@ -155,7 +174,31 @@ export function useHomeConfig() {
     verticalsBand: (settings?.verticalsBand ??
       null) as VerticalsBandConfig | null,
     homeHero: (settings?.homeHero ?? null) as HomeHeroConfig | null,
+    // null (not []) when unset, so the caller can tell "not configured yet" from
+    // "configured to show nothing" and keep rendering the old single section
+    // until an admin saves. That is what makes this deployable before the
+    // settings exist.
+    homeSections: (Array.isArray(settings?.homeSections) &&
+    settings.homeSections.length
+      ? (settings.homeSections as HomeSection[])
+      : null) as HomeSection[] | null,
   };
+}
+
+/**
+ * The vertical blocks to render, enabled-only and in display order.
+ *
+ * Returns null when nothing is configured — the homepage then keeps its previous
+ * single-section layout, so this ships without a settings edit and an
+ * un-migrated environment looks exactly as it did.
+ */
+export function useHomeSections(): HomeSection[] | null {
+  const { homeSections } = useHomeConfig();
+  if (!homeSections) return null;
+
+  return homeSections
+    .filter((s) => s?.typeSlug && s.enabled !== false)
+    .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 }
 
 /** A single banner's on/off (default ON). */

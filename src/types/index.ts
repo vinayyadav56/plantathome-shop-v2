@@ -161,6 +161,8 @@ export interface CategoryQueryOptions extends QueryOptions {
   language: string;
   parent: string | null;
   type: string;
+  /** 1 = only categories flagged Show-on-homepage AND active, ordered server-side. */
+  home?: number;
 }
 
 export interface RefundQueryOptions extends QueryOptions {

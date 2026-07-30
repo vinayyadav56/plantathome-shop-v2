@@ -14,6 +14,9 @@ import { WhyPlants } from './why-plants';
 import { CorporateGifting } from './corporate-gifting';
 import { Gifting } from './gifting';
 import { BottomNav } from './bottom-nav';
+import { VerticalSection } from '@/components/storefront/home/vertical-section';
+import { useHomeSections } from '@/lib/use-home-config';
+import { useTypes } from '@/framework/type';
 
 /* ============ FOOTER (Claude Design) ============ */
 const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [
@@ -250,6 +253,14 @@ function Footer() {
  * live, city-scoped data. Centred as an app column on desktop (mobile <lg only).
  */
 export default function PahHome(_props: { variables?: any }) {
+  // The SAME component the desktop tree renders. These two trees are otherwise
+  // separate and have drifted before; sharing the section is what keeps a
+  // change landing on both.
+  const sections = useHomeSections();
+  const { types } = useTypes({ limit: 100 });
+  const labelFor = (slug: string) =>
+    (types ?? []).find((t: any) => t?.slug === slug)?.name;
+
   return (
     <div className="min-h-screen w-full bg-cream-100 font-hanken text-forest-900 antialiased">
       <div className="mx-auto min-h-screen max-w-[440px] overflow-hidden bg-cream-50 shadow-[0_0_60px_-30px_rgba(34,48,26,0.3)]">
@@ -259,8 +270,20 @@ export default function PahHome(_props: { variables?: any }) {
           <CategoryCircles />
           <SpecialOffer />
           <VerticalsRail />
-          <Collections />
-          <BestSellers />
+          {sections ? (
+            sections.map((section) => (
+              <VerticalSection
+                key={section.typeSlug}
+                section={section}
+                label={labelFor(section.typeSlug)}
+              />
+            ))
+          ) : (
+            <>
+              <Collections />
+              <BestSellers />
+            </>
+          )}
           <TrustRow />
           <WhyPlants />
           <CorporateGifting />
