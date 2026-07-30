@@ -128,10 +128,10 @@ export function VerticalSection({
   if (!showCategories && !showProducts) return null;
 
   return (
-    <section className="g-light-a">
-      <div className="mx-auto max-w-none px-5 pb-[40px] pt-[40px] sm:px-8 lg:px-16 lg:pb-[52px] lg:pt-[48px]">
-        {showCategories ? (
-          <>
+    <>
+      {showCategories ? (
+        <section className="g-light-a">
+          <div className="mx-auto max-w-none px-5 pb-[40px] pt-[40px] sm:px-8 lg:px-16 lg:pb-[52px] lg:pt-[48px]">
             <div className="mb-[26px] flex items-end justify-between gap-4">
               <div>
                 <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">
@@ -159,7 +159,7 @@ export function VerticalSection({
               never overflow; these rows are unbounded, overflow is now the
               normal case, and centring a scrolling rail clips its leading cards.
             */}
-            <div className="pah-rail [--rail-w:31%] grid grid-cols-2 gap-[18px] sm:grid-cols-3 sm:[--rail-w:15.5%] md:[--rail-w:13%] lg:[--rail-w:calc((100%_-_72px)/7)]">
+            <div className="pah-rail -mx-5 grid grid-cols-2 gap-[18px] px-5 [--rail-w:31%] sm:-mx-8 sm:grid-cols-3 sm:px-8 sm:[--rail-w:15.5%] md:[--rail-w:13%] lg:-mx-16 lg:px-16 lg:[--rail-w:calc((100%_-_72px)/7)]">
               {isLoading && cards.length === 0
                 ? Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex flex-col items-center gap-3">
@@ -169,20 +169,22 @@ export function VerticalSection({
                   ))
                 : cards.map((c) => <CategoryCard key={c.slug} c={c} />)}
             </div>
-          </>
-        ) : null}
-
-        {showProducts ? (
-          <div className={showCategories ? 'mt-[44px]' : ''}>
-            <BestSellers
-              typeSlug={section.typeSlug}
-              limit={Number(section.maxProducts) || 10}
-              headingLabel={label}
-            />
           </div>
-        ) : null}
-      </div>
-    </section>
+        </section>
+      ) : null}
+
+      {/* Sibling, NOT nested: BestSellers renders its own <section> with its own
+          gutters and full-bleed background band. Wrapping it in this section's
+          padded container applied the gutters twice (px-16 inside px-16) and
+          inset the band, so the row rendered visibly narrower than the page. */}
+      {showProducts ? (
+        <BestSellers
+          typeSlug={section.typeSlug}
+          limit={Number(section.maxProducts) || 10}
+          headingLabel={label}
+        />
+      ) : null}
+    </>
   );
 }
 
