@@ -116,16 +116,21 @@ export function Collections() {
         </Link>
       </div>
       {/*
-        Half-size circles come from narrowing the RAIL, not from shrinking the
-        circle inside a full-width cell — .pah-rail is `display:flex !important`
-        and sizes every child to --rail-w, so a smaller circle in an unchanged
-        cell just turns the difference into a gap.
+        Half size is done by halving --rail-w, the variable .pah-rail sizes every
+        child from (it is `display:flex !important`, so the grid classes here are
+        only a no-JS fallback). Halving the CELL keeps the circle filling it, so
+        the gaps scale with it — shrinking the circle inside a full-width cell
+        instead just turned the missing half into a gap.
 
-        Capping the rail's width scales the cells and the gaps together, so the
-        row stays evenly spaced at any size. Left full-width below sm, where the
-        circles are already small and a narrower rail would shrink them twice.
+        `justify-center` keeps the row centred now that it no longer spans the
+        full width. Safe with overflow-x here because half-width cells cannot
+        overflow (homeCollections.count is capped at 6 → 6 × 9.5% ≈ 57%);
+        centring a rail that DOES overflow would clip its leading items.
+
+        Base stays 31%: below sm the circles are already small and halving twice
+        would make them unreadable.
       */}
-      <div className="pah-rail [--rail-w:31%] mx-auto grid grid-cols-2 gap-[18px] sm:max-w-[480px] sm:grid-cols-3 sm:[--rail-w:23%] md:max-w-[560px] md:[--rail-w:19%] lg:max-w-[680px] lg:[--rail-w:calc((100%_-_72px)/5)]">
+      <div className="pah-rail [--rail-w:31%] grid grid-cols-2 gap-[18px] sm:grid-cols-3 sm:justify-center sm:[--rail-w:11.5%] md:[--rail-w:9.5%] lg:[--rail-w:calc((100%_-_72px)/10)]">
         {isLoading && cards.length === 0
           ? Array.from({ length: count }).map((_, i) => (
               <div key={i} className="flex flex-col items-center gap-3">
