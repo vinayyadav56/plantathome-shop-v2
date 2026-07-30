@@ -1,4 +1,6 @@
+import { PlantLoader } from '@/components/ui/plant-loader';
 import dynamic from 'next/dynamic';
+import { Suspense } from 'react';
 import Modal from '@/components/ui/modal/modal';
 import { useModalAction, useModalState } from './modal.context';
 
@@ -107,49 +109,66 @@ const ManagedModal = () => {
   }
   return (
     <Modal open={isOpen} onClose={closeModal}>
-      {view === 'LOGIN_VIEW' && <Login />}
-      {view === 'REGISTER' && <Register />}
-      {view === 'FORGOT_VIEW' && <ForgotPassword />}
-      {view === 'OTP_LOGIN' && <OtpLoginView />}
-      {view === 'REFUND_REQUEST' && <CreateRefundView />}
-      {view === 'ADD_OR_UPDATE_ADDRESS' && <CreateOrUpdateAddressForm />}
-      {view === 'ADD_OR_UPDATE_GUEST_ADDRESS' && (
-        <CreateOrUpdateGuestAddressForm />
-      )}
-      {view === 'LOCATION_BASED_SHOP' && <LocationBasedShopForm />}
-      {view === 'ADD_OR_UPDATE_CHECKOUT_CONTACT' && (
-        <AddOrUpdateCheckoutContact />
-      )}
-      {view === 'ADD_OR_UPDATE_PROFILE_CONTACT' && (
-        <ProfileAddOrUpdateContact />
-      )}
-      {view === 'DELETE_ADDRESS' && <AddressDeleteView />}
-      {view === 'PRODUCT_DETAILS' && (
-        <ProductDetailsModalView productSlug={data} />
-      )}
-      {view === 'SHOP_INFO' && (
-        <ShopInfoCard
-          shop={data?.shop}
-          cardClassName="!hidden"
-          className="!flex !h-screen !w-screen max-w-screen-sm flex-col"
-        />
-      )}
-      {view === 'REVIEW_RATING' && <ReviewRating />}
-      {view === 'ABUSE_REPORT' && <AbuseReport data={data} />}
-      {view === 'QUESTION_FORM' && <QuestionForm />}
-      {view === 'SELECT_PRODUCT_VARIATION' && (
-        <ProductVariation productSlug={data} />
-      )}
-      {view === 'REVIEW_IMAGE_POPOVER' && <ReviewImageModal />}
-      {/* Payment Modal */}
-      {view === 'USE_NEW_PAYMENT' && <AddNewPaymentModal />}
-      {/* Card/My Card Modal */}
-      {view === 'ADD_NEW_CARD' && <AddNewCardModal />}
-      {view === 'DELETE_CARD_MODAL' && <DeleteCardModal />}
-      {view === 'GATEWAY_MODAL' && <GateWayControlModal />}
-      {view === 'STRIPE_ELEMENT_MODAL' && <StripeElementModal />}
-      {view === 'NEWSLETTER_MODAL' && <NewsLetterModal />}
-      {view === 'ASK_AI' && <AskAiChat />}
+      {/*
+        ONE boundary for all 28 dynamic views below. Each is its own chunk,
+        downloaded on first open, and next/dynamic's default fallback is `null` —
+        so opening a modal rendered an empty box until the chunk landed, with
+        nothing to say it was working.
+
+        A single Suspense here beats adding `loading:` to 28 dynamic() calls and
+        automatically covers any view added later.
+      */}
+      <Suspense
+        fallback={
+          <div className="grid min-h-[220px] place-items-center">
+            <PlantLoader size="md" />
+          </div>
+        }
+      >
+        {view === 'LOGIN_VIEW' && <Login />}
+        {view === 'REGISTER' && <Register />}
+        {view === 'FORGOT_VIEW' && <ForgotPassword />}
+        {view === 'OTP_LOGIN' && <OtpLoginView />}
+        {view === 'REFUND_REQUEST' && <CreateRefundView />}
+        {view === 'ADD_OR_UPDATE_ADDRESS' && <CreateOrUpdateAddressForm />}
+        {view === 'ADD_OR_UPDATE_GUEST_ADDRESS' && (
+          <CreateOrUpdateGuestAddressForm />
+        )}
+        {view === 'LOCATION_BASED_SHOP' && <LocationBasedShopForm />}
+        {view === 'ADD_OR_UPDATE_CHECKOUT_CONTACT' && (
+          <AddOrUpdateCheckoutContact />
+        )}
+        {view === 'ADD_OR_UPDATE_PROFILE_CONTACT' && (
+          <ProfileAddOrUpdateContact />
+        )}
+        {view === 'DELETE_ADDRESS' && <AddressDeleteView />}
+        {view === 'PRODUCT_DETAILS' && (
+          <ProductDetailsModalView productSlug={data} />
+        )}
+        {view === 'SHOP_INFO' && (
+          <ShopInfoCard
+            shop={data?.shop}
+            cardClassName="!hidden"
+            className="!flex !h-screen !w-screen max-w-screen-sm flex-col"
+          />
+        )}
+        {view === 'REVIEW_RATING' && <ReviewRating />}
+        {view === 'ABUSE_REPORT' && <AbuseReport data={data} />}
+        {view === 'QUESTION_FORM' && <QuestionForm />}
+        {view === 'SELECT_PRODUCT_VARIATION' && (
+          <ProductVariation productSlug={data} />
+        )}
+        {view === 'REVIEW_IMAGE_POPOVER' && <ReviewImageModal />}
+        {/* Payment Modal */}
+        {view === 'USE_NEW_PAYMENT' && <AddNewPaymentModal />}
+        {/* Card/My Card Modal */}
+        {view === 'ADD_NEW_CARD' && <AddNewCardModal />}
+        {view === 'DELETE_CARD_MODAL' && <DeleteCardModal />}
+        {view === 'GATEWAY_MODAL' && <GateWayControlModal />}
+        {view === 'STRIPE_ELEMENT_MODAL' && <StripeElementModal />}
+        {view === 'NEWSLETTER_MODAL' && <NewsLetterModal />}
+        {view === 'ASK_AI' && <AskAiChat />}
+      </Suspense>
     </Modal>
   );
 };
