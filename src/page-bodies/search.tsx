@@ -84,7 +84,7 @@ export default function SearchPage() {
                 else q.limit = e.target.value;
                 router.push({ pathname: router.pathname, query: q });
               }}
-              className="rounded-lg border border-forest-900/15 bg-white px-2 py-1.5 text-sm font-semibold text-heading focus:outline-none"
+              className="rounded-lg border border-forest-900/15 bg-white py-1.5 pl-2.5 pr-7 text-sm font-semibold text-heading focus:outline-none"
               aria-label="Products per page"
             >
               {[PRODUCTS_PER_PAGE, 40, 60].map((n) => (
@@ -126,7 +126,7 @@ export default function SearchPage() {
 
 const GetLayout = (page: React.ReactElement) => {
   const { t } = useTranslation('common');
-  const [_, setDrawerView] = useAtom(drawerAtom);
+  const [drawerState, setDrawerView] = useAtom(drawerAtom);
   return (
     <GeneralLayout>
       <>
@@ -149,19 +149,30 @@ const GetLayout = (page: React.ReactElement) => {
               drawer, and the desktop rail is hidden below md, so without this
               sub-md users cannot filter at all. Fixed above the bottom nav;
               hidden ≥md where the sidebar rail takes over. */}
-          <motion.button
-            whileTap={{ scale: 0.88 }}
-            onClick={() =>
-              setDrawerView({
-                display: true,
-                view: 'SEARCH_FILTER',
-              })
-            }
-            className="fixed bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-ds-btn text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
-          >
-            <span className="sr-only">{t('text-filter')}</span>
-            <FilterIcon width="17.05" height="18" />
-          </motion.button>
+          {/*
+            Labelled, and hidden while the drawer it opens is already open.
+
+            It was a bare 48px circle whose only text was sr-only, so on a phone
+            the filters read as simply absent ("filters are not coming on this
+            page") — the sidebar is display:none below md, and this was the sole
+            way in. It also sat on top of the drawer's own "Show Products"
+            button once open, because it stayed mounted at z-40.
+          */}
+          {!(drawerState?.display && drawerState?.view === 'SEARCH_FILTER') && (
+            <motion.button
+              whileTap={{ scale: 0.88 }}
+              onClick={() =>
+                setDrawerView({
+                  display: true,
+                  view: 'SEARCH_FILTER',
+                })
+              }
+              className="fixed bottom-24 z-40 flex h-12 items-center justify-center gap-2 rounded-full bg-ds-btn px-4 text-[13px] font-semibold text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
+            >
+              <FilterIcon width="17.05" height="18" />
+              <span>{t('text-filter')}</span>
+            </motion.button>
+          )}
         </MobileNavigation>
       </>
     </GeneralLayout>
