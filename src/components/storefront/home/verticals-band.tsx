@@ -68,7 +68,7 @@ export function VerticalsBand() {
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.6, ease: EXPO }}
-          className="mb-[26px] flex flex-col items-start gap-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-4"
+          className="mb-[26px] flex flex-wrap items-end justify-between gap-x-4 gap-y-2"
         >
           <div>
             <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">

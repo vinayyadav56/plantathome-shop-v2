@@ -59,8 +59,8 @@ export function BestSellers({
       }}
     >
       <div className="mx-auto max-w-none px-5 sm:px-8 lg:px-16">
-      {/* Stacks below sm so the heading gets the full width — see vertical-section.tsx */}
-      <div className="mb-[22px] flex flex-col items-start gap-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+      {/* Wraps rather than stacks so the link stays right of the heading — see vertical-section.tsx */}
+      <div className="mb-[22px] flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
         <div>
           <div
             className="font-jost text-[11px] font-bold uppercase tracking-[0.2em] text-[#4ADE80]"

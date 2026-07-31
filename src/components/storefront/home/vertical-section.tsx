@@ -132,11 +132,13 @@ export function VerticalSection({
       {showCategories ? (
         <section className="g-light-a">
           <div className="mx-auto max-w-none px-5 pb-[40px] pt-[40px] sm:px-8 lg:px-16 lg:pb-[52px] lg:pt-[48px]">
-            {/* Below sm the heading takes the full width and "View all" drops
-                beneath it. Sharing one row with the link squeezed the heading
-                into ~208px on a 390px screen, so every section title wrapped to
-                two lines. See the note on the h2 for the size. */}
-            <div className="mb-[26px] flex flex-col items-start gap-2.5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            {/* Wrap, don't stack: the link sits to the RIGHT of the heading
+                wherever it fits (at 390px "Shop Our Best Collections" + "View
+                All" comes to ~342px of the 344px available) and only drops to
+                its own line on narrower phones. flex-wrap rather than a fixed
+                breakpoint because the heading is fluid, so the point where the
+                pair stops fitting depends on the string, not the viewport. */}
+            <div className="mb-[26px] flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
               <div>
                 <div className="mb-[9px] font-jost text-[11px] font-medium uppercase tracking-[0.2em] text-forest-600">
                   {label ?? t('home-collections-eyebrow')}
@@ -148,7 +150,11 @@ export function VerticalSection({
                     so nothing shrinks on larger phones. */}
                 <h2 className="m-0 flex items-center gap-[9px] whitespace-nowrap font-pahserif text-[clamp(15px,4.9vw,24px)] font-medium leading-[1.1] tracking-[-0.005em] text-forest-900 sm:text-[28px] lg:text-[34px]">
                   {t('home-collections-title')}
-                  <LineIcon name="lotus" className="h-[23px] w-[23px] text-forest-500" />
+                  {/* `leaf` is the Lucide leaf path; `lotus` was a bespoke
+                      three-stroke shape that read as amateur next to it.
+                      Hidden below sm so the heading and "View All" have the
+                      room to share one row on a phone. */}
+                  <LineIcon name="leaf" className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
                 </h2>
               </div>
               <Link

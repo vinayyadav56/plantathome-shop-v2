@@ -92,6 +92,16 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
               {badge}
             </span>
           ) : null}
+          {/* Discount rides on the IMAGE, not in the price row. This card is
+              ~131px wide in a two-up rail, which leaves ~65px beside the cart
+              button — the chip could never fit there, so it overflowed and ran
+              under the button along with the price. Bottom-left is the only
+              free corner (badge top-left, wishlist top-right). */}
+          {!isVariable && discount ? (
+            <span className="absolute bottom-2.5 left-2.5 z-10 rounded-md bg-[#D73C3C] px-1.5 py-0.5 text-[9px] font-bold leading-none tracking-wide text-white shadow-sm">
+              {discount} OFF
+            </span>
+          ) : null}
         </button>
         <button
           type="button"
@@ -135,22 +145,27 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
         </p>
 
         {/* price + cart — variable products show the size range min–max */}
-        <div className="mt-auto flex items-center justify-between gap-2 pt-2.5">
-          <span className="flex min-w-0 flex-wrap items-center gap-1.5">
-            <span
-              className={`whitespace-nowrap leading-none text-[#14532D] ${
-                isVariable && hasRange ? 'text-[13px] font-semibold' : 'text-[15.5px] font-bold'
-              }`}
-            >
-              {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}
+        <div className="mt-auto flex items-center justify-between gap-1.5 pt-2.5">
+          {/*
+            A COLUMN, not a wrapping row. The card is ~131px wide (two-up rail),
+            so after the 36px button and the gap the price gets ~65px. The old
+            row put price + struck price + discount chip in there at 76/51/57px
+            each: every one overflowed its box and ran underneath the cart
+            button. Price on its own line, struck price beneath, discount moved
+            to the image, and smaller type throughout.
+
+            A variable product shows "₹359+" rather than the full "₹359 – ₹929"
+            range — the range needs ~105px and simply cannot fit beside a button
+            at this width, so it used to wrap mid-price.
+          */}
+          <span className="flex min-w-0 flex-col gap-[3px]">
+            <span className="truncate text-[13px] font-bold leading-none text-[#14532D]">
+              {isVariable ? (hasRange ? `${minPrice}+` : minPrice) : price}
             </span>
             {!isVariable && basePrice && (
-              <del className="text-[11px] font-medium leading-none text-[#9CA3AF]">{basePrice}</del>
-            )}
-            {!isVariable && discount && (
-              <span className="rounded-md bg-[#FFEAEA] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#D73C3C]">
-                {discount} OFF
-              </span>
+              <del className="truncate text-[10px] font-medium leading-none text-[#9CA3AF]">
+                {basePrice}
+              </del>
             )}
           </span>
           {isVariable ? (

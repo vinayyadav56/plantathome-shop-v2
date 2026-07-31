@@ -242,12 +242,13 @@ const Footer = () => {
 
       {/* ── sustainability badge strip ── */}
       <div className="relative z-[1] border-t border-white/[0.08]">
-        {/* Left-aligned from sm up so the badges start on the same gutter as the
-            link columns above and the copyright below — centred, they were the
-            only row in the footer not lining up with anything, which is what
-            read as "not properly placed in the box". Stays centred on mobile,
-            where the bottom bar centres too. */}
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2.5 px-5 py-3.5 sm:justify-start sm:gap-3 sm:py-5 sm:px-8 lg:px-16">
+        {/* Spread gutter to gutter from lg, echoing the link columns above and
+            the copyright row below. Centred it lined up with nothing; merely
+            left-aligned it stopped ~500px short and left the right half of the
+            row empty. Four badges distributed across the width read as placed
+            rather than parked. Still centred on small screens, where they wrap
+            and justify-between would strand the last row. */}
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2.5 px-5 py-3.5 sm:gap-3 sm:py-5 sm:px-8 lg:justify-between lg:px-16">
           {BADGES.map((b) => (
             <span
               key={b.label}
