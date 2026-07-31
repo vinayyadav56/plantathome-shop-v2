@@ -1358,8 +1358,16 @@ footer {
   background: var(--surface-inverse, #16301A) !important;
   color: rgba(255,255,255,0.78) !important;
 }
-footer h3, footer h4 {
+/* h3 only — that is the big "Grow with us." newsletter headline, a deliberate
+   brand moment where the display serif belongs. h4 is the 10.5px uppercase
+   column labels (SHOP / PLANT CARE / COMPANY / HELP); forcing a serif on those
+   fought the sitewide "headings use the body font" rule and left four spindly
+   serif labels sitting above columns of Inter links. They now fall through to
+   the body font like every other small label on the site. */
+footer h3 {
   font-family: var(--font-heading) !important;
+}
+footer h3, footer h4 {
   color: #fff !important;
 }
 footer a {

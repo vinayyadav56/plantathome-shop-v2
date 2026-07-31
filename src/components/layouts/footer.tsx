@@ -237,7 +237,12 @@ const Footer = () => {
 
       {/* ── sustainability badge strip ── */}
       <div className="relative z-[1] border-t border-white/[0.08]">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2.5 px-5 py-3.5 sm:gap-3 sm:py-5 sm:px-8 lg:px-16">
+        {/* Left-aligned from sm up so the badges start on the same gutter as the
+            link columns above and the copyright below — centred, they were the
+            only row in the footer not lining up with anything, which is what
+            read as "not properly placed in the box". Stays centred on mobile,
+            where the bottom bar centres too. */}
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2.5 px-5 py-3.5 sm:justify-start sm:gap-3 sm:py-5 sm:px-8 lg:px-16">
           {BADGES.map((b) => (
             <span
               key={b.label}

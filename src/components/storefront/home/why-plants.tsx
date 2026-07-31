@@ -106,7 +106,9 @@ export function WhyPlants() {
             <i className="fa-solid fa-seedling text-[13px] text-forest-500" aria-hidden />
             {t('home-why-eyebrow')}
           </span>
-          <h2 className="font-pahserif mt-4 text-[30px] font-medium not-italic leading-[1.05] tracking-[-0.012em] text-forest-900 sm:text-[42px]">
+          {/* One line on mobile too — fluid rather than fixed 30px, which wrapped
+              "Small Plants, Big Impact" onto two lines on a 390px screen. */}
+          <h2 className="font-pahserif mt-4 whitespace-nowrap text-[clamp(20px,7.2vw,30px)] font-medium not-italic leading-[1.05] tracking-[-0.012em] text-forest-900 sm:text-[42px]">
             {heading}
           </h2>
           <p className="mx-auto mt-3 max-w-xl font-hanken text-[14px] leading-[1.55] text-stone-500 sm:text-[15.5px]">

@@ -343,6 +343,26 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
             </button>
+
+            {/*
+              Ask AI lives ON the image, bottom-left — the one corner the gallery
+              leaves free (thumbnails run down the top-left, the prev/next arrows
+              sit bottom-right, the wishlist heart is top-right).
+
+              It was the last pill in the attribute chip row, which is a single
+              horizontal scroller: on a 1440px screen it sat half-clipped past the
+              right edge, so the feature was effectively hidden again. On the
+              image it is unmissable and costs the info column no width.
+            */}
+            {askAiEnabled && (
+              <button
+                type="button"
+                onClick={onAskAi}
+                className="absolute bottom-3 left-3 z-[2] inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/90 px-3 py-2 text-[12px] font-bold text-clay-700 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:bottom-4 sm:left-4 sm:gap-2 sm:px-3.5 sm:text-[13px]"
+              >
+                <Spark className="h-4 w-4 text-clay-600" /> Ask AI
+              </button>
+            )}
           </div>
 
           {/* info panel — min-w-0 is load-bearing: as a grid item its default
@@ -399,8 +419,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </div>
             )}
 
-            {/* quick-glance plant chips — Ask AI rides along as the last pill */}
-            {(quickChips.length > 0 || askAiEnabled) && (
+            {/* quick-glance plant chips. Ask AI is NOT here any more — it moved
+                onto the gallery image, where it can't be scrolled out of sight. */}
+            {quickChips.length > 0 && (
               <div className="pah-chip-row mt-3 flex items-center gap-1.5 overflow-x-auto sm:gap-2">
                 {quickChips.map((c) => (
                   <span
@@ -411,21 +432,6 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     {c.label}
                   </span>
                 ))}
-                {/*
-                  Ask AI used to be the LAST element in this column — below the
-                  pot picker, so nobody saw it without scrolling past everything
-                  that matters. Here it is visible on arrival AND costs no extra
-                  height, because this row already wraps.
-                */}
-                {askAiEnabled && (
-                  <button
-                    type="button"
-                    onClick={onAskAi}
-                    className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border border-clay-500/40 bg-white px-2 py-1 text-[11px] font-bold text-clay-700 transition hover:border-clay-600 hover:bg-clay-50 sm:gap-1.5 sm:px-2.5 sm:text-[11.5px]"
-                  >
-                    <Spark className="h-3.5 w-3.5 text-clay-600" /> Ask AI
-                  </button>
-                )}
               </div>
             )}
 
