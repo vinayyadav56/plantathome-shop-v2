@@ -116,6 +116,42 @@ export const AddToCart = ({
   // Display-only city: swap every add-to-cart affordance for an Out of Stock
   // pill — the catalog stays browsable, ordering waits for nursery supply.
   if (displayOnly && !isInCart(item?.id)) {
+    // Inside a product card this has to obey the SAME container-query geometry
+    // as the real CTA it replaces. As a fixed inline-flex chip (px-3, text-xs,
+    // ~119px wide, ~28px tall) it neither filled nor fitted the card's action
+    // row: in a two-up grid it burst out of the card, and where it did fit it
+    // sat half the height of the qty stepper beside it. Same height clamp,
+    // radius and fluid type as AddToCartBtn's plantathome variant.
+    if (variant === 'plantathome') {
+      return (
+        <span className="flex h-[clamp(38px,12.4cqw,48px)] w-full min-w-0 cursor-not-allowed items-center justify-center rounded-[14px] bg-gray-100 px-[clamp(6px,2.6cqw,16px)] text-[clamp(10px,3.6cqw,14px)] font-semibold uppercase leading-none tracking-wide text-stone-500">
+          <span className="truncate">Out of Stock</span>
+        </span>
+      );
+    }
+    // Mini rail card: the footer is ~105px wide and shared with the price, so
+    // its sibling CTA for variable products is a 36x36 icon button. The text
+    // pill got 67px there and wrapped "Out of Stock" onto THREE lines, making
+    // a 60px-tall lump in a 131px card. Same 36x36 footprint instead — a
+    // struck-through cart, which cannot wrap, with the wording kept on the
+    // tooltip and the accessible name.
+    if (variant === 'homeMini') {
+      return (
+        <span
+          role="img"
+          aria-label="Out of Stock"
+          title="Out of Stock"
+          className="grid h-9 w-9 shrink-0 cursor-not-allowed place-items-center rounded-[10px] bg-gray-100 text-stone-400"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
+            <circle cx="9" cy="21" r="1.6" />
+            <circle cx="19" cy="21" r="1.6" />
+            <path d="M1 1h3l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+            <path d="M3 3l18 18" />
+          </svg>
+        </span>
+      );
+    }
     return (
       <span className="inline-flex cursor-not-allowed items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-stone-500">
         Out of Stock

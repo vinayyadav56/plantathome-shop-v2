@@ -9,6 +9,7 @@ import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
 import { useCart } from '@/store/quick-cart/cart.context';
+import { useCitySupply } from '@/lib/use-city-supply';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
 import { getCardBadge, plantQuickFacts, shortDescription } from '@/components/products/cards/card-helpers';
@@ -124,6 +125,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
   const facts = plantQuickFacts(product);
   const inCart =
     mounted && !isVariable && isInCart(generateCartItem(product as any, undefined as any)?.id);
+
+  // In a display-only city AddToCart renders an "Out of Stock" pill instead of
+  // a CTA, so the qty stepper beside it is dead UI — and worse, it was eating
+  // ~120px of a two-up card, which is what pushed the pill out of the box.
+  const { displayOnly } = useCitySupply();
 
   const { data: askAiSettings } = useAskAiEnabled();
   const askAiEnabled = Boolean(askAiSettings?.data?.enabled);
@@ -364,7 +370,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             </button>
           ) : (
             <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
-              {!inCart && (
+              {!inCart && !displayOnly && (
                 <div className="flex h-[clamp(40px,12.4cqw,48px)] w-[clamp(88px,31cqw,120px)] shrink-0 items-center justify-around rounded-[14px] border border-[#DDDDDD]">
                   <button
                     type="button"

@@ -149,7 +149,12 @@ const Footer = () => {
 
       {/* ── newsletter band ── */}
       <div className="relative z-[1] border-b border-white/[0.09]">
-        <div className="mx-auto flex max-w-5xl flex-col gap-6 px-5 py-8 sm:gap-8 sm:py-12 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:px-16 lg:py-[52px]">
+        {/* max-w-7xl, matching every other row in the footer. At max-w-5xl this
+            band was 256px narrower than the link columns below it, so "Grow with
+            us." started ~128px in from the gutter everything else lines up on.
+            Vertical padding trimmed too (52 -> 34 at lg) — it was the tallest
+            band in the footer by some way for two lines of text and one input. */}
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 sm:gap-8 sm:py-8 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:px-16 lg:py-[34px]">
           <div className="flex-1">
             <div className="inline-flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.06] px-3.5 py-1.5">
               <span className="relative flex h-[7px] w-[7px] shrink-0">
