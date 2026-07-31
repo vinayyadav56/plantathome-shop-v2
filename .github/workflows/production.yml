@@ -207,10 +207,29 @@ jobs:
               'NODE_ENV=production' \
               > .env.production.local
 
-            echo "==> Reloading PM2 (zero-downtime)..."
-            pm2 delete shop 2>/dev/null || true
-            pm2 start "npm start" --name shop --cwd /var/www/plantathome/shop-src
+            echo "==> Reloading PM2 (cluster, zero-downtime)..."
+            # `pm2 reload` restarts workers one at a time, so the socket keeps
+            # being served throughout. That is only true in CLUSTER mode — the
+            # previous `pm2 delete` + `pm2 start` was a hard outage on every
+            # deploy despite the comment claiming otherwise.
+            #
+            # `--update-env` picks up the .env.production.local written above.
+            # The `reload || start` shape makes this idempotent: first deploy
+            # after this change has no cluster process to reload, so it starts.
+            cd /var/www/plantathome/shop-src
+            if pm2 describe shop >/dev/null 2>&1; then
+              pm2 reload ecosystem.config.js --update-env
+            else
+              pm2 start ecosystem.config.js --update-env
+            fi
             pm2 save
+
+            # Fail the deploy if we did not actually get cluster mode. PM2
+            # silently falls back to fork when it cannot cluster a script, and
+            # a silent fallback here costs ~4x throughput with no error.
+            MODE=$(pm2 jlist | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const a=JSON.parse(s).find(p=>p.name==='shop');console.log(a?a.pm2_env.exec_mode:'missing')})")
+            echo "==> shop exec_mode: $MODE"
+            [ "$MODE" = "cluster_mode" ] || { echo "ERROR: shop is not in cluster mode ($MODE)"; exit 1; }
 
             echo "==> Deploy complete"
 
