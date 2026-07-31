@@ -148,15 +148,33 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
     };
   }, [state.items, hydrated, isAuthorized]);
 
-  // ── Cross-device real-time: poll the account cart and adopt server changes ──
+  // ── Cross-device sync: adopt server changes made elsewhere ──────────────
   // A change made on another device (Android / iOS / another tab) shows up here
   // without a page refresh. Client-only + post-hydration (never during SSR), and
   // only while authorized. Skipped whenever a local save is queued or in flight so
   // the user's own just-made change is never overwritten by a stale server snapshot.
+  //
+  // This used to be a flat 7s interval that ran forever, including in tabs the
+  // user had backgrounded days ago. Every one of those requests is authenticated,
+  // so it is uncacheable at every layer and lands on the origin: modelled at
+  // 100k concurrent users it was ~65% of ALL origin traffic before anyone
+  // clicked anything.
+  //
+  // Three changes, none of which give up cross-device sync:
+  //   1. The interval only runs while the tab is VISIBLE. A backgrounded tab
+  //      costs nothing.
+  //   2. Becoming visible re-syncs immediately, so a returning user is up to
+  //      date the moment they look at it — strictly better than waiting out the
+  //      old 7s tick.
+  //   3. A `storage` listener gives free same-origin cross-TAB sync, so the
+  //      poll only has to cover cross-DEVICE. That is why the interval can be
+  //      much slower without the user noticing.
   React.useEffect(() => {
     if (!hydrated || !isAuthorized) return;
-    const POLL_MS = 7000;
-    const id = setInterval(async () => {
+
+    // Same guards as before, extracted so the interval, the visibility handler
+    // and the storage listener cannot drift apart.
+    const syncFromServer = async () => {
       if (!syncedRef.current) return;
       if (saveTimer.current || savingRef.current) return;
       try {
@@ -177,8 +195,59 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
       } catch {
         /* offline / not reachable — keep the local cart */
       }
-    }, POLL_MS);
-    return () => clearInterval(id);
+    };
+
+    // 60s rather than 7s: cross-TAB is now handled by the storage event below
+    // and returning to a tab syncs on sight, so the interval only needs to catch
+    // a change made on another DEVICE while this tab sits open and visible.
+    const POLL_MS = 60000;
+    let id: ReturnType<typeof setInterval> | null = null;
+
+    const start = () => {
+      if (id === null) id = setInterval(syncFromServer, POLL_MS);
+    };
+    const stop = () => {
+      if (id !== null) {
+        clearInterval(id);
+        id = null;
+      }
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        void syncFromServer(); // catch up on whatever happened while hidden
+        start();
+      } else {
+        stop();
+      }
+    };
+
+    // Another tab wrote the cart to localStorage. Same-origin, instant, free —
+    // no request at all. Guarded identically so it cannot clobber a local edit.
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== CART_KEY || !e.newValue) return;
+      if (saveTimer.current || savingRef.current) return;
+      try {
+        const parsed = JSON.parse(e.newValue);
+        const items = (parsed?.items ?? []) as Item[];
+        if (cartSignature(items as any[]) === cartSignature(stateRef.current.items as any[]))
+          return;
+        dispatch({ type: 'RESET_CART' });
+        if (items.length) dispatch({ type: 'ADD_ITEMS_WITH_QUANTITY', items });
+      } catch {
+        /* malformed payload from another tab — keep ours */
+      }
+    };
+
+    if (document.visibilityState === 'visible') start();
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('storage', onStorage);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated, isAuthorized]);
 
