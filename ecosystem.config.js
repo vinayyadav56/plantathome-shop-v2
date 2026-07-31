@@ -30,6 +30,40 @@
  * in cluster mode. The workflow currently does `pm2 delete` + `pm2 start` under
  * a comment claiming zero-downtime, which is a hard outage on every deploy.
  */
+const os = require('os');
+
+/**
+ * How many workers this box can actually afford.
+ *
+ * `instances: 'max'` is one worker per core, which is right on a machine that
+ * only runs the storefront. This is NOT that machine: production is a SINGLE
+ * EC2 box that also carries php-fpm, six systemd queue workers and the admin
+ * app. Combined with max_memory_restart below, plain 'max' authorises
+ * cores x 900MB of resident storefront before PM2 intervenes — on a box whose
+ * size is genuinely unknown here (the AWS report records the host's
+ * pm.max_children as "not in the repo — read it off the box", and it was never
+ * read).
+ *
+ * PM2 evaluates this file with Node ON the target host, so rather than guess,
+ * ask. Cap the storefront at ~35% of total RAM, and never exceed core count —
+ * extra workers past that only add context switching.
+ *
+ * Worst case this lands on 1 and behaves exactly like the old fork setup;
+ * it cannot be worse than what it replaces.
+ */
+const WORKER_RSS_MB = 900; // must track max_memory_restart below
+const RAM_SHARE = 0.35;
+
+const cores = Math.max(1, os.cpus().length);
+const affordable = Math.floor((os.totalmem() / 1024 / 1024) * RAM_SHARE / WORKER_RSS_MB);
+const instances = Math.max(1, Math.min(cores, affordable));
+
+// Surfaces in the deploy log, so the chosen count is visible rather than implied.
+console.log(
+  `[ecosystem] shop: ${cores} cores, ${Math.round(os.totalmem() / 1024 / 1024)}MB RAM ` +
+  `-> ${instances} cluster worker(s)`
+);
+
 module.exports = {
   apps: [
     {
@@ -43,7 +77,7 @@ module.exports = {
       args: 'start -p 3003',
       cwd: '/var/www/plantathome/shop-src',
       exec_mode: 'cluster',
-      instances: 'max',
+      instances,
 
       // Next holds a lot of resident memory once the ISR cache warms; restart a
       // worker that runs away rather than letting it take the box down. Cluster
