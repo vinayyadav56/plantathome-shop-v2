@@ -37,6 +37,14 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
   });
   const { price: minPrice } = usePrice({ amount: product.min_price });
   const { price: maxPrice } = usePrice({ amount: product.max_price });
+
+  /**
+   * Drop a whole-rupee ".00" on this card only. At ~65px of price column,
+   * "₹1,299.00" needs ~66px and was truncating to "₹1,299...." — an ellipsised
+   * price, which is worse than no decimals. Paise are kept when they are real
+   * (₹1,299.50 stays), so nothing is ever misstated.
+   */
+  const compact = (s?: string) => (s ? s.replace(/\.00(?=\D|$)/g, '') : s);
   const hasRange =
     Number(product.max_price) > Number(product.min_price) && Number(product.min_price) > 0;
 
@@ -160,11 +168,11 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
           */}
           <span className="flex min-w-0 flex-col gap-[3px]">
             <span className="truncate text-[13px] font-bold leading-none text-[#14532D]">
-              {isVariable ? (hasRange ? `${minPrice}+` : minPrice) : price}
+              {isVariable ? (hasRange ? `${compact(minPrice)}+` : compact(minPrice)) : compact(price)}
             </span>
             {!isVariable && basePrice && (
               <del className="truncate text-[10px] font-medium leading-none text-[#9CA3AF]">
-                {basePrice}
+                {compact(basePrice)}
               </del>
             )}
           </span>
