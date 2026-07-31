@@ -33,7 +33,8 @@ export function WhyPlants() {
           {t('m-why-eyebrow')}
         </span>
         <div className="mx-auto mt-2.5 h-0.5 w-[42px] rounded-full bg-forest-500" />
-        <h2 className="font-pahserif mt-3 text-[30px] font-medium leading-[1.04] tracking-[-0.01em] text-forest-900">{t('m-why-title')}</h2>
+        {/* One line — wrapped at a fixed 30px. See home/vertical-section.tsx. */}
+        <h2 className="font-pahserif mt-3 whitespace-nowrap text-[clamp(20px,7.2vw,30px)] font-medium leading-[1.04] tracking-[-0.01em] text-forest-900">{t('m-why-title')}</h2>
         <p className="mt-2.5 text-[12.5px] leading-[1.55] text-stone-500">{t('m-why-subtitle')} <strong className="font-bold text-forest-700">{t('m-why-subtitle-strong')}</strong></p>
       </div>
       {/* carousel */}

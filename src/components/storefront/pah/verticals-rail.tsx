@@ -30,7 +30,9 @@ export function VerticalsRail() {
   return (
     <section className="mb-7">
       <div className="mb-3.5 flex items-end justify-between px-5">
-        <h2 className="m-0 font-pahserif text-[20px] font-medium tracking-[-0.005em] text-forest-900">
+        {/* One line — "Six worlds, one green home." is the widest heading on the
+            page and wrapped at a fixed 20px. See home/vertical-section.tsx. */}
+        <h2 className="m-0 whitespace-nowrap font-pahserif text-[clamp(15px,4.9vw,20px)] font-medium tracking-[-0.005em] text-forest-900">
           {t('home-verticals-title')}
         </h2>
         <Link href="/categories" className="font-hanken text-[12.5px] font-semibold text-forest-700">
