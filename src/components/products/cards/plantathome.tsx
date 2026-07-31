@@ -12,7 +12,7 @@ import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
-import { getCardBadge, plantQuickFacts, shortDescription } from '@/components/products/cards/card-helpers';
+import { compactPrice, getCardBadge, plantQuickFacts, shortDescription } from '@/components/products/cards/card-helpers';
 import { PlantMark } from '@/components/storefront/logo-mark';
 import type { Product } from '@/types';
 
@@ -202,14 +202,27 @@ const PlantAtHomeCard: React.FC<Props> = ({
           </span>
         )}
 
-        {/* badge (reference: #1C5E3C rounded-rect, 14px/600, 18px inset) */}
+        {/*
+          ONE badge slot, image bottom-left: the product's status badge when it
+          has one, otherwise "New" for a product with no reviews yet. The "New"
+          chip used to sit beside the product name, where it ate width from long
+          names and could appear alongside a "New Arrival" badge on the image —
+          two near-identical labels on one card.
+
+          Top-left is Ask AI now, so only the no-image placeholder badge still
+          uses that corner (and Ask AI is hidden on those cards, below).
+        */}
         {noImage ? (
           <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
             No Image
           </span>
         ) : badge ? (
-          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
+          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
             {badge}
+          </span>
+        ) : reviewCount === 0 ? (
+          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-sage-100 px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-forest-800">
+            New
           </span>
         ) : null}
       </button>
@@ -224,8 +237,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
           <Heart active={inWishlist} />
         </button>
 
-        {/* Ask AI — per-plant chat (admin-toggled); overlay pill, bottom-left.
-            Hidden on no-image cards — it overlapped the placeholder copy. */}
+        {/* Ask AI — per-plant chat (admin-toggled); overlay pill, TOP-left.
+            Hidden on no-image cards — it overlapped the placeholder copy, and
+            that is also the one case where the top-left slot is still a badge. */}
         {askAiEnabled && !noImage && (
           <button
             type="button"
@@ -236,7 +250,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
                deserve. This is a secondary, optional action, so it now reads as one: a neutral
                glass chip that sits on ANY photograph, with no colour of its own. Hover raises the
                contrast rather than the scale, so the card does not jitter under the cursor. */
-            className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
+            /* Same clamp insets as the wishlist heart opposite it — it used a
+               fixed bottom-3/left-3, so it only lined up with the other
+               overlays at one card width. */
+            className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
               <path d="M12 2l1.9 5.6L19.5 9.5 13.9 11.4 12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2z" />
@@ -277,29 +294,25 @@ const PlantAtHomeCard: React.FC<Props> = ({
               <p className="mt-[5px] truncate text-[clamp(10.5px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
             ) : null}
           </div>
-          {/* The chip is inline-flex, so it sat on the BASELINE of this container's default line
-              box — the leading above that baseline pushed it ~7px below the name it labels, which
-              no amount of padding tweaking would have fixed cleanly. leading-none collapses the
-              line box to the chip's own height so it aligns with the name's first line. */}
-          <div className="shrink-0 text-right leading-none">
-            {reviewCount > 0 ? (
-              <>
-                <span className="flex items-center justify-end gap-1.5">
-                  <GoldStar />
-                  <strong className="text-[clamp(11.5px,3.6cqw,13px)] font-semibold leading-none text-gray-900">
-                    {ratingVal.toFixed(1)}
-                  </strong>
-                </span>
-                <span className="mt-[6px] block text-[clamp(10px,3.2cqw,11px)] leading-none text-[#888888]">
-                  ({reviewCount.toLocaleString('en-IN')})
-                </span>
-              </>
-            ) : (
-              <span className="inline-flex items-center rounded-full bg-sage-100 px-2 py-0.5 text-[11px] font-medium leading-none text-forest-800">
-                New
+          {/* Rating only. The "New" chip that used to be the else-branch here
+              now lives on the image, bottom-left — beside the name it stole
+              width from long product names, and it could sit next to a "New
+              Arrival" badge on the same card. For an unreviewed product this
+              renders empty and the name takes the full row, which is the point.
+              leading-none keeps the rating aligned with the name's first line. */}
+          {reviewCount > 0 ? (
+            <div className="shrink-0 text-right leading-none">
+              <span className="flex items-center justify-end gap-1.5">
+                <GoldStar />
+                <strong className="text-[clamp(11.5px,3.6cqw,13px)] font-semibold leading-none text-gray-900">
+                  {ratingVal.toFixed(1)}
+                </strong>
               </span>
-            )}
-          </div>
+              <span className="mt-[6px] block text-[clamp(10px,3.2cqw,11px)] leading-none text-[#888888]">
+                ({reviewCount.toLocaleString('en-IN')})
+              </span>
+            </div>
+          ) : null}
         </div>
 
         {/* description — Inter 17px (15px mobile), #5B5B5B, lh 1.6; 2-line
@@ -337,22 +350,42 @@ const PlantAtHomeCard: React.FC<Props> = ({
 
           {/* price row — 34px (28px mobile) #14532D · struck 18px #A0A0A0 ·
               chip #FFEAEA / #D73C3C. Sits directly on top of the CTA. */}
-          <div className="mb-[clamp(9px,3.4cqw,13px)] flex flex-wrap items-center gap-x-[clamp(8px,3.6cqw,14px)] gap-y-1">
-            {/* variable products show the size range min–max */}
-            <span
-              className={`whitespace-nowrap leading-none text-[#14532D] ${
-                isVariable && hasRange
-                  ? 'text-[clamp(13px,4.4cqw,16px)] font-semibold'
-                  : 'text-[clamp(15px,5.4cqw,19px)] font-bold'
-              }`}
-            >
-              {isVariable ? (hasRange ? `${minPrice} – ${maxPrice}` : minPrice) : price}
+          {/*
+            Price and struck price group on the LEFT, discount chip pinned
+            RIGHT. Previously all three were loose flex items in one wrapping
+            row: at two-up mobile they measure 63 + 46 + 58 = 167px inside a
+            140px row, so the row broke onto THREE lines with the chip stranded
+            underneath.
+
+            `compactPrice` drops a whole-rupee ".00" (₹899.00 → ₹899), which is
+            what buys the ~40px that lets all three share one line at that
+            width. flex-wrap is kept so the narrowest cards still degrade by
+            wrapping rather than overflowing.
+          */}
+          <div className="mb-[clamp(9px,3.4cqw,13px)] flex flex-wrap items-center justify-between gap-x-[clamp(6px,2.6cqw,14px)] gap-y-1">
+            <span className="flex min-w-0 items-center gap-x-[clamp(5px,2.2cqw,10px)]">
+              {/* variable products show the size range min–max */}
+              <span
+                className={`whitespace-nowrap leading-none text-[#14532D] ${
+                  isVariable && hasRange
+                    ? 'text-[clamp(13px,4.4cqw,16px)] font-semibold'
+                    : 'text-[clamp(15px,5.4cqw,19px)] font-bold'
+                }`}
+              >
+                {isVariable
+                  ? hasRange
+                    ? `${compactPrice(minPrice)} – ${compactPrice(maxPrice)}`
+                    : compactPrice(minPrice)
+                  : compactPrice(price)}
+              </span>
+              {!isVariable && basePrice && (
+                <del className="whitespace-nowrap text-[clamp(12px,4.4cqw,18px)] leading-none text-[#A0A0A0]">
+                  {compactPrice(basePrice)}
+                </del>
+              )}
             </span>
-            {!isVariable && basePrice && (
-              <del className="text-[clamp(12px,4.9cqw,18px)] leading-none text-[#A0A0A0]">{basePrice}</del>
-            )}
             {!isVariable && discount && (
-              <span className="rounded-[8px] bg-[#FFEAEA] px-[clamp(7px,3cqw,12px)] py-1.5 text-[clamp(10.5px,3.8cqw,14px)] font-bold leading-none text-[#D73C3C]">
+              <span className="shrink-0 whitespace-nowrap rounded-[8px] bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(10px,3.4cqw,14px)] font-bold leading-none text-[#D73C3C]">
                 {discount} OFF
               </span>
             )}

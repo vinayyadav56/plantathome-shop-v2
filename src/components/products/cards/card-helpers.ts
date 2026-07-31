@@ -93,3 +93,17 @@ export function shortDescription(product: Product): string {
   }
   return product?.categories?.[0]?.name || (product as any)?.unit || '';
 }
+
+/** Drop a whole-rupee ".00" from a formatted price.
+ *
+ *  Product cards are narrow — at two-up mobile the big card's price row has
+ *  ~140px and the mini card's price column ~65px — and those four characters
+ *  are the difference between the price, the struck price and the discount chip
+ *  sharing one line or overflowing into the button beside them.
+ *
+ *  Real paise are preserved (₹1,299.50 stays intact), so a price is never
+ *  misstated; only a trailing ".00" goes. Indian formatting groups with commas,
+ *  so a "." only ever introduces decimals here. */
+export function compactPrice(s?: string): string | undefined {
+  return s ? s.replace(/\.00(?=\D|$)/g, '') : s;
+}

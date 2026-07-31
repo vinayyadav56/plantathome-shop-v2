@@ -7,7 +7,7 @@ import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
 import usePrice from '@/lib/use-price';
-import { getCardBadge, shortDescription } from '@/components/products/cards/card-helpers';
+import { compactPrice, getCardBadge, shortDescription } from '@/components/products/cards/card-helpers';
 import type { Product } from '@/types';
 
 const AddToCart = dynamic(
@@ -38,13 +38,9 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
   const { price: minPrice } = usePrice({ amount: product.min_price });
   const { price: maxPrice } = usePrice({ amount: product.max_price });
 
-  /**
-   * Drop a whole-rupee ".00" on this card only. At ~65px of price column,
-   * "₹1,299.00" needs ~66px and was truncating to "₹1,299...." — an ellipsised
-   * price, which is worse than no decimals. Paise are kept when they are real
-   * (₹1,299.50 stays), so nothing is ever misstated.
-   */
-  const compact = (s?: string) => (s ? s.replace(/\.00(?=\D|$)/g, '') : s);
+  // Whole-rupee ".00" is dropped so "₹1,299.00" doesn't ellipsise in this
+  // card's ~65px price column. Shared with the big card — see compactPrice.
+  const compact = compactPrice;
   const hasRange =
     Number(product.max_price) > Number(product.min_price) && Number(product.min_price) > 0;
 

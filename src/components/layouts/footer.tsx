@@ -242,19 +242,29 @@ const Footer = () => {
 
       {/* ── sustainability badge strip ── */}
       <div className="relative z-[1] border-t border-white/[0.08]">
-        {/* Spread gutter to gutter from lg, echoing the link columns above and
-            the copyright row below. Centred it lined up with nothing; merely
-            left-aligned it stopped ~500px short and left the right half of the
-            row empty. Four badges distributed across the width read as placed
-            rather than parked. Still centred on small screens, where they wrap
-            and justify-between would strand the last row. */}
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-2.5 px-5 py-3.5 sm:gap-3 sm:py-5 sm:px-8 lg:justify-between lg:px-16">
+        {/* Two per row below lg: as a centred flex row the badges are 223 / 191
+            / 189 / 152px against a 344px container, so no two fitted together
+            and all four took a line each. A 2-col grid forces the pairing.
+
+            `items-stretch` is load-bearing — "Peat-free soil & recycled pots"
+            needs ~167px of text alone at 12px against ~125px of usable cell, so
+            it wraps to two lines whatever the type size. Stretching makes every
+            cell match its tallest sibling, so the block reads as a deliberate
+            2x2 instead of one odd tall pill. Labels are content and stay whole.
+
+            From lg it goes back to a flex row spread gutter to gutter, echoing
+            the link columns above and the copyright row below. */}
+        <div className="mx-auto grid max-w-7xl grid-cols-2 items-stretch gap-2 px-5 py-3.5 sm:gap-3 sm:py-5 sm:px-8 lg:flex lg:flex-wrap lg:items-center lg:justify-between lg:px-16">
           {BADGES.map((b) => (
             <span
               key={b.label}
-              className="inline-flex items-center gap-2 rounded-full border border-white/[0.11] bg-white/[0.04] px-4 py-1.5 font-hanken text-[12px] text-white/65 transition-colors duration-200 hover:border-[#4ADE80]/30 hover:text-white/85"
+              /* w-full + centred so each pill fills its grid cell and the two
+                 in a row are the same width; auto width again at lg, where the
+                 row spreads them itself. Tighter padding and a step down in
+                 type below lg to limit how far the longest label wraps. */
+              className="flex w-full items-center justify-center gap-1.5 rounded-full border border-white/[0.11] bg-white/[0.04] px-2.5 py-2 text-center font-hanken text-[11px] text-white/65 transition-colors duration-200 hover:border-[#4ADE80]/30 hover:text-white/85 lg:inline-flex lg:w-auto lg:gap-2 lg:px-4 lg:py-1.5 lg:text-[12px]"
             >
-              <span className="text-[#86EFAC]">{b.icon}</span>
+              <span className="shrink-0 text-[#86EFAC]">{b.icon}</span>
               {b.label}
             </span>
           ))}
