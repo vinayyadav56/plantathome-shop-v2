@@ -262,7 +262,7 @@ const Footer = () => {
                  in a row are the same width; auto width again at lg, where the
                  row spreads them itself. Tighter padding and a step down in
                  type below lg to limit how far the longest label wraps. */
-              className="flex w-full items-center justify-center gap-1.5 rounded-full border border-white/[0.11] bg-white/[0.04] px-2.5 py-2 text-center font-hanken text-[11px] text-white/65 transition-colors duration-200 hover:border-[#4ADE80]/30 hover:text-white/85 lg:inline-flex lg:w-auto lg:gap-2 lg:px-4 lg:py-1.5 lg:text-[12px]"
+              className="flex min-h-[52px] w-full items-center justify-center gap-1.5 rounded-full border border-white/[0.11] bg-white/[0.04] px-2.5 py-2 text-center font-hanken text-[11px] text-white/65 transition-colors duration-200 hover:border-[#4ADE80]/30 hover:text-white/85 lg:inline-flex lg:min-h-0 lg:w-auto lg:gap-2 lg:px-4 lg:py-1.5 lg:text-[12px]"
             >
               <span className="shrink-0 text-[#86EFAC]">{b.icon}</span>
               {b.label}
