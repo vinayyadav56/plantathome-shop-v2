@@ -191,9 +191,28 @@ jobs:
             rm -f /tmp/shop-build.tar.gz
 
             echo "==> Fixing build paths (runner path → EC2 path)..."
-            sed -i 's|"appDir":"[^"]*"|"appDir":"/var/www/plantathome/shop-src"|g' \
-              .next/required-server-files.json
-            python3 -c "import json; d=json.load(open('.next/required-server-files.json')); print('appDir after patch:', d.get('appDir'))"
+            # required-server-files.json is pretty-printed, so the key is
+            # `"appDir": "..."` WITH a space after the colon. The original
+            # pattern here had no space and therefore never matched — the patch
+            # was a silent no-op on every deploy since it was written, and its
+            # own diagnostic printed the unchanged runner path each time
+            # ("appDir after patch: /home/runner/work/shop/shop") without
+            # failing anything.
+            #
+            # Edit the JSON as JSON rather than by regex, and ASSERT the result,
+            # so a no-op cannot pass silently again.
+            python3 - <<'PYFIX'
+            import json
+            p = '.next/required-server-files.json'
+            want = '/var/www/plantathome/shop-src'
+            d = json.load(open(p))
+            before = d.get('appDir')
+            d['appDir'] = want
+            json.dump(d, open(p, 'w'))
+            after = json.load(open(p)).get('appDir')
+            print(f'appDir: {before} -> {after}')
+            assert after == want, f'appDir patch failed: {after}'
+            PYFIX
 
             echo "==> Writing runtime env..."
             printf '%s\n' \
@@ -233,8 +252,24 @@ jobs:
               pm2 reload ecosystem.config.js --update-env
             else
               echo "==> one-time conversion to cluster mode (reload cannot change exec_mode)"
+              # Between the delete and a successful start there is a window
+              # where NOTHING serves the storefront. That window has already
+              # cost two outages — once because /var/log/pm2 did not exist and
+              # PM2 treats an uncreatable log dir as fatal, once because the
+              # hardcoded next binary path did not resolve. Both failed AFTER
+              # the delete, leaving the site down and the deploy red.
+              #
+              # So: if the clustered start fails for any reason, put the old
+              # fork-mode process back immediately. The deploy still fails
+              # loudly (exit 1) — but it fails with the site serving.
               pm2 delete shop 2>/dev/null || true
-              pm2 start ecosystem.config.js --update-env
+              if ! pm2 start ecosystem.config.js --update-env; then
+                echo "ERROR: clustered start failed — restoring fork-mode process so the site serves"
+                pm2 start npm --name shop -- start || true
+                pm2 save || true
+                pm2 logs shop --lines 30 --nostream || true
+                exit 1
+              fi
             fi
             pm2 save
 

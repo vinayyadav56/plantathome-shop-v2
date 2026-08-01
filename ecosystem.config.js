@@ -31,6 +31,25 @@
  * a comment claiming zero-downtime, which is a hard outage on every deploy.
  */
 const os = require('os');
+const path = require('path');
+
+/**
+ * Resolve next's CLI rather than hardcoding a path.
+ *
+ * The admin app, which uses the same pattern, failed its deploy with
+ * "Script not found: .../rest/node_modules/next/dist/bin/next" because yarn
+ * hoists dependencies to the workspace root. This app uses npm and resolves
+ * locally today, but the hardcoded path is a latent version of the same bug —
+ * PM2 runs this file with Node on the box, so ask Node's resolver instead.
+ */
+function resolveNextBin() {
+  try {
+    const pkg = require.resolve('next/package.json', { paths: [__dirname] });
+    return path.join(path.dirname(pkg), 'dist/bin/next');
+  } catch {
+    return './node_modules/next/dist/bin/next';
+  }
+}
 
 /**
  * How many workers this box can actually afford.
@@ -73,7 +92,7 @@ module.exports = {
       // fork mode with one instance and no warning. Verified locally: the same
       // config with `npm` reported exec_mode "fork_mode" / 1 worker, while
       // pointing at next's own bin gave "cluster_mode" / 8 workers.
-      script: './node_modules/next/dist/bin/next',
+      script: resolveNextBin(),
       args: 'start -p 3003',
       cwd: '/var/www/plantathome/shop-src',
       exec_mode: 'cluster',
@@ -96,10 +115,15 @@ module.exports = {
         PORT: 3003,
       },
 
-      // PM2's own log rotation is not enabled by default; keep stdout/stderr
-      // separate so a deploy failure is readable.
-      error_file: '/var/log/pm2/shop-error.log',
-      out_file: '/var/log/pm2/shop-out.log',
+      // Deliberately NO error_file/out_file. Pointing them at /var/log/pm2
+      // took production down: the directory does not exist, the deploy user
+      // cannot create it, and PM2 treats that as fatal —
+      //
+      //   [PM2][ERROR] Could not create folder: /var/log/pm2
+      //
+      // which landed AFTER `pm2 delete shop` had already removed the running
+      // app. Left with PM2's default (~/.pm2/logs/shop-{out,error}.log), which
+      // always exists, is what `pm2 logs` reads, and needs no privileges.
       merge_logs: true,
       time: true,
     },
