@@ -214,15 +214,46 @@ jobs:
             # deploy despite the comment claiming otherwise.
             #
             # `--update-env` picks up the .env.production.local written above.
-            # The `reload || start` shape makes this idempotent: first deploy
-            # after this change has no cluster process to reload, so it starts.
+            #
+            # The branch below is on exec_mode, NOT on whether the process
+            # exists. `pm2 reload` CANNOT change a running app's exec_mode: it
+            # reloads the workers of the process as already configured. The box
+            # was running the old inline `pm2 start "npm start" --name shop`, so
+            # `pm2 describe shop` succeeded, reload ran, the app stayed in
+            # fork_mode, and the assert below correctly failed the deploy — with
+            # the storefront left down. Converting requires delete + start.
+            #
+            # That conversion is a brief outage, and it happens exactly once.
+            # Every subsequent deploy takes the reload path and is genuinely
+            # zero-downtime.
             cd /var/www/plantathome/shop-src
-            if pm2 describe shop >/dev/null 2>&1; then
+            CUR=$(pm2 jlist 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{const a=JSON.parse(s).find(p=>p.name==='shop');console.log(a?a.pm2_env.exec_mode:'missing')}catch(e){console.log('missing')}})")
+            echo "==> current shop exec_mode: $CUR"
+            if [ "$CUR" = "cluster_mode" ]; then
               pm2 reload ecosystem.config.js --update-env
             else
+              echo "==> one-time conversion to cluster mode (reload cannot change exec_mode)"
+              pm2 delete shop 2>/dev/null || true
               pm2 start ecosystem.config.js --update-env
             fi
             pm2 save
+
+            # Wait for the app to actually answer before declaring success — a
+            # started PM2 process is not the same as a serving one.
+            for i in $(seq 1 30); do
+              curl -sf -o /dev/null --max-time 5 http://127.0.0.1:3003/ && { echo "==> storefront answering on :3003"; break; }
+              [ "$i" = "30" ] && { echo "ERROR: storefront not answering on :3003 after 60s"; pm2 logs shop --lines 40 --nostream || true; exit 1; }
+              sleep 2
+            done
+
+            # This box is small (2 cores / ~1.9GB) and shared with php-fpm and
+            # six queue workers, so print what is actually resident. The
+            # max_memory_restart ceilings in the ecosystem files were chosen
+            # before the host size was known; these numbers are how they get
+            # tuned rather than guessed at again.
+            echo "==> memory after deploy:"
+            free -m || true
+            pm2 jlist 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{JSON.parse(s).forEach(p=>console.log('    '+p.name.padEnd(10),p.pm2_env.exec_mode.padEnd(13),Math.round((p.monit&&p.monit.memory||0)/1048576)+'MB'))}catch(e){}})" || true
 
             # Fail the deploy if we did not actually get cluster mode. PM2
             # silently falls back to fork when it cannot cluster a script, and
