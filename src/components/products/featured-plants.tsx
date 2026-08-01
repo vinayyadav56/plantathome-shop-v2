@@ -2,12 +2,59 @@ import dynamic from 'next/dynamic';
 import { useBestSellingProducts } from '@/framework/product';
 import { PlantAtHomeCardSkeleton } from '@/components/products/cards/plantathome';
 
+/**
+ * One row of placeholder cards, used for EVERY state in which the real cards
+ * are not on screen yet.
+ *
+ * It exists because this section had three different "not ready" renderings —
+ * the data-loading skeleton, the not-yet-downloaded Carousel chunk, and the
+ * not-yet-downloaded card chunk — and two of them rendered nothing at all.
+ * Sharing one placeholder is what keeps the section's height constant while
+ * it settles.
+ */
+function FeaturedRowPlaceholder() {
+  return (
+    <div className="grid grid-cols-2 gap-4 px-1 sm:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <PlantAtHomeCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+/**
+ * `loading` is NOT optional here, and leaving it off was a real bug.
+ *
+ * `dynamic(..., { ssr: false })` with no `loading` renders NULL until the chunk
+ * arrives. This section sits directly above the result count and the product
+ * grid on /search, so every time it rendered null the whole page below it
+ * jumped up, and jumped back down when the chunk landed.
+ *
+ * Measured on production before this change (PerformanceObserver, layout-shift
+ * entries, desktop 1200px): CLS 0.887, of which 0.789 was attributed to the
+ * grid wrapper and the header row shifting by an identical amount — the
+ * signature of something ABOVE both changing height. Not one shifting element
+ * was an <img>; the images here already sit in sized containers.
+ *
+ * The section is 594px tall once settled (512px of card + 28px heading +
+ * padding), so a null render is a ~550px jump.
+ */
 const Carousel = dynamic(() => import('@/components/ui/carousel'), {
   ssr: false,
+  loading: () => <FeaturedRowPlaceholder />,
 });
+
 const PlantAtHomeCard = dynamic(
   () => import('@/components/products/cards/plantathome'),
-  { ssr: false },
+  {
+    ssr: false,
+    // Same reasoning one level down: without this each slide is empty until
+    // the card chunk loads, so the carousel itself collapses even after it has
+    // mounted. Deliberately still `dynamic` rather than a static import —
+    // statically importing the card is the known React 19 hydration-loop trap
+    // in this app.
+    loading: () => <PlantAtHomeCardSkeleton />,
+  },
 );
 
 // Featured cards are larger than listing cards → fewer per view (reference-like).
@@ -38,11 +85,7 @@ export default function FeaturedPlants() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-4 px-1 sm:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <PlantAtHomeCardSkeleton key={i} />
-          ))}
-        </div>
+        <FeaturedRowPlaceholder />
       ) : (
         <Carousel items={products} breakpoints={breakpoints}>
           {(item: any) => <PlantAtHomeCard product={item} />}
