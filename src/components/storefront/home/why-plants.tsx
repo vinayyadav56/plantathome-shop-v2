@@ -103,7 +103,12 @@ export function WhyPlants() {
           className="mx-auto mb-8 max-w-[760px] text-center"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-forest-600/15 bg-forest-600/[0.07] px-4 py-1.5 font-jost text-[11.5px] font-semibold uppercase tracking-[0.22em] text-forest-600">
-            <i className="fa-solid fa-seedling text-[13px] text-forest-500" aria-hidden />
+            {/* Inline SVG, not Font Awesome: FA loads async now, so an <i> here
+                rendered as a blank gap until the stylesheet arrived. */}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[13px] w-[13px] text-forest-500">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
+              <path d="M2 21c0-3 1.85-5.36 5.08-6" />
+            </svg>
             {t('home-why-eyebrow')}
           </span>
           {/* One line on mobile too — fluid rather than fixed 30px, which wrapped
@@ -121,8 +126,17 @@ export function WhyPlants() {
           </p>
         </motion.div>
 
-        {/* benefit cards — small, clean, single scrollable row */}
-        <div className="pah-rail [--rail-w:52%] md:[--rail-w:calc((100%_-_60px)/4)] lg:[--rail-w:calc((100%_-_72px)/4)] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
+        {/* Benefit cards.
+            The previous card carried a 50px circle badge absolutely positioned
+            to straddle the image/body seam — pinned per-breakpoint to the image
+            height, it drifted whenever one changed, and at md the whole card
+            shrank to 10.5px body text to force four into view: unreadable, and
+            the annotated "looking very worst". The icon now lives in the body
+            as a chip beside the title (no absolute maths to drift), copy is
+            left-aligned and never below 12.5px, and md shows 3 per view instead
+            of shrinking type to fit 4. The image keeps its own rounding inset
+            from the card so the two radii no longer fight. */}
+        <div className="pah-rail [--rail-w:74%] sm:[--rail-w:46%] md:[--rail-w:calc((100%_-_48px)/3)] lg:[--rail-w:calc((100%_-_72px)/4)] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
           {cards.map((b, i) => (
             <motion.div
               key={`${b.title}-${i}`}
@@ -130,33 +144,32 @@ export function WhyPlants() {
               whileInView={{ y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: EXPO }}
-              className="group relative overflow-hidden rounded-[18px] border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition-all duration-300 hover:-translate-y-[6px] hover:border-forest-200 hover:shadow-[0_16px_36px_rgba(34,48,26,0.13)]"
+              className="group flex flex-col overflow-hidden rounded-[18px] border border-kraft-200 bg-white p-2.5 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-forest-200 hover:shadow-[0_14px_32px_rgba(34,48,26,0.12)]"
             >
-              {/* image */}
-              <div className="relative h-[150px] overflow-hidden bg-cream-100 sm:h-[160px] md:h-[100px] lg:h-[170px]">
+              {/* image — inset with its own radius, so it reads as a framed
+                  photograph instead of a bleed fighting the card's corners */}
+              <div className="relative h-[150px] overflow-hidden rounded-[12px] bg-cream-100 sm:h-[160px] md:h-[130px] lg:h-[160px]">
                 <SafeImage
                   src={b.img}
                   alt={b.title}
                   fill
-                  sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
+                  sizes="(max-width:640px) 74vw, (max-width:1024px) 33vw, 25vw"
+                  className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                 />
-                {/* subtle green tint on hover */}
-                <div className="absolute inset-0 bg-forest-600/0 transition-colors duration-500 group-hover:bg-forest-600/12" />
               </div>
 
-              {/* icon badge */}
-              <div className="absolute left-1/2 top-[150px] flex h-[50px] w-[50px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-sage-200 bg-white text-forest-700 shadow-[0_6px_16px_rgba(20,40,24,0.12)] transition-all duration-300 group-hover:scale-110 group-hover:border-forest-300 group-hover:text-forest-600 group-hover:shadow-[0_8px_22px_rgba(20,80,24,0.2)] sm:top-[160px] md:top-[100px] md:h-[36px] md:w-[36px] lg:top-[170px] lg:h-[50px] lg:w-[50px]">
-                {b.icon}
-              </div>
-
-              <div className="px-5 pb-6 pt-9 text-center md:px-3 md:pb-4 md:pt-7 lg:px-5 lg:pb-6 lg:pt-9">
-                <h3 className="font-hanken text-[16px] font-medium leading-[1.2] text-forest-900 transition-colors duration-300 group-hover:text-forest-700 md:text-[12.5px] lg:text-[16px]">
-                  {b.title}
-                </h3>
-                {/* animated divider — grows + turns green on hover */}
-                <div className="mx-auto mb-3 mt-2.5 h-0.5 w-[24px] rounded-full bg-forest-400 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:w-[44px] group-hover:bg-[#4ADE80] md:mb-2 md:mt-1.5 lg:mb-3 lg:mt-2.5" />
-                <p className="mx-auto max-w-[300px] font-hanken text-[12.5px] leading-[1.6] text-stone-500 md:line-clamp-3 md:text-[10.5px] md:leading-[1.5] lg:line-clamp-none lg:text-[12.5px] lg:leading-[1.6]">{b.body}</p>
+              <div className="flex flex-1 flex-col px-2.5 pb-3.5 pt-4 md:px-2 md:pb-3 md:pt-3.5">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-forest-600/[0.08] text-forest-700 [&>svg]:h-[16px] [&>svg]:w-[16px]">
+                    {b.icon}
+                  </span>
+                  <h3 className="font-hanken text-[15.5px] font-semibold leading-snug text-forest-900 md:text-[14px] lg:text-[15.5px]">
+                    {b.title}
+                  </h3>
+                </div>
+                <p className="mt-2.5 font-hanken text-[13px] leading-[1.6] text-stone-500 md:text-[12.5px]">
+                  {b.body}
+                </p>
               </div>
             </motion.div>
           ))}
@@ -176,40 +189,43 @@ export function WhyPlants() {
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
           />
-          {/* dark overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,16,8,0.96)_0%,rgba(10,28,14,0.90)_45%,rgba(18,46,22,0.78)_100%)]" />
-          {/* grain */}
+          {/* Dark overlay. The band used to layer acid-green (#4ADE80/#86EFAC)
+              accents, a green radial glow, a gold blur blob and a glowing CTA
+              shadow over this — the lone-neon-pop-on-near-black look, and none
+              of it the brand green. One quiet overlay + grain now; the type and
+              the design-system CTA do the work. */}
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(8,18,10,0.95)_0%,rgba(14,30,17,0.90)_45%,rgba(24,48,28,0.80)_100%)]" />
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.055] mix-blend-overlay"
             style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }}
           />
-          {/* green radial glow left */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-[radial-gradient(ellipse_at_0%_60%,rgba(74,222,128,0.10)_0%,transparent_65%)]" />
-          {/* gold glow right */}
-          <div className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 rounded-full bg-[#C8F09A]/8 blur-3xl" />
 
           <div className="relative z-10 flex flex-col items-center gap-6 px-7 py-9 text-center sm:px-10 md:flex-row md:gap-7 md:py-8 md:text-left lg:gap-10 lg:px-12 lg:py-10">
 
-            {/* icon — premium solid */}
-            <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl border border-[#4ADE80]/25 bg-[#4ADE80]/12 text-[#4ADE80] md:h-[46px] md:w-[46px] lg:h-[60px] lg:w-[60px]">
-              <i className="fa-solid fa-leaf text-[26px] md:text-[20px] lg:text-[26px]" aria-hidden />
+            {/* Inline SVG, not Font Awesome — FA loads async and this icon
+                popped in a beat after the band rendered. */}
+            <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.07] text-sage-200 md:h-[46px] md:w-[46px] lg:h-[56px] lg:w-[56px]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]">
+                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
+                <path d="M2 21c0-3 1.85-5.36 5.08-6" />
+              </svg>
             </div>
 
             {/* vertical divider */}
             <div className="hidden w-px self-stretch bg-white/10 md:block" />
 
             {/* text */}
-            <p className="flex-1 font-hanken text-[18px] font-medium leading-[1.55] text-white/90 md:text-[16px] lg:text-[21px]">
+            <p className="flex-1 font-hanken text-[17px] font-medium leading-[1.55] text-white/90 md:text-[15.5px] lg:text-[20px]">
               {t('home-why-cta-band-text')}{' '}
-              <strong className="font-bold text-[#86EFAC]">{t('home-why-cta-band-strong-1')}</strong>
+              <strong className="font-bold text-sage-200">{t('home-why-cta-band-strong-1')}</strong>
               {' '}{t('home-why-cta-band-and')}{' '}
-              <strong className="font-bold text-[#86EFAC]">{t('home-why-cta-band-strong-2')}</strong>
+              <strong className="font-bold text-sage-200">{t('home-why-cta-band-strong-2')}</strong>
             </p>
 
-            {/* CTA */}
+            {/* CTA — the design-system button, minus the green glow it used to carry */}
             <Link
               href="/plants/search"
-              className="shrink-0 inline-flex items-center gap-2 rounded-[13px] bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink shadow-[0_0_28px_rgba(74,222,128,0.25)] transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
+              className="shrink-0 inline-flex items-center gap-2 rounded-[13px] bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
             >
               {t('home-why-cta')}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
