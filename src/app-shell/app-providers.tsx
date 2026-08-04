@@ -22,6 +22,7 @@ import DefaultSeo from '@/components/seo/default-seo';
 import { CartProvider } from '@/store/quick-cart/cart.context';
 import SocialLogin from '@/components/auth/social-login';
 import Maintenance from '@/components/maintenance/layout';
+import CityOpsGate from '@/components/maintenance/city-gate';
 import { NotificationProvider } from '@/context/notify-content';
 import CitySync from '@/components/layouts/city-sync';
 import GlobalFetchBar from '@/components/ui/global-fetch-bar';
@@ -66,7 +67,13 @@ export default function AppProviders({ children }: { children: React.ReactNode }
                 <CitySync />
                 <LocationGate />
                 <Maintenance>
-                  <NotificationProvider>{children}</NotificationProvider>
+                  {/* City Operations takeover: a paused/disabled/maintenance
+                      delivery city replaces the storefront (enforcement is
+                      server-side; this is the face). Inside the platform gate
+                      so a platform-wide maintenance still wins. */}
+                  <CityOpsGate>
+                    <NotificationProvider>{children}</NotificationProvider>
+                  </CityOpsGate>
                 </Maintenance>
                 <ManagedModal />
                 <ManagedDrawer />
