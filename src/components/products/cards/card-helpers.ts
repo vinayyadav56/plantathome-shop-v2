@@ -107,3 +107,19 @@ export function shortDescription(product: Product): string {
 export function compactPrice(s?: string): string | undefined {
   return s ? s.replace(/\.00(?=\D|$)/g, '') : s;
 }
+
+/** Props that make a product-card link open the PDP in a NEW tab, leaving the
+ *  grid the customer was browsing exactly where it was — no navigation, no
+ *  scroll position to restore on Back.
+ *
+ *  `rel` is not decoration: without `noopener` the opened page can reach back
+ *  through `window.opener` and redirect the tab it came from (reverse
+ *  tabnabbing). Browsers imply it for `target="_blank"` now, but this is a
+ *  security property worth stating rather than inheriting.
+ *
+ *  One constant instead of ten copies, so "new tab" vs "same tab" is a
+ *  one-line decision for the whole storefront. */
+export const PRODUCT_LINK_PROPS = {
+  target: '_blank',
+  rel: 'noopener noreferrer',
+} as const;

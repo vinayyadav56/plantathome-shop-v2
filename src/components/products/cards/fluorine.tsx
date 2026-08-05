@@ -13,6 +13,7 @@ import { ExternalIconNew } from '@/components/icons/external-icon';
 // import Badge from '@/components/ui/badge';
 import { StarIcon } from '@/components/icons/star-icon';
 import { EyeIcon } from '@/components/icons/eye';
+import { PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
 import dynamic from 'next/dynamic';
 const FavoriteButton = dynamic(
   () => import('@/components/products/details/favorite-button'),
@@ -156,6 +157,7 @@ const Fluorine: React.FC<FluorineProps> = ({
         {/* A real anchor, so the hand-rolled role/tabIndex/onKeyDown that
             faked keyboard support for a <div> is no longer needed. */}
         <Link
+          {...PRODUCT_LINK_PROPS}
           href={Routes.product(product?.slug)}
           aria-label={product?.name ? `View ${product.name}` : 'View product'}
           className="block h-full w-full"
@@ -186,13 +188,18 @@ const Fluorine: React.FC<FluorineProps> = ({
           )}
         >
           <Link
+            {...PRODUCT_LINK_PROPS}
             className={product?.is_external ? 'truncate' : ''}
             href={Routes?.product(product?.slug)}
           >
             {product?.name}
           </Link>
           {product?.is_external ? (
+            /* Either branch wants a new tab: an external merchant URL should
+               never replace our tab, and the fallback is the product page,
+               which follows the same rule as every other card link. */
             <Link
+              {...PRODUCT_LINK_PROPS}
               href={
                 product?.external_product_url ?? Routes?.product(product?.slug)
               }
@@ -234,6 +241,7 @@ const Fluorine: React.FC<FluorineProps> = ({
               {product?.product_type.toLowerCase() === 'variable' ||
               product?.is_external ? (
                 <Link
+                  {...PRODUCT_LINK_PROPS}
                   href={Routes.product(product?.slug)}
                   aria-label={`View ${product?.name}`}
                   className="text-xl text-accent"
@@ -250,6 +258,7 @@ const Fluorine: React.FC<FluorineProps> = ({
             </div>
           ) : (
             <Link
+              {...PRODUCT_LINK_PROPS}
               href={Routes.product(product?.slug)}
               aria-label={`View ${product?.name}`}
               className="text-xl text-accent"

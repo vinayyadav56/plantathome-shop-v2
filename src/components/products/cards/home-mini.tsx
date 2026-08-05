@@ -8,7 +8,7 @@ import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
 import usePrice from '@/lib/use-price';
-import { compactPrice, getCardBadge, shortDescription } from '@/components/products/cards/card-helpers';
+import { compactPrice, getCardBadge, shortDescription, PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
 import type { Product } from '@/types';
 
 const AddToCart = dynamic(
@@ -71,6 +71,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
       {/* photo + badge + heart (heart is a sibling of the link — valid HTML) */}
       <div className="relative">
         <Link
+          {...PRODUCT_LINK_PROPS}
           href={Routes.product(product.slug)}
           aria-label={product.name}
           className="relative block aspect-square w-full overflow-hidden bg-[#F6F8F4]"
@@ -120,6 +121,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
       <div className="flex flex-1 flex-col p-3">
         <div className="flex items-start justify-between gap-2">
           <Link
+            {...PRODUCT_LINK_PROPS}
             href={Routes.product(product.slug)}
             className="min-w-0 truncate text-left text-[15px] font-bold leading-[1.2] text-[#1D4D35]"
           >
@@ -169,6 +171,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
           </span>
           {isVariable ? (
             <Link
+              {...PRODUCT_LINK_PROPS}
               href={Routes.product(product.slug)}
               aria-label="Select options"
               title="Select options"

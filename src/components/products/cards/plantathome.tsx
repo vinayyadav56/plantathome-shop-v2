@@ -16,7 +16,7 @@ import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
-import { compactPrice, getCardBadge, plantQuickFacts, shortDescription } from '@/components/products/cards/card-helpers';
+import { compactPrice, getCardBadge, plantQuickFacts, shortDescription, PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
 import { PlantMark } from '@/components/storefront/logo-mark';
 import type { Product } from '@/types';
 
@@ -173,6 +173,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
       {/* image zone (reference .image: #F7F5EF, zoom on hover) */}
       <div className={isList ? 'relative w-[40%] max-w-[250px] shrink-0' : 'relative'}>
       <Link
+        {...PRODUCT_LINK_PROPS}
         href={Routes.product(product.slug)}
         aria-label={`View ${product.name}`}
         className={`relative block w-full overflow-hidden bg-[#F7F5EF] text-left ${
@@ -283,6 +284,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
                 the previous clamp scaled the name from 15.5px to 23px with card width, which is
                 what made it read as oversized in the grid. */}
             <Link
+              {...PRODUCT_LINK_PROPS}
               href={Routes.product(product.slug)}
               className="block w-full truncate text-left text-[0.9rem] font-medium leading-none text-[#184A31] transition hover:text-forest-700"
             >
@@ -395,6 +397,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             /* Sizes are chosen on the product page — this used to open a
                quick-view popup over the grid. */
             <Link
+              {...PRODUCT_LINK_PROPS}
               href={Routes.product(product.slug)}
               className="flex h-[clamp(40px,12.4cqw,48px)] w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] text-[clamp(13px,4.7cqw,18px)] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
             >
