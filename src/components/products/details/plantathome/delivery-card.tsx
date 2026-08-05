@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import VendorAvailabilityNote from '../vendor-availability-note';
+import DeliveryCheck from './delivery-check';
 import { LineIcon } from '@/components/icons/line-icons';
 
 /**
@@ -34,7 +35,8 @@ export function DeliveryCard(props: {
     displayOnly = false,
   } = props;
 
-  if (!city && !verticalBlocked && !displayOnly) return null;
+  // The pincode checker is useful with or without a chosen city — it is often
+  // the FIRST thing a customer reaches for — so the card now mounts always.
 
   const showEta = etaDays != null && Boolean(city);
   const dayWord = `day${etaDays === 1 ? '' : 's'}`;
@@ -65,6 +67,9 @@ export function DeliveryCard(props: {
 
       {/* "we'll confirm within 6h" note — self-gates on the location-price API */}
       <VendorAvailabilityNote productId={product?.id} variationOptionId={variationOptionId} />
+
+      {/* Pincode → every delivery option with its own ETA (local + live courier) */}
+      <DeliveryCheck productId={product?.id} />
 
       {/* Operations Control Center — vertical paused/unavailable in city */}
       {verticalBlocked && (
