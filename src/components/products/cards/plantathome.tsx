@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { goToSignin } from '@/lib/go-to-signin';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { Routes } from '@/config/routes';
+// Still needed for Ask AI — the product quick-view popup is gone (cards link
+// straight to the product page), but this card opens the ASK_AI modal too.
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
@@ -134,9 +138,6 @@ const PlantAtHomeCard: React.FC<Props> = ({
   const { data: askAiSettings } = useAskAiEnabled();
   const askAiEnabled = Boolean(askAiSettings?.data?.enabled);
 
-  function handleQuickView() {
-    openModal('PRODUCT_DETAILS', product.slug);
-  }
   function handleAskAi(e: React.MouseEvent) {
     e.stopPropagation();
     e.preventDefault();
@@ -171,9 +172,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
     >
       {/* image zone (reference .image: #F7F5EF, zoom on hover) */}
       <div className={isList ? 'relative w-[40%] max-w-[250px] shrink-0' : 'relative'}>
-      <button
-        type="button"
-        onClick={handleQuickView}
+      <Link
+        href={Routes.product(product.slug)}
         aria-label={`View ${product.name}`}
         className={`relative block w-full overflow-hidden bg-[#F7F5EF] text-left ${
           isList ? 'h-full min-h-[170px]' : 'aspect-[25/24]'
@@ -225,9 +225,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
             New
           </span>
         ) : null}
-      </button>
+      </Link>
 
-        {/* wishlist — sibling of the image button (valid HTML, reliable click) */}
+        {/* wishlist — sibling of the image link (valid HTML, reliable click) */}
         <button
           type="button"
           onClick={handleWishlist}
@@ -282,13 +282,12 @@ const PlantAtHomeCard: React.FC<Props> = ({
             {/* Type spec given exactly: weight 500, 0.9rem, line-height 1. Fixed, not a clamp —
                 the previous clamp scaled the name from 15.5px to 23px with card width, which is
                 what made it read as oversized in the grid. */}
-            <button
-              type="button"
-              onClick={handleQuickView}
+            <Link
+              href={Routes.product(product.slug)}
               className="block w-full truncate text-left text-[0.9rem] font-medium leading-none text-[#184A31] transition hover:text-forest-700"
             >
               {product.name}
-            </button>
+            </Link>
             {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
             {sciName ? (
               <p className="mt-[5px] truncate text-[clamp(10.5px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
@@ -393,14 +392,15 @@ const PlantAtHomeCard: React.FC<Props> = ({
 
           {/* footer — qty stepper + Add to Cart (reference .footer) */}
           {isVariable ? (
-            <button
-              type="button"
-              onClick={handleQuickView}
+            /* Sizes are chosen on the product page — this used to open a
+               quick-view popup over the grid. */
+            <Link
+              href={Routes.product(product.slug)}
               className="flex h-[clamp(40px,12.4cqw,48px)] w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] text-[clamp(13px,4.7cqw,18px)] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
             >
               <CartGlyph />
               Select Options
-            </button>
+            </Link>
           ) : (
             <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
               {!inCart && !displayOnly && (

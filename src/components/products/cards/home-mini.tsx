@@ -1,8 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { useModalAction } from '@/components/ui/modal/modal.context';
+import { Routes } from '@/config/routes';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
@@ -23,7 +24,6 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
   className = '',
 }) => {
   const [imgError, setImgError] = useState(false);
-  const { openModal } = useModalAction();
   const { isAuthorized } = useUser();
   const { toggleWishlist } = useToggleWishlist(product.id);
   const { inWishlist } = useInWishlist({
@@ -54,9 +54,6 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
     (product.plant_attribute as any)?.scientific_name ??
     null;
 
-  function handleQuickView() {
-    openModal('PRODUCT_DETAILS', product.slug);
-  }
   function handleWishlist(e: React.MouseEvent) {
     e.stopPropagation();
     e.preventDefault();
@@ -71,11 +68,10 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
     <article
       className={`group flex h-full flex-col overflow-hidden rounded-[16px] border border-kraft-200 bg-white transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(34,48,26,0.1)] ${className}`}
     >
-      {/* photo + badge + heart (heart is a sibling of the button — valid HTML) */}
+      {/* photo + badge + heart (heart is a sibling of the link — valid HTML) */}
       <div className="relative">
-        <button
-          type="button"
-          onClick={handleQuickView}
+        <Link
+          href={Routes.product(product.slug)}
           aria-label={product.name}
           className="relative block aspect-square w-full overflow-hidden bg-[#F6F8F4]"
         >
@@ -106,7 +102,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
               {discount} OFF
             </span>
           ) : null}
-        </button>
+        </Link>
         <button
           type="button"
           onClick={handleWishlist}
@@ -123,13 +119,12 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
           the line under the name is a short plant blurb, never "New" */}
       <div className="flex flex-1 flex-col p-3">
         <div className="flex items-start justify-between gap-2">
-          <button
-            type="button"
-            onClick={handleQuickView}
+          <Link
+            href={Routes.product(product.slug)}
             className="min-w-0 truncate text-left text-[15px] font-bold leading-[1.2] text-[#1D4D35]"
           >
             {product.name}
-          </button>
+          </Link>
           {count > 0 ? (
             <span className="flex shrink-0 items-center gap-1 pt-0.5">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="#FDBA12" aria-hidden>
@@ -173,9 +168,8 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
             )}
           </span>
           {isVariable ? (
-            <button
-              type="button"
-              onClick={handleQuickView}
+            <Link
+              href={Routes.product(product.slug)}
               aria-label="Select options"
               title="Select options"
               className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-ds-btn text-white transition duration-200 hover:bg-ds-btn-hover"
@@ -185,7 +179,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
                 <circle cx="19" cy="21" r="1.6" />
                 <path d="M1 1h3l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
               </svg>
-            </button>
+            </Link>
           ) : (
             <AddToCart variant="homeMini" counterVariant="plantathome" counterClass="!h-9 !w-[96px]" data={product} />
           )}

@@ -6,9 +6,8 @@ import Link from 'next/link';
 import { twMerge } from 'tailwind-merge';
 import classNames from 'classnames';
 import { Routes } from '@/config/routes';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import dayjs from 'dayjs';
-import { useModalAction } from '@/components/ui/modal/modal.context';
 import { ExternalIconNew } from '@/components/icons/external-icon';
 // import { PlusIcon } from '@/components/icons/plus-icon';
 // import Badge from '@/components/ui/badge';
@@ -147,11 +146,6 @@ const Fluorine: React.FC<FluorineProps> = ({
     baseAmount: product?.price,
   });
 
-  const { openModal } = useModalAction();
-  const handleProductQuickView = useCallback(() => {
-    return openModal('PRODUCT_DETAILS', product?.slug);
-  }, [product?.slug]);
-
   return (
     <div
       className={twMerge(
@@ -159,18 +153,12 @@ const Fluorine: React.FC<FluorineProps> = ({
       )}
     >
       <div className="relative w-auto cursor-pointer md:h-[22.75rem]">
-        <div
-          onClick={handleProductQuickView}
-          role="button"
-          tabIndex={0}
-          aria-label={product?.name ? `Quick view ${product.name}` : 'Quick view product'}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleProductQuickView();
-            }
-          }}
-          className="h-full w-full"
+        {/* A real anchor, so the hand-rolled role/tabIndex/onKeyDown that
+            faked keyboard support for a <div> is no longer needed. */}
+        <Link
+          href={Routes.product(product?.slug)}
+          aria-label={product?.name ? `View ${product.name}` : 'View product'}
+          className="block h-full w-full"
         >
           <Image
             src={product?.image?.original ?? productPlaceholder}
@@ -181,7 +169,7 @@ const Fluorine: React.FC<FluorineProps> = ({
             sizes="(max-width: 768px) 100vw"
             className="block h-full w-full"
           />
-        </div>
+        </Link>
         <div className="absolute top-5 right-5">
           <FavoriteButton
             productId={product?.id}
@@ -245,13 +233,13 @@ const Fluorine: React.FC<FluorineProps> = ({
             <div>
               {product?.product_type.toLowerCase() === 'variable' ||
               product?.is_external ? (
-                <button
-                  onClick={handleProductQuickView}
-                  // className="flex h-[2.125rem] w-[2.125rem] items-center justify-center rounded-full bg-accent text-lg text-white transition-colors hover:bg-accent-hover hover:text-white focus:bg-accent-hover focus:text-white focus:outline-0"
+                <Link
+                  href={Routes.product(product?.slug)}
+                  aria-label={`View ${product?.name}`}
                   className="text-xl text-accent"
                 >
                   <EyeIcon />
-                </button>
+                </Link>
               ) : (
                 <>
                   {!discountSimplePrice?.isInvalidPrice && (
@@ -261,13 +249,13 @@ const Fluorine: React.FC<FluorineProps> = ({
               )}
             </div>
           ) : (
-            <button
-              onClick={handleProductQuickView}
-              // className="flex h-[2.125rem] w-[2.125rem] items-center justify-center rounded-full bg-accent text-lg text-white transition-colors hover:bg-accent-hover hover:text-white focus:bg-accent-hover focus:text-white focus:outline-0"
+            <Link
+              href={Routes.product(product?.slug)}
+              aria-label={`View ${product?.name}`}
               className="text-xl text-accent"
             >
               <EyeIcon />
-            </button>
+            </Link>
           )}
         </div>
         <p className="flex items-center gap-1 text-sm font-medium text-[#666]">

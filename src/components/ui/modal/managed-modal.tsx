@@ -12,10 +12,6 @@ const Register = dynamic(() => import('@/components/auth/register-form'));
 const ForgotPassword = dynamic(
   () => import('@/components/auth/forgot-password')
 );
-const ProductDetailsModalView = dynamic(
-  () => import('@/components/products/details/popup'),
-  { ssr: false }
-);
 const ShopInfoCard = dynamic(() => import('@/components/shops/sidebar'));
 const CreateOrUpdateAddressForm = dynamic(
   () => import('@/components/address/address-form'),
@@ -142,9 +138,6 @@ const ManagedModal = () => {
           <ProfileAddOrUpdateContact />
         )}
         {view === 'DELETE_ADDRESS' && <AddressDeleteView />}
-        {view === 'PRODUCT_DETAILS' && (
-          <ProductDetailsModalView productSlug={data} />
-        )}
         {view === 'SHOP_INFO' && (
           <ShopInfoCard
             shop={data?.shop}
