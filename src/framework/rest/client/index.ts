@@ -180,9 +180,13 @@ class Client {
         }),
       }),
 
-    get: ({ slug, language }: GetParams) =>
+    // `city` drives the API's per-variant city pricing on the PDP — without it
+    // the detail page renders master catalogue prices while the card that
+    // opened it shows the city price.
+    get: ({ slug, language, city }: GetParams & { city?: string }) =>
       HttpClient.get<Product>(`${API_ENDPOINTS.PRODUCTS}/${slug}`, {
         language,
+        ...(city ? { city } : {}),
         searchJoin: 'and',
         with: 'categories;shop;type;variations;variations.attribute.values;variation_options;tags',
       }),

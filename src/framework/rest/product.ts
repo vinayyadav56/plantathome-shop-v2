@@ -145,10 +145,15 @@ export const useBestSellingProducts = (
 
 export function useProduct({ slug }: { slug: string }) {
   const { locale: language } = useRouter();
+  // The PDP must send the city like the listing does, or the API has nothing to
+  // price against and the detail page falls back to master catalogue prices —
+  // the card and the page it opens then disagree on the same product. The city
+  // is in the query key, so switching city refetches.
+  const { city } = useCustomerCity();
 
   const { data, isLoading, error } = useQuery<Product, Error>(
-    [API_ENDPOINTS.PRODUCTS, { slug, language }],
-    () => client.products.get({ slug, language }),
+    [API_ENDPOINTS.PRODUCTS, { slug, language, city }],
+    () => client.products.get({ slug, language, ...(city ? { city } : {}) }),
   );
   return {
     product: data,
