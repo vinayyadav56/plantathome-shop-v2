@@ -154,6 +154,11 @@ export function useProduct({ slug }: { slug: string }) {
   const { data, isLoading, error } = useQuery<Product, Error>(
     [API_ENDPOINTS.PRODUCTS, { slug, language, city }],
     () => client.products.get({ slug, language, ...(city ? { city } : {}) }),
+    // Without this an empty slug still fires, hitting /products/ and 404ing. It
+    // did not matter while the quick-view modal was the only caller (it always
+    // has a product); useCityPrice calls this on every PDP render, including the
+    // first one before the product prop has settled.
+    { enabled: !!slug },
   );
   return {
     product: data,
