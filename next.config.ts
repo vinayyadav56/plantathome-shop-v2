@@ -6,6 +6,55 @@ import type { NextConfig } from 'next';
  * back the tsconfig path redirects at the bundler level (Turbopack).
  */
 
+/**
+ * Content-Security-Policy, ENFORCED.
+ *
+ * Every origin below was observed on the live site with a real browser rather than guessed —
+ * that is the difference between a CSP that ships and one that breaks checkout on a Saturday.
+ * Google Fonts, Font Awesome via cdnjs, GTM + GA4, Cloudflare Insights and the RUM beacon,
+ * and Unsplash imagery all appear on the home page today. Razorpay and Google Maps are added
+ * for the checkout and location-picker flows, which the crawl did not exercise.
+ *
+ * Honest about what this does and does not buy:
+ *  - script-src keeps 'unsafe-inline'/'unsafe-eval' because Next's App Router bootstraps from
+ *    inline scripts and there is no nonce plumbing here. So this is NOT a strong anti-XSS
+ *    control. What it does do is bound WHERE script may come from and — via connect-src —
+ *    where a compromised page may send data, which is the half that limits token exfiltration
+ *    (see src/lib/cookie-options.ts on why the auth cookie is readable by script).
+ *  - img-src allows https: broadly on purpose: product imagery is served from S3, several
+ *    CDNs and editorial hosts, and an allowlist there would break the catalogue for no real
+ *    gain — images are not an execution sink.
+ *
+ * frame-ancestors 'none' is the clickjacking control; X-Frame-Options below repeats it for
+ * older browsers that ignore the CSP directive.
+ */
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://maps.googleapis.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
+  "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+  "img-src 'self' data: blob: https:",
+  "connect-src 'self' https://api.plantathome.in https://staging-api.plantathome.in https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com",
+  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self' https://api.razorpay.com https://checkout.razorpay.com",
+  "object-src 'none'",
+  'upgrade-insecure-requests',
+].join('; ');
+
+const SECURITY_HEADERS = [
+  { key: 'Content-Security-Policy', value: CSP },
+  { key: 'X-Frame-Options', value: 'DENY' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), payment=(self "https://checkout.razorpay.com"), geolocation=(self)' },
+  // Short max-age to start, and deliberately NO preload: HSTS preload is effectively
+  // irreversible, so it should be a decision taken on purpose rather than inherited from a
+  // security sweep. Raise to 63072000 + preload once this has run clean for a while.
+  { key: 'Strict-Transport-Security', value: 'max-age=86400; includeSubDomains' },
+];
+
 const COMPAT_ALIASES = {
   'react-query': './src/compat/react-query.tsx',
   'react-query/hydration': './src/compat/react-query-hydration.tsx',
@@ -77,6 +126,11 @@ const nextConfig: NextConfig = {
       {
         source: '/:dir(images|brand|fonts|icons)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        // The site had NO security headers at all. Applied to everything.
+        source: '/:path*',
+        headers: SECURITY_HEADERS,
       },
     ];
   },

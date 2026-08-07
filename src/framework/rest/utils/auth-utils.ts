@@ -1,5 +1,6 @@
 import Cookie from 'js-cookie';
 import SSRCookie from 'cookie';
+import { AUTH_COOKIE_OPTIONS } from '@/lib/cookie-options';
 import {
   AUTH_CRED, EMAIL_VERIFIED,
   PERMISSIONS,
@@ -17,10 +18,10 @@ export const ownerOnly = [STORE_OWNER];
 export const ownerAndStaffOnly = [STORE_OWNER, STAFF];
 
 export function setAuthCredentials(token: string, permissions: any) {
-  Cookie.set(AUTH_CRED, JSON.stringify({ token, permissions }));
+  Cookie.set(AUTH_CRED, JSON.stringify({ token, permissions }), AUTH_COOKIE_OPTIONS);
 }
 export function setEmailVerified(emailVerified: boolean) {
-  Cookie.set(EMAIL_VERIFIED, JSON.stringify({ emailVerified }));
+  Cookie.set(EMAIL_VERIFIED, JSON.stringify({ emailVerified }), AUTH_COOKIE_OPTIONS);
 }
 export function getEmailVerified(): {
   emailVerified: boolean;
