@@ -13,7 +13,9 @@ import { Routes } from '@/config/routes';
 import type { Product } from '@/types';
 import usePrice from '@/lib/use-price';
 import { HttpClient } from '@/framework/client/http-client';
-import { getStoredLatLng, getStoredCity } from '@/lib/customer-location';
+import { getStoredCity } from '@/lib/customer-location';
+// '@/framework/*' maps to src/framework/rest/* (see tsconfig paths).
+import { useCityPrice } from '@/framework/use-city-price';
 import VendorAvailabilityNote from '@/components/products/details/vendor-availability-note';
 import Truncate from '@/components/ui/truncate';
 import { useTranslation } from 'next-i18next';
@@ -127,36 +129,32 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     ),
     baseAmount: Number(priceSource?.price ?? 0),
   });
-  const { price: minPrice } = usePrice({ amount: product?.min_price ?? 0 });
-  const { price: maxPrice } = usePrice({ amount: product?.max_price ?? 0 });
+  // ONE resolver for every price on this page — the range, the selected variant
+  // and the sticky bar. It used to be three independent paths, and the range one
+  // read the SSR prop, which is fetched WITHOUT a city (that fetch is ISR-cached,
+  // so it cannot be city-specific) — hence a city-correct selected price sitting
+  // next to a master-catalogue range on the same screen.
+  const {
+    minAmount,
+    maxAmount,
+    selectedAmount,
+    hasVendorPrice,
+    fulfillment,
+    isResolving: priceResolving,
+  } = useCityPrice({
+    product,
+    selectedVariationId: isSelected ? selectedVariation?.id : null,
+  });
 
-  // Location-derived selling price (margin over the nearest vendor's hidden cost).
-  // Only overrides the displayed price when this product actually has a vendor
-  // cost sheet — otherwise the catalog price above is shown unchanged.
-  const loc = getStoredLatLng();
+  // Still needed outside pricing: the vertical availability check and the
+  // delivery card's "to {city}" copy.
   const customerCity = getStoredCity();
-  const { data: vendorPriceData } = useQuery(
-    ['location-price', id, isSelected ? selectedVariation?.id : null, loc?.lat, loc?.lng, customerCity],
-    () =>
-      HttpClient.get<any>('location-price', {
-        product_id: id,
-        ...(isSelected && selectedVariation?.id ? { variation_option_id: selectedVariation.id } : {}),
-        ...(loc ? { lat: loc.lat, lng: loc.lng } : {}),
-        ...(customerCity ? { city: customerCity } : {}),
-      }),
-    // keepPreviousData: hold the last result while re-fetching for a newly
-    // selected size, so the delivery line + price don't collapse/jump (the query
-    // key changes with the variation). Prevents the section from fluctuating.
-    { enabled: !!id, retry: 0, staleTime: 60_000, keepPreviousData: true },
-  );
-  const fulfillment = vendorPriceData?.fulfillment as
-    | { fulfillment_mode?: 'local' | 'courier'; eta_days?: number }
-    | null
-    | undefined;
-  const { price: vendorPrice } = usePrice({ amount: Number(vendorPriceData?.price ?? 0) });
-  const useVendorPrice = Boolean(vendorPriceData?.has_vendor_cost && vendorPriceData?.available);
-  const displayPrice = useVendorPrice ? vendorPrice : price;
-  const displayBasePrice = useVendorPrice ? null : basePrice;
+
+  const { price: minPrice } = usePrice({ amount: minAmount });
+  const { price: maxPrice } = usePrice({ amount: maxAmount });
+  const { price: vendorPrice } = usePrice({ amount: Number(selectedAmount ?? 0) });
+  const displayPrice = hasVendorPrice ? vendorPrice : price;
+  const displayBasePrice = hasVendorPrice ? null : basePrice;
 
   // Operations Control Center — is this product's vertical available in the
   // customer's city? Only checked when a city is known; fail open otherwise.
@@ -195,7 +193,17 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
    */
   const priceBlock = needsSelection ? (
     <span className="whitespace-nowrap text-[15px] font-bold leading-none text-[#14532D] sm:text-[17px] lg:text-[20px]">
-      {minPrice} – {maxPrice}
+      {/* While the city price is still in flight, hold the space rather than
+          printing the master-catalogue range: showing a number we are about to
+          replace is worse than showing none, and this is the exact moment the
+          old code showed the wrong one permanently. */}
+      {priceResolving ? (
+        <span className="inline-block h-[1em] w-[7.5em] animate-pulse rounded bg-stone-200 align-middle" />
+      ) : (
+        <>
+          {minPrice} – {maxPrice}
+        </>
+      )}
     </span>
   ) : (
     <>
@@ -203,7 +211,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
       {displayBasePrice && (
         <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>
       )}
-      {!useVendorPrice && discount && (
+      {!hasVendorPrice && discount && (
         <span className="rounded-[8px] bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
           {discount} OFF
         </span>
@@ -223,8 +231,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     // charges the location/margin price (also what the PDP displays), NOT the
     // raw catalog variation price. The cart line must carry that same price or
     // the displayed cart total diverges from the amount actually charged.
-    if (useVendorPrice && vendorPriceData?.price != null) {
-      const vp = Number(vendorPriceData.price);
+    if (hasVendorPrice && selectedAmount != null) {
+      const vp = Number(selectedAmount);
       if (Number.isFinite(vp) && vp > 0) (item as any).price = vp;
     }
     if (item?.language && item.language !== language) updateCartLanguage(item.language);

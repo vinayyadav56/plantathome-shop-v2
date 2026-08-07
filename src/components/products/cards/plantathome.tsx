@@ -399,7 +399,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <Link
               {...PRODUCT_LINK_PROPS}
               href={Routes.product(product.slug)}
-              className="flex h-[clamp(40px,12.4cqw,48px)] w-full items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] text-[clamp(13px,4.7cqw,18px)] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
+              /* Slimmer scale (2026-08-07): the 48px/18px ceilings made these read
+                 as heavy slabs on wide cards. Kept in lockstep with the qty stepper
+                 below and add-to-cart-btn/add-to-cart, which share this baseline —
+                 changing one alone breaks the action row's alignment. */
+              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 rounded-[12px] bg-ds-btn text-[clamp(12px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
               <CartGlyph />
               Select Options
@@ -407,7 +411,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           ) : (
             <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
               {!inCart && !displayOnly && (
-                <div className="flex h-[clamp(40px,12.4cqw,48px)] w-[clamp(88px,31cqw,120px)] shrink-0 items-center justify-around rounded-[14px] border border-[#DDDDDD]">
+                <div className="flex h-[clamp(34px,9.5cqw,40px)] w-[clamp(80px,27cqw,104px)] shrink-0 items-center justify-around rounded-[12px] border border-[#DDDDDD]">
                   <button
                     type="button"
                     aria-label="Decrease quantity"

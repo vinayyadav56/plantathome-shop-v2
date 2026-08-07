@@ -98,7 +98,8 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
             // two-up grid "Add To Shopping Cart" burst straight out of the card.
             // The clamp bounds keep it sane if this ever renders outside a
             // container, where cqw falls back to the viewport.
-            'flex h-[clamp(38px,12.4cqw,48px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.8cqw,10px)] rounded-[14px] bg-[#14532D] px-[clamp(6px,2.6cqw,16px)] text-[clamp(11px,4.2cqw,18px)] font-semibold leading-none text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0',
+            // Shares the card action row's baseline — see plantathome.tsx's CTA.
+            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-[12px] bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(11px,3.4cqw,14px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0',
             {
               'cursor-not-allowed !bg-stone-300 !text-stone-500 hover:!bg-stone-300':
                 disabled,

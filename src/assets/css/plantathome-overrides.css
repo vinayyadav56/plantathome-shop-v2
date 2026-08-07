@@ -1358,15 +1358,12 @@ footer {
   background: var(--surface-inverse, #16301A) !important;
   color: rgba(255,255,255,0.78) !important;
 }
-/* h3 only — that is the big "Grow with us." newsletter headline, a deliberate
-   brand moment where the display serif belongs. h4 is the 10.5px uppercase
-   column labels (SHOP / PLANT CARE / COMPANY / HELP); forcing a serif on those
-   fought the sitewide "headings use the body font" rule and left four spindly
-   serif labels sitting above columns of Inter links. They now fall through to
-   the body font like every other small label on the site. */
-footer h3 {
-  font-family: var(--font-heading) !important;
-}
+/* The footer's "Grow with us." h3 used to carve itself out of the sitewide
+   "headings use the body font" rule and render in the display serif — a
+   deliberate brand moment when it was written. It was ALSO the only heading on
+   the entire site that did so, which is exactly how it read: not as emphasis,
+   as an inconsistency. Removed 2026-08-07 on that feedback; the h4 column
+   labels had already fallen through to the body font for the same reason. */
 footer h3, footer h4 {
   color: #fff !important;
 }

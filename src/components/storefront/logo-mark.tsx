@@ -73,7 +73,13 @@ export function WordmarkStacked({
   className?: string;
 }) {
   const fg = light ? 'text-white' : 'text-forest-900';
-  const accent = light ? 'text-[#8FD56F]' : 'text-forest-600';
+  // The light variant's accent used to be #8FD56F — the same lime the home hero
+  // uses for its own accents, sitting on a dark-green translucent header over a
+  // dark-green hero. Three greens in a stack, so the mark did not read as a mark.
+  // White at 80% keeps the two-tone lockup (weight + opacity carry it) while
+  // staying legible on any dark surface. The dark variant is unchanged: forest
+  // green on light backgrounds already has the contrast.
+  const accent = light ? 'text-white/80' : 'text-forest-600';
   const tagline = light ? 'text-white/70' : 'text-stone-500';
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>

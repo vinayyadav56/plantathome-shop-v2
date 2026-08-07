@@ -124,7 +124,7 @@ export const AddToCart = ({
     // radius and fluid type as AddToCartBtn's plantathome variant.
     if (variant === 'plantathome') {
       return (
-        <span className="flex h-[clamp(38px,12.4cqw,48px)] w-full min-w-0 cursor-not-allowed items-center justify-center rounded-[14px] bg-gray-100 px-[clamp(6px,2.6cqw,16px)] text-[clamp(10px,3.6cqw,14px)] font-semibold uppercase leading-none tracking-wide text-stone-500">
+        <span className="flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 cursor-not-allowed items-center justify-center rounded-[12px] bg-gray-100 px-[clamp(6px,2.2cqw,12px)] text-[clamp(10px,3.2cqw,12px)] font-medium uppercase leading-none tracking-wide text-stone-500">
           <span className="truncate">Out of Stock</span>
         </span>
       );
