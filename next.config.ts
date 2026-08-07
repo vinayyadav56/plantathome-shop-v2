@@ -28,13 +28,25 @@ import type { NextConfig } from 'next';
  * frame-ancestors 'none' is the clickjacking control; X-Frame-Options below repeats it for
  * older browsers that ignore the CSP directive.
  */
+/**
+ * Agentation (the on-page annotation overlay) talks to a local companion on :4747 and is
+ * default-ON outside production. An enforced connect-src blocks it — verified on staging, where
+ * it was the ONLY thing the CSP broke. Allowed on non-production builds only; the production
+ * domain never gets a localhost origin in its policy.
+ */
+const IS_PRODUCTION_SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? '').includes('plantathome.in');
+const AGENTATION_CONNECT = IS_PRODUCTION_SITE
+  ? ''
+  : ' http://localhost:4747 http://127.0.0.1:4747 ws://localhost:4747';
+
 const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://maps.googleapis.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
   "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
   "img-src 'self' data: blob: https:",
-  "connect-src 'self' https://api.plantathome.in https://staging-api.plantathome.in https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com",
+  "connect-src 'self' https://api.plantathome.in https://staging-api.plantathome.in https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com" +
+    AGENTATION_CONNECT,
   "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
