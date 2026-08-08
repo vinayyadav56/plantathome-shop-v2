@@ -31,14 +31,19 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
   const isAdmin = hasAccess(adminOnly, permissions);
 
   const { data } = useQuery<any>(
-    ['city-ops-status', city],
+    // Same key SHAPE as the PDP's own vertical check (['svc-availability', vertical, city]),
+    // so on a plants page the two share ONE cache entry and ONE request instead of firing
+    // byte-identical calls under different keys. Any product vertical resolves the city tier;
+    // plants is always known.
+    ['svc-availability', 'plants', city],
     () =>
       HttpClient.get<any>('service-availability/check', {
-        // Any product vertical resolves the city tier; plants is always known.
         vertical: 'plants',
         city: city as string,
       }),
-    { enabled: !!city && !isAdmin, retry: 0, staleTime: 60_000, refetchOnWindowFocus: true },
+    // refetchOnWindowFocus dropped: the app default is false (app-providers.tsx) and this one
+    // query silently overrode it, costing a request on every tab refocus site-wide.
+    { enabled: !!city && !isAdmin, retry: 0, staleTime: 60_000 },
   );
 
   const reason: string | null = data?.reason ?? null;

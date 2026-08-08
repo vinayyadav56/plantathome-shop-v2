@@ -143,22 +143,24 @@ export const useBestSellingProducts = (
   };
 };
 
-export function useProduct({ slug }: { slug: string }) {
+export function useProduct({ slug, enabled = true }: { slug: string; enabled?: boolean }) {
   const { locale: language } = useRouter();
   // The PDP must send the city like the listing does, or the API has nothing to
   // price against and the detail page falls back to master catalogue prices —
   // the card and the page it opens then disagree on the same product. The city
-  // is in the query key, so switching city refetches.
+  // is in the query key, so switching city refetches. useCustomerCity reads the
+  // city synchronously now, so this key no longer churns null→city (which used to
+  // fire this query twice per PDP view).
   const { city } = useCustomerCity();
 
   const { data, isLoading, error } = useQuery<Product, Error>(
     [API_ENDPOINTS.PRODUCTS, { slug, language, city }],
     () => client.products.get({ slug, language, ...(city ? { city } : {}) }),
-    // Without this an empty slug still fires, hitting /products/ and 404ing. It
-    // did not matter while the quick-view modal was the only caller (it always
-    // has a product); useCityPrice calls this on every PDP render, including the
-    // first one before the product prop has settled.
-    { enabled: !!slug },
+    // `enabled` lets a caller skip the fetch entirely (useCityPrice does this when no
+    // city is set — the SSR product's master range is already the right answer, so
+    // there is nothing to refetch). The empty-slug guard stays: an empty slug would
+    // otherwise hit /products/ and 404.
+    { enabled: !!slug && enabled },
   );
   return {
     product: data,

@@ -140,7 +140,6 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     selectedAmount,
     hasVendorPrice,
     fulfillment,
-    isResolving: priceResolving,
   } = useCityPrice({
     product,
     selectedVariationId: isSelected ? selectedVariation?.id : null,
@@ -193,17 +192,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
    */
   const priceBlock = needsSelection ? (
     <span className="whitespace-nowrap text-[15px] font-bold leading-none text-[#14532D] sm:text-[17px] lg:text-[20px]">
-      {/* While the city price is still in flight, hold the space rather than
-          printing the master-catalogue range: showing a number we are about to
-          replace is worse than showing none, and this is the exact moment the
-          old code showed the wrong one permanently. */}
-      {priceResolving ? (
-        <span className="inline-block h-[1em] w-[7.5em] animate-pulse rounded bg-stone-200 align-middle" />
-      ) : (
-        <>
-          {minPrice} – {maxPrice}
-        </>
-      )}
+      {/* Paints the master range on the first frame (from the SSR product) and quietly
+          refines to the city range when it arrives — no blank skeleton. */}
+      {minPrice} – {maxPrice}
     </span>
   ) : (
     <>

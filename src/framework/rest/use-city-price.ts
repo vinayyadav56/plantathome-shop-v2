@@ -58,10 +58,14 @@ export function useCityPrice({
   const loc = getStoredLatLng();
   const id = product?.id;
 
-  // City-aware refetch of the same product the server rendered. React Query keys
-  // on the city, so switching city refetches rather than serving a stale range.
-  const { product: cityProduct, isLoading: cityProductLoading } = useProduct({
+  // Refetch the product with the city ONLY when a city is set — that is the sole case
+  // where the range differs from what the server already rendered (the SSR product is
+  // city-less). No-city visitors need no extra request; their master range is correct.
+  // With useCustomerCity now synchronous, this fires at most once (was twice, from the
+  // null→city key churn).
+  const { product: cityProduct } = useProduct({
     slug: (product as any)?.slug ?? '',
+    enabled: !!city,
   });
 
   const { data: vendorPriceData } = useQuery(
@@ -91,6 +95,9 @@ export function useCityPrice({
     selectedAmount: hasVendorPrice ? Number(vendorPriceData?.price ?? 0) : null,
     hasVendorPrice,
     fulfillment: vendorPriceData?.fulfillment,
-    isResolving: Boolean(city) && cityProductLoading && !cityProduct,
+    // Never true now: rangeSource always falls back to the SSR `product`, so the range
+    // paints the master price on the FIRST frame and quietly refines to the city price
+    // when it arrives. The old blank skeleton (a measured 0.4-1.3s of no price) is gone.
+    isResolving: false,
   };
 }
