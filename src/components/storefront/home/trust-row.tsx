@@ -2,49 +2,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { EXPO } from '@/components/storefront/motion';
+import { Heart, MessageCircle, Package, ShieldCheck } from '@/components/ui/icon';
 
 const ITEMS: { title: string; sub: string; icon: JSX.Element }[] = [
   {
     title: '100% Quality Assured',
     sub: 'Only healthy & handpicked plants',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-        <path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z" />
-        <path d="m9 12 2 2 4-4" />
-      </svg>
-    ),
+    icon: <ShieldCheck size={20} aria-hidden />,
   },
   {
     title: 'Secure Packaging',
     sub: 'Safe delivery to your doorstep',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-        <path d="M21 8V21H3V8" />
-        <path d="M23 3H1v5h22V3Z" />
-        <path d="M10 12h4" />
-      </svg>
-    ),
+    icon: <Package size={20} aria-hidden />,
   },
   {
     title: 'Loved by 10,000+',
     sub: 'Happy plant parents',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
+    icon: <Heart size={20} aria-hidden />,
   },
   {
     title: 'Expert Guidance',
     sub: 'Helping you at every step',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-      </svg>
-    ),
+    icon: <MessageCircle size={20} aria-hidden />,
   },
 ];
 

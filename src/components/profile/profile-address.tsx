@@ -2,6 +2,7 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import AddressCard from '@/components/address/address-card';
 import { useTranslation } from 'next-i18next';
 import { AddressType } from '@/framework/utils/constants';
+import { Plus } from '@/components/ui/icon';
 
 interface AddressesProps {
   addresses: any[] | undefined;
@@ -89,7 +90,7 @@ export const ProfileAddressGrid: React.FC<AddressesProps> = ({
           onClick={onAdd}
           className="flex shrink-0 items-center gap-1 text-[13px] font-semibold text-forest-700 transition-colors hover:text-forest-900"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="h-4 w-4" aria-hidden><path d="M12 5v14M5 12h14" /></svg>
+          <Plus size={16} aria-hidden />
           {t('add-new-address')}
         </button>
       </div>

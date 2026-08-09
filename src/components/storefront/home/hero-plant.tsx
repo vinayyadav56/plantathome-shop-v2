@@ -8,6 +8,7 @@ import { Icon } from '../icons';
 import { EXPO, WordReveal } from '../motion';
 import { usePincodeServiceability } from '@/lib/use-pincode-serviceability';
 import { useSettings } from '@/framework/settings';
+import { CircleCheck, Leaf, MapPin } from '@/components/ui/icon';
 
 // Luxury hero, round 6 — a cinematic HOUSE-TOUR sequence through the glass-walled
 // greenhouse villa: approach the exterior → step into the living space → linger on
@@ -224,10 +225,7 @@ function PincodeChecker() {
         }}
         className="flex items-center gap-2 rounded-xl bg-white py-[5px] pl-4 pr-[5px] shadow-[0_10px_26px_rgba(0,0,0,0.24)]"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="#908A7E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] shrink-0">
-          <path d="M20 10c0 5-8 11-8 11s-8-6-8-11a8 8 0 0 1 16 0Z" />
-          <circle cx="12" cy="10" r="2.6" />
-        </svg>
+        <MapPin size={18} className="shrink-0" style={{ color: '#908A7E' }} aria-hidden />
         <input
           value={pincode}
           inputMode="numeric"
@@ -251,10 +249,7 @@ function PincodeChecker() {
         </p>
       ) : (
         <p className="mt-[14px] flex items-center gap-[7px] text-[13px] text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.65)]">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#7FC95E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
-            <circle cx="12" cy="12" r="9" />
-            <path d="m8.5 12 2.3 2.3 4.7-4.7" />
-          </svg>
+          <CircleCheck size={16} className="shrink-0" style={{ color: '#7FC95E' }} aria-hidden />
           {t('home-hero-pincode-coverage')}
         </p>
       )}
@@ -326,10 +321,7 @@ export function HeroPlant() {
             className="mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/35 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90"
           >
             {t('home-hero-eyebrow')}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0 text-[#8FD56F]" aria-hidden>
-              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
-              <path d="M2 21c0-3 1.85-5.36 5.08-6" />
-            </svg>
+            <Leaf size={12} className="shrink-0 text-[#8FD56F]" aria-hidden />
           </motion.span>
 
           {headline ? (

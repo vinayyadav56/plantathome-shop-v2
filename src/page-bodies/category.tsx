@@ -19,6 +19,7 @@ import { useHomeConfig } from '@/lib/use-home-config';
 import { productPlaceholder } from '@/lib/placeholders';
 import { drawerAtom } from '@/store/drawer-atom';
 import type { Product } from '@/types';
+import { ArrowLeft } from '@/components/ui/icon';
 
 
 export async function getStaticPaths() {
@@ -115,9 +116,7 @@ export default function CategoryPage() {
               href={`/${typeSlug}/search`}
               className="mb-5 inline-flex w-max items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 py-1.5 font-hanken text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80 backdrop-blur-md transition hover:text-white"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden>
-                <path d="M19 12H5M12 5l-7 7 7 7" />
-              </svg>
+              <ArrowLeft size={12} aria-hidden />
               {typeName ?? 'All products'}
             </Link>
           )}

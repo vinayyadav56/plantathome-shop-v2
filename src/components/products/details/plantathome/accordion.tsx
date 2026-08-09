@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { Plus, Minus } from '@/components/ui/icon';
 
 export type AccordionItem = { title: string; content: React.ReactNode };
 
@@ -26,10 +27,7 @@ const PlantAtHomeAccordion: React.FC<{ items: AccordionItem[]; defaultOpen?: num
             >
               <span className="text-[13.5px] font-semibold text-forest-900">{item.title}</span>
               <span className="grid h-6 w-6 shrink-0 place-items-center text-clay-600">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                  <path d="M5 12h14" />
-                  {!isOpen && <path d="M12 5v14" />}
-                </svg>
+                {isOpen ? <Minus size={18} aria-hidden /> : <Plus size={18} aria-hidden />}
               </span>
             </button>
             <div

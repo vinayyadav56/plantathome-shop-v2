@@ -4,6 +4,7 @@ import { siteSettings } from '@/config/site';
 import { fadeInOut } from '@/lib/motion/fade-in-out';
 import usePrice from '@/lib/use-price';
 import { useCart } from '@/store/quick-cart/cart.context';
+import { Minus, Plus, X } from '@/components/ui/icon';
 
 interface CartItemProps {
   item: any;
@@ -59,9 +60,7 @@ const CartItem = ({ item }: CartItemProps) => {
               onClick={handleDecrement}
               aria-label="Decrease quantity"
             >
-              <svg width="10" height="2" viewBox="0 0 10 2" fill="currentColor">
-                <rect width="10" height="2" rx="1"/>
-              </svg>
+              <Minus size={12} aria-hidden />
             </button>
             <span className="pa-qty-val">{item.quantity}</span>
             <button
@@ -69,9 +68,7 @@ const CartItem = ({ item }: CartItemProps) => {
               onClick={handleIncrement}
               aria-label="Increase quantity"
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
-                <path d="M5 0v10M0 5h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+              <Plus size={12} aria-hidden />
             </button>
           </div>
           <span className="pa-cart-item-total">{itemTotal}</span>
@@ -85,9 +82,7 @@ const CartItem = ({ item }: CartItemProps) => {
         onClick={() => clearItemFromCart(item.id)}
         aria-label="Remove item"
       >
-        <svg width="9" height="9" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-          <path d="M1 1l12 12M13 1L1 13"/>
-        </svg>
+        <X size={12} aria-hidden />
       </button>
     </motion.div>
   );

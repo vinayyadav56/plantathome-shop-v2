@@ -13,6 +13,7 @@
 
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { X } from '@/components/ui/icon';
 import { SearchProvider } from '@/components/ui/search/search.context';
 import { ModalProvider } from '@/components/ui/modal/modal.context';
 import ManagedModal from '@/components/ui/modal/managed-modal';
@@ -103,12 +104,7 @@ export default function AppProviders({ children }: { children: React.ReactNode }
                       aria-label="close"
                       onClick={closeToast}
                     >
-                      <svg aria-hidden="true" viewBox="0 0 14 16" width="14" height="16" fill="currentColor">
-                        <path
-                          fillRule="evenodd"
-                          d="M7.71 8.23l3.75 3.75-1.48 1.48-3.75-3.75-3.75 3.75L1 11.98l3.75-3.75L1 4.48 2.48 3l3.75 3.75L9.98 3l1.48 1.48-3.75 3.75z"
-                        />
-                      </svg>
+                      <X size={14} aria-hidden />
                     </button>
                   )}
                 />

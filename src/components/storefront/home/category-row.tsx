@@ -4,17 +4,18 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCategories } from '@/framework/category';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
+import { ArrowRight, Droplet, Leaf, ShoppingBag, Sprout, Wrench } from '@/components/ui/icon';
 
 // Same query as collections.tsx (shared react-query cache). limit=1000 makes the
 // categories API truncate its JSON mid-stream — see collections.tsx.
 const HOME_CATEGORIES_LIMIT = 100;
 
 const FALLBACK_ICONS: JSX.Element[] = [
-  <svg key="0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" /><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" /></svg>,
-  <svg key="1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M5 9h14l-1.5 10.5a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5L5 9Z" /><path d="M4 9h16" /><path d="M9 6c0-1.5 1.5-3 3-3s3 1.5 3 3" /></svg>,
-  <svg key="2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M12 22V12" /><path d="M12 12c0-3.3 2.7-6 6-6 0 3.3-2.7 6-6 6Z" /><path d="M12 14c0-2.8-2.2-5-5-5 0 2.8 2.2 5 5 5Z" /></svg>,
-  <svg key="3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M12 22a7 7 0 0 0 7-7c0-4-7-12-7-12S5 11 5 15a7 7 0 0 0 7 7Z" /></svg>,
-  <svg key="4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4l-6 6 2 2 6-6a4 4 0 0 0 5.4-5.4l-2.6 2.6-2-2 2.6-2.6Z" /></svg>,
+  <Leaf key="0" size={24} aria-hidden />,
+  <ShoppingBag key="1" size={24} aria-hidden />,
+  <Sprout key="2" size={24} aria-hidden />,
+  <Droplet key="3" size={24} aria-hidden />,
+  <Wrench key="4" size={24} aria-hidden />,
 ];
 
 function Thumb({ src, fallback }: { src: string; fallback: JSX.Element }) {
@@ -79,9 +80,7 @@ export function CategoryRow() {
                         </p>
                         <p className="mt-1 flex items-center gap-1 font-hanken text-[11px] font-semibold leading-none text-forest-900 transition-colors duration-200 group-hover:text-forest-700 md:text-[9.5px] lg:text-[11px]">
                           Shop Now
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-[10px] w-[10px] transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden>
-                            <path d="M5 12h13M13 6l6 6-6 6" />
-                          </svg>
+                          <ArrowRight size={12} className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
                         </p>
                       </div>
 

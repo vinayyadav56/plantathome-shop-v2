@@ -13,8 +13,8 @@ export function Gifting() {
     <div className="px-5 pb-[6px] pt-[26px]">
       <div className="relative overflow-hidden rounded-[18px] bg-[radial-gradient(130%_90%_at_50%_-10%,#2a5535_0%,#16321e_42%,#0c1d12_100%)] shadow-[0_18px_40px_rgba(10,22,14,0.4)]">
         {/* botanical line art */}
-        <svg className="absolute -right-[26px] -top-[30px] z-0 opacity-[0.10]" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#DCC07A" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V5" /><path d="M12 10c0-3.2 2.2-5.7 6.2-6.2C18 7.6 15.6 10 12 10Z" /><path d="M12 13c0-2.7-1.9-4.8-5.2-5.2C6.6 11.3 9 13 12 13Z" /><path d="M12 7.5c0-2 1.2-3.6 3.4-4" /></svg>
-        <svg className="absolute -bottom-[34px] -left-[30px] z-0 -scale-x-100 opacity-[0.08]" width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#DCC07A" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V5" /><path d="M12 10c0-3.2 2.2-5.7 6.2-6.2C18 7.6 15.6 10 12 10Z" /><path d="M12 13c0-2.7-1.9-4.8-5.2-5.2C6.6 11.3 9 13 12 13Z" /></svg>
+        <svg aria-hidden className="absolute -right-[26px] -top-[30px] z-0 opacity-[0.10]" width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="#DCC07A" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V5" /><path d="M12 10c0-3.2 2.2-5.7 6.2-6.2C18 7.6 15.6 10 12 10Z" /><path d="M12 13c0-2.7-1.9-4.8-5.2-5.2C6.6 11.3 9 13 12 13Z" /><path d="M12 7.5c0-2 1.2-3.6 3.4-4" /></svg>
+        <svg aria-hidden className="absolute -bottom-[34px] -left-[30px] z-0 -scale-x-100 opacity-[0.08]" width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="#DCC07A" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22V5" /><path d="M12 10c0-3.2 2.2-5.7 6.2-6.2C18 7.6 15.6 10 12 10Z" /><path d="M12 13c0-2.7-1.9-4.8-5.2-5.2C6.6 11.3 9 13 12 13Z" /></svg>
         {/* top gilt glow */}
         <div className="absolute inset-0 z-0 bg-[radial-gradient(80%_55%_at_50%_0%,rgba(220,192,122,0.16),rgba(220,192,122,0)_70%)]" />
         {/* inset gilded double frame */}

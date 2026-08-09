@@ -13,6 +13,18 @@ import { useGiftingConfig, resolveImageUrl } from '@/lib/use-home-config';
 import {
   useGiftingTemplates, useSubmitCorporateLead, useGiftingCheckout, GardenLeadInput,
 } from '@/framework/garden';
+import {
+  BadgeCheck,
+  Check,
+  Gift,
+  Lock,
+  Plus,
+  ShieldCheck,
+  Sprout,
+  Truck,
+  UserRound,
+  WandSparkles,
+} from '@/components/ui/icon';
 
 
 type CorporateInput = GardenLeadInput & { company?: string; occasion?: string; quantity?: string };
@@ -21,15 +33,15 @@ const OCCASIONS = ['Diwali / Festivals', 'Employee onboarding', 'Work anniversar
 const QTY = ['10–50', '50–200', '200–500', '500+'];
 
 const AUDIENCE = [
-  { icon: '🎉', title: 'Festive & Diwali gifting', text: 'Sustainable, memorable gifts that outlast the season — for clients, partners and teams.' },
-  { icon: '🧑‍💼', title: 'Employee gifting', text: 'Onboarding kits, milestones and appreciation gifts that bring the outdoors to every desk.' },
-  { icon: '🤝', title: 'Client & VIP gifting', text: 'Premium curated hampers with custom branding that leave a lasting impression.' },
+  { icon: <Gift size={24} className="text-forest-700" aria-hidden />, title: 'Festive & Diwali gifting', text: 'Sustainable, memorable gifts that outlast the season — for clients, partners and teams.' },
+  { icon: <UserRound size={24} className="text-forest-700" aria-hidden />, title: 'Employee gifting', text: 'Onboarding kits, milestones and appreciation gifts that bring the outdoors to every desk.' },
+  { icon: <BadgeCheck size={24} className="text-forest-700" aria-hidden />, title: 'Client & VIP gifting', text: 'Premium curated hampers with custom branding that leave a lasting impression.' },
 ];
 const WHY = [
-  { icon: '🌱', title: 'Memorable & sustainable', text: 'A living gift that keeps growing — far better recall than chocolates or generic kits.' },
-  { icon: '🎨', title: 'Custom branding', text: 'Branded pots, tags and packaging tailored to your company and occasion.' },
-  { icon: '🚚', title: 'Bulk, pan-India delivery', text: 'Any quantity, coordinated delivery to one office or hundreds of addresses.' },
-  { icon: '✅', title: 'Healthy-plant guarantee', text: 'Hardy, easy-care plants picked to thrive in office and home environments.' },
+  { icon: <Sprout size={20} className="text-forest-700" aria-hidden />, title: 'Memorable & sustainable', text: 'A living gift that keeps growing — far better recall than chocolates or generic kits.' },
+  { icon: <WandSparkles size={20} className="text-forest-700" aria-hidden />, title: 'Custom branding', text: 'Branded pots, tags and packaging tailored to your company and occasion.' },
+  { icon: <Truck size={20} className="text-forest-700" aria-hidden />, title: 'Bulk, pan-India delivery', text: 'Any quantity, coordinated delivery to one office or hundreds of addresses.' },
+  { icon: <ShieldCheck size={20} className="text-forest-700" aria-hidden />, title: 'Healthy-plant guarantee', text: 'Hardy, easy-care plants picked to thrive in office and home environments.' },
 ];
 const FAQS = [
   { q: 'What’s the minimum order quantity?', a: 'We handle orders from 10 to thousands of gifts. Per-unit pricing improves with volume — share your numbers for a quote.' },
@@ -93,7 +105,10 @@ function EnquiryForm() {
       <button type="submit" disabled={isLoading} className="mt-5 w-full rounded-xl bg-ds-btn px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-ds-btn-hover disabled:opacity-60">
         {isLoading ? 'Sending…' : 'Request a quote →'}
       </button>
-      <p className="mt-3 text-center text-xs text-stone-400">🔒 B2B enquiries only · Trusted by teams across India</p>
+      <p className="mt-3 flex items-center justify-center gap-1 text-center text-xs text-stone-400">
+        <Lock size={12} className="shrink-0" aria-hidden />
+        B2B enquiries only · Trusted by teams across India
+      </p>
     </form>
   );
 }
@@ -193,7 +208,7 @@ export default function CorporateGiftingPage() {
                   <p className="mt-1 text-sm text-cream-50/65">{t.tagline}</p>
                   <div className="mt-4 font-cormorant text-4xl font-semibold">From {fmt(t.suggested_price)}<span className="text-sm font-normal text-cream-50/55"> /gift</span></div>
                   <ul className="mt-5 flex-1 space-y-2 text-sm">
-                    {(t.items ?? []).map((it, j) => <li key={j} className="flex gap-2"><span className="text-ds-cta">✓</span><span className="text-cream-50/90">{it.name}</span></li>)}
+                    {(t.items ?? []).map((it, j) => <li key={j} className="flex gap-2"><span className="text-ds-cta"><Check size={14} aria-hidden /></span><span className="text-cream-50/90">{it.name}</span></li>)}
                   </ul>
                   <button onClick={() => buy(t.id)} disabled={buying && buyingId === t.id}
                     className={`mt-6 w-full rounded-xl px-5 py-3 text-sm font-semibold uppercase tracking-[0.06em] transition-colors disabled:opacity-60 ${highlight ? 'bg-ds-cta text-ds-cta-ink hover:bg-ds-cta-hover' : 'bg-white/15 text-white hover:bg-white/25'}`}>
@@ -256,7 +271,7 @@ export default function CorporateGiftingPage() {
               <details key={f.q} className="group rounded-xl border border-kraft-200 bg-white p-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between font-jost font-semibold text-forest-900">
                   {f.q}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0 text-forest-600 transition-transform group-open:rotate-45"><path d="M12 5v14M5 12h14" /></svg>
+                  <Plus size={16} className="shrink-0 text-forest-600 transition-transform group-open:rotate-45" aria-hidden />
                 </summary>
                 <p className="mt-2 text-sm leading-relaxed text-stone-600">{f.a}</p>
               </details>

@@ -18,6 +18,10 @@ import {
   DiagnosisResponse,
   Severity,
 } from '@/framework/plant-doctor';
+import {
+  ArrowRight, Camera, Check, ChevronDown, CircleAlert, Clock, FileText, Leaf,
+  Lock, RefreshCw, RotateCcw, ShieldCheck, Sparkles, Trash2, type LucideIcon,
+} from '@/components/ui/icon';
 
 /* ────────────────────────────────────────────────────────────────────────────
    Design tokens (storefront design language — matches products/cards/plantathome)
@@ -41,122 +45,36 @@ const SEV_RANK: Record<Severity, number> = { low: 0, medium: 1, high: 2, critica
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Inline line icons (stroke=currentColor — Font Awesome classes never load)
+   Icons — Lucide glyphs via the shared funnel, keyed by the old local names
    ──────────────────────────────────────────────────────────────────────────── */
 
-const ICON_PATHS: Record<string, React.ReactNode> = {
-  camera: (
-    <>
-      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-      <circle cx="12" cy="13" r="4" />
-    </>
-  ),
-  leaf: (
-    <>
-      <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
-      <path d="M2 21c0-3 1.85-5.36 5.08-6" />
-    </>
-  ),
-  clipboard: (
-    <>
-      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-      <rect x="8" y="2" width="8" height="4" rx="1" />
-      <path d="m9 14 2 2 4-4" />
-    </>
-  ),
-  shield: (
-    <>
-      <path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z" />
-      <path d="m9 12 2 2 4-4" />
-    </>
-  ),
-  clock: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 8v4l3 3" />
-    </>
-  ),
-  lock: (
-    <>
-      <rect x="4" y="10" width="16" height="11" rx="2" />
-      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-    </>
-  ),
-  history: (
-    <>
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-      <path d="M12 7v5l3 2" />
-    </>
-  ),
-  refresh: (
-    <>
-      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-      <path d="M3 3v5h5" />
-    </>
-  ),
-  trash: (
-    <>
-      <path d="M3 6h18" />
-      <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-      <line x1="10" y1="11" x2="10" y2="17" />
-      <line x1="14" y1="11" x2="14" y2="17" />
-    </>
-  ),
-  alert: (
-    <>
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="8" x2="12" y2="12" />
-      <line x1="12" y1="16" x2="12.01" y2="16" />
-    </>
-  ),
-  check: <polyline points="20 6 9 17 4 12" />,
-  arrowRight: (
-    <>
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </>
-  ),
-  chevronDown: <polyline points="6 9 12 15 18 9" />,
-  sparkle: (
-    <>
-      <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
-      <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" />
-    </>
-  ),
-  image: (
-    <>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <circle cx="8.5" cy="8.5" r="1.5" />
-      <path d="m21 15-5-5L5 21" />
-    </>
-  ),
+const ICONS: Record<string, LucideIcon> = {
+  camera: Camera,
+  leaf: Leaf,
+  clipboard: FileText,
+  shield: ShieldCheck,
+  clock: Clock,
+  lock: Lock,
+  history: RotateCcw,
+  refresh: RefreshCw,
+  trash: Trash2,
+  alert: CircleAlert,
+  check: Check,
+  arrowRight: ArrowRight,
+  chevronDown: ChevronDown,
+  sparkle: Sparkles,
+  image: Camera,
 };
 
 function Icon({
   name,
   className = 'h-4 w-4',
-  strokeWidth = 1.9,
 }: {
-  name: keyof typeof ICON_PATHS;
+  name: keyof typeof ICONS;
   className?: string;
-  strokeWidth?: number;
 }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-      className={className}
-    >
-      {ICON_PATHS[name] ?? ICON_PATHS.leaf}
-    </svg>
-  );
+  const Glyph = ICONS[name] ?? Leaf;
+  return <Glyph className={className} aria-hidden />;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -305,7 +223,7 @@ function HealthGauge({ score }: { score: number }) {
   return (
     <div className="flex items-center gap-4">
       <div className="relative h-20 w-20 shrink-0">
-        <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90">
+        <svg viewBox="0 0 36 36" className="h-20 w-20 -rotate-90" aria-hidden>
           <circle cx="18" cy="18" r="15.9" fill="none" stroke="#EFECE3" strokeWidth="3" />
           <circle
             cx="18" cy="18" r="15.9" fill="none" stroke={color} strokeWidth="3"
@@ -335,7 +253,7 @@ function CareList({ title, items, accent }: { title: string; items?: string[]; a
         {items.map((it, i) => (
           <li key={i} className={`flex gap-2.5 text-[13.5px] leading-relaxed ${accent ? 'text-[#184A31]' : 'text-[#5B5B5B]'}`}>
             <span className={`mt-[3px] shrink-0 ${accent ? 'text-[#24693E]' : 'text-[#C9C4B8]'}`}>
-              <Icon name={accent ? 'check' : 'leaf'} className="h-3.5 w-3.5" strokeWidth={2.2} />
+              <Icon name={accent ? 'check' : 'leaf'} className="h-3.5 w-3.5" />
             </span>
             <span>{it}</span>
           </li>
@@ -499,7 +417,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
                         className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#24693E] transition hover:bg-[#14532D] hover:text-white"
                       >
                         {p}
-                        <Icon name="arrowRight" className="h-3 w-3" strokeWidth={2.2} />
+                        <Icon name="arrowRight" className="h-3 w-3" />
                       </Link>
                     ))}
                   </div>
@@ -541,7 +459,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
       {/* actions */}
       <div className="flex flex-wrap items-center gap-4 pt-1">
         <button onClick={onReset} className={BTN_PRIMARY}>
-          <Icon name="refresh" className="h-4 w-4" strokeWidth={2.1} />
+          <Icon name="refresh" className="h-4 w-4" />
           Diagnose another plant
         </button>
         <Link
@@ -549,7 +467,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
           className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#24693E] underline underline-offset-4 transition hover:text-[#14532D]"
         >
           Need a real gardener? Book a visit
-          <Icon name="arrowRight" className="h-3.5 w-3.5" strokeWidth={2.2} />
+          <Icon name="arrowRight" className="h-3.5 w-3.5" />
         </Link>
       </div>
       <p className="text-[11.5px] text-[#8A8A8A]">
@@ -563,7 +481,7 @@ function RejectionView({ result, onReset }: { result: DiagnosisResponse; onReset
   return (
     <div className={`${CARD} mx-auto max-w-xl p-8 text-center sm:p-10`}>
       <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
-        <Icon name="image" className="h-7 w-7" strokeWidth={1.7} />
+        <Icon name="image" className="h-7 w-7" />
       </span>
       <h2 className="mt-5 text-[1.5rem] font-medium leading-tight text-[#184A31]">
         We couldn&rsquo;t find a plant in that photo
@@ -677,7 +595,7 @@ function HistorySection({
                     </span>
                   </span>
                   <span className={`shrink-0 text-[#8A8A8A] transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
-                    <Icon name="chevronDown" className="h-4 w-4" strokeWidth={2.1} />
+                    <Icon name="chevronDown" className="h-4 w-4" />
                   </span>
                 </button>
 
@@ -688,7 +606,7 @@ function HistorySection({
                         {e.conditions.map((c, i) => (
                           <li key={i} className="flex gap-2 text-[12.5px] leading-snug text-[#5B5B5B]">
                             <span className="mt-[3px] shrink-0 text-[#24693E]">
-                              <Icon name="check" className="h-3 w-3" strokeWidth={2.4} />
+                              <Icon name="check" className="h-3 w-3" />
                             </span>
                             {c}
                           </li>
@@ -706,7 +624,7 @@ function HistorySection({
                         className="inline-flex items-center gap-1.5 rounded-[12px] bg-[#14532D] px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-[#0D4324]"
                       >
                         Open full report
-                        <Icon name="arrowRight" className="h-3 w-3" strokeWidth={2.2} />
+                        <Icon name="arrowRight" className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => onDelete(e.id)}
@@ -739,7 +657,7 @@ function HistoryLoginTeaser() {
       <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-[radial-gradient(ellipse,rgba(231,238,226,0.9)_0%,transparent_70%)]" />
       <div className="relative flex flex-col items-start gap-5 sm:flex-row sm:items-center">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
-          <Icon name="lock" className="h-5 w-5" strokeWidth={1.8} />
+          <Icon name="lock" className="h-5 w-5" />
         </span>
         <div className="flex-1">
           <h2 className="text-[1.15rem] font-medium text-[#184A31]">
@@ -755,7 +673,7 @@ function HistoryLoginTeaser() {
           className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-[#14532D] px-6 py-3 text-[13.5px] font-semibold text-white transition hover:bg-[#0D4324]"
         >
           Sign in
-          <Icon name="arrowRight" className="h-3.5 w-3.5" strokeWidth={2.2} />
+          <Icon name="arrowRight" className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>
@@ -998,7 +916,7 @@ export default function PlantDoctorPage() {
                 key={c.label}
                 className="inline-flex items-center gap-1.5 rounded-full border border-[#ECECEC] bg-white/85 px-3.5 py-1.5 text-[12px] font-medium text-[#24693E]"
               >
-                <Icon name={c.icon} className="h-3.5 w-3.5" strokeWidth={1.8} />
+                <Icon name={c.icon} className="h-3.5 w-3.5" />
                 {c.label}
               </span>
             ))}
@@ -1014,7 +932,7 @@ export default function PlantDoctorPage() {
         {!enabled ? (
           <div className={`${CARD} p-10 text-center`}>
             <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
-              <Icon name="leaf" className="h-7 w-7" strokeWidth={1.7} />
+              <Icon name="leaf" className="h-7 w-7" />
             </span>
             <p className="text-[1.4rem] font-bold text-[#184A31]">Plant Doctor is coming soon</p>
             <p className="mt-2 text-[13.5px] text-[#8A8A8A]">
@@ -1059,7 +977,7 @@ export default function PlantDoctorPage() {
                   ) : (
                     <span className="px-8">
                       <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-white text-[#24693E] shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-transform duration-200 group-hover:scale-105">
-                        <Icon name="camera" className="h-7 w-7" strokeWidth={1.6} />
+                        <Icon name="camera" className="h-7 w-7" />
                       </span>
                       <span className="mt-4 block text-[17px] font-bold text-[#184A31]">
                         Add a photo of your plant
@@ -1117,7 +1035,7 @@ export default function PlantDoctorPage() {
                   {['Use natural light — avoid flash', 'Focus on the affected leaves', 'Include the whole plant if you can'].map((t) => (
                     <li key={t} className="flex items-center gap-2 text-[12px] text-[#5B5B5B]">
                       <span className="text-[#24693E]">
-                        <Icon name="check" className="h-3 w-3" strokeWidth={2.4} />
+                        <Icon name="check" className="h-3 w-3" />
                       </span>
                       {t}
                     </li>
@@ -1173,13 +1091,13 @@ export default function PlantDoctorPage() {
 
                 {error && (
                   <div className="mt-3 flex items-start gap-2.5 rounded-[14px] border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3">
-                    <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-[#A23022]" strokeWidth={1.8} />
+                    <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-[#A23022]" />
                     <p className="text-[13px] text-[#A23022]">{error}</p>
                   </div>
                 )}
 
                 <button onClick={submit} disabled={isLoading} className={`${BTN_PRIMARY} mt-6`}>
-                  <Icon name="leaf" className="h-4 w-4" strokeWidth={2} />
+                  <Icon name="leaf" className="h-4 w-4" />
                   Diagnose my plant
                 </button>
 

@@ -1,4 +1,5 @@
 import type { RatingCount } from '@/types';
+import { Star } from '@/components/ui/icon';
 
 type AverageRatingsProps = {
   ratings?: number;
@@ -10,19 +11,18 @@ type AverageRatingsProps = {
 /* Gold star — same glyph + #FDBA12 fill as the product cards */
 const GoldStar = ({
   filled = true,
-  className = 'h-[17px] w-[17px]',
+  size = 16,
 }: {
   filled?: boolean;
-  className?: string;
+  size?: 12 | 16;
 }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill={filled ? '#FDBA12' : '#E8E4D8'}
+  <Star
+    size={size}
+    fill="currentColor"
+    strokeWidth={0}
+    style={{ color: filled ? '#FDBA12' : '#E8E4D8' }}
     aria-hidden
-    className={className}
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
+  />
 );
 
 const STARS = [5, 4, 3, 2, 1] as const;
@@ -75,7 +75,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
           <div key={star} className="flex items-center gap-3">
             <span className="flex w-8 shrink-0 items-center gap-1 text-[13px] font-semibold leading-none text-[#184A31]">
               {star}
-              <GoldStar className="h-3 w-3" />
+              <GoldStar size={12} />
             </span>
             <div className="relative h-2 min-w-[120px] flex-1 overflow-hidden rounded-full bg-[#F3F8EC]">
               <div

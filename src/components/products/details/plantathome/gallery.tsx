@@ -1,12 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-
-const Chevron = ({ dir }: { dir: 'prev' | 'next' }) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[18px] w-[18px]">
-    <path d={dir === 'prev' ? 'M15 18l-6-6 6-6' : 'M9 18l6-6-6-6'} />
-  </svg>
-);
+import { ChevronLeft, ChevronRight, Leaf } from '@/components/ui/icon';
 
 type GalleryImage = { original?: string; thumbnail?: string; id?: string | number };
 
@@ -105,7 +100,7 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
               {src ? (
                 <Image src={src} alt="" fill sizes="68px" className="object-cover" />
               ) : (
-                <span className="grid h-full w-full place-items-center text-forest-700/30">🌿</span>
+                <span className="grid h-full w-full place-items-center text-forest-700/30"><Leaf size={16} aria-hidden /></span>
               )}
             </button>
           );
@@ -127,7 +122,7 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
               aria-label={dir === 'prev' ? 'Previous image' : 'Next image'}
               className="grid h-9 w-9 place-items-center rounded-full border border-white/40 bg-white/85 text-forest-900 shadow-[0_6px_16px_-6px_rgba(34,48,26,0.5)] backdrop-blur-md transition hover:bg-white sm:h-10 sm:w-10"
             >
-              <Chevron dir={dir} />
+              {dir === 'prev' ? <ChevronLeft size={18} aria-hidden /> : <ChevronRight size={18} aria-hidden />}
             </button>
           ))}
         </div>

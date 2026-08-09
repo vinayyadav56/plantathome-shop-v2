@@ -1,5 +1,6 @@
 import { useCart } from '@/store/quick-cart/cart.context';
 import usePrice from '@/lib/use-price';
+import { ArrowRight } from '@/components/ui/icon';
 
 /**
  * Mobile-only sticky bottom bar showing the live total + a CTA that jumps to
@@ -27,9 +28,7 @@ export default function MobileCheckoutBar() {
       </div>
       <button type="button" className="pa-mcbar-cta" onClick={scrollToSummary}>
         Review &amp; Pay
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
-        </svg>
+        <ArrowRight size={16} aria-hidden />
       </button>
     </div>
   );

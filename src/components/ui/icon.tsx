@@ -50,7 +50,7 @@ export {
   Leaf, Sprout, Flower2, Droplet, Sun, Moon, Wind, Thermometer, Ruler, Wrench, Layers, Earth,
   // misc UI
   Plus, Minus, Pencil, Trash2, Camera, Globe, Play, Quote, Zap, Sparkles, WandSparkles, Building2,
-  TrendingUp, VolumeX,
+  TrendingUp, VolumeX, Mic, Send, CircleHelp, FileText, Settings, Navigation, Crosshair, Download,
 } from 'lucide-react';
 
 export type { LucideIcon, LucideProps } from 'lucide-react';

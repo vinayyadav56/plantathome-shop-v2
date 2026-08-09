@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { useCategories } from '@/framework/category';
 import LineIcon from '@/components/icons/line-icons';
 import BestSellers from '@/components/storefront/home/best-sellers';
+import { ArrowRight } from '@/components/ui/icon';
 import {
   resolveImageUrl,
   useHomeConfig,
@@ -162,9 +163,7 @@ export function VerticalSection({
                 className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap text-[14px] font-semibold text-forest-700"
               >
                 {t('home-collections-view-all')}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M5 12h13M13 6l6 6-6 6" />
-                </svg>
+                <ArrowRight size={14} aria-hidden />
               </Link>
             </div>
 

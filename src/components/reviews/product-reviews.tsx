@@ -13,6 +13,7 @@ import Link from '@/components/ui/link';
 import { Routes } from '@/config/routes';
 import isEmpty from 'lodash/isEmpty';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
+import { Pencil, ArrowRight, Leaf } from '@/components/ui/icon';
 
 type ProductReviewsProps = {
   className?: any;
@@ -22,55 +23,6 @@ type ProductReviewsProps = {
   totalReviews?: number;
   ratingCount?: Array<{ rating: number; total: number }>;
 };
-
-/* ─── inline line icons (shared LineIcon has no pen glyph; local like the
-       product card's own GoldStar/TruckIcon) ──────────────────────────── */
-const PenIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-    className="h-[18px] w-[18px] shrink-0"
-  >
-    <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-  </svg>
-);
-
-const ArrowRightIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-    className="h-4 w-4 shrink-0"
-  >
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
-  </svg>
-);
-
-const LeafGlyph = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-    className="h-10 w-10"
-  >
-    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
-    <path d="M2 21c0-3 1.85-5.36 5.08-6" />
-  </svg>
-);
 
 const CARD_SHADOW =
   'shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
@@ -170,7 +122,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                   className="inline-flex items-center gap-2.5 rounded-[12px] bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-snug text-[#24693E] transition hover:bg-[#E9F2DD]"
                 >
                   Bought this plant? Review it from your orders.
-                  <ArrowRightIcon />
+                  <ArrowRight size={16} className="shrink-0" aria-hidden />
                 </Link>
               ) : (
                 <button
@@ -178,7 +130,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                   onClick={handleWriteReview}
                   className="inline-flex h-12 items-center gap-2.5 rounded-[14px] bg-[#14532D] px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
                 >
-                  <PenIcon />
+                  <Pencil size={18} className="shrink-0" aria-hidden />
                   Write a review
                 </button>
               )}
@@ -246,7 +198,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
             <span className="text-[#24693E]/35">
-              <LeafGlyph />
+              <Leaf size={40} aria-hidden />
             </span>
             <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-reviews-found')}

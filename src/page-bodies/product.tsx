@@ -27,6 +27,7 @@ import isEmpty from 'lodash/isEmpty';
 import dynamic from 'next/dynamic';
 
 import PlantAtHomeProductDetails from '@/components/products/details/plantathome-details';
+import { Leaf, ArrowRight } from '@/components/ui/icon';
 import ProductCard from '@/components/products/cards/card';
 import StyledSpaces from '@/components/products/details/plantathome/styled-spaces';
 import FrequentlyBoughtTogether from '@/components/products/details/plantathome/frequently-bought-together';
@@ -99,11 +100,11 @@ const ProductPage = ({ product }: any) => {
                     <div className="mb-6 flex items-center justify-between">
                       <h2 className="flex items-center gap-2 text-[1.4rem] font-medium text-forest-700">
                         You May Also Like
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-forest-500"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" /><path d="M2 21c0-3 1.85-5.36 5.08-6" /></svg>
+                        <Leaf size={20} className="text-forest-500" aria-hidden />
                       </h2>
                       <Link href="/plants/search" className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest-600 hover:text-forest-700">
                         View All Plants
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                        <ArrowRight size={14} aria-hidden />
                       </Link>
                     </div>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">

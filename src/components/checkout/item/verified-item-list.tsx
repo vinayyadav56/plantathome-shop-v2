@@ -22,6 +22,7 @@ import PaymentGrid from '@/components/checkout/payment/payment-grid';
 import { PlaceOrderAction } from '@/components/checkout/place-order-action';
 import Wallet from '@/components/checkout/wallet/wallet';
 import { useSettings } from '@/framework/settings';
+import { ShoppingBag } from '@/components/ui/icon';
 import cn from 'classnames';
 import { CouponType } from '@/types';
 
@@ -100,9 +101,7 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   return (
     <div className={cn('pa-order-summary', className)}>
       <h3 className="pa-order-summary-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2C5F2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
-        </svg>
+        <ShoppingBag size={16} style={{ color: '#2C5F2E' }} aria-hidden />
         {t('text-your-order')}
       </h3>
 

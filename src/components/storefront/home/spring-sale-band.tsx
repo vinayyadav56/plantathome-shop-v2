@@ -5,43 +5,14 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
+import { ArrowRight, Headset, RotateCcw, ShieldCheck, Star } from '@/components/ui/icon';
 
 const PERKS = [
-  {
-    label: 'Best Quality Products',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Expert Plant Care Support',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Easy Returns & Refunds',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-        <path d="M3 3v5h5" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Secure Payments',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z" />
-        <path d="m9 12 2 2 4-4" />
-      </svg>
-    ),
-  },
+  // Sized by the parent's [&>svg] rules (responsive), so no `size` prop here.
+  { label: 'Best Quality Products', icon: <Star aria-hidden /> },
+  { label: 'Expert Plant Care Support', icon: <Headset aria-hidden /> },
+  { label: 'Easy Returns & Refunds', icon: <RotateCcw aria-hidden /> },
+  { label: 'Secure Payments', icon: <ShieldCheck aria-hidden /> },
 ];
 
 export function SpringSaleBand() {
@@ -102,9 +73,7 @@ export function SpringSaleBand() {
               className="mt-2.5 inline-flex items-center gap-1.5 rounded-[9px] bg-ds-cta px-3.5 py-1.5 font-hanken text-[11.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] lg:mt-3 lg:px-4 lg:py-2 lg:text-[12.5px]"
             >
               {t('home-sale-cta')}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M5 12h13M13 6l6 6-6 6" />
-              </svg>
+              <ArrowRight size={12} aria-hidden />
             </Link>
           </div>
 

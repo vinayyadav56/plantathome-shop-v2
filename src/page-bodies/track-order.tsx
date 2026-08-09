@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from '@/compat/next-router';
 import { getLayout } from '@/components/layouts/layout';
 import { Routes } from '@/config/routes';
+import { ShoppingBag, ArrowRight } from '@/components/ui/icon';
 
 export default function TrackOrderPage() {
   const router = useRouter();
@@ -20,9 +21,7 @@ export default function TrackOrderPage() {
     <div className="flex min-h-[70vh] w-full items-center justify-center bg-[linear-gradient(180deg,#FFFFFF_0%,#F6FAF7_50%,#EFF4EC_100%)] px-4 py-16">
       <div className="w-full max-w-md rounded-2xl border border-kraft-200/80 bg-white p-8 shadow-[0_8px_30px_-12px_rgba(34,48,26,0.18)]">
         <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage-100">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2E5E3A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 8h14l-1 11a2 2 0 01-2 2H8a2 2 0 01-2-2L5 8z" /><path d="M9 8V6a3 3 0 016 0v2" /><circle cx="12" cy="14" r="2" />
-          </svg>
+          <ShoppingBag size={20} style={{ color: '#2E5E3A' }} aria-hidden />
         </div>
         <h1 className="font-pahserif text-2xl font-medium text-forest-900">Track Your Order</h1>
         <p className="mt-1.5 text-sm text-stone-500">
@@ -44,7 +43,7 @@ export default function TrackOrderPage() {
             className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-forest-900 text-[14px] font-semibold text-white transition hover:bg-forest-800 disabled:cursor-not-allowed disabled:bg-stone-300"
           >
             Track Order
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+            <ArrowRight size={16} aria-hidden />
           </button>
         </form>
 

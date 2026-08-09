@@ -7,12 +7,7 @@ import {
   deliveryTimeAtom,
   verifiedResponseAtom,
 } from '@/store/checkout';
-
-const CheckIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
+import { Check } from '@/components/ui/icon';
 
 export const CHECKOUT_STEPS = ['Contact', 'Address', 'Delivery', 'Review'];
 
@@ -62,7 +57,7 @@ export default function CheckoutSteps({
             style={{ background: 'none', border: 'none', padding: 0, cursor: clickable ? 'pointer' : 'default' }}
           >
             <span className="pa-step-dot">
-              {s.done && i !== current ? <CheckIcon /> : <span>{i + 1}</span>}
+              {s.done && i !== current ? <Check size={14} aria-hidden /> : <span>{i + 1}</span>}
             </span>
             <span className="pa-step-label">{s.label}</span>
           </button>

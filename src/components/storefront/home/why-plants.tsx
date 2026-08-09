@@ -6,25 +6,21 @@ import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
 import { useHomeConfig } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
+import { ArrowRight, Droplet, Earth, Heart, Leaf, TrendingUp, VolumeX, Wind } from '@/components/ui/icon';
 
 /** Icon presets selectable from the admin Why-Plants editor (iconKey).
- *  Inline SVG line icons — the old Font Awesome <i> tags depended on a
- *  stylesheet the App Router build never loads, so they rendered as empty
- *  circles. Admin keys are unchanged so saved CMS cards keep working. */
-const whyIcon = (paths: React.ReactNode) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[22px] w-[22px]">
-    {paths}
-  </svg>
-);
+ *  Lucide glyphs via the shared icon funnel (same picks as pah/why-plants).
+ *  Admin keys are unchanged so saved CMS cards keep working. The rendering
+ *  chip sizes these via its [&>svg] rules. */
 export const WHY_ICONS: Record<string, React.ReactNode> = {
-  air: whyIcon(<><path d="M9.6 4.6A2 2 0 1 1 11 8H2" /><path d="M12.6 19.4A2 2 0 1 0 14 16H2" /><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" /></>),
-  stress: whyIcon(<path d="M19 14c1.5-1.4 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.1 3 5.5l7 7z" />),
-  productivity: whyIcon(<><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></>),
-  humidity: whyIcon(<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />),
-  noise: whyIcon(<><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="22" y1="9" x2="16" y2="15" /><line x1="16" y1="9" x2="22" y2="15" /></>),
-  planet: whyIcon(<><circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>),
-  leaf: whyIcon(<><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" /><path d="M2 21c0-3 1.85-5.36 5.08-6" /></>),
-  heart: whyIcon(<path d="M19 14c1.5-1.4 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.1 3 5.5l7 7z" />),
+  air: <Wind size={16} aria-hidden />,
+  stress: <Heart size={16} aria-hidden />,
+  productivity: <TrendingUp size={16} aria-hidden />,
+  humidity: <Droplet size={16} aria-hidden />,
+  noise: <VolumeX size={16} aria-hidden />,
+  planet: <Earth size={16} aria-hidden />,
+  leaf: <Leaf size={16} aria-hidden />,
+  heart: <Heart size={16} aria-hidden />,
 };
 
 const BENEFITS: { title: string; body: string; img: string; iconKey: string }[] = [
@@ -103,12 +99,7 @@ export function WhyPlants() {
           className="mx-auto mb-8 max-w-[760px] text-center"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-forest-600/15 bg-forest-600/[0.07] px-4 py-1.5 font-jost text-[11.5px] font-semibold uppercase tracking-[0.22em] text-forest-600">
-            {/* Inline SVG, not Font Awesome: FA loads async now, so an <i> here
-                rendered as a blank gap until the stylesheet arrived. */}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[13px] w-[13px] text-forest-500">
-              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
-              <path d="M2 21c0-3 1.85-5.36 5.08-6" />
-            </svg>
+            <Leaf size={14} className="text-forest-500" aria-hidden />
             {t('home-why-eyebrow')}
           </span>
           {/* One line on mobile too — fluid rather than fixed 30px, which wrapped
@@ -202,13 +193,9 @@ export function WhyPlants() {
 
           <div className="relative z-10 flex flex-col items-center gap-6 px-7 py-9 text-center sm:px-10 md:flex-row md:gap-7 md:py-8 md:text-left lg:gap-10 lg:px-12 lg:py-10">
 
-            {/* Inline SVG, not Font Awesome — FA loads async and this icon
-                popped in a beat after the band rendered. */}
             <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.07] text-sage-200 md:h-[46px] md:w-[46px] lg:h-[56px] lg:w-[56px]">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]">
-                <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" />
-                <path d="M2 21c0-3 1.85-5.36 5.08-6" />
-              </svg>
+              {/* responsive sizing → classes, no size prop */}
+              <Leaf className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]" aria-hidden />
             </div>
 
             {/* vertical divider */}
@@ -228,9 +215,7 @@ export function WhyPlants() {
               className="shrink-0 inline-flex items-center gap-2 rounded-[13px] bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
             >
               {t('home-why-cta')}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
-                <path d="M5 12h13M13 6l6 6-6 6" />
-              </svg>
+              <ArrowRight size={16} aria-hidden />
             </Link>
           </div>
         </motion.div>

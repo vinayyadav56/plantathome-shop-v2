@@ -1,6 +1,7 @@
 import { CloseIcon } from '@/components/icons/close-icon';
 import { PencilIcon } from '@/components/icons/pencil-icon';
 import { formatAddress } from '@/lib/format-address';
+import { Check } from '@/components/ui/icon';
 import classNames from 'classnames';
 import { useTranslation } from 'next-i18next';
 
@@ -26,9 +27,7 @@ const AddressCard: React.FC<AddressProps> = ({
     <div className={classNames('pa-address-card', { 'pa-address-card--checked': checked })}>
       {checked && (
         <span className="pa-address-check">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
+          <Check size={12} aria-hidden />
         </span>
       )}
       <div className="flex items-center gap-2">

@@ -9,6 +9,7 @@ import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
 import usePrice from '@/lib/use-price';
 import { compactPrice, getCardBadge, shortDescription, PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
+import { Heart, Star, ShoppingBag } from '@/components/ui/icon';
 import type { Product } from '@/types';
 
 const AddToCart = dynamic(
@@ -110,9 +111,12 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
           className="absolute right-2.5 top-2.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-white shadow-sm transition hover:scale-105"
           aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill={inWishlist ? '#C26B45' : 'none'} stroke={inWishlist ? '#C26B45' : '#1E4023'} strokeWidth="1.8" aria-hidden>
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
+          <Heart
+            size={14}
+            fill={inWishlist ? '#C26B45' : 'none'}
+            style={{ color: inWishlist ? '#C26B45' : '#1E4023' }}
+            aria-hidden
+          />
         </button>
       </div>
 
@@ -129,9 +133,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
           </Link>
           {count > 0 ? (
             <span className="flex shrink-0 items-center gap-1 pt-0.5">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#FDBA12" aria-hidden>
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
+              <Star size={14} fill="currentColor" strokeWidth={0} style={{ color: '#FDBA12' }} aria-hidden />
               <span className="text-[12px] font-semibold leading-none text-gray-900">
                 {rating.toFixed(1)}
               </span>
@@ -177,11 +179,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
               title="Select options"
               className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-ds-btn text-white transition duration-200 hover:bg-ds-btn-hover"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
-                <circle cx="9" cy="21" r="1.6" />
-                <circle cx="19" cy="21" r="1.6" />
-                <path d="M1 1h3l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-              </svg>
+              <ShoppingBag size={16} aria-hidden />
             </Link>
           ) : (
             <AddToCart variant="homeMini" counterVariant="plantathome" counterClass="!h-9 !w-[96px]" data={product} />

@@ -1,5 +1,6 @@
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
+import { X } from '@/components/ui/icon';
 
 /** One removable chip per active filter value, derived straight from the URL
  *  query (the single source of filter state). Removing a chip strips just that
@@ -92,9 +93,7 @@ const AppliedFilters: React.FC = () => {
               aria-label={`${t('filter-remove')} ${chip.label}`}
               className="grid h-[18px] w-[18px] place-items-center rounded-full text-forest-900/60 transition hover:bg-forest-900/10 hover:text-forest-900"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" className="h-3 w-3" aria-hidden>
-                <path d="M6 6l12 12M18 6 6 18" />
-              </svg>
+              <X size={12} aria-hidden />
             </button>
           </span>
         ))}

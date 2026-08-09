@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { usePlantVoice } from '@/lib/use-plant-voice';
 import { SVGLoaderIcon } from '@/components/icons/svg-loader';
+import { Mic } from '@/components/ui/icon';
 
 interface Props {
   className?: string;
@@ -53,10 +54,7 @@ export const VoiceMic: React.FC<Props> = ({ className }) => {
         {processing ? (
           <SVGLoaderIcon className="h-5 w-5" />
         ) : (
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 14a3 3 0 003-3V6a3 3 0 10-6 0v5a3 3 0 003 3z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-14 0M12 18v3M8 21h8" />
-          </svg>
+          <Mic size={20} aria-hidden />
         )}
 
         {popover && (

@@ -1,4 +1,5 @@
 import { useTranslation } from 'next-i18next';
+import { Search } from '@/components/ui/icon';
 
 /** Inline mini-search shown above long filter checkbox lists (>8 entries) —
  *  pure client-side narrowing, no API call. */
@@ -9,10 +10,7 @@ const FilterListSearch: React.FC<{
   const { t } = useTranslation('common');
   return (
     <div className="relative mb-3">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" aria-hidden>
-        <circle cx="11" cy="11" r="7" />
-        <path d="m20 20-3.5-3.5" />
-      </svg>
+      <Search size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-stone-400" aria-hidden />
       <input
         type="text"
         value={value}

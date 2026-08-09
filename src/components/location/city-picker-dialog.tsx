@@ -5,6 +5,7 @@ import { useAllCities } from '@/framework/location';
 import { getBrowserCoords, reverseGeocode } from '@/lib/geocode';
 import { track } from '@/lib/analytics/track';
 import { getRecentCities, pushRecentCity } from '@/lib/recent-cities';
+import { MapPin } from '@/components/ui/icon';
 
 interface Props {
   open: boolean;
@@ -174,7 +175,7 @@ export default function CityPickerDialog({
                 disabled={detecting}
                 className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-accent disabled:opacity-50"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                <MapPin size={16} aria-hidden />
                 {detecting ? 'Detecting…' : 'Detect my location'}
               </button>
 

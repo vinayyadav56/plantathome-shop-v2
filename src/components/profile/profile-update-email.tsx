@@ -6,6 +6,7 @@ import pick from 'lodash/pick';
 import { Form } from '@/components/ui/forms/form';
 import { useUpdateEmail } from '@/framework/user';
 import type { UpdateEmailUserInput, User } from '@/types';
+import { Mail } from '@/components/ui/icon';
 
 const ProfileUpdateEmail = ({ user }: { user: User }) => {
   const { t } = useTranslation('common');
@@ -33,7 +34,7 @@ const ProfileUpdateEmail = ({ user }: { user: User }) => {
         <Card className="w-full">
           <div className="mb-6 flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sage-100 text-forest-700">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></svg>
+              <Mail size={20} aria-hidden />
             </span>
             <div>
               <h3 className="text-[16px] font-medium text-forest-900">{t('text-email')}</h3>

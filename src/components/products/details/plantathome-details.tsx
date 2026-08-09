@@ -39,26 +39,7 @@ import StickyAtcBar from './plantathome/sticky-atc-bar';
 import { LineIcon } from '@/components/icons/line-icons';
 import { usePdpContent } from '@/lib/use-home-config';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
-
-/* ── small inline icons ─────────────────────────────────────────── */
-const GoldStar = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="#FDBA12" aria-hidden>
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
-);
-const Bag = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
-  </svg>
-);
-const Spark = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-    <path d="M12 2l1.9 5.6L19.5 9.5 13.9 11.4 12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2z" />
-  </svg>
-);
-const Chevron = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
-);
+import { Star, Heart, Sparkles, ChevronRight, ShoppingBag, Plus, Minus } from '@/components/ui/icon';
 
 /* ── badge from tags / flash sale ───────────────────────────────── */
 function getBadge(product: Product): string | null {
@@ -314,7 +295,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     ) : (
                       <span className={last ? 'font-medium text-clay-600' : 'text-forest-800/80'}>{c.label}</span>
                     )}
-                    {!last && <span className="text-forest-800/40"><Chevron /></span>}
+                    {!last && <span className="text-forest-800/40"><ChevronRight size={16} aria-hidden /></span>}
                   </span>
                 );
               })}
@@ -338,9 +319,12 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
               className="absolute right-3 top-3 z-[2] grid h-10 w-10 place-items-center rounded-full border border-black/5 bg-white/90 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:right-4 sm:top-4 sm:h-11 sm:w-11"
             >
-              <svg viewBox="0 0 24 24" fill={inWishlist ? '#C26B45' : 'none'} stroke={inWishlist ? '#C26B45' : '#374151'} strokeWidth="1.8" className="h-[19px] w-[19px] sm:h-[21px] sm:w-[21px]" aria-hidden>
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
+              <Heart
+                fill={inWishlist ? '#C26B45' : 'none'}
+                style={{ color: inWishlist ? '#C26B45' : '#374151' }}
+                className="h-[18px] w-[18px] sm:h-5 sm:w-5"
+                aria-hidden
+              />
             </button>
 
             {/*
@@ -359,7 +343,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 onClick={onAskAi}
                 className="absolute bottom-3 left-3 z-[2] inline-flex items-center gap-1.5 rounded-full border border-black/5 bg-white/90 px-3 py-2 text-[12px] font-bold text-clay-700 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:bottom-4 sm:left-4 sm:gap-2 sm:px-3.5 sm:text-[13px]"
               >
-                <Spark className="h-4 w-4 text-clay-600" /> Ask AI
+                <Sparkles size={16} fill="currentColor" className="text-clay-600" aria-hidden /> Ask AI
               </button>
             )}
           </div>
@@ -409,7 +393,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {reviewCount > 0 && (
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <a href="#reviews" className="group flex items-center gap-2">
-                  <GoldStar className="h-[15px] w-[15px]" />
+                  <Star size={14} fill="currentColor" strokeWidth={0} style={{ color: '#FDBA12' }} aria-hidden />
                   <span className="text-[13.5px] font-semibold text-gray-900">{ratingVal.toFixed(1)}</span>
                   <span className="text-[12.5px] text-stone-500 underline-offset-2 group-hover:underline">
                     ({reviewCount.toLocaleString('en-IN')} review{reviewCount === 1 ? '' : 's'})
@@ -594,7 +578,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-cream-100 disabled:opacity-40"
                   disabled={qty <= 1}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M5 12h14" /></svg>
+                  <Minus size={16} aria-hidden />
                 </button>
                 <span className="min-w-[1.5rem] text-center text-[14px] font-semibold text-forest-900">
                   {String(qty).padStart(2, '0')}
@@ -605,7 +589,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   onClick={() => setQty((q) => (availableQty ? Math.min(availableQty, q + 1) : q + 1))}
                   className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-cream-100"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+                  <Plus size={16} aria-hidden />
                 </button>
               </div>
 
@@ -620,7 +604,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     : 'bg-[#14532D] shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-[#0D4324]',
                 )}
               >
-                <Bag className="h-5 w-5" />
+                <ShoppingBag size={20} aria-hidden />
                 {ctaLabel}
               </button>
             </div>

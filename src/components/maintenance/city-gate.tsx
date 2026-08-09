@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { HttpClient } from '@/framework/client/http-client';
 import { useCustomerCity } from '@/lib/use-customer-city';
+import { Sun } from '@/components/ui/icon';
 import {
   adminOnly,
   getAuthCredentials,
@@ -78,10 +79,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
         />
       ) : (
         <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-sage-100">
-          <svg viewBox="0 0 24 24" className="h-10 w-10 text-forest-700" fill="none" stroke="currentColor" strokeWidth="1.6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m14.95-6.95l-1.414 1.414M7.464 16.536L6.05 17.95m11.9 0l-1.414-1.414M7.464 7.464L6.05 6.05" />
-            <circle cx="12" cy="12" r="4" />
-          </svg>
+          <Sun size={40} className="text-forest-700" aria-hidden />
         </div>
       )}
 

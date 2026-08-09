@@ -8,26 +8,24 @@ import { useLogout, useUser } from '@/framework/user';
 import { useSettings } from '@/framework/settings';
 import { Routes } from '@/config/routes';
 import { isStripeAvailable } from '@/lib/is-stripe-available';
+import { Bell, CircleHelp, CreditCard, Download, FileText, Heart, Leaf, Lock, LogOut, Package, Plus, RotateCcw, ShoppingBag, User } from '@/components/ui/icon';
 
 type Props = { className?: string };
 
-/* Thin line icons per account route (Lucide-style, matching the storefront). */
-const I = (d: React.ReactNode) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] shrink-0" aria-hidden>{d}</svg>
-);
+/* Line icons per account route, from the shared Lucide funnel. */
 const NAV_ICON: Record<string, React.ReactNode> = {
-  [Routes.profile]: I(<><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" /></>),
-  [Routes.orders]: I(<><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18M16 10a4 4 0 0 1-8 0" /></>),
-  [Routes.myPackages]: I(<><path d="M12 2 3 7v10l9 5 9-5V7Z" /><path d="m3 7 9 5 9-5M12 22V12" /></>),
-  [Routes.downloads]: I(<><path d="M12 3v12M8 11l4 4 4-4" /><path d="M4 19h16" /></>),
-  [Routes.wishlists]: I(<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z" />),
-  [Routes.questions]: I(<><circle cx="12" cy="12" r="9.5" /><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .8-1 1.7M12 17h.01" /></>),
-  [Routes.refunds]: I(<><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></>),
-  [Routes.reports]: I(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6M9 13h6M9 17h4" /></>),
-  [Routes.help]: I(<><circle cx="12" cy="12" r="9.5" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.8.4-1.4.9-1.4 1.7M12 17h.01" /></>),
-  [Routes.changePassword]: I(<><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>),
-  [Routes.notifyLogs]: I(<><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 0 1-3.4 0" /></>),
-  [Routes.cards]: I(<><rect x="2" y="5" width="20" height="14" rx="2" /><path d="M2 10h20" /></>),
+  [Routes.profile]: <User size={18} className="shrink-0" aria-hidden />,
+  [Routes.orders]: <ShoppingBag size={18} className="shrink-0" aria-hidden />,
+  [Routes.myPackages]: <Package size={18} className="shrink-0" aria-hidden />,
+  [Routes.downloads]: <Download size={18} className="shrink-0" aria-hidden />,
+  [Routes.wishlists]: <Heart size={18} className="shrink-0" aria-hidden />,
+  [Routes.questions]: <CircleHelp size={18} className="shrink-0" aria-hidden />,
+  [Routes.refunds]: <RotateCcw size={18} className="shrink-0" aria-hidden />,
+  [Routes.reports]: <FileText size={18} className="shrink-0" aria-hidden />,
+  [Routes.help]: <CircleHelp size={18} className="shrink-0" aria-hidden />,
+  [Routes.changePassword]: <Lock size={18} className="shrink-0" aria-hidden />,
+  [Routes.notifyLogs]: <Bell size={18} className="shrink-0" aria-hidden />,
+  [Routes.cards]: <CreditCard size={18} className="shrink-0" aria-hidden />,
 };
 
 const DashboardSidebar: React.FC<Props> = ({ className }) => {
@@ -85,7 +83,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         {/* wallet points */}
         <div className="rounded-2xl border border-forest-900/10 bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] text-forest-600" aria-hidden><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" /><path d="M2 21c0-3 1.85-5.4 5.08-6" /></svg>
+            <Leaf size={18} className="text-forest-600" aria-hidden />
             <span className="text-[15px] font-bold text-forest-900">{t('wallet-points')}</span>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
@@ -97,7 +95,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
             ))}
           </div>
           <div className="mt-4 flex items-center gap-2 rounded-xl bg-sage-100 px-3.5 py-2.5 text-[12px] font-semibold text-forest-700">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0" aria-hidden><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></svg>
+            <Plus size={16} className="shrink-0" aria-hidden />
             {t('earn-more-points')}
           </div>
         </div>
@@ -128,7 +126,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
               onClick={() => logout()}
               className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-red-500 transition hover:bg-red-50"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] shrink-0" aria-hidden><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5M21 12H9" /></svg>
+              <LogOut size={18} className="shrink-0" aria-hidden />
               {t('profile-sidebar-logout')}
             </button>
           </div>

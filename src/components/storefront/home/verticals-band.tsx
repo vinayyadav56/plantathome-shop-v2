@@ -11,6 +11,7 @@ import {
   useHomeConfig,
   resolveImageUrl,
 } from '@/lib/use-home-config';
+import { ArrowRight } from '@/components/ui/icon';
 
 const EXPO = [0.22, 1, 0.36, 1] as const;
 
@@ -87,9 +88,7 @@ export function VerticalsBand() {
             className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap text-[14px] font-semibold text-forest-700"
           >
             {t('home-verticals-view-all')}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M5 12h13M13 6l6 6-6 6" />
-            </svg>
+            <ArrowRight size={14} aria-hidden />
           </Link>
         </motion.div>
 
@@ -142,9 +141,7 @@ export function VerticalsBand() {
                       </p>
                     </div>
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-md transition-all duration-300 group-hover:bg-[#4ADE80] group-hover:text-forest-950">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                        <path d="M5 12h13M13 6l6 6-6 6" />
-                      </svg>
+                      <ArrowRight size={14} aria-hidden />
                     </span>
                   </div>
                 </Link>

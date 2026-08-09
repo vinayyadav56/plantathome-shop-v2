@@ -2,6 +2,7 @@
 import { useQuery } from 'react-query';
 import { HttpClient } from '@/framework/client/http-client';
 import { getStoredLatLng } from '@/lib/customer-location';
+import { CircleAlert } from '@/components/ui/icon';
 
 /**
  * Shows the "we'll confirm availability within 6 hours" note when the nearest
@@ -33,9 +34,7 @@ export default function VendorAvailabilityNote({
 
   return (
     <div className="mt-5 flex items-start gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
-        <circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" />
-      </svg>
+      <CircleAlert size={18} className="mt-0.5 shrink-0" aria-hidden />
       <span>
         {data.message || 'We will update the availability of this plant within 6 hours.'}{' '}
         You can still place your order — we’ll confirm shortly.

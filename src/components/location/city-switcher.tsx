@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useCustomerCity } from '@/lib/use-customer-city';
 import CityPickerDialog from './city-picker-dialog';
 import ChangeCityDialog from './change-city-dialog';
+import { MapPin } from '@/components/ui/icon';
 
 /**
  * Header "📍 <city> · Change" chip (Shopping-City redesign). Opens the
@@ -40,7 +41,7 @@ export default function CitySwitcher({
         className={`inline-flex items-center gap-1.5 text-[12px] font-medium ${color} ${className}`}
         aria-label="Change shopping city"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+        <MapPin size={14} aria-hidden />
         <span className="font-semibold">{city ?? 'Select city'}</span>
         <span className={tone === 'light' ? 'text-white/60' : 'text-stone-400'}>
           · Change

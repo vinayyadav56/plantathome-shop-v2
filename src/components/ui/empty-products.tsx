@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { getStoredCity } from '@/lib/customer-location';
+import { ArrowRight } from '@/components/ui/icon';
 
 /**
  * Branded, city-aware "no products" empty state — replaces the generic Pickbazar
@@ -65,7 +66,7 @@ export function EmptyProducts({
       <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row">
         <Link href="/plants/search" className="pa-btn pa-btn-primary">
           Browse all plants
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+          <ArrowRight size={16} aria-hidden />
         </Link>
         <Link href="/plants/search" className="pa-btn pa-btn-secondary">Explore categories</Link>
         {city && (

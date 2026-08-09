@@ -3,6 +3,7 @@ import CartIcon from '@/components/icons/cart';
 import { useTranslation } from 'next-i18next';
 import cn from 'classnames';
 import { PlusIconNew } from '@/components/icons/plus-icon';
+import { ShoppingBag } from '@/components/ui/icon';
 
 type Props = {
   variant?:
@@ -65,9 +66,7 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
           disabled={disabled}
           className="pa-add-btn order-5 sm:order-4"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="ltr:mr-1.5 rtl:ml-1.5 shrink-0">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
-          </svg>
+          <ShoppingBag size={16} className="ltr:mr-1.5 rtl:ml-1.5 shrink-0" aria-hidden />
           <span>{t('text-add')}</span>
         </button>
       );

@@ -8,6 +8,7 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import { useUser } from '@/framework/user';
 import isEmpty from 'lodash/isEmpty';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
+import { Search, MessageCircle } from '@/components/ui/icon';
 
 type ProductQuestionsProps = {
   className?: any;
@@ -15,38 +16,6 @@ type ProductQuestionsProps = {
   shopId: string;
   productType?: string;
 };
-
-/* ─── inline line icons (local, like the product card's own glyphs) ────── */
-const SearchGlyph = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-    className="h-[18px] w-[18px]"
-  >
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-);
-
-const ChatGlyph = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden
-    className="h-[18px] w-[18px] shrink-0"
-  >
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-  </svg>
-);
 
 const CARD_SHADOW =
   'shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
@@ -140,7 +109,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
           <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:w-auto lg:justify-end">
             <div className="relative w-full sm:max-w-[360px]">
               <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#8A8A8A]">
-                <SearchGlyph />
+                <Search size={18} aria-hidden />
               </span>
               <input
                 type="search"
@@ -156,7 +125,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
               onClick={openQuestionModal}
               className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
             >
-              <ChatGlyph />
+              <MessageCircle size={18} className="shrink-0" aria-hidden />
               {t('text-ask-question')}
             </button>
           </div>
@@ -211,18 +180,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
             <span className="text-[#24693E]/35">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden
-                className="h-10 w-10"
-              >
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-              </svg>
+              <MessageCircle size={40} aria-hidden />
             </span>
             <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-question-found')}

@@ -6,47 +6,30 @@ import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
+import { BadgeCheck, Building2, Gift, Globe, Leaf, ShieldCheck, Sprout, Truck } from '@/components/ui/icon';
 
 const REASONS: { a: string; b: string; icon: React.ReactNode }[] = [
-  { a: 'Better for People', b: '& Workspaces', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" /><path d="M2 21c0-3 1.85-5.4 5.08-6" /></svg>) },
-  { a: 'Elegant Gifts for', b: 'Every Occasion', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7"><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" /></svg>) },
-  { a: 'Sustainable Choice', b: 'for a Greener Future', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7"><circle cx="12" cy="12" r="9.5" /><path d="M2.5 12h19M12 2.5a15 15 0 0 1 4 9.5 15 15 0 0 1-4 9.5 15 15 0 0 1-4-9.5 15 15 0 0 1 4-9.5Z" /></svg>) },
-  { a: 'Perfect for Clients,', b: 'Partners & Employees', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7"><path d="M9 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16" /><path d="M9 21H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h5" /><path d="M13 8h3M13 12h3M13 16h3" /></svg>) },
+  { a: 'Better for People', b: '& Workspaces', icon: <Leaf size={24} aria-hidden /> },
+  { a: 'Elegant Gifts for', b: 'Every Occasion', icon: <Gift size={24} aria-hidden /> },
+  { a: 'Sustainable Choice', b: 'for a Greener Future', icon: <Globe size={24} aria-hidden /> },
+  { a: 'Perfect for Clients,', b: 'Partners & Employees', icon: <Building2 size={24} aria-hidden /> },
 ];
 
 const ASSURE: { title: string; sub: string; icon: React.ReactNode }[] = [
   {
     title: 'Curated with Care',
     sub: 'Premium quality plants, beautifully packaged.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M12 21s7-3.6 7-9V5.6L12 3 5 5.6V12c0 5.4 7 9 7 9Z" />
-        <path d="m9 12 2 2 4-4" />
-      </svg>
-    ),
+    icon: <ShieldCheck size={24} aria-hidden />,
   },
   {
     title: 'Customized for You',
     sub: 'Personalized messages, branding & bulk options.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <circle cx="12" cy="8.5" r="5.5" />
-        <path d="m12 5.8 1 2 2.2.3-1.6 1.5.4 2.2L12 12.8l-2 1.1.4-2.3L8.8 9.6l2.2-.3Z" />
-        <path d="M8.6 13.6 7 22l5-2.8L17 22l-1.6-8.4" />
-      </svg>
-    ),
+    icon: <BadgeCheck size={24} aria-hidden />,
   },
   {
     title: 'Pan India Delivery',
     sub: 'Timely and safe delivery across 500+ cities.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-        <path d="M2 17V6.5A1.5 1.5 0 0 1 3.5 5h10A1.5 1.5 0 0 1 15 6.5V17" />
-        <path d="M15 9h3.6a2 2 0 0 1 1.7 1l1.7 3v4h-3" />
-        <circle cx="6.5" cy="17.5" r="2" />
-        <circle cx="17.5" cy="17.5" r="2" />
-      </svg>
-    ),
+    icon: <Truck size={24} aria-hidden />,
   },
 ];
 
@@ -70,7 +53,7 @@ export function GiftingBand() {
           className="flex flex-col justify-center px-5 py-12 sm:px-8 lg:flex-[1_1_56%] lg:py-[34px] lg:pe-[30px] lg:ps-16"
         >
           <span className="font-jost inline-flex w-fit items-center gap-2.5 rounded-full border-[1.5px] border-sage-400 bg-white/45 px-[18px] py-[9px] text-[11px] font-medium uppercase tracking-[0.22em] text-forest-700">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-forest-600"><path d="M7 20s-1-7 4-11c0 0 2 4-1 7" /><path d="M12 20c0-6 4-10 9-10 0 6-4 10-9 10Z" /></svg>
+            <Sprout size={14} className="text-forest-600" aria-hidden />
             {t('home-gift-eyebrow')}
           </span>
           <h2 className="font-cormorant mt-4 text-[2.4rem] font-medium leading-[1.0] tracking-[-0.02em] text-forest-900 sm:text-[56px]">
@@ -78,7 +61,7 @@ export function GiftingBand() {
           </h2>
           <div className="mt-4 flex max-w-[472px] items-center gap-[13px]">
             <div className="h-px w-[120px] shrink-0 bg-kraft-300 sm:w-[186px]" />
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[15px] w-[15px] text-forest-500"><path d="M7 20s-1-7 4-11c0 0 2 4-1 7" /><path d="M12 20c0-6 4-10 9-10 0 6-4 10-9 10Z" /></svg>
+            <Sprout size={14} className="text-forest-500" aria-hidden />
             <div className="h-px flex-1 bg-kraft-300" />
           </div>
           {/* single line at every width: font scales with the viewport below lg,
@@ -103,7 +86,7 @@ export function GiftingBand() {
             ))}
           </div>
           <Link href="/corporate-gifting" className="font-jost mt-6 inline-flex w-fit items-center gap-3 rounded-[11px] bg-ds-btn px-[30px] py-[17px] text-[14px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-ds-btn-hover">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]"><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" /></svg>
+            <Gift size={18} aria-hidden />
             {t('home-gift-cta')}
           </Link>
         </motion.div>

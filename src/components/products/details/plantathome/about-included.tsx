@@ -1,12 +1,6 @@
 import React from 'react';
 import type { Product } from '@/types';
-
-const Check = () => (
-  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-);
-const Play = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M8 5v14l11-7z" /></svg>
-);
+import { Check, Play } from '@/components/ui/icon';
 
 const INCLUDED = (name: string) => [
   `Healthy ${name}`,
@@ -51,7 +45,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
           )}
           <span className="absolute inset-0 grid place-items-center">
             <span className="grid h-16 w-16 place-items-center rounded-full bg-white/90 text-forest-700 shadow-lg transition group-hover:scale-110">
-              <Play className="h-6 w-6 translate-x-0.5" />
+              <Play size={24} fill="currentColor" className="translate-x-0.5" aria-hidden />
             </span>
           </span>
         </a>
@@ -63,7 +57,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
             {INCLUDED(name).map((it) => (
               <li key={it} className="flex items-center gap-2.5 text-[13.5px] text-stone-700">
                 <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-forest-600 text-white">
-                  <Check />
+                  <Check size={12} aria-hidden />
                 </span>
                 {it}
               </li>

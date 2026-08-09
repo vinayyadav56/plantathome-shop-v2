@@ -6,6 +6,7 @@ export const SuccessAnimation = () => {
     <>
       <button onClick={() => setSuccess(true)}>animate success</button>
       <svg
+        aria-hidden
         viewBox="0 0 37 37"
         xmlns="http://www.w3.org/2000/svg"
         className={`h-auto w-14 xs:right-4 xs:w-6 ${success && 'is-carting'}`}
@@ -39,6 +40,7 @@ export const ErrorAnimation = () => {
     <>
       <button onClick={() => setError(true)}>animate error</button>
       <svg
+        aria-hidden
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 37 37"
         className={`h-auto w-14 xs:right-4 xs:w-6 ${error && 'is-carting'}`}

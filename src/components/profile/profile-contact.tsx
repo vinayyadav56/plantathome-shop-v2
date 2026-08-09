@@ -4,6 +4,7 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import { useTranslation } from 'next-i18next';
 import PhoneInput from '@/components/ui/forms/phone-input';
 import { WhatsAppIcon } from '@/components/icons/whatsapp';
+import { Check } from '@/components/ui/icon';
 
 interface Props {
   userId: string;
@@ -60,7 +61,7 @@ const ProfileContact = ({ userId, profileId, contact }: Props) => {
         </div>
         {Boolean(contact) && (
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-forest-600/10 px-2.5 py-1 text-xs font-semibold text-forest-700">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden><path d="m5 12 4 4L19 6" /></svg>
+            <Check size={12} aria-hidden />
             {t('text-verified')}
           </span>
         )}

@@ -10,6 +10,7 @@ import {
   useVerifyEmailOtp,
   type ContactEmail,
 } from '@/framework/contact';
+import { Check, Phone, TriangleAlert } from '@/components/ui/icon';
 
 /** Small pill: verified (forest) vs unverified (amber). */
 function StatusBadge({ verified }: { verified: boolean }) {
@@ -17,14 +18,14 @@ function StatusBadge({ verified }: { verified: boolean }) {
   if (verified) {
     return (
       <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-forest-600/10 px-2.5 py-1 text-xs font-semibold text-forest-700">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden><path d="m5 12 4 4L19 6" /></svg>
+        <Check size={12} aria-hidden />
         {t('text-verified')}
       </span>
     );
   }
   return (
     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-600">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden><path d="M12 9v4" /><path d="M12 17h.01" /><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /></svg>
+      <TriangleAlert size={12} aria-hidden />
       {t('text-unverified')}
     </span>
   );
@@ -177,7 +178,7 @@ const ProfileContactDetails = () => {
     <Card className="w-full">
       <div className="mb-6 flex items-start gap-3">
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sage-100 text-forest-700">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5" aria-hidden><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" /></svg>
+          <Phone size={20} aria-hidden />
         </span>
         <div>
           <h3 className="text-[16px] font-medium text-forest-900">{t('text-contact-details')}</h3>

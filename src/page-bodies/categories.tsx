@@ -11,6 +11,7 @@ import { useCategories } from '@/framework/category';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import type { Type } from '@/types';
+import { Leaf, ArrowRight } from '@/components/ui/icon';
 
 
 /** Compact brand category card — image + serif name, links to /c/[slug].
@@ -36,9 +37,7 @@ function CategoryCard({ category }: { category: any }) {
           />
         ) : (
           <div className="grid h-full w-full place-items-center text-forest-300">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8" aria-hidden>
-              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
-            </svg>
+            <Leaf size={32} aria-hidden />
           </div>
         )}
       </div>
@@ -92,9 +91,7 @@ function VerticalSection({ type }: { type: Type }) {
           className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap font-hanken text-[13.5px] font-semibold text-forest-700"
         >
           {t('categories-explore-vertical')}
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M5 12h13M13 6l6 6-6 6" />
-          </svg>
+          <ArrowRight size={14} aria-hidden />
         </Link>
       </div>
 
