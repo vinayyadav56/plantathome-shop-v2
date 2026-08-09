@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { shippingAddressAtom, verifiedResponseAtom } from '@/store/checkout';
 import { usePincodeServiceability } from '@/lib/use-pincode-serviceability';
 import DeliveryNotifyMe from '@/components/location/delivery-notify-me';
+import { Check, X } from '@/components/ui/icon';
 
 /**
  * Shows whether the selected shipping pincode is serviceable. Surfaced in the
@@ -30,7 +31,8 @@ export default function PincodeServiceability() {
     return (
       <>
         <div className="pa-pin pa-pin--ok">
-          ✓ We deliver to {result.pincode}
+          <Check size={14} className="mr-1 inline-block align-[-2px]" aria-hidden />
+          We deliver to {result.pincode}
           {result.area ? ` · ${result.area}` : result.city ? ` · ${result.city}` : ''}
           {result.eta_days ? ` · ~${result.eta_days} day delivery` : ''}
         </div>
@@ -45,7 +47,8 @@ export default function PincodeServiceability() {
   }
   return (
     <div className="pa-pin pa-pin--no">
-      ✗ Sorry, we don’t deliver to {result.pincode} yet. Please use a serviceable
+      <X size={14} className="mr-1 inline-block align-[-2px]" aria-hidden />
+      Sorry, we don’t deliver to {result.pincode} yet. Please use a serviceable
       delivery address to continue.
       <DeliveryNotifyMe pincode={zip} />
     </div>

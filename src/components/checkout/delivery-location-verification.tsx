@@ -6,6 +6,7 @@ import {
   deliveryVerificationAtom,
 } from '@/store/checkout';
 import { haversineKm, toLatLng, formatDistance } from '@/lib/geo-distance';
+import { Check, MapPin, TriangleAlert } from '@/components/ui/icon';
 
 // How close (km) the customer must be to the delivery address to count as
 // "at the delivery location".
@@ -114,7 +115,7 @@ function DeliveryLocationVerification({
           <div className="mt-4">
             {matched === true && (
               <div className="flex items-start gap-2 rounded-lg bg-accent/10 p-3 text-sm text-accent">
-                <span aria-hidden>✓</span>
+                <Check size={16} className="mt-0.5 shrink-0" aria-hidden />
                 <span>
                   You&apos;re at your delivery address
                   {verification?.distance_km != null && (
@@ -126,7 +127,7 @@ function DeliveryLocationVerification({
 
             {matched === false && (
               <div className="flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-700">
-                <span aria-hidden>⚠️</span>
+                <TriangleAlert size={16} className="mt-0.5 shrink-0" aria-hidden />
                 <span>
                   You appear to be{' '}
                   <strong>{formatDistance(verification!.distance_km!)}</strong>{' '}
@@ -138,7 +139,7 @@ function DeliveryLocationVerification({
 
             {matched === null && (
               <div className="flex items-start gap-2 rounded-lg bg-gray-100 p-3 text-sm text-body">
-                <span aria-hidden>📍</span>
+                <MapPin size={16} className="mt-0.5 shrink-0" aria-hidden />
                 <span>
                   Location captured. Add a map location to your delivery address
                   (via the address form) to enable the distance check.

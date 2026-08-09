@@ -4,6 +4,7 @@ import { HttpClient } from '@/framework/client/http-client';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { checkoutAtom } from '@/store/checkout';
 import { getStoredCity, getStoredPincode } from '@/lib/customer-location';
+import { Bike, Package, Truck } from '@/components/ui/icon';
 
 interface EstimateItem {
   product_id: number;
@@ -66,7 +67,7 @@ export default function DeliveryEstimate() {
   return (
     <div className="mt-4 rounded-md border border-emerald-100 bg-emerald-50/60 p-4">
       <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-heading">
-        <span>🚚</span>
+        <Truck size={16} className="shrink-0" aria-hidden />
         <span>Estimated delivery</span>
         {data?.totals?.expected_delivery_date && (
           <span className="ml-auto text-xs font-normal text-body">by {fmt(data.totals.expected_delivery_date)}</span>
@@ -75,7 +76,11 @@ export default function DeliveryEstimate() {
       <ul className="space-y-1">
         {withEta.map((e) => (
           <li key={`${e.product_id}:${e.variation_option_id ?? ''}`} className="flex items-center justify-between text-xs text-body">
-            <span>{e.fulfillment_mode === 'local' ? '🛵 Local' : '📦 Courier'}</span>
+            <span className="flex items-center gap-1">
+              {e.fulfillment_mode === 'local'
+                ? <><Bike size={14} aria-hidden /> Local</>
+                : <><Package size={14} aria-hidden /> Courier</>}
+            </span>
             <span className="font-medium text-heading">{fmt(e.expected_delivery_date as string)}</span>
           </li>
         ))}

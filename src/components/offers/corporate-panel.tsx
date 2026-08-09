@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { goToSignin } from '@/lib/go-to-signin';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { useGiftingTemplates, useGiftingCheckout } from '@/framework/garden';
+import { Check, Gift } from '@/components/ui/icon';
 
 const fmt = (n: number) => '₹' + Number(n).toLocaleString('en-IN');
 
@@ -54,7 +55,7 @@ export default function CorporatePanel() {
         </div>
       ) : tiers.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-kraft-200 bg-white p-10 text-center">
-          <div className="text-4xl">🎁</div>
+          <Gift size={40} className="mx-auto text-forest-600" aria-hidden />
           <h3 className="mt-3 font-pahserif text-lg font-medium text-forest-900">
             Corporate gifting, made effortless
           </h3>
@@ -97,7 +98,7 @@ export default function CorporatePanel() {
                 <ul className="mt-5 flex-1 space-y-2 text-sm text-stone-600">
                   {(t.items ?? []).map((it, j) => (
                     <li key={j} className="flex gap-2">
-                      <span className="text-forest-600">✓</span>
+                      <Check size={16} className="mt-0.5 shrink-0 text-forest-600" aria-hidden />
                       <span>{it.name}</span>
                     </li>
                   ))}

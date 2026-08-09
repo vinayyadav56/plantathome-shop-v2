@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation } from 'react-query';
 import { HttpClient } from '@/framework/client/http-client';
+import { Check } from '@/components/ui/icon';
 
 /**
  * Inline "Notify me" capture for non-serviceable pincodes. Posts to the
@@ -35,8 +36,9 @@ export default function DeliveryNotifyMe({ pincode }: { pincode: string }) {
 
   if (done) {
     return (
-      <p className="mt-2 text-[12.5px] text-forest-700">
-        ✓ We&apos;ll let you know when delivery opens up in {clean}.
+      <p className="mt-2 flex items-center gap-1 text-[12.5px] text-forest-700">
+        <Check size={14} className="shrink-0" aria-hidden />
+        We&apos;ll let you know when delivery opens up in {clean}.
       </p>
     );
   }
