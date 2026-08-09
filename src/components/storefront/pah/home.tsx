@@ -17,6 +17,13 @@ import { BottomNav } from './bottom-nav';
 import { VerticalSection } from '@/components/storefront/home/vertical-section';
 import { useHomeSections } from '@/lib/use-home-config';
 import { useTypes } from '@/framework/type';
+import { ArrowRight, Check, Leaf, Mail } from '@/components/ui/icon';
+import {
+  FacebookIcon,
+  InstagramIcon,
+  PinterestIcon,
+  YouTubeIcon,
+} from '@/components/icons/social';
 
 /* ============ FOOTER (Claude Design) ============ */
 const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[] = [
@@ -49,11 +56,11 @@ const FOOTER_COLS: { title: string; links: { label: string; href: string }[] }[]
   },
 ];
 
-const FOOTER_SOCIAL: { name: string; faClass: string; href: string }[] = [
-  { name: 'Instagram', faClass: 'fa-instagram', href: 'https://instagram.com/plantathome' },
-  { name: 'Pinterest', faClass: 'fa-pinterest', href: 'https://pinterest.com/plantathome' },
-  { name: 'Facebook', faClass: 'fa-facebook-f', href: 'https://facebook.com/plantathome' },
-  { name: 'YouTube', faClass: 'fa-youtube', href: 'https://youtube.com/@plantathome' },
+const FOOTER_SOCIAL: { name: string; Glyph: React.FC<React.SVGAttributes<{}>>; href: string }[] = [
+  { name: 'Instagram', Glyph: InstagramIcon, href: 'https://instagram.com/plantathome' },
+  { name: 'Pinterest', Glyph: PinterestIcon, href: 'https://pinterest.com/plantathome' },
+  { name: 'Facebook', Glyph: FacebookIcon, href: 'https://facebook.com/plantathome' },
+  { name: 'YouTube', Glyph: YouTubeIcon, href: 'https://youtube.com/@plantathome' },
 ];
 
 function Footer() {
@@ -102,7 +109,7 @@ function Footer() {
             className="mt-4 flex items-center gap-2 rounded-[12px] border py-[5px] pl-[14px] pr-[5px]"
             style={{ background: 'rgba(255,255,255,0.07)', borderColor: 'rgba(231,238,226,0.18)' }}
           >
-            <i className="fa-solid fa-envelope text-[16px] text-sage-300" aria-hidden />
+            <Mail size={16} className="shrink-0 text-sage-300" aria-hidden />
             <input
               type="email"
               required
@@ -119,8 +126,8 @@ function Footer() {
               className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-[9px] border-none bg-ds-btn transition-colors hover:bg-ds-btn-hover active:scale-90 active:bg-forest-700 disabled:opacity-60"
             >
               {isSubscribed
-                ? <i className="fa-solid fa-check text-[14px] text-white" aria-hidden />
-                : <i className="fa-solid fa-arrow-right text-[14px] text-white" aria-hidden />
+                ? <Check size={16} className="text-white" aria-hidden />
+                : <ArrowRight size={16} className="text-white" aria-hidden />
               }
             </button>
           </form>
@@ -167,7 +174,7 @@ function Footer() {
               className="flex h-[38px] w-[38px] items-center justify-center rounded-full border transition-colors hover:border-[rgba(231,238,226,0.42)] hover:bg-white/[0.08] hover:text-white active:scale-90"
               style={{ borderColor: 'rgba(231,238,226,0.2)', color: 'rgba(231,238,226,0.82)' }}
             >
-              <i className={`fa-brands ${s.faClass} text-[18px]`} aria-hidden />
+              <s.Glyph className="h-[18px] w-[18px]" aria-hidden />
             </a>
           ))}
         </div>
@@ -177,7 +184,7 @@ function Footer() {
           className="mt-[22px] flex items-center justify-center gap-2.5 rounded-[11px] border px-[14px] py-[11px]"
           style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(231,238,226,0.1)' }}
         >
-          <i className="fa-solid fa-leaf text-[15px] text-sage-300" aria-hidden />
+          <Leaf size={16} className="shrink-0 text-sage-300" aria-hidden />
           <span className="text-[10px] leading-[1.4]" style={{ color: 'rgba(231,238,226,0.7)' }}>
             Peat-free soil · Recycled pots · Carbon-neutral delivery
           </span>

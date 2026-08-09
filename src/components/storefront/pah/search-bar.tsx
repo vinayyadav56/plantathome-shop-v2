@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useRouter } from '@/compat/next-router';
+import { Search } from '@/components/ui/icon';
 
 export function SearchBar() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export function SearchBar() {
         }}
         className="flex items-center gap-2 rounded-2xl border border-kraft-200 bg-white py-1.5 pl-4 pr-1.5 shadow-[0_9px_22px_rgba(15,30,18,0.22)]"
       >
-        <i className="fa-solid fa-magnifying-glass text-[16px] text-stone-500" aria-hidden />
+        <Search size={16} className="shrink-0 text-stone-500" aria-hidden />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}

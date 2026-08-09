@@ -38,7 +38,7 @@ export {
   // commerce
   ShoppingBag, Search, Heart, Star, Gift, CreditCard, Wallet, Receipt, Tag, Percent,
   // fulfilment
-  Truck, Bike, Package, MapPin, Clock, CalendarDays, Timer, RefreshCw, Flag, Headset, Box,
+  Truck, Bike, Package, MapPin, Clock, CalendarDays, Timer, RefreshCw, RotateCcw, Flag, Headset, Box,
   // status
   Check, CircleCheck, X, CircleX, TriangleAlert, CircleAlert, Info, ShieldCheck, BadgeCheck, Lock,
   // navigation
@@ -50,6 +50,7 @@ export {
   Leaf, Sprout, Flower2, Droplet, Sun, Moon, Wind, Thermometer, Ruler, Wrench, Layers, Earth,
   // misc UI
   Plus, Minus, Pencil, Trash2, Camera, Globe, Play, Quote, Zap, Sparkles, WandSparkles, Building2,
+  TrendingUp, VolumeX,
 } from 'lucide-react';
 
 export type { LucideIcon, LucideProps } from 'lucide-react';

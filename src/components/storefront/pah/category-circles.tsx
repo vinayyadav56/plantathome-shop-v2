@@ -5,6 +5,7 @@ import { useCategories } from '@/framework/category';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
 import { PLACEHOLDER } from './_img';
+import { LayoutGrid } from '@/components/ui/icon';
 import type { Category } from '@/types';
 
 function Circle({ c }: { c: Category }) {
@@ -38,7 +39,7 @@ export function CategoryCircles() {
         : list.map((c) => <Circle key={c.id ?? c.slug} c={c} />)}
       <Link href="/plants/search" className="flex w-16 shrink-0 flex-col items-center gap-2">
         <span className="grid h-16 w-16 place-items-center rounded-full border border-sage-200 bg-sage-100 text-forest-700 transition hover:bg-sage-200 active:scale-95">
-          <i className="fa-solid fa-table-cells-large" aria-hidden style={{ fontSize: '22px' }} />
+          <LayoutGrid size={24} aria-hidden />
         </span>
         <span className="text-center font-hanken text-[10.5px] font-semibold leading-[1.2] text-stone-600">View All</span>
       </Link>

@@ -3,6 +3,7 @@ import React from 'react';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
 import { useBannerEnabled } from '@/lib/use-home-config';
+import { ArrowRight, Sprout } from '@/components/ui/icon';
 
 export function Gifting() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function Gifting() {
           <span className="font-jost text-[9.5px] font-medium uppercase tracking-[0.34em] text-[#DCC07A]">{t('m-gband-eyebrow')}</span>
           <div className="my-[11px] mb-[13px] flex items-center gap-[9px]">
             <span className="h-px w-[34px] bg-[linear-gradient(90deg,rgba(220,192,122,0),#C9A24B)]" />
-            <i className="fa-solid fa-seedling text-[14px] text-[#DCC07A]" aria-hidden />
+            <Sprout size={14} className="text-[#DCC07A]" aria-hidden />
             <span className="h-px w-[34px] bg-[linear-gradient(90deg,#C9A24B,rgba(220,192,122,0))]" />
           </div>
           <h3 className="m-0 font-pahserif text-[30px] font-medium leading-[1.06] tracking-[0.01em] text-[#FCFBF6]">
@@ -40,7 +41,7 @@ export function Gifting() {
           </p>
           <button type="button" onClick={() => router.push('/corporate-gifting')} className="pa-btn pa-btn-gold px-[22px] py-[11px] font-jost text-[11px] uppercase tracking-[0.14em]">
             {t('m-gband-cta')}
-            <i className="fa-solid fa-arrow-right text-[12px]" aria-hidden />
+            <ArrowRight size={12} aria-hidden />
           </button>
         </div>
       </div>

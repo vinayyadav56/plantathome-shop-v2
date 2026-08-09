@@ -68,34 +68,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Jost:wght@300;400;500;600&display=swap"
           rel="stylesheet"
         />
-        {/* Font Awesome 6.5.2 — icon system used by the mobile home (fa-solid …).
-            Loaded NON-BLOCKING. As a plain <link rel="stylesheet"> it was a
-            render-blocking request to a third-party origin on EVERY route, for
-            an icon font that only the mobile home actually uses — Lighthouse
-            flagged render-blocking resources at 0.32s on mobile.
-
-            The media="print" swap is the standard no-JS-framework trick: the
-            browser fetches it at low priority and does not block paint, then the
-            onload flips it to apply. Icons appear a beat later than the text
-            around them, which is the correct trade for an icon set. */}
-        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
-        <Script id="fa-async" strategy="afterInteractive">
-          {`(function(){
-            if (document.getElementById('fa-css')) return;
-            var l = document.createElement('link');
-            l.id = 'fa-css';
-            l.rel = 'stylesheet';
-            l.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css';
-            document.head.appendChild(l);
-          })();`}
-        </Script>
-        <noscript>
-          <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-          />
-        </noscript>
-
         {/* Google Analytics (V1 _document.tsx) */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KTCXX5B35N" strategy="afterInteractive" />
         <Script id="ga-init" strategy="afterInteractive">

@@ -3,12 +3,13 @@ import React from 'react';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
 import { useBannerEnabled } from '@/lib/use-home-config';
+import { ArrowRight, Package, RotateCcw, Sprout, Truck, type LucideIcon } from '@/components/ui/icon';
 
-const PERKS = [
-  { label: 'Secure Packaging', icon: 'fa-box-open' },
-  { label: 'Live Plant Guarantee', icon: 'fa-seedling' },
-  { label: 'Easy Returns', icon: 'fa-arrow-rotate-left' },
-  { label: 'Fast & Safe Delivery', icon: 'fa-truck-fast' },
+const PERKS: { label: string; icon: LucideIcon }[] = [
+  { label: 'Secure Packaging', icon: Package },
+  { label: 'Live Plant Guarantee', icon: Sprout },
+  { label: 'Easy Returns', icon: RotateCcw },
+  { label: 'Fast & Safe Delivery', icon: Truck },
 ];
 
 export function SpecialOffer() {
@@ -24,13 +25,13 @@ export function SpecialOffer() {
           <div className="mt-1 text-[9px] text-white/[0.72]">{t('m-offer-subtext')}</div>
           <button type="button" onClick={() => router.push('/plants/search')} className="mt-2.5 inline-flex items-center gap-[5px] rounded-[9px] bg-[#3A6B33] px-3 py-1.5 font-hanken text-[11px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,0,0.2)]">
             {t('m-offer-cta')}
-            <i className="fa-solid fa-arrow-right" aria-hidden style={{ fontSize: '10px', color: '#fff' }} />
+            <ArrowRight size={12} aria-hidden style={{ color: '#fff' }} />
           </button>
         </div>
         <div className="flex min-w-0 flex-1 justify-between gap-[7px] border-l border-white/[0.16] pl-3.5">
           {PERKS.map((p) => (
             <div key={p.label} className="flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center text-white/[0.92]">
-              <span style={{ color: '#B3C9A8' }}><i className={`fa-solid ${p.icon}`} aria-hidden style={{ fontSize: '16px' }} /></span>
+              <span style={{ color: '#B3C9A8' }}><p.icon size={16} aria-hidden /></span>
               <span className="text-[8.5px] leading-[1.2]">{p.label}</span>
             </div>
           ))}

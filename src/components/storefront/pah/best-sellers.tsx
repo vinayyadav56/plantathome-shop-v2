@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { useProducts } from '@/framework/product';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
+import { ArrowRight, Leaf } from '@/components/ui/icon';
 import { ProductCard } from './product-card';
 import { cn } from '@/lib/cn';
 
@@ -28,11 +29,11 @@ export function BestSellers() {
         <div className="flex items-center justify-between gap-3">
           <h2 className="flex items-center gap-1.5 font-hanken text-[18px] font-medium tracking-[-0.01em] text-forest-900">
             {t('m-bestsellers-title')}
-            <i className="fa-solid fa-leaf text-[15px] text-forest-500" aria-hidden />
+            <Leaf size={16} className="text-forest-500" aria-hidden />
           </h2>
           <Link href="/plants/search" className="flex shrink-0 items-center gap-[3px] text-[12.5px] font-semibold text-forest-700">
             {t('m-bestsellers-view-all')}
-            <i className="fa-solid fa-arrow-right text-[11px]" aria-hidden />
+            <ArrowRight size={12} aria-hidden />
           </Link>
         </div>
       </div>
