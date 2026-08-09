@@ -52,4 +52,4 @@ export {
   Plus, Minus, Pencil, Trash2, Camera, Globe, Play, Quote, Zap, Sparkles, WandSparkles, Building2,
 } from 'lucide-react';
 
-export type { LucideIcon } from 'lucide-react';
+export type { LucideIcon, LucideProps } from 'lucide-react';
