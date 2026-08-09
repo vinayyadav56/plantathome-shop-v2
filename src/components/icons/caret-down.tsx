@@ -1,12 +1,5 @@
-import React from 'react';
+import { ChevronDown } from '@/components/ui/icon';
+
 export const CaretDown = ({ ...props }) => {
-	return (
-		<svg width="10" height="6" viewBox="0 0 10 6" {...props}>
-			<path
-				d="M128,192l5,5,5-5Z"
-				transform="translate(-128 -192)"
-				fill="currentColor"
-			/>
-		</svg>
-	);
+  return <ChevronDown aria-hidden {...(props as any)} />;
 };

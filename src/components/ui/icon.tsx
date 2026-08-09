@@ -42,8 +42,8 @@ export {
   // status
   Check, CircleCheck, X, CircleX, TriangleAlert, CircleAlert, Info, ShieldCheck, BadgeCheck, Lock,
   // navigation
-  Menu, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowRight, ArrowLeft, Home,
-  ExternalLink, LayoutGrid, SlidersHorizontal, LogOut,
+  Menu, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ArrowRight, ArrowLeft, ArrowDown, ArrowUp,
+  Home, ExternalLink, LayoutGrid, SlidersHorizontal, LogOut,
   // account & contact
   User, UserRound, Phone, Mail, MessageCircle, Smartphone, Bell, Share2, Copy, Eye, EyeOff,
   // plants & care
@@ -51,6 +51,7 @@ export {
   // misc UI
   Plus, Minus, Pencil, Trash2, Camera, Globe, Play, Quote, Zap, Sparkles, WandSparkles, Building2,
   TrendingUp, VolumeX, Mic, Send, CircleHelp, FileText, Settings, Navigation, Crosshair, Download,
+  ThumbsUp, ThumbsDown, Hand, Upload, Ellipsis, EllipsisVertical,
 } from 'lucide-react';
 
 export type { LucideIcon, LucideProps } from 'lucide-react';

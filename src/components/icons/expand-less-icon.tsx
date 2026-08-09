@@ -1,16 +1,7 @@
+import { ChevronDown } from '@/components/ui/icon';
+
+// NOTE: the legacy glyph in this file actually drew a chevron pointing DOWN
+// (despite the "less" name), so ChevronDown preserves the rendered shape.
 export const ExpandLessIcon: React.FC<React.SVGAttributes<{}>> = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    {...props}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M19 9l-7 7-7-7"
-    />
-  </svg>
+  <ChevronDown aria-hidden {...(props as any)} />
 );
