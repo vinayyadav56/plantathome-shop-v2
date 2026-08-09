@@ -20,6 +20,7 @@ import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import Search from '@/components/ui/search/search';
+import { ChevronDown, Heart, Truck } from '@/components/ui/icon';
 
 
 
@@ -176,7 +177,7 @@ const Header = ({ layout }: { layout?: string }) => {
 
             <CitySwitcher tone="light" />
             <span className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 items-center gap-2.5 whitespace-nowrap lg:flex">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-sage-300" aria-hidden><path d="M5 17H3V6h11v11" /><path d="M14 9h4l3 3v5h-2" /><circle cx="7.5" cy="18" r="1.6" /><circle cx="17.5" cy="18" r="1.6" /></svg>
+              <Truck size={14} className="shrink-0 text-sage-300" aria-hidden />
               FREE SHIPPING on orders above ₹499
               <span className="h-3 w-px bg-white/30" />
               Extra 5% OFF on prepaid orders
@@ -208,9 +209,7 @@ const Header = ({ layout }: { layout?: string }) => {
                       className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.15] hover:text-white"
                     >
                       {n.label}
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-[11px] w-[11px] opacity-50 transition-transform duration-200 group-hover:rotate-180">
-                        <path d="m6 9 6 6 6-6" />
-                      </svg>
+                      <ChevronDown size={12} className="opacity-50 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
                     </Link>
                     {/* dropdown — glass panel */}
                     <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
@@ -249,12 +248,12 @@ const Header = ({ layout }: { layout?: string }) => {
               </button>
               {/* Track Order */}
               <Link href="/track-order" className="flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label="Track Order">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]"><path d="M5 17H3V6a1 1 0 0 1 1-1h11v12" /><path d="M15 9h4l3 3v5h-2" /><circle cx="7.5" cy="18" r="1.8" /><circle cx="17.5" cy="18" r="1.8" /></svg>
+                <Truck size={18} aria-hidden />
                 <span className="hidden text-[11px] font-medium leading-none xl:inline">Track Order</span>
               </Link>
               {/* Wishlist */}
               <Link href="/wishlists" className="flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label="Wishlist">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px]"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8Z" /></svg>
+                <Heart size={18} aria-hidden />
                 <span className="hidden text-[11px] font-medium leading-none xl:inline">Wishlist</span>
               </Link>
               {/* Cart */}

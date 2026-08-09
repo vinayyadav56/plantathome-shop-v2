@@ -95,7 +95,7 @@ const Counter: React.FC<CounterProps> = ({
       >
         <span className="sr-only">{t('text-minus')}</span>
         {variant !== 'florine' ? (
-          <MinusIcon className="h-3 w-3 stroke-2.5" />
+          <MinusIcon className="h-4 w-4" />
         ) : (
           <MinusIconNew />
         )}
@@ -132,7 +132,7 @@ const Counter: React.FC<CounterProps> = ({
       >
         <span className="sr-only">{t('text-plus')}</span>
         {variant !== 'florine' ? (
-          <PlusIcon className="md:w-4.5 h-3.5 w-3.5 stroke-2.5 md:h-4.5" />
+          <PlusIcon className="h-4 w-4" />
         ) : (
           <PlusIconNew />
         )}

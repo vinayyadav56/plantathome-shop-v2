@@ -10,6 +10,7 @@ import { useCart } from '@/store/quick-cart/cart.context';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import { useToggleWishlist } from '@/framework/wishlist';
 import { authorizationAtom } from '@/store/authorization-atom';
+import { Check, Heart, Plus } from '@/components/ui/icon';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { getCardBadge } from '@/components/products/cards/card-helpers';
 import type { Product } from '@/types';
@@ -102,9 +103,12 @@ export function ProductCard({ product }: { product: Product }) {
           aria-label="Add to wishlist"
           className="absolute right-2 top-2 grid h-[30px] w-[30px] place-items-center rounded-full bg-white/95 shadow-[0_1px_2px_rgba(34,48,26,0.06)] transition active:scale-90"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill={wished ? '#C26B45' : 'none'} stroke={wished ? '#C26B45' : '#908A7E'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20s-7-4.4-9.2-9C1.3 8.1 2.6 5 5.8 5 8 5 9.4 6.6 12 9c2.6-2.4 4-4 6.2-4 3.2 0 4.5 3.1 3 6-2.2 4.6-9.2 9-9.2 9Z" />
-          </svg>
+          <Heart
+            size={18}
+            fill={wished ? '#C26B45' : 'none'}
+            style={{ color: wished ? '#C26B45' : '#908A7E' }}
+            aria-hidden
+          />
         </button>
       </div>
       <div className="px-3 pb-3 pt-[11px]">
@@ -125,9 +129,9 @@ export function ProductCard({ product }: { product: Product }) {
             className={cn('grid h-[30px] w-[30px] place-items-center rounded-full text-white transition active:scale-90', added ? 'bg-forest-800' : 'bg-ds-btn hover:bg-ds-btn-hover')}
           >
             {added ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+              <Check size={16} className="text-white" aria-hidden />
             ) : (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
+              <Plus size={16} className="text-white" aria-hidden />
             )}
           </button>
         </div>

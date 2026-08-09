@@ -9,6 +9,7 @@ import { Routes } from '@/config/routes';
 // Still needed for Ask AI — the product quick-view popup is gone (cards link
 // straight to the product page), but this card opens the ASK_AI modal too.
 import { useModalAction } from '@/components/ui/modal/modal.context';
+import { Heart as HeartGlyph, ShoppingBag, Sparkles, Star } from '@/components/ui/icon';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
@@ -52,28 +53,23 @@ export const PlantAtHomeCardSkeleton: React.FC = () => (
   </div>
 );
 
-/* ─── Heart (reference .wishlist: 48px white circle, ~21px outline heart) ── */
+/* ─── Heart (reference .wishlist: 48px white circle) ─────────────── */
 const Heart = ({ active }: { active: boolean }) => (
-  <svg viewBox="0 0 24 24" fill={active ? '#C26B45' : 'none'} stroke={active ? '#C26B45' : '#555555'} strokeWidth="1.8" className="h-[21px] w-[21px]">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
+  <HeartGlyph
+    size={18}
+    fill={active ? '#C26B45' : 'none'}
+    style={{ color: active ? '#C26B45' : '#555555' }}
+    aria-hidden
+  />
 );
 
 /* ─── Gold star (reference .rating i: #FDBA12) ─────────────────── */
 const GoldStar = () => (
-  <svg viewBox="0 0 24 24" fill="#FDBA12" aria-hidden className="h-[17px] w-[17px]">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-  </svg>
+  <Star size={16} fill="#FDBA12" strokeWidth={0} style={{ color: '#FDBA12' }} aria-hidden />
 );
 
 /* ─── Cart icon for the CTA ────────────────────────────────────── */
-const CartGlyph = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-[18px] w-[18px]">
-    <circle cx="9" cy="21" r="1" />
-    <circle cx="20" cy="21" r="1" />
-    <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-  </svg>
-);
+const CartGlyph = () => <ShoppingBag size={18} aria-hidden />;
 
 type Props = {
   product: Product;
@@ -256,9 +252,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
                overlays at one card width. */
             className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-              <path d="M12 2l1.9 5.6L19.5 9.5 13.9 11.4 12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2z" />
-            </svg>
+            <Sparkles size={12} fill="currentColor" aria-hidden />
             Ask AI
           </button>
         )}

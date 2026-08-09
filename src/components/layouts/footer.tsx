@@ -8,6 +8,13 @@ import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import { WordmarkStacked } from '@/components/storefront/logo-mark';
 import InlineLanguageSelect from '@/components/ui/inline-language-select';
+import { ArrowRight, Leaf, Lock, Mail, MapPin, Phone, ShieldCheck, Truck } from '@/components/ui/icon';
+import {
+  FacebookIcon,
+  InstagramIcon,
+  PinterestIcon,
+  YouTubeIcon,
+} from '@/components/icons/social';
 
 const COLS: { title: string; links: { name: string; href: string }[] }[] = [
   {
@@ -43,17 +50,17 @@ const COLS: { title: string; links: { name: string; href: string }[] }[] = [
 ];
 
 const SOCIALS: { name: string; href: string; icon: JSX.Element }[] = [
-  { name: 'Instagram', href: 'https://instagram.com/plantathome', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" /></svg>) },
-  { name: 'Facebook', href: 'https://facebook.com/plantathome', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden><path d="M14.5 21v-7h2.6l.4-3h-3V9.1c0-.9.3-1.5 1.6-1.5h1.5V4.9c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8V11H9v3h2.7v7" /></svg>) },
-  { name: 'YouTube', href: 'https://youtube.com/@plantathome', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden><rect x="2.5" y="5.5" width="19" height="13" rx="4" /><path d="M10.2 9.5l5 2.5-5 2.5Z" fill="currentColor" stroke="none" /></svg>) },
-  { name: 'Pinterest', href: 'https://pinterest.com/plantathome', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden><circle cx="12" cy="12" r="9.5" /><path d="M9.5 17.5 12 8m0 0c2-1.5 4 .2 4 2.4 0 2-1.4 3.6-3.2 3.6-1 0-1.8-.6-1.8-1.6" /></svg>) },
+  { name: 'Instagram', href: 'https://instagram.com/plantathome', icon: <InstagramIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'Facebook', href: 'https://facebook.com/plantathome', icon: <FacebookIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'YouTube', href: 'https://youtube.com/@plantathome', icon: <YouTubeIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'Pinterest', href: 'https://pinterest.com/plantathome', icon: <PinterestIcon className="h-4 w-4" aria-hidden /> },
 ];
 
 const BADGES: { label: string; icon: JSX.Element }[] = [
-  { label: 'Peat-free soil & recycled pots', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 9-9 0 5-2 9-2 9" /><path d="M11 20c0-3 1-6 3-8" /></svg>) },
-  { label: 'Carbon-neutral delivery', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M5 17H3V6h11v11" /><path d="M14 9h4l3 3v5h-2" /><circle cx="7.5" cy="18" r="1.8" /><circle cx="17.5" cy="18" r="1.8" /></svg>) },
-  { label: '30-day plant guarantee', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z" /><path d="m9 12 2 2 4-4" /></svg>) },
-  { label: 'Secure checkout', icon: (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5"><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>) },
+  { label: 'Peat-free soil & recycled pots', icon: <Leaf size={14} aria-hidden /> },
+  { label: 'Carbon-neutral delivery', icon: <Truck size={14} aria-hidden /> },
+  { label: '30-day plant guarantee', icon: <ShieldCheck size={14} aria-hidden /> },
+  { label: 'Secure checkout', icon: <Lock size={14} aria-hidden /> },
 ];
 
 const PayMark = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -74,7 +81,7 @@ function NewsletterForm() {
         onSubmit={(e) => { e.preventDefault(); if (email.trim() && !isLoading) subscribe({ email: email.trim() }); }}
         className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.14] bg-white/[0.07] py-1.5 pe-1.5 ps-4"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0 text-[#86EFAC]" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></svg>
+        <Mail size={16} className="shrink-0 text-[#86EFAC]" aria-hidden />
         <input
           type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder={t('footer-newsletter-email-placeholder')} aria-label="Email address"
@@ -86,11 +93,11 @@ function NewsletterForm() {
           className="inline-flex shrink-0 items-center gap-2 rounded-[10px] bg-ds-cta px-6 py-3 font-hanken text-[13.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] disabled:opacity-60"
         >
           {isSubscribed ? t('footer-newsletter-subscribed') : t('footer-newsletter-subscribe')}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3" aria-hidden><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+          <ArrowRight size={12} aria-hidden />
         </button>
       </form>
       <p className="mt-2.5 flex items-center gap-2 font-hanken text-[12px] text-white/45">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 shrink-0" aria-hidden><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+        <Lock size={12} className="shrink-0" aria-hidden />
         {t('footer-newsletter-privacy-note')}
       </p>
     </div>
@@ -187,15 +194,15 @@ const Footer = () => {
           {/* contact */}
           <div className="mt-5 flex flex-col gap-2.5">
             <span className="flex items-center gap-3 text-[13px] text-white/60">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[14px] w-4 shrink-0 text-[#86EFAC]" aria-hidden><path d="M12 21s7-5.5 7-11a7 7 0 0 0-14 0c0 5.5 7 11 7 11Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+              <MapPin size={14} className="shrink-0 text-[#86EFAC]" aria-hidden />
               {address}
             </span>
             <a href={`tel:${phone}`} className="flex items-center gap-3 text-[13px] text-white/60 transition hover:text-white">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[14px] w-4 shrink-0 text-[#86EFAC]" aria-hidden><path d="M5.5 3h3l1.7 4.3-2 1.6a13.5 13.5 0 0 0 6 6l1.6-2L20 14.6v3.1A2.3 2.3 0 0 1 17.7 20 15.8 15.8 0 0 1 4 6.3 2.3 2.3 0 0 1 5.5 3Z" /></svg>
+              <Phone size={14} className="shrink-0 text-[#86EFAC]" aria-hidden />
               {phone}
             </a>
             <a href={`mailto:${email}`} className="flex items-center gap-3 text-[13px] text-white/60 transition hover:text-white">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[14px] w-4 shrink-0 text-[#86EFAC]" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></svg>
+              <Mail size={14} className="shrink-0 text-[#86EFAC]" aria-hidden />
               {email}
             </a>
           </div>
