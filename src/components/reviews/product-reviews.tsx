@@ -13,7 +13,7 @@ import Link from '@/components/ui/link';
 import { Routes } from '@/config/routes';
 import isEmpty from 'lodash/isEmpty';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
-import { Pencil, ArrowRight, Leaf } from '@/components/ui/icon';
+import { Pencil, ArrowRight, Star } from '@/components/ui/icon';
 
 type ProductReviewsProps = {
   className?: any;
@@ -198,7 +198,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
             <span className="text-[#24693E]/35">
-              <Leaf size={40} aria-hidden />
+              <Star size={40} aria-hidden />
             </span>
             <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-reviews-found')}

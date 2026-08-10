@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { LineIcon } from '@/components/icons/line-icons';
+import { Check } from '@/components/ui/icon';
 
 /** Extract a YouTube video id from watch/embed/shorts/youtu.be URLs. */
 function youtubeId(url: string): string | null {
@@ -120,7 +121,42 @@ export function PlantCareSection({
   const petFriendly = Boolean(pa.pet_friendly);
   const videoUrl: string | undefined = product?.video?.[0]?.url;
 
-  const hasLeft = Boolean(contentHtml || benefits || medicinal);
+  // "Care at a glance" — friendly sentences DERIVED from the spec values, shown
+  // when the product has no long description so the left column never sits
+  // near-empty beside the tall spec card (owner feedback).
+  const careTips: string[] = contentHtml
+    ? []
+    : ([
+        (() => {
+          const v = (real(pa.sunlight) || '').toLowerCase();
+          if (!v) return null;
+          if (v.includes('full')) return 'Thrives in full sun — give it the brightest spot you have.';
+          if (v.includes('partial') || v.includes('indirect'))
+            return 'Prefers bright, indirect light — near a window is perfect.';
+          if (v.includes('low') || v.includes('shade')) return 'Comfortable in low light and shade.';
+          return `Sunlight: ${real(pa.sunlight)}.`;
+        })(),
+        (() => {
+          const v = (real(pa.water_requirement) || '').toLowerCase();
+          if (!v) return null;
+          if (v.includes('low')) return 'Water sparingly — let the soil dry out fully between waterings.';
+          if (v.includes('moderate') || v.includes('medium'))
+            return 'Water when the top inch of soil feels dry.';
+          if (v.includes('high')) return 'Likes consistently moist soil — water regularly.';
+          return `Watering: ${real(pa.water_requirement)}.`;
+        })(),
+        (() => {
+          const v = (real(pa.indoor_outdoor) || '').toLowerCase();
+          if (!v) return null;
+          if (v.includes('outdoor') && !v.includes('indoor')) return 'Happiest outdoors — balcony, terrace or garden.';
+          if (v.includes('indoor') && !v.includes('outdoor')) return 'A true indoor plant — perfect for living spaces.';
+          return 'Grows well both indoors and outdoors.';
+        })(),
+        real(pa.temperature_range) ? `Comfortable between ${real(pa.temperature_range)} °C.` : null,
+        petFriendly ? 'Pet-friendly — safe around cats and dogs.' : null,
+      ].filter(Boolean) as string[]);
+
+  const hasLeft = Boolean(contentHtml || benefits || medicinal || careTips.length);
   const hasRight = specs.length > 0 || airPurifying || petFriendly;
 
   if (!hasLeft && !hasRight && !videoUrl) return null;
@@ -141,8 +177,21 @@ export function PlantCareSection({
                 dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
             )}
+            {careTips.length > 0 && (
+              <div className="rounded-[14px] bg-[#F3F8EC] p-5">
+                <h3 className="text-sm font-medium text-[#184A31]">Care at a glance</h3>
+                <ul className="mt-1.5 space-y-1.5 text-sm leading-6 text-[#5B5B5B]">
+                  {careTips.map((tip) => (
+                    <li key={tip} className="flex items-start gap-2">
+                      <Check size={14} className="mt-1 shrink-0 text-[#24693E]" aria-hidden />
+                      {tip}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {(benefits || medicinal) && (
-              <div className={`${contentHtml ? 'mt-5' : ''} space-y-4`}>
+              <div className={`${contentHtml || careTips.length ? 'mt-5' : ''} space-y-4`}>
                 {benefits && (
                   <div className="rounded-[14px] bg-[#F3F8EC] p-5">
                     <h3 className="text-sm font-medium text-[#184A31]">Benefits</h3>

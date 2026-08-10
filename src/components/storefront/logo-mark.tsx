@@ -120,7 +120,11 @@ export function BrandLogo({
         <img
           src={uploaded}
           alt={settings?.siteTitle || 'PlantAtHome'}
-          className="h-9 w-auto object-contain object-left"
+          // On the dark header the uploaded mark is forced to white
+          // (brightness-0 invert) — the green-on-green asset was invisible.
+          // Needs a transparent-background logo; an opaque one should be
+          // re-uploaded as headerLogoLight instead.
+          className={`h-11 w-auto object-contain object-left ${light ? 'brightness-0 invert' : ''}`}
         />
       </span>
     );

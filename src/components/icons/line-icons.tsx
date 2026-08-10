@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Bike,
   Box,
   Check,
   ChevronLeft,
@@ -32,6 +33,7 @@ const GLYPHS: Record<string, LucideIcon> = {
   arrowRight: ArrowRight,
   droplet: Droplet,
   truck: Truck,
+  bike: Bike,
   language: Globe,
   check: Check,
   box: Box,

@@ -27,7 +27,7 @@ import isEmpty from 'lodash/isEmpty';
 import dynamic from 'next/dynamic';
 
 import PlantAtHomeProductDetails from '@/components/products/details/plantathome-details';
-import { Leaf, ArrowRight } from '@/components/ui/icon';
+import { Sparkles, ArrowRight } from '@/components/ui/icon';
 import ProductCard from '@/components/products/cards/card';
 import StyledSpaces from '@/components/products/details/plantathome/styled-spaces';
 import FrequentlyBoughtTogether from '@/components/products/details/plantathome/frequently-bought-together';
@@ -100,7 +100,7 @@ const ProductPage = ({ product }: any) => {
                     <div className="mb-6 flex items-center justify-between">
                       <h2 className="flex items-center gap-2 text-[1.4rem] font-medium text-forest-700">
                         You May Also Like
-                        <Leaf size={20} className="text-forest-500" aria-hidden />
+                        <Sparkles size={20} className="text-forest-500" aria-hidden />
                       </h2>
                       <Link href="/plants/search" className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest-600 hover:text-forest-700">
                         View All Plants

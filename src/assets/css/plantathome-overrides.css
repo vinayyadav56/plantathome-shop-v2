@@ -1640,6 +1640,9 @@ select:focus {
   height: 100%;
   background: #F4F7F1;
   position: relative;
+  /* One typeface through the whole drawer — item names used the heading serif
+     at 13.5px next to body-font prices and read as a different UI. */
+  font-family: var(--font-body);
 }
 
 /* ── Header ──────────────────────────────────────────────────── */
@@ -1775,7 +1778,7 @@ select:focus {
   min-width: 0;
 }
 .pa-cart-item-name {
-  font-family: var(--font-heading) !important;
+  font-family: var(--font-body) !important;
   font-size: 13.5px;
   font-weight: 700;
   color: var(--ds-accent-ink, #1E4023);

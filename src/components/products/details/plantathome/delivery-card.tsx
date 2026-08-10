@@ -38,8 +38,11 @@ export function DeliveryCard(props: {
   // The pincode checker is useful with or without a chosen city — it is often
   // the FIRST thing a customer reaches for — so the card now mounts always.
 
-  const showEta = etaDays != null && Boolean(city);
-  const dayWord = `day${etaDays === 1 ? '' : 's'}`;
+  // Business rule (owner): local same-city delivery always promises 1 day —
+  // vendor-fed eta_days only applies to courier shipments.
+  const shownEta = fulfillmentMode === 'local' ? 1 : etaDays;
+  const showEta = shownEta != null && Boolean(city);
+  const dayWord = `day${shownEta === 1 ? '' : 's'}`;
 
   return (
     <div className="rounded-[14px] border border-[#ECECEC] bg-white p-4">
@@ -54,11 +57,11 @@ export function DeliveryCard(props: {
           <span>
             {fulfillmentMode === 'local' ? (
               <>
-                <span className="font-semibold">Local delivery</span> to {city} in ~{etaDays} {dayWord}
+                <span className="font-semibold">Local delivery</span> to {city} in 1 day
               </>
             ) : (
               <>
-                Ships to {city} by <span className="font-semibold">courier</span> in ~{etaDays} {dayWord}
+                Ships to {city} by <span className="font-semibold">courier</span> in ~{shownEta} {dayWord}
               </>
             )}
           </span>

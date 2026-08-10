@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { useCategories } from '@/framework/category';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
-import { ArrowRight, Leaf } from '@/components/ui/icon';
+import { ArrowRight, LayoutGrid } from '@/components/ui/icon';
 import { PLACEHOLDER } from './_img';
 import type { Category } from '@/types';
 
@@ -39,7 +39,7 @@ export function Collections() {
       <div className="mb-3.5 mt-1.5 flex items-center justify-between gap-3 px-5">
         <h2 className="flex items-center gap-1.5 font-hanken text-[18px] font-medium tracking-[-0.01em] text-forest-900">
           {t('m-collections-title')}
-          <Leaf size={16} className="text-forest-500" aria-hidden />
+          <LayoutGrid size={16} className="text-forest-500" aria-hidden />
         </h2>
         <Link href="/plants/search" className="flex shrink-0 items-center gap-[3px] text-[12.5px] font-semibold text-forest-700">
           {t('m-collections-view-all')}

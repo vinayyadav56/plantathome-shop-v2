@@ -521,21 +521,45 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* Size Guide — per-product image behind a native disclosure so the
                 info column stays compact. Plain <img> (like the pot picker) so
                 any chart shape renders at its natural aspect ratio without
-                next/image's fixed-dimension letterboxing. Hidden in the modal. */}
-            {size_guide?.original && !isModal && (
+                next/image's fixed-dimension letterboxing. Hidden in the modal.
+                Products WITHOUT an uploaded chart get the standard PlantAtHome
+                size explainer instead, so the section always exists for
+                size-variable products (owner feedback). */}
+            {!isModal && (size_guide?.original || ((variations as any)?.size?.length ?? 0) > 0) && (
               <details className="group mt-6 rounded-[14px] border border-[#ECECEC] bg-white">
                 <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-semibold text-forest-900 [&::-webkit-details-marker]:hidden">
                   Size guide
                   <LineIcon name="chevronRight" className="h-4 w-4 text-stone-400 transition-transform group-open:rotate-90" />
                 </summary>
                 <div className="px-4 pb-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={size_guide.original}
-                    alt={`${name} size guide`}
-                    loading="lazy"
-                    className="h-auto w-full rounded-2xl border border-kraft-300/70 bg-white"
-                  />
+                  {size_guide?.original ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={size_guide.original}
+                      alt={`${name} size guide`}
+                      loading="lazy"
+                      className="h-auto w-full rounded-2xl border border-kraft-300/70 bg-white"
+                    />
+                  ) : (
+                    <dl className="divide-y divide-[#ECECEC] text-[13px]">
+                      {((variations as any)?.size ?? []).map((s: any) => {
+                        const v = String(s?.value ?? '').toLowerCase();
+                        const note = v.includes('small')
+                          ? 'Compact — typically a 4–6" nursery pot; sits happily on desks and shelves.'
+                          : v.includes('medium')
+                            ? 'Mid-size — typically an 8–10" nursery pot; tabletops and bright corners.'
+                            : v.includes('large') || v.includes('xl')
+                              ? 'Statement — typically a 12"+ nursery pot; a floor plant with presence.'
+                              : 'Sized as delivered by our nursery partners for this plant.';
+                        return (
+                          <div key={s?.id ?? s?.value} className="flex items-start gap-4 py-2.5 first:pt-0 last:pb-0">
+                            <dt className="w-16 shrink-0 font-semibold text-forest-900">{s?.value}</dt>
+                            <dd className="text-[#5B5B5B]">{note}</dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                  )}
                 </div>
               </details>
             )}

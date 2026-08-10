@@ -119,7 +119,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
                 className="flex items-start gap-2.5 rounded-[10px] border border-[#ECECEC] bg-[#FAFAF7] px-3 py-2.5"
               >
                 <LineIcon
-                  name={o.type === 'instant' ? 'leaf' : 'truck'}
+                  name={o.type === 'instant' ? 'bike' : 'truck'}
                   className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#24693E]"
                 />
                 <span className="min-w-0 flex-1 text-[13px] text-[#184A31]">
@@ -127,7 +127,8 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
                   {o.note && <span className="block text-[12px] text-[#6B6B6B]">{o.note}</span>}
                 </span>
                 <span className="shrink-0 text-[13px] font-semibold text-[#24693E]">
-                  {o.eta_text}
+                  {/* Local (instant) always promises 1 day — owner rule. */}
+                  {o.type === 'instant' ? '1 day' : o.eta_text}
                 </span>
               </div>
             ))}
