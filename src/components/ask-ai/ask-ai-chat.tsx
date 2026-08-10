@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { useModalState, useModalAction } from '@/components/ui/modal/modal.context';
+import { Leaf } from '@/components/ui/icon';
 import { useAskAi, useAskAiEnabled } from '@/framework/ask-ai';
 import type { Product } from '@/types';
 
@@ -57,7 +58,7 @@ export default function AskAiChat() {
           {image ? (
             <Image src={image} alt={product.name} fill className="object-cover" sizes="44px" />
           ) : (
-            <span className="grid h-full w-full place-items-center text-forest-700">🌿</span>
+            <span className="grid h-full w-full place-items-center text-forest-700"><Leaf size={20} aria-hidden /></span>
           )}
         </div>
         <div className="min-w-0 flex-1">
