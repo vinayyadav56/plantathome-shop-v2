@@ -1,5 +1,5 @@
 import { BrandSpinner } from '@/components/ui/plant-loader';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtom } from 'jotai';
 import isEmpty from 'lodash/isEmpty';
 import { useCreateOrder } from '@/framework/order';
@@ -42,6 +42,15 @@ export const PlaceOrderAction: React.FC<{
   const { t } = useTranslation('common');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { createOrder, isLoading } = useCreateOrder();
+  // One key per checkout attempt (stable across double-clicks and network
+  // retries on this mount): the server dedupes on it, so a duplicate POST
+  // returns the ORIGINAL order instead of charging/creating twice. A new
+  // mount (fresh checkout) gets a new key.
+  const idempotencyKeyRef = useRef(
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  );
   const { locale }: any = useRouter();
   const { items } = useCart();
   const { me } = useUser();
@@ -216,7 +225,7 @@ export const PlaceOrderAction: React.FC<{
       label: serviceableCity ?? detectedCity ?? undefined,
     });
     //@ts-ignore
-    createOrder(input);
+    createOrder({ ...input, __idempotency_key: idempotencyKeyRef.current });
     Cookies.remove(REVIEW_POPUP_MODAL_KEY);
   };
 

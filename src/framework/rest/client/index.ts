@@ -384,8 +384,16 @@ class Client {
         `${API_ENDPOINTS.ORDERS}/${tracking_number}/shipments`,
         token ? { token } : {},
       ),
-    create: (input: CreateOrderInput) =>
-      HttpClient.post<Order>(API_ENDPOINTS.ORDERS, input),
+    create: ({ __idempotency_key, ...input }: CreateOrderInput & { __idempotency_key?: string }) =>
+      HttpClient.post<Order>(
+        API_ENDPOINTS.ORDERS,
+        input,
+        // Checkout idempotency: the server dedupes duplicate submissions on
+        // this header (double-click / retry ⇒ the original order comes back).
+        __idempotency_key
+          ? { headers: { 'Idempotency-Key': __idempotency_key } }
+          : undefined,
+      ),
     refunds: (params: Pick<QueryOptions, 'limit'>) =>
       HttpClient.get<RefundPaginator>(API_ENDPOINTS.ORDERS_REFUNDS, {
         with: 'refund_policy;order',
