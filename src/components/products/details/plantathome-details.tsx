@@ -39,7 +39,8 @@ import StickyAtcBar from './plantathome/sticky-atc-bar';
 import { LineIcon } from '@/components/icons/line-icons';
 import { usePdpContent } from '@/lib/use-home-config';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
-import { Star, Heart, Sparkles, ChevronRight, ShoppingBag, Plus, Minus } from '@/components/ui/icon';
+import { Star, Heart, Sparkles, ChevronRight, ShoppingBag, Plus, Minus, Ruler } from '@/components/ui/icon';
+import { useProduct } from '@/framework/product';
 
 /* ── badge from tags / flash sale ───────────────────────────────── */
 function getBadge(product: Product): string | null {
@@ -129,6 +130,45 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   // Still needed outside pricing: the vertical availability check and the
   // delivery card's "to {city}" copy.
   const customerCity = getStoredCity();
+
+  // Sizes are only offered when a vendor actually supplies them in the city —
+  // attachCityPricing marks variation_options[].city_available on the
+  // city-aware fetch. Same react-query key useCityPrice uses internally, so
+  // this adds ZERO network requests. Fail-open: no city / data not yet in /
+  // nothing available in the city ⇒ every size shows (browse-only cards and
+  // the delivery notices handle the nothing-deliverable case downstream).
+  const { product: cityProduct } = useProduct({
+    slug: slug ?? '',
+    enabled: !!customerCity,
+  });
+  const unavailableSizes = useMemo(() => {
+    const set = new Set<string>();
+    for (const o of (cityProduct as any)?.variation_options ?? []) {
+      if (o?.city_available === false) {
+        const v = (o?.options ?? []).find(
+          (x: any) => String(x?.name ?? '').toLowerCase() === 'size',
+        )?.value;
+        if (v != null) set.add(String(v));
+      }
+    }
+    return set;
+  }, [cityProduct]);
+  const anySizeAvailable = useMemo(
+    () => ((variations as any)?.size ?? []).some((o: any) => !unavailableSizes.has(String(o.value))),
+    [variations, unavailableSizes],
+  );
+  // A selection that just became city-unavailable must not persist (e.g. the
+  // customer switched city with a size already picked).
+  React.useEffect(() => {
+    const sel = (attributes as any)?.size;
+    if (sel && anySizeAvailable && unavailableSizes.has(String(sel))) {
+      setAttributes((p: any) => {
+        const next = { ...p };
+        delete next.size;
+        return next;
+      });
+    }
+  }, [unavailableSizes, anySizeAvailable, attributes, setAttributes]);
 
   const { price: minPrice } = usePrice({ amount: minAmount });
   const { price: maxPrice } = usePrice({ amount: maxAmount });
@@ -455,15 +495,43 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* variation pickers */}
             {hasVariations &&
               Object.keys(variations).map((groupName, groupIndex) => {
-                const options = variations[groupName] as any[];
+                const allOptions = variations[groupName] as any[];
+                const isSizeGroup = groupName.toLowerCase() === 'size';
+                // Only vendor-supplied sizes for the customer's city; fail-open
+                // to the full list when the filter would empty it.
+                const cityFiltered =
+                  isSizeGroup && unavailableSizes.size > 0
+                    ? allOptions.filter((o) => !unavailableSizes.has(String(o.value)))
+                    : allOptions;
+                const options = cityFiltered.length > 0 ? cityFiltered : allOptions;
                 const color = isColorGroup(groupName, options);
                 const selected = attributes[groupName];
                 return (
                   <div key={groupName} className="mt-5">
                     <div className="mb-2 flex items-center justify-between gap-x-3">
-                      <p className="shrink-0 whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900 sm:text-[12px]">
-                        {`Select ${groupName.replace(/-/g, ' ')}`}
-                      </p>
+                      <span className="flex min-w-0 items-center gap-x-2.5">
+                        <p className="shrink-0 whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900 sm:text-[12px]">
+                          {`Select ${groupName.replace(/-/g, ' ')}`}
+                        </p>
+                        {/* Popup size guide, right where the sizes are chosen —
+                            works on the full PDP AND in the quick-view modal. */}
+                        {isSizeGroup && (size_guide?.original || allOptions.length > 0) && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              openModal('SIZE_GUIDE', {
+                                sizeGuide: size_guide,
+                                sizes: (variations as any)?.size ?? [],
+                                name,
+                              })
+                            }
+                            className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-forest-700 underline underline-offset-2 hover:text-forest-900"
+                          >
+                            <Ruler size={12} aria-hidden />
+                            Size guide
+                          </button>
+                        )}
+                      </span>
                       {/* first picker only — repeating the price above every
                           group would read as a different price per group. */}
                       {groupIndex === 0 && (
@@ -517,52 +585,6 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   </div>
                 );
               })}
-
-            {/* Size Guide — per-product image behind a native disclosure so the
-                info column stays compact. Plain <img> (like the pot picker) so
-                any chart shape renders at its natural aspect ratio without
-                next/image's fixed-dimension letterboxing. Hidden in the modal.
-                Products WITHOUT an uploaded chart get the standard PlantAtHome
-                size explainer instead, so the section always exists for
-                size-variable products (owner feedback). */}
-            {!isModal && (size_guide?.original || ((variations as any)?.size?.length ?? 0) > 0) && (
-              <details className="group mt-6 rounded-[14px] border border-[#ECECEC] bg-white">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-[13px] font-semibold text-forest-900 [&::-webkit-details-marker]:hidden">
-                  Size guide
-                  <LineIcon name="chevronRight" className="h-4 w-4 text-stone-400 transition-transform group-open:rotate-90" />
-                </summary>
-                <div className="px-4 pb-4">
-                  {size_guide?.original ? (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={size_guide.original}
-                      alt={`${name} size guide`}
-                      loading="lazy"
-                      className="h-auto w-full rounded-2xl border border-kraft-300/70 bg-white"
-                    />
-                  ) : (
-                    <dl className="divide-y divide-[#ECECEC] text-[13px]">
-                      {((variations as any)?.size ?? []).map((s: any) => {
-                        const v = String(s?.value ?? '').toLowerCase();
-                        const note = v.includes('small')
-                          ? 'Compact — typically a 4–6" nursery pot; sits happily on desks and shelves.'
-                          : v.includes('medium')
-                            ? 'Mid-size — typically an 8–10" nursery pot; tabletops and bright corners.'
-                            : v.includes('large') || v.includes('xl')
-                              ? 'Statement — typically a 12"+ nursery pot; a floor plant with presence.'
-                              : 'Sized as delivered by our nursery partners for this plant.';
-                        return (
-                          <div key={s?.id ?? s?.value} className="flex items-start gap-4 py-2.5 first:pt-0 last:pb-0">
-                            <dt className="w-16 shrink-0 font-semibold text-forest-900">{s?.value}</dt>
-                            <dd className="text-[#5B5B5B]">{note}</dd>
-                          </div>
-                        );
-                      })}
-                    </dl>
-                  )}
-                </div>
-              </details>
-            )}
 
             {/* pot picker — plants only; pots are real products added as their
                 own cart line, size-matched to the selected plant size */}
@@ -633,17 +655,19 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </button>
             </div>
 
-            {/* trust strip — modern convention: guarantees directly under the CTA */}
+            {/* trust strip — modern convention: guarantees directly under the
+                CTA. Single-line rows: the 3-column tiles wrapped every label
+                onto two lines (owner feedback). */}
             {!isModal && (
-              <div className="mt-5 grid grid-cols-3 gap-2.5">
+              <div className="mt-5 divide-y divide-[#ECECEC] rounded-[14px] border border-[#ECECEC] bg-white px-4">
                 {[
                   { icon: 'shield', label: '30-day healthy-arrival guarantee' },
                   { icon: 'box', label: 'Secure eco-friendly packaging' },
                   { icon: 'leaf', label: 'Expert plant support' },
                 ].map((t) => (
-                  <div key={t.label} className="flex flex-col items-center gap-1.5 rounded-[14px] border border-[#ECECEC] bg-white px-2 py-3 text-center">
-                    <LineIcon name={t.icon} className="h-5 w-5 text-[#24693E]" />
-                    <span className="text-[11px] font-medium leading-snug text-stone-600">{t.label}</span>
+                  <div key={t.label} className="flex items-center gap-2.5 py-2.5">
+                    <LineIcon name={t.icon} className="h-[18px] w-[18px] shrink-0 text-[#24693E]" />
+                    <span className="whitespace-nowrap text-[12px] font-medium text-stone-600">{t.label}</span>
                   </div>
                 ))}
               </div>

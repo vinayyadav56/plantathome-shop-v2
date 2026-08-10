@@ -5,6 +5,9 @@ import Modal from '@/components/ui/modal/modal';
 import { useModalAction, useModalState } from './modal.context';
 
 const OtpLoginView = dynamic(() => import('@/components/auth/otp-login'));
+const SizeGuideContent = dynamic(
+  () => import('@/components/products/details/size-guide-content')
+);
 const Login = dynamic(() => import('@/components/auth/login-form'), {
   ssr: false,
 });
@@ -161,6 +164,16 @@ const ManagedModal = () => {
         {view === 'STRIPE_ELEMENT_MODAL' && <StripeElementModal />}
         {view === 'NEWSLETTER_MODAL' && <NewsLetterModal />}
         {view === 'ASK_AI' && <AskAiChat />}
+        {view === 'SIZE_GUIDE' && (
+          <div className="w-full max-w-md rounded-2xl bg-white p-6">
+            <h3 className="mb-4 text-[15px] font-semibold text-forest-900">Size guide</h3>
+            <SizeGuideContent
+              sizeGuide={data?.sizeGuide}
+              sizes={data?.sizes ?? []}
+              name={data?.name}
+            />
+          </div>
+        )}
       </Suspense>
     </Modal>
   );

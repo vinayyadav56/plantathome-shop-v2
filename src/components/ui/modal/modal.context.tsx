@@ -29,7 +29,8 @@ type MODAL_VIEWS =
   | 'NEWSLETTER_MODAL'
   | 'PROMO_POPUP_MODAL'
   | 'REVIEW_POPUP_MODAL'
-  | 'ASK_AI';
+  | 'ASK_AI'
+  | 'SIZE_GUIDE';
 
 interface State {
   view?: MODAL_VIEWS;

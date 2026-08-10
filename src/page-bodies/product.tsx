@@ -32,6 +32,8 @@ import ProductCard from '@/components/products/cards/card';
 import StyledSpaces from '@/components/products/details/plantathome/styled-spaces';
 import FrequentlyBoughtTogether from '@/components/products/details/plantathome/frequently-bought-together';
 import PlantCareSection from '@/components/products/details/plantathome/plant-care-section';
+import SizeGuideContent from '@/components/products/details/size-guide-content';
+import { getVariations } from '@/lib/get-variations';
 
 const BookDetails = dynamic(() => import('@/components/products/details/book-details'));
 const CartCounterButton = dynamic(() => import('@/components/cart/cart-counter-button'), { ssr: false });
@@ -47,6 +49,13 @@ const ProductPage = ({ product }: any) => {
   // Same sanitizer the details panel uses — PlantCareSection receives
   // ready-to-render HTML.
   const contentHtml = useSanitizeContent({ description: product?.description ?? '' });
+  // Below-the-fold size guide (owner request) — the popup version lives on the
+  // size picker; this is the full-width section after Plant care & details.
+  const sizeOptions: any[] =
+    product?.product_type?.toLowerCase() === 'variable'
+      ? ((getVariations(product?.variations) as any)?.size ?? [])
+      : [];
+  const hasSizeGuide = Boolean(product?.size_guide?.original) || sizeOptions.length > 0;
 
   return (
     <>
@@ -79,6 +88,25 @@ const ProductPage = ({ product }: any) => {
                   <PlantCareSection product={product} contentHtml={contentHtml || null} />
                 </div>
               </section>
+
+              {/* Size guide — below the fold (owner request); the size picker
+                  also opens the same content in a popup */}
+              {hasSizeGuide && (
+                <section className="bg-[#FAF8F2]">
+                  <div className={`${CONTAINER} py-10`} id="size-guide">
+                    <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
+                      Size guide
+                    </h2>
+                    <div className="mt-6 max-w-2xl rounded-[22px] border border-[#ECECEC] bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+                      <SizeGuideContent
+                        sizeGuide={product?.size_guide}
+                        sizes={sizeOptions}
+                        name={product?.name}
+                      />
+                    </div>
+                  </div>
+                </section>
+              )}
 
               {/* Styled in Real Spaces — admin-configurable (Product Page Sections) */}
               <StyledSpaces />
