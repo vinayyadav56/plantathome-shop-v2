@@ -13,6 +13,7 @@ import {
   NEWSLETTER_POPUP_MODAL_KEY,
   REVIEW_POPUP_MODAL_KEY,
 } from '@/lib/constants';
+import { getErrorMessage } from '@/lib/get-error-message';
 import { useToken } from '@/lib/hooks/use-token';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { clearCheckoutAtom } from '@/store/checkout';
@@ -105,6 +106,58 @@ export const useDeleteAddress = () => {
     },
   });
 };
+/**
+ * The address endpoints' 422 is a BARE field-error bag ({"address.zip": [msg]},
+ * no `message` key) — surface the first field message; everything else goes
+ * through getErrorMessage (never destructure error.response — D15).
+ */
+const addressErrorMessage = (error: any, fallback: string): string => {
+  const data = error?.response?.data;
+  if (data && typeof data === 'object' && !data.message) {
+    const first = Object.values(data)
+      .flat()
+      .find((v) => typeof v === 'string') as string | undefined;
+    if (first) return first;
+  }
+  return getErrorMessage(error, fallback);
+};
+
+/** POST /address — routed create (replaces the legacy PUT /users/:id array path). */
+export const useCreateAddress = () => {
+  const queryClient = useQueryClient();
+  const { closeModal } = useModalAction();
+  return useMutation(client.address.create, {
+    onSuccess: () => {
+      toast.success('Address saved');
+      closeModal();
+    },
+    onError: (error) => {
+      toast.error(addressErrorMessage(error, 'Could not save the address'));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(API_ENDPOINTS.USERS_ME);
+    },
+  });
+};
+
+/** PUT /address/{id} — routed update (also used for "set as default"). */
+export const useUpdateAddressMutation = () => {
+  const queryClient = useQueryClient();
+  const { closeModal } = useModalAction();
+  return useMutation(client.address.update, {
+    onSuccess: () => {
+      toast.success('Address updated');
+      closeModal();
+    },
+    onError: (error) => {
+      toast.error(addressErrorMessage(error, 'Could not update the address'));
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(API_ENDPOINTS.USERS_ME);
+    },
+  });
+};
+
 export const useUpdateEmail = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();

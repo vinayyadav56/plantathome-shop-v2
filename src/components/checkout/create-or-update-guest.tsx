@@ -18,6 +18,7 @@ type FormValues = {
     zip: string;
     street_address: string;
   };
+  location?: any;
 };
 
 const CreateOrUpdateGuestAddressForm = () => {
@@ -29,10 +30,17 @@ const CreateOrUpdateGuestAddressForm = () => {
   const [selectedAddress, setAddress] = useAtom(atom);
 
   function onSubmit(values: FormValues) {
+    const loc: any = values.location ?? {};
     const formattedInput = {
       title: values.title,
       type: values.type,
       address: values.address,
+      // Keep the map-pin data (previously dropped) so guest orders carry the
+      // same location payload as logged-in ones.
+      location: values.location,
+      ...(Number(loc.lat) && Number(loc.lng)
+        ? { latitude: Number(loc.lat), longitude: Number(loc.lng) }
+        : {}),
     };
     setAddress(formattedInput);
     closeModal();
@@ -52,6 +60,7 @@ const CreateOrUpdateGuestAddressForm = () => {
             country: 'India',
             ...address?.address,
           },
+          location: address?.location ?? '',
         }}
       />
     </div>

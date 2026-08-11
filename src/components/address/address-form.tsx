@@ -2,15 +2,18 @@ import Button from '@/components/ui/button';
 import Input from '@/components/ui/forms/input';
 import Label from '@/components/ui/forms/label';
 import Radio from '@/components/ui/forms/radio/radio';
+import Checkbox from '@/components/ui/forms/checkbox/checkbox';
 import { Controller } from 'react-hook-form';
 import TextArea from '@/components/ui/forms/text-area';
 import { useTranslation } from 'next-i18next';
 import * as yup from 'yup';
+import { useEffect } from 'react';
 import { useModalState } from '@/components/ui/modal/modal.context';
 import { Form } from '@/components/ui/forms/form';
 import { AddressType } from '@/framework/utils/constants';
 import { GoogleMapLocation } from '@/types';
-import { useUpdateUser } from '@/framework/user';
+import { useCreateAddress, useUpdateAddressMutation } from '@/framework/user';
+import { isAddressComplete } from '@/lib/address-complete';
 import GooglePlacesAutocomplete from '@/components/form/google-places-autocomplete';
 import StateCitySelect from '@/components/location/state-city-select';
 import AddressMapPicker, { type PinResult } from '@/components/address/address-map-picker';
@@ -20,14 +23,17 @@ type FormValues = {
   title: string;
   type: AddressType;
   address_type?: 'home' | 'office' | 'other';
+  default?: boolean;
   address: {
     country: string;
     city: string;
     state: string;
     zip: string;
+    house_no: string;
     street_address: string;
     street_address2?: string;
     landmark?: string;
+    delivery_instructions?: string;
   };
   location: GoogleMapLocation;
 };
@@ -46,14 +52,26 @@ const addressSchema = yup.object().shape({
       .string()
       .required('error-zip-required')
       .matches(/^\d{6}$/, 'error-zip-invalid'),
+    house_no: yup.string().required('House / flat / building no. is required'),
     street_address: yup.string().required('error-street-required'),
+    delivery_instructions: yup.string().max(500, 'Max 500 characters'),
   }),
 });
+
+/** Complete-on-use: validate immediately so the missing fields highlight. */
+function TriggerValidationOnMount({ trigger }: { trigger: () => void }) {
+  useEffect(() => {
+    trigger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 export const AddressForm: React.FC<any> = ({
   onSubmit,
   defaultValues,
   isLoading,
+  incomplete,
 }) => {
   const { t } = useTranslation('common');
   const { settings } = useSettings();
@@ -69,9 +87,18 @@ export const AddressForm: React.FC<any> = ({
       }}
       resetValues={defaultValues}
     >
-      {({ register, control, getValues, setValue, watch, formState: { errors } }) => {
+      {({ register, control, getValues, setValue, watch, trigger, formState: { errors } }) => {
         return (
           <>
+            {incomplete ? (
+              <>
+                <TriggerValidationOnMount trigger={trigger} />
+                <div className="col-span-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] leading-relaxed text-amber-800">
+                  This address is missing a few details — fill the highlighted
+                  fields to use it.
+                </div>
+              </>
+            ) : null}
             <div>
               <Label>{t('text-type')}</Label>
               <div className="flex items-center space-x-4 rtl:space-x-reverse">
@@ -193,6 +220,15 @@ export const AddressForm: React.FC<any> = ({
               variant="outline"
             />
 
+            <Input
+              label="House / flat / building no."
+              placeholder="e.g. B-42, 2nd floor"
+              {...register('address.house_no')}
+              error={t(errors.address?.house_no?.message!)}
+              variant="outline"
+              className="col-span-2"
+            />
+
             <TextArea
               label={t('text-street-address')}
               {...register('address.street_address')}
@@ -212,6 +248,15 @@ export const AddressForm: React.FC<any> = ({
               variant="outline"
             />
 
+            <TextArea
+              label="Delivery instructions (optional)"
+              {...register('address.delivery_instructions')}
+              error={t(errors.address?.delivery_instructions?.message!)}
+              maxLength={500}
+              variant="outline"
+              className="col-span-2"
+            />
+
             <div className="col-span-2">
               <Label>Address label</Label>
               <div className="flex items-center gap-4">
@@ -227,6 +272,12 @@ export const AddressForm: React.FC<any> = ({
                 ))}
               </div>
             </div>
+
+            <Checkbox
+              {...register('default')}
+              label="Set as default address"
+              className="col-span-2"
+            />
 
             <Button
               className="w-full col-span-2"
@@ -246,22 +297,26 @@ export const AddressForm: React.FC<any> = ({
 export default function CreateOrUpdateAddressForm() {
   const { t } = useTranslation('common');
   const {
-    data: { customerId, address, type },
+    data: { address, type },
   } = useModalState();
 
-  // isLoading was never destructured, so the form's Save button (which already accepts a
-  // loading prop) sat inert-looking with no double-click guard — every extra click fired
-  // another PUT /users/:id (D12).
-  const { mutate: updateProfile, isLoading } = useUpdateUser();
+  // Routed address endpoints (POST /address, PUT /address/{id}) replace the
+  // legacy PUT /users/:id address-array save path.
+  const { mutate: createAddress, isLoading: isCreating } = useCreateAddress();
+  const { mutate: updateAddress, isLoading: isUpdating } =
+    useUpdateAddressMutation();
+  const isLoading = isCreating || isUpdating;
+
+  // Complete-on-use: an existing address opened with required fields missing.
+  const incomplete = Boolean(address) && !isAddressComplete(address);
 
   const onSubmit = (values: FormValues) => {
     const loc: any = values.location ?? {};
     const formattedInput = {
-      id: address?.id,
-      // customer_id: customerId,
       title: values.title,
       type: values.type,
       address_type: values.address_type ?? 'home',
+      default: Boolean(values.default),
       address: {
         ...values.address,
       },
@@ -271,11 +326,15 @@ export default function CreateOrUpdateAddressForm() {
       ...(Number(loc.lat) && Number(loc.lng)
         ? { latitude: Number(loc.lat), longitude: Number(loc.lng) }
         : {}),
+      ...(loc.google_place_id || loc.place_id
+        ? { google_place_id: loc.google_place_id ?? loc.place_id }
+        : {}),
     };
-    updateProfile({
-      id: customerId,
-      address: [formattedInput],
-    });
+    if (address?.id) {
+      updateAddress({ id: address.id, ...formattedInput });
+    } else {
+      createAddress(formattedInput);
+    }
   };
 
   return (
@@ -286,15 +345,18 @@ export default function CreateOrUpdateAddressForm() {
       <AddressForm
         onSubmit={onSubmit}
         isLoading={isLoading}
+        incomplete={incomplete}
         defaultValues={{
           title: address?.title ?? '',
           type: address?.type ?? type,
           address_type: address?.address_type ?? 'home',
+          default: Boolean(address?.default),
           address: {
             city: address?.address?.city ?? '',
             country: address?.address?.country ?? 'India',
             state: address?.address?.state ?? '',
             zip: address?.address?.zip ?? '',
+            house_no: address?.address?.house_no ?? '',
             street_address: address?.address?.street_address ?? '',
             ...address?.address,
           },

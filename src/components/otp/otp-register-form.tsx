@@ -15,7 +15,8 @@ interface OtpRegisterFormProps {
 
 type OtpRegisterFormValues = {
   email: string;
-  name: string;
+  first_name: string;
+  last_name?: string;
   code: string;
 };
 
@@ -24,7 +25,8 @@ const otpLoginFormSchemaForNewUser = yup.object().shape({
     .string()
     .email('error-email-format')
     .required('error-email-required'),
-  name: yup.string().required('error-name-required'),
+  first_name: yup.string().required('error-name-required'),
+  last_name: yup.string(),
   code: yup.string().required('error-code-required'),
 });
 
@@ -38,7 +40,18 @@ export default function OtpRegisterForm({
   return (
     <div className="p-5 space-y-5 border border-gray-200 rounded">
       <Form<OtpRegisterFormValues>
-        onSubmit={onSubmit}
+        onSubmit={({ email, first_name, last_name, code }) => {
+          const trimmedFirst = first_name.trim();
+          const trimmedLast = (last_name ?? '').trim();
+          // Joined `name` still sent — old-API belt and braces.
+          onSubmit({
+            email,
+            code,
+            name: [trimmedFirst, trimmedLast].filter(Boolean).join(' '),
+            first_name: trimmedFirst,
+            last_name: trimmedLast || undefined,
+          });
+        }}
         validationSchema={otpLoginFormSchemaForNewUser}
       >
         {({ register, control, formState: { errors } }) => (
@@ -51,13 +64,22 @@ export default function OtpRegisterForm({
               className="mb-5"
               error={t(errors.email?.message!)}
             />
-            <Input
-              label={t('text-name')}
-              {...register('name')}
-              variant="outline"
-              className="mb-5"
-              error={t(errors.name?.message!)}
-            />
+            <div className="mb-5 grid grid-cols-2 gap-4">
+              <Input
+                label="First name"
+                {...register('first_name')}
+                autoComplete="given-name"
+                variant="outline"
+                error={t(errors.first_name?.message!)}
+              />
+              <Input
+                label="Last name (optional)"
+                {...register('last_name')}
+                autoComplete="family-name"
+                variant="outline"
+                error={t(errors.last_name?.message!)}
+              />
+            </div>
 
             <div className="mb-5">
               <Label>{t('text-otp-code')}</Label>

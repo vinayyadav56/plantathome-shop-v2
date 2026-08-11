@@ -7,6 +7,14 @@ import { Form } from '@/components/ui/forms/form';
 import { useUpdateEmail } from '@/framework/user';
 import type { UpdateEmailUserInput, User } from '@/types';
 import { Mail } from '@/components/ui/icon';
+import * as yup from 'yup';
+
+const updateEmailSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email('error-email-format')
+    .required('error-email-required'),
+});
 
 const ProfileUpdateEmail = ({ user }: { user: User }) => {
   const { t } = useTranslation('common');
@@ -24,13 +32,14 @@ const ProfileUpdateEmail = ({ user }: { user: User }) => {
   return (
     <Form<UpdateEmailUserInput>
       onSubmit={onSubmit}
+      validationSchema={updateEmailSchema}
       useFormProps={{
         ...(user && {
           defaultValues: pick(user, ['email']),
         }),
       }}
     >
-      {({ register }) => (
+      {({ register, formState: { errors } }) => (
         <Card className="w-full">
           <div className="mb-6 flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sage-100 text-forest-700">
@@ -46,8 +55,10 @@ const ProfileUpdateEmail = ({ user }: { user: User }) => {
             <Input
               className="flex-1"
               {...register('email')}
+              type="email"
               variant="outline"
               disabled={!!isLoading}
+              error={t(errors.email?.message!)}
             />
             <Button
               variant="outline"

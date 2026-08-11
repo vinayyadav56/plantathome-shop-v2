@@ -10,18 +10,25 @@ import { GoogleIcon } from '@/components/icons/google';
 import { MobileIcon } from '@/components/icons/mobile-icon';
 import { WhatsAppIcon } from '@/components/icons/whatsapp';
 import { Form } from '@/components/ui/forms/form';
-import type { RegisterUserInput } from '@/types';
 import * as yup from 'yup';
 import { useRegister } from '@/framework/user';
 
 const registerFormSchema = yup.object().shape({
-  name: yup.string().required('error-name-required'),
+  first_name: yup.string().required('error-name-required'),
+  last_name: yup.string(),
   email: yup
     .string()
     .email('error-email-format')
     .required('error-email-required'),
   password: yup.string().required('error-password-required'),
 });
+
+type RegisterFormValues = {
+  first_name: string;
+  last_name?: string;
+  email: string;
+  password: string;
+};
 
 type RegisterFormProps = {
   /** When provided (page context), switches to the login view in place. */
@@ -33,31 +40,44 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
   const { openModal } = useModalAction();
   const { mutate, isLoading, formError } = useRegister();
 
-  function onSubmit({ name, email, password }: RegisterUserInput) {
+  function onSubmit({ first_name, last_name, email, password }: RegisterFormValues) {
+    const trimmedFirst = first_name.trim();
+    const trimmedLast = (last_name ?? '').trim();
+    // Keep sending the joined `name` too — old-API belt and braces.
     mutate({
-      name,
+      name: [trimmedFirst, trimmedLast].filter(Boolean).join(' '),
+      first_name: trimmedFirst,
+      last_name: trimmedLast || undefined,
       email,
       password,
-    });
+    } as any);
   }
 
   return (
     <>
-      <Form<RegisterUserInput>
+      <Form<RegisterFormValues>
         onSubmit={onSubmit}
         validationSchema={registerFormSchema}
-        serverError={formError}
+        serverError={formError as any}
       >
         {({ register, formState: { errors } }) => (
           <>
-            <Input
-              label={t('text-name')}
-              {...register('name')}
-              autoComplete="name"
-              variant="outline"
-              className="mb-5"
-              error={t(errors.name?.message!)}
-            />
+            <div className="mb-5 grid grid-cols-2 gap-4">
+              <Input
+                label="First name"
+                {...register('first_name')}
+                autoComplete="given-name"
+                variant="outline"
+                error={t(errors.first_name?.message!)}
+              />
+              <Input
+                label="Last name (optional)"
+                {...register('last_name')}
+                autoComplete="family-name"
+                variant="outline"
+                error={t(errors.last_name?.message!)}
+              />
+            </div>
             <Input
               label={t('text-email')}
               {...register('email')}

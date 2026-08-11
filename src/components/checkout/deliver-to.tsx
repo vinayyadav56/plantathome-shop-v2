@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { useAtom } from 'jotai';
 import { RadioGroup } from '@headlessui/react';
 import {
@@ -7,6 +8,9 @@ import {
   recipientPhoneAtom,
   saveRecipientAddressAtom,
 } from '@/store/deliver-to';
+
+/** Indian mobile: exactly 10 digits starting 6-9. */
+export const RECIPIENT_PHONE_RE = /^[6-9]\d{9}$/;
 
 /**
  * Checkout Delivery-Type step: "Deliver to Me" (default, existing address flow)
@@ -19,6 +23,14 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
   const [name, setName] = useAtom(recipientNameAtom);
   const [phone, setPhone] = useAtom(recipientPhoneAtom);
   const [save, setSave] = useAtom(saveRecipientAddressAtom);
+  const [touched, setTouched] = useState({ name: false, phone: false });
+
+  const nameError =
+    touched.name && !name.trim() ? 'Recipient name is required.' : null;
+  const phoneError =
+    (touched.phone || phone.length === 10) && !RECIPIENT_PHONE_RE.test(phone)
+      ? 'Enter a valid 10-digit mobile number starting with 6-9.'
+      : null;
 
   return (
     <div className="pa-checkout-step">
@@ -70,9 +82,17 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
+              onBlur={() => setTouched((s) => ({ ...s, name: true }))}
               placeholder="Who receives this order?"
-              className="w-full rounded-lg border border-border-base px-3.5 py-2.5 text-sm outline-none focus:border-accent"
+              className={`w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none ${
+                nameError
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-border-base focus:border-accent'
+              }`}
             />
+            {nameError ? (
+              <p className="mt-1 text-xs text-red-500">{nameError}</p>
+            ) : null}
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-heading">
@@ -80,11 +100,22 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
             </label>
             <input
               value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/[^\d+ ]/g, ''))}
-              placeholder="Their contact number"
+              onChange={(e) =>
+                setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))
+              }
+              onBlur={() => setTouched((s) => ({ ...s, phone: true }))}
+              placeholder="10-digit mobile number"
               inputMode="tel"
-              className="w-full rounded-lg border border-border-base px-3.5 py-2.5 text-sm outline-none focus:border-accent"
+              maxLength={10}
+              className={`w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none ${
+                phoneError
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-border-base focus:border-accent'
+              }`}
             />
+            {phoneError ? (
+              <p className="mt-1 text-xs text-red-500">{phoneError}</p>
+            ) : null}
           </div>
           <label className="col-span-full flex cursor-pointer items-center gap-2.5 text-sm text-heading">
             <input

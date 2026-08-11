@@ -735,13 +735,20 @@ export interface Address {
   id: string;
   title: string;
   type: any;
+  /** Server-side sole-default flag (PUT /address/{id} with default:true). */
+  default?: boolean;
+  address_type?: 'home' | 'office' | 'other';
   address: {
     __typename?: string;
     country: string;
     city: string;
     state: string;
     zip: string;
+    house_no?: string;
     street_address: string;
+    street_address2?: string;
+    landmark?: string;
+    delivery_instructions?: string;
   };
   location: GoogleMapLocation;
 }

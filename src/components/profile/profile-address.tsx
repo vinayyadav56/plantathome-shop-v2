@@ -3,6 +3,7 @@ import AddressCard from '@/components/address/address-card';
 import { useTranslation } from 'next-i18next';
 import { AddressType } from '@/framework/utils/constants';
 import { Plus } from '@/components/ui/icon';
+import { useUpdateAddressMutation } from '@/framework/user';
 
 interface AddressesProps {
   addresses: any[] | undefined;
@@ -11,14 +12,15 @@ interface AddressesProps {
   userId: string;
 }
 
-/** One address type group (Billing or Shipping) — labelled, with the first
- *  entry marked Default (display-only; there's no is_default flag in data). */
+/** One address type group (Billing or Shipping) — labelled, showing the real
+ *  server-side `address.default` flag with a per-card "Set as default" action. */
 function AddressGroup({
   title,
   items,
   userId,
   onEdit,
   onDelete,
+  onSetDefault,
   emptyText,
 }: {
   title: string;
@@ -26,6 +28,7 @@ function AddressGroup({
   userId: string;
   onEdit: (a: any, type: AddressType) => void;
   onDelete: (a: any) => void;
+  onSetDefault: (a: any) => void;
   emptyText: string;
 }) {
   return (
@@ -33,13 +36,14 @@ function AddressGroup({
       <p className="mb-3 text-[13px] font-bold uppercase tracking-wide text-forest-800">{title}</p>
       {items.length ? (
         <div className="flex flex-col gap-4">
-          {items.map((address, i) => (
+          {items.map((address) => (
             <AddressCard
               key={address.id}
               checked={false}
               address={address}
               userId={userId}
-              defaultBadge={i === 0}
+              defaultBadge={Boolean(address?.default)}
+              onSetDefault={() => onSetDefault(address)}
               onEdit={() => onEdit(address, (address?.type as AddressType) ?? AddressType.Billing)}
               onDelete={() => onDelete(address)}
             />
@@ -62,6 +66,8 @@ export const ProfileAddressGrid: React.FC<AddressesProps> = ({
 }) => {
   const { openModal } = useModalAction();
   const { t } = useTranslation('common');
+  const { mutate: updateAddress, isLoading: isSettingDefault } =
+    useUpdateAddressMutation();
 
   const list = addresses ?? [];
   const billing = list.filter((a) => a?.type === AddressType.Billing);
@@ -77,6 +83,20 @@ export const ProfileAddressGrid: React.FC<AddressesProps> = ({
   }
   function onDelete(address: any) {
     openModal('DELETE_ADDRESS', { addressId: address?.id });
+  }
+  function onSetDefault(address: any) {
+    if (isSettingDefault || address?.default || !address?.id) return;
+    // PUT the full existing row + default:true so validation passes and the
+    // server makes it the sole default.
+    updateAddress({
+      id: address.id,
+      title: address?.title,
+      type: address?.type,
+      address_type: address?.address_type ?? 'home',
+      address: { ...address?.address },
+      location: address?.location,
+      default: true,
+    });
   }
 
   return (
@@ -97,8 +117,8 @@ export const ProfileAddressGrid: React.FC<AddressesProps> = ({
 
       {list.length ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          <AddressGroup title={t('billing-address')} items={[...billing, ...untyped]} userId={userId} onEdit={onEdit} onDelete={onDelete} emptyText={t('text-no-address')} />
-          <AddressGroup title={t('shipping-address')} items={shipping} userId={userId} onEdit={onEdit} onDelete={onDelete} emptyText={t('text-no-address')} />
+          <AddressGroup title={t('billing-address')} items={[...billing, ...untyped]} userId={userId} onEdit={onEdit} onDelete={onDelete} onSetDefault={onSetDefault} emptyText={t('text-no-address')} />
+          <AddressGroup title={t('shipping-address')} items={shipping} userId={userId} onEdit={onEdit} onDelete={onDelete} onSetDefault={onSetDefault} emptyText={t('text-no-address')} />
         </div>
       ) : (
         <p className="rounded-xl border border-dashed border-forest-900/15 px-5 py-8 text-center text-[13px] text-stone-400">

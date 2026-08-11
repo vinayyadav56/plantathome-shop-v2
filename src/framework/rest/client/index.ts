@@ -452,6 +452,14 @@ class Client {
         ...(type && { search: HttpClient.formatSearchParams({ type }) }),
       }),
   };
+  // Routed address CRUD (POST /address, PUT /address/{id}) — replaces the
+  // legacy PUT /users/:id address-array save path. DELETE lives in users below.
+  address = {
+    create: (input: Record<string, any>) =>
+      HttpClient.post<any>(API_ENDPOINTS.USERS_ADDRESS, input),
+    update: ({ id, ...input }: Record<string, any> & { id: string | number }) =>
+      HttpClient.put<any>(`${API_ENDPOINTS.USERS_ADDRESS}/${id}`, input),
+  };
   users = {
     me: () => HttpClient.get<User>(API_ENDPOINTS.USERS_ME),
     update: (user: UpdateUserInput) =>

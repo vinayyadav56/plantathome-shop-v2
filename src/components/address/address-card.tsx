@@ -11,8 +11,12 @@ interface AddressProps {
   onEdit?: () => void;
   onDelete?: () => void;
   userId?: any;
-  /** Show a "Default" pill (display-only — no is_default flag in the data). */
+  /** Show a "Default" pill (real `address.default` flag from the API). */
   defaultBadge?: boolean;
+  /** Amber "Needs details" chip — address is missing required fields. */
+  needsDetails?: boolean;
+  /** When provided (and not default), renders a small "Set as default" action. */
+  onSetDefault?: () => void;
 }
 const AddressCard: React.FC<AddressProps> = ({
   checked,
@@ -21,6 +25,8 @@ const AddressCard: React.FC<AddressProps> = ({
   onEdit,
   onDelete,
   defaultBadge,
+  needsDetails,
+  onSetDefault,
 }) => {
   const { t } = useTranslation();
   return (
@@ -37,8 +43,25 @@ const AddressCard: React.FC<AddressProps> = ({
             {t('text-default')}
           </span>
         )}
+        {needsDetails && (
+          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10.5px] font-semibold text-amber-700">
+            Needs details
+          </span>
+        )}
       </div>
       <p className="pa-address-body">{formatAddress(address?.address)}</p>
+      {onSetDefault && !defaultBadge && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSetDefault();
+          }}
+          className="mt-1.5 text-[11.5px] font-semibold text-forest-700 underline transition-colors hover:text-forest-900 hover:no-underline"
+        >
+          Set as default
+        </button>
+      )}
       <div className="pa-address-actions">
         {onEdit && (
           <button className="pa-address-btn pa-address-btn--edit" onClick={onEdit} title={t('text-edit')}>

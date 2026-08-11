@@ -1,13 +1,14 @@
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { RadioGroup } from '@headlessui/react';
 import { useAtom, WritableAtom } from 'jotai';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import AddressCard from '@/components/address/address-card';
 import { AddressHeader } from '@/components/address/address-header';
 import { useTranslation } from 'next-i18next';
 import type { Address } from '@/types';
 import { useCustomerCity } from '@/lib/use-customer-city';
 import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
+import { isAddressComplete } from '@/lib/address-complete';
 import CityMismatchDialog from './city-mismatch-dialog';
 
 interface AddressesProps {
@@ -58,13 +59,37 @@ export const AddressGrid: React.FC<AddressesProps> = ({
     return { matching, others };
   }, [addresses, shoppingCity, cityKey]);
 
+  // Complete-on-use: the address sent to the edit modal because it was missing
+  // details — select it once it comes back complete from the save.
+  const pendingCompletionIdRef = useRef<Address['id'] | null>(null);
+
   useEffect(() => {
     if (matching.length) {
+      // An address just completed via the modal wins the selection.
+      if (pendingCompletionIdRef.current) {
+        const completed = matching.find(
+          (a) => a.id === pendingCompletionIdRef.current,
+        );
+        if (completed && isAddressComplete(completed)) {
+          pendingCompletionIdRef.current = null;
+          setAddress(completed);
+          return;
+        }
+      }
       if (selectedAddress?.id) {
         const found = matching.find((a) => a.id === selectedAddress.id);
-        setAddress(found ?? matching[0]);
-      } else {
-        setAddress(matching[0]);
+        if (found && isAddressComplete(found)) {
+          setAddress(found);
+          return;
+        }
+      }
+      // Auto-select only COMPLETE addresses, preferring the server default.
+      const complete = matching.filter((a) => isAddressComplete(a));
+      const preferred = complete.find((a) => a?.default) ?? complete[0];
+      if (preferred) {
+        setAddress(preferred);
+      } else if (selectedAddress?.id) {
+        setAddress(null as any);
       }
     } else if (selectedAddress?.id) {
       // The previously selected address no longer matches the shopping city.
@@ -88,6 +113,13 @@ export const AddressGrid: React.FC<AddressesProps> = ({
     const ac = addressCityOf(address);
     if (shoppingCity && ac && normalizeCityClient(ac) !== cityKey) {
       setMismatch(address);
+      return;
+    }
+    // Complete-on-use: don't select an address with missing required fields —
+    // open the edit modal prefilled so the shopper fills the gaps first.
+    if (!isAddressComplete(address)) {
+      pendingCompletionIdRef.current = address.id;
+      openModal('ADD_OR_UPDATE_ADDRESS', { customerId: userId, address });
       return;
     }
     setAddress(address);
@@ -116,6 +148,8 @@ export const AddressGrid: React.FC<AddressesProps> = ({
                         onDelete={() => onDelete(address)}
                         onEdit={() => onEdit(address)}
                         address={address}
+                        defaultBadge={Boolean(address?.default)}
+                        needsDetails={!isAddressComplete(address)}
                       />
                     )}
                   </RadioGroup.Option>
