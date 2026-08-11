@@ -15,6 +15,19 @@
 import { useEffect } from 'react';
 import { PlantLoader } from '@/components/ui/plant-loader';
 
+/**
+ * A failed lazy-chunk fetch is not a code error — it's a STALE TAB. After every deploy the
+ * old build's hashed chunks stop existing, so a tab opened before the deploy crashes the
+ * moment it lazy-loads something new (e.g. Check Availability mounting the dynamic
+ * VerifiedItemList). The only correct fix is a hard reload onto the new build.
+ */
+function isStaleChunkError(error: Error): boolean {
+  const msg = `${error?.name ?? ''} ${error?.message ?? ''}`;
+  return /ChunkLoadError|Loading chunk .*failed|failed to fetch dynamically imported module|error loading dynamically imported module|Importing a module script failed|css chunk/i.test(
+    msg,
+  );
+}
+
 export default function RouteError({
   error,
   reset,
@@ -26,6 +39,22 @@ export default function RouteError({
     // Surface it once for whoever is watching the console / error reporter.
     // eslint-disable-next-line no-console
     console.error('[route-error]', error?.message, error?.digest ?? '');
+
+    // Stale-deploy self-heal: hard-reload ONCE onto the fresh build. The sessionStorage
+    // guard prevents a reload loop if the failure is real rather than stale chunks.
+    if (isStaleChunkError(error)) {
+      try {
+        const KEY = 'pah-chunk-reload';
+        if (sessionStorage.getItem(KEY) !== '1') {
+          sessionStorage.setItem(KEY, '1');
+          window.location.reload();
+          return;
+        }
+        sessionStorage.removeItem(KEY);
+      } catch {
+        /* storage unavailable — fall through to the manual UI */
+      }
+    }
   }, [error]);
 
   return (
