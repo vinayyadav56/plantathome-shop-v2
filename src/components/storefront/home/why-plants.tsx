@@ -6,7 +6,7 @@ import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
 import { useHomeConfig } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
-import { ArrowRight, Droplet, Earth, Heart, Leaf, TrendingUp, VolumeX, Wind } from '@/components/ui/icon';
+import { ArrowRight, Droplet, Earth, Heart, Sprout, TrendingUp, VolumeX, Wind } from '@/components/ui/icon';
 
 /** Icon presets selectable from the admin Why-Plants editor (iconKey).
  *  Lucide glyphs via the shared icon funnel (same picks as pah/why-plants).
@@ -19,7 +19,7 @@ export const WHY_ICONS: Record<string, React.ReactNode> = {
   humidity: <Droplet size={16} aria-hidden />,
   noise: <VolumeX size={16} aria-hidden />,
   planet: <Earth size={16} aria-hidden />,
-  leaf: <Leaf size={16} aria-hidden />,
+  leaf: <Sprout size={16} aria-hidden />,
   heart: <Heart size={16} aria-hidden />,
 };
 
@@ -99,7 +99,7 @@ export function WhyPlants() {
           className="mx-auto mb-8 max-w-[760px] text-center"
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-forest-600/15 bg-forest-600/[0.07] px-4 py-1.5 font-jost text-[11.5px] font-semibold uppercase tracking-[0.22em] text-forest-600">
-            <Leaf size={14} className="text-forest-500" aria-hidden />
+            <Sprout size={14} className="text-forest-500" aria-hidden />
             {t('home-why-eyebrow')}
           </span>
           {/* One line on mobile too — fluid rather than fixed 30px, which wrapped
@@ -195,7 +195,7 @@ export function WhyPlants() {
 
             <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.07] text-sage-200 md:h-[46px] md:w-[46px] lg:h-[56px] lg:w-[56px]">
               {/* responsive sizing → classes, no size prop */}
-              <Leaf className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]" aria-hidden />
+              <Sprout className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]" aria-hidden />
             </div>
 
             {/* vertical divider */}

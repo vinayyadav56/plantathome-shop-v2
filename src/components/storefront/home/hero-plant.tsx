@@ -8,7 +8,7 @@ import { Icon } from '../icons';
 import { EXPO, WordReveal } from '../motion';
 import { usePincodeServiceability } from '@/lib/use-pincode-serviceability';
 import { useSettings } from '@/framework/settings';
-import { CircleCheck, Leaf, MapPin } from '@/components/ui/icon';
+import { CircleCheck, MapPin, Sprout } from '@/components/ui/icon';
 
 // Luxury hero, round 6 — a cinematic HOUSE-TOUR sequence through the glass-walled
 // greenhouse villa: approach the exterior → step into the living space → linger on
@@ -321,7 +321,7 @@ export function HeroPlant() {
             className="mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/35 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90"
           >
             {t('home-hero-eyebrow')}
-            <Leaf size={12} className="shrink-0 text-[#8FD56F]" aria-hidden />
+            <Sprout size={12} className="shrink-0 text-[#8FD56F]" aria-hidden />
           </motion.span>
 
           {headline ? (

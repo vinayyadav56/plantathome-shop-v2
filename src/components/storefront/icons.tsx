@@ -4,7 +4,6 @@ import {
   Droplet,
   Heart,
   Home,
-  Leaf,
   Lock,
   Menu,
   Moon,
@@ -32,7 +31,8 @@ import {
 type P = LucideProps;
 
 export const Icon = {
-  leaf: (p: P) => <Leaf strokeWidth={2} {...p} />,
+  // Key frozen for call-site compat; renders Sprout (decorative leaves retired).
+  leaf: (p: P) => <Sprout strokeWidth={2} {...p} />,
   truck: (p: P) => <Truck strokeWidth={2} {...p} />,
   shield: (p: P) => <ShieldCheck strokeWidth={2} {...p} />,
   star: (p: P) => <Star fill="currentColor" strokeWidth={0} {...p} />,

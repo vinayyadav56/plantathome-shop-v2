@@ -8,7 +8,7 @@ import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import { WordmarkStacked } from '@/components/storefront/logo-mark';
 import InlineLanguageSelect from '@/components/ui/inline-language-select';
-import { ArrowRight, Leaf, Lock, Mail, MapPin, Phone, ShieldCheck, Truck } from '@/components/ui/icon';
+import { ArrowRight, Sprout, Lock, Mail, MapPin, Phone, ShieldCheck, Truck } from '@/components/ui/icon';
 import {
   FacebookIcon,
   InstagramIcon,
@@ -57,7 +57,7 @@ const SOCIALS: { name: string; href: string; icon: JSX.Element }[] = [
 ];
 
 const BADGES: { label: string; icon: JSX.Element }[] = [
-  { label: 'Peat-free soil & recycled pots', icon: <Leaf size={14} aria-hidden /> },
+  { label: 'Peat-free soil & recycled pots', icon: <Sprout size={14} aria-hidden /> },
   { label: 'Carbon-neutral delivery', icon: <Truck size={14} aria-hidden /> },
   { label: '30-day plant guarantee', icon: <ShieldCheck size={14} aria-hidden /> },
   { label: 'Secure checkout', icon: <Lock size={14} aria-hidden /> },

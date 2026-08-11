@@ -8,7 +8,7 @@ import {
   Building2,
   Earth,
   Gift,
-  Leaf,
+  Heart,
   ShieldCheck,
   Sprout,
   Truck,
@@ -20,7 +20,7 @@ import {
  *  assurance band), matched to the Mobile Home reference. Separate from the luxury
  *  gilded banner (pah/gifting.tsx) that follows it. */
 const REASONS: { a: string; b: string; icon: LucideIcon }[] = [
-  { a: 'Better for People', b: '& Workspaces', icon: Leaf },
+  { a: 'Better for People', b: '& Workspaces', icon: Heart },
   { a: 'Elegant Gifts for', b: 'Every Occasion', icon: Gift },
   { a: 'Sustainable Choice', b: 'Greener Future', icon: Earth },
   { a: 'Perfect for Clients', b: '& Employees', icon: Building2 },

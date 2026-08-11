@@ -17,7 +17,7 @@ import { BottomNav } from './bottom-nav';
 import { VerticalSection } from '@/components/storefront/home/vertical-section';
 import { useHomeSections } from '@/lib/use-home-config';
 import { useTypes } from '@/framework/type';
-import { ArrowRight, Check, Leaf, Mail } from '@/components/ui/icon';
+import { ArrowRight, Check, Mail, Sprout } from '@/components/ui/icon';
 import {
   FacebookIcon,
   InstagramIcon,
@@ -184,7 +184,7 @@ function Footer() {
           className="mt-[22px] flex items-center justify-center gap-2.5 rounded-[11px] border px-[14px] py-[11px]"
           style={{ background: 'rgba(255,255,255,0.04)', borderColor: 'rgba(231,238,226,0.1)' }}
         >
-          <Leaf size={16} className="shrink-0 text-sage-300" aria-hidden />
+          <Sprout size={16} className="shrink-0 text-sage-300" aria-hidden />
           <span className="text-[10px] leading-[1.4]" style={{ color: 'rgba(231,238,226,0.7)' }}>
             Peat-free soil · Recycled pots · Carbon-neutral delivery
           </span>

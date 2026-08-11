@@ -11,7 +11,7 @@ import { useCategories } from '@/framework/category';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import type { Type } from '@/types';
-import { Leaf, ArrowRight } from '@/components/ui/icon';
+import { Sprout, ArrowRight } from '@/components/ui/icon';
 
 
 /** Compact brand category card — image + serif name, links to /c/[slug].
@@ -37,7 +37,7 @@ function CategoryCard({ category }: { category: any }) {
           />
         ) : (
           <div className="grid h-full w-full place-items-center text-forest-300">
-            <Leaf size={32} aria-hidden />
+            <Sprout size={32} aria-hidden />
           </div>
         )}
       </div>

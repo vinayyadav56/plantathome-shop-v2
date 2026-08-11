@@ -6,7 +6,6 @@ import {
   Copy,
   Flag,
   Headset,
-  Leaf,
   Mail,
   MapPin,
   Phone,
@@ -74,5 +73,5 @@ export const ShieldCheckIcon = ({ className }: IconProps) => (
   <ShieldCheck className={className} strokeWidth={2} aria-hidden />
 );
 export const LeafIcon = ({ className }: IconProps) => (
-  <Leaf className={className} strokeWidth={2} aria-hidden />
+  <Sprout className={className} strokeWidth={2} aria-hidden />
 );

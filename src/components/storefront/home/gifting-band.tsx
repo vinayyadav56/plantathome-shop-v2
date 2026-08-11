@@ -6,10 +6,10 @@ import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
-import { BadgeCheck, Building2, Gift, Globe, Leaf, ShieldCheck, Sprout, Truck } from '@/components/ui/icon';
+import { BadgeCheck, Building2, Gift, Globe, Heart, ShieldCheck, Sprout, Truck } from '@/components/ui/icon';
 
 const REASONS: { a: string; b: string; icon: React.ReactNode }[] = [
-  { a: 'Better for People', b: '& Workspaces', icon: <Leaf size={24} aria-hidden /> },
+  { a: 'Better for People', b: '& Workspaces', icon: <Heart size={24} aria-hidden /> },
   { a: 'Elegant Gifts for', b: 'Every Occasion', icon: <Gift size={24} aria-hidden /> },
   { a: 'Sustainable Choice', b: 'for a Greener Future', icon: <Globe size={24} aria-hidden /> },
   { a: 'Perfect for Clients,', b: 'Partners & Employees', icon: <Building2 size={24} aria-hidden /> },

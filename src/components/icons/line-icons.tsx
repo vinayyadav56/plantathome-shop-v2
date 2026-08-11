@@ -10,8 +10,7 @@ import {
   ExternalLink,
   Flower2,
   Globe,
-  Leaf,
-  Menu,
+  Sprout, Menu,
   Play,
   Plus,
   ShieldCheck,
@@ -26,7 +25,7 @@ import {
  * should import from '@/components/ui/icon' directly.
  */
 const GLYPHS: Record<string, LucideIcon> = {
-  leaf: Leaf,
+  leaf: Sprout,
   lotus: Flower2,
   menu: Menu,
   cart: ShoppingBag,
@@ -59,7 +58,7 @@ export function LineIcon({
   if (!Glyph && process.env.NODE_ENV !== 'production') {
     console.warn('[icons] LineIcon unmapped name:', name);
   }
-  const Resolved = Glyph ?? Leaf;
+  const Resolved = Glyph ?? Sprout;
   return <Resolved className={className} strokeWidth={strokeWidth} aria-hidden />;
 }
 

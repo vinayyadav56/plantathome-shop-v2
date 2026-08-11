@@ -19,8 +19,7 @@ import {
   Severity,
 } from '@/framework/plant-doctor';
 import {
-  ArrowRight, Camera, Check, ChevronDown, CircleAlert, Clock, FileText, Leaf,
-  Lock, RefreshCw, RotateCcw, ShieldCheck, Sparkles, Trash2, type LucideIcon,
+  ArrowRight, Camera, Check, ChevronDown, CircleAlert, Clock, FileText, Sprout, Lock, RefreshCw, RotateCcw, ShieldCheck, Sparkles, Trash2, type LucideIcon,
 } from '@/components/ui/icon';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -50,7 +49,7 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 
 const ICONS: Record<string, LucideIcon> = {
   camera: Camera,
-  leaf: Leaf,
+  leaf: Sprout,
   clipboard: FileText,
   shield: ShieldCheck,
   clock: Clock,
@@ -73,7 +72,7 @@ function Icon({
   name: keyof typeof ICONS;
   className?: string;
 }) {
-  const Glyph = ICONS[name] ?? Leaf;
+  const Glyph = ICONS[name] ?? Sprout;
   return <Glyph className={className} aria-hidden />;
 }
 

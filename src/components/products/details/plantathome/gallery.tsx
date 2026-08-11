@@ -1,7 +1,7 @@
 'use client';
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, Leaf } from '@/components/ui/icon';
+import { ChevronLeft, ChevronRight, Sprout } from '@/components/ui/icon';
 
 type GalleryImage = { original?: string; thumbnail?: string; id?: string | number };
 
@@ -100,7 +100,7 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
               {src ? (
                 <Image src={src} alt="" fill sizes="68px" className="object-cover" />
               ) : (
-                <span className="grid h-full w-full place-items-center text-forest-700/30"><Leaf size={16} aria-hidden /></span>
+                <span className="grid h-full w-full place-items-center text-forest-700/30"><Sprout size={16} aria-hidden /></span>
               )}
             </button>
           );
