@@ -993,6 +993,8 @@ export interface VerifiedCheckoutData {
   total_tax: number;
   shipping_charge: number;
   unavailable_products?: number[];
+  /** Variable-product cart lines missing their variation (ghost lines) — dropped client-side. */
+  invalid_option_lines?: number[];
   wallet_currency?: number;
   wallet_amount?: number;
   /** Per-vendor pincode coverage verdict (delivery-coverage system). */

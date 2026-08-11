@@ -114,8 +114,18 @@ export const PlaceOrderAction: React.FC<{
     setErrorMessage(null);
   }, [payment_gateway]);
 
+  // unavailable_products carries PRODUCT ids while a variation cart item's id is
+  // the composite "product.variation" STRING — match productId too, or an
+  // unavailable variable product slips through. invalid_option_lines = ghost
+  // lines (variable product, no variation picked) that would 422 the order.
   const available_items = items?.filter(
-    (item) => !verified_response?.unavailable_products?.includes(item.id),
+    (item: any) =>
+      !verified_response?.unavailable_products?.includes(item.id) &&
+      !(item.productId && verified_response?.unavailable_products?.includes(item.productId)) &&
+      !(
+        !item.variationId &&
+        (verified_response as any)?.invalid_option_lines?.includes(item.productId ?? item.id)
+      ),
   );
 
   // ONE totals computation, shared verbatim with the order summary — what the customer

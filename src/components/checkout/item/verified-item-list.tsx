@@ -42,9 +42,16 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   const freeShippingAmount = settings?.freeShippingAmount;
   const freeShipping = settings?.freeShipping;
 
-  const available_items = items?.filter(
-    (item) => !verifiedResponse?.unavailable_products?.includes(item.id)
-  );
+  // unavailable_products carries PRODUCT ids while a variation cart item's id is
+  // the composite "product.variation" STRING — match productId too. Ghost lines
+  // (variable product, no variation picked — invalid_option_lines) are excluded
+  // exactly like unavailable ones. MUST mirror PlaceOrderAction's filter.
+  const isExcluded = (item: any) =>
+    verifiedResponse?.unavailable_products?.includes(item.id) ||
+    (item.productId && verifiedResponse?.unavailable_products?.includes(item.productId)) ||
+    (!item.variationId &&
+      (verifiedResponse as any)?.invalid_option_lines?.includes(item.productId ?? item.id));
+  const available_items = items?.filter((item: any) => !isExcluded(item));
 
   // ONE totals computation, shared verbatim with PlaceOrderAction — what this summary
   // shows is exactly what gets submitted (percentage coupons, free shipping and all).
@@ -87,9 +94,7 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
       <div className="mb-3">
         {!isEmptyCart ? (
           items?.map((item) => {
-            const notAvailable = verifiedResponse?.unavailable_products?.find(
-              (d: any) => d === item.id
-            );
+            const notAvailable = isExcluded(item) ? item.id : undefined;
             return (
               <ItemCard
                 item={item}
