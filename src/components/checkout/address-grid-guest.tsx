@@ -5,6 +5,8 @@ import { useAtom, WritableAtom } from 'jotai';
 import AddressCard from '@/components/address/address-card';
 import { AddressHeader } from '@/components/address/address-header';
 import { useTranslation } from 'next-i18next';
+import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
+import { getStoredCity } from '@/lib/customer-location';
 
 interface AddressesProps {
   addresses: Address[] | undefined;
@@ -42,17 +44,48 @@ export const GuestAddressGrid: React.FC<AddressesProps> = ({
         <RadioGroup as="span" value={selectedAddress} onChange={setAddress}>
           <RadioGroup.Label className="sr-only">{label}</RadioGroup.Label>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {addresses?.map((address) => (
-              <RadioGroup.Option value={address} key={address?.id}>
-                {({ checked }) => (
-                  <AddressCard
-                    checked={checked}
-                    address={address}
-                    onEdit={() => onEdit(address)}
-                  />
-                )}
-              </RadioGroup.Option>
-            ))}
+            {addresses?.map((address, idx) => {
+              // Guest addresses live only in the atom and have NO id — key off
+              // stable content instead of an always-undefined id.
+              const key = `${address?.title ?? ''}-${address?.address?.zip ?? ''}-${idx}`;
+              const shoppingCity = getStoredCity();
+              const addressCity = addressCityOf(address);
+              const cityMismatch =
+                shoppingCity &&
+                addressCity &&
+                normalizeCityClient(addressCity) !== normalizeCityClient(shoppingCity);
+              return (
+                <RadioGroup.Option value={address} key={key}>
+                  {({ checked }) => (
+                    <div>
+                      <AddressCard
+                        checked={checked}
+                        address={address}
+                        onEdit={() => onEdit(address)}
+                      />
+                      {cityMismatch && (
+                        <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[13px] leading-relaxed text-amber-800">
+                          This address is in {addressCity} but you&apos;re shopping
+                          in {shoppingCity} — orders are delivered within{' '}
+                          {shoppingCity}. Edit the address or switch city.{' '}
+                          <button
+                            type="button"
+                            className="font-semibold underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              onEdit(address);
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </RadioGroup.Option>
+              );
+            })}
           </div>
         </RadioGroup>
       ) : (

@@ -23,3 +23,18 @@ export function getErrorMessage(
   }
   return fallback;
 }
+
+/**
+ * First message out of a BARE 422 field-error bag — {"field": ["msg"]} with no
+ * `message` key (Laravel validation on order/address create). Returns undefined
+ * for anything else so callers fall through to getErrorMessage.
+ */
+export function firstFieldError(error: any): string | undefined {
+  const data = error?.response?.data;
+  if (data && typeof data === 'object' && !data.message) {
+    return Object.values(data)
+      .flat()
+      .find((v): v is string => typeof v === 'string');
+  }
+  return undefined;
+}

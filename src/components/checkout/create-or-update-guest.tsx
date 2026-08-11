@@ -53,6 +53,7 @@ const CreateOrUpdateGuestAddressForm = () => {
       </h1>
       <AddressForm
         onSubmit={onSubmit}
+        variant="guest"
         defaultValues={{
           title: address?.title ?? '',
           type: address?.type ?? type,

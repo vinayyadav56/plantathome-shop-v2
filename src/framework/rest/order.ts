@@ -32,7 +32,7 @@ import { isArray, isObject, isEmpty } from 'lodash';
 import { useMemo } from 'react';
 import { resolveOrderToken, saveOrderToken } from '@/lib/order-token';
 import { cartFingerprint } from '@/lib/checkout-totals';
-import { getErrorMessage } from '@/lib/get-error-message';
+import { firstFieldError, getErrorMessage } from '@/lib/get-error-message';
 
 export function useOrders(options?: Partial<OrderQueryOptions>) {
   const { locale } = useRouter();
@@ -346,8 +346,12 @@ export function useCreateOrder() {
       } catch {
         /* not the gate — fall through to the generic toast */
       }
+      // Order-create 422s are BARE field-error bags (no `message` key) — surface
+      // the first field message instead of the generic fallback. 503 maintenance
+      // and COD_DISABLED carry a `message`, which getErrorMessage shows as-is.
       toast.error(
-        getErrorMessage(error, 'We could not place your order — please try again.'),
+        firstFieldError(error) ??
+          getErrorMessage(error, 'We could not place your order — please try again.'),
       );
     },
   });

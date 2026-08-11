@@ -20,6 +20,7 @@ import PaymentGrid from '@/components/checkout/payment/payment-grid';
 import { PlaceOrderAction } from '@/components/checkout/place-order-action';
 import Wallet from '@/components/checkout/wallet/wallet';
 import { useSettings } from '@/framework/settings';
+import { authorizationAtom } from '@/store/authorization-atom';
 import { ShoppingBag } from '@/components/ui/icon';
 import cn from 'classnames';
 
@@ -34,6 +35,9 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   const [discount] = useAtom(discountAtom);
   const [payableAmount] = useAtom(payableAmountAtom);
   const [use_wallet] = useAtom(walletAtom);
+  // Guests have no wallet — hide the block (its balance/checkbox are meaningless
+  // without an account).
+  const [isAuthorized] = useAtom(authorizationAtom);
   const { settings } = useSettings();
   const freeShippingAmount = settings?.freeShippingAmount;
   const freeShipping = settings?.freeShipping;
@@ -147,7 +151,7 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
         </div>
       </div>
 
-      {verifiedResponse && (
+      {isAuthorized && verifiedResponse && (
         <Wallet
           totalPrice={totalPrice}
           walletAmount={verifiedResponse.wallet_amount}

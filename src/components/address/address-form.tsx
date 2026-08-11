@@ -72,6 +72,9 @@ export const AddressForm: React.FC<any> = ({
   defaultValues,
   isLoading,
   incomplete,
+  // 'guest' hides the address_type label + default checkbox — both are inert
+  // without an account (nothing server-side stores them for guests).
+  variant,
 }) => {
   const { t } = useTranslation('common');
   const { settings } = useSettings();
@@ -257,27 +260,31 @@ export const AddressForm: React.FC<any> = ({
               className="col-span-2"
             />
 
-            <div className="col-span-2">
-              <Label>Address label</Label>
-              <div className="flex items-center gap-4">
-                {(['home', 'office', 'other'] as const).map((v) => (
-                  <Radio
-                    key={v}
-                    id={`address-type-${v}`}
-                    {...register('address_type')}
-                    type="radio"
-                    value={v}
-                    label={v.charAt(0).toUpperCase() + v.slice(1)}
-                  />
-                ))}
-              </div>
-            </div>
+            {variant !== 'guest' && (
+              <>
+                <div className="col-span-2">
+                  <Label>Address label</Label>
+                  <div className="flex items-center gap-4">
+                    {(['home', 'office', 'other'] as const).map((v) => (
+                      <Radio
+                        key={v}
+                        id={`address-type-${v}`}
+                        {...register('address_type')}
+                        type="radio"
+                        value={v}
+                        label={v.charAt(0).toUpperCase() + v.slice(1)}
+                      />
+                    ))}
+                  </div>
+                </div>
 
-            <Checkbox
-              {...register('default')}
-              label="Set as default address"
-              className="col-span-2"
-            />
+                <Checkbox
+                  {...register('default')}
+                  label="Set as default address"
+                  className="col-span-2"
+                />
+              </>
+            )}
 
             <Button
               className="w-full col-span-2"

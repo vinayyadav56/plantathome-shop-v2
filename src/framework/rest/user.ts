@@ -13,7 +13,7 @@ import {
   NEWSLETTER_POPUP_MODAL_KEY,
   REVIEW_POPUP_MODAL_KEY,
 } from '@/lib/constants';
-import { getErrorMessage } from '@/lib/get-error-message';
+import { firstFieldError, getErrorMessage } from '@/lib/get-error-message';
 import { useToken } from '@/lib/hooks/use-token';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { clearCheckoutAtom } from '@/store/checkout';
@@ -111,16 +111,8 @@ export const useDeleteAddress = () => {
  * no `message` key) — surface the first field message; everything else goes
  * through getErrorMessage (never destructure error.response — D15).
  */
-const addressErrorMessage = (error: any, fallback: string): string => {
-  const data = error?.response?.data;
-  if (data && typeof data === 'object' && !data.message) {
-    const first = Object.values(data)
-      .flat()
-      .find((v) => typeof v === 'string') as string | undefined;
-    if (first) return first;
-  }
-  return getErrorMessage(error, fallback);
-};
+const addressErrorMessage = (error: any, fallback: string): string =>
+  firstFieldError(error) ?? getErrorMessage(error, fallback);
 
 /** POST /address — routed create (replaces the legacy PUT /users/:id array path). */
 export const useCreateAddress = () => {

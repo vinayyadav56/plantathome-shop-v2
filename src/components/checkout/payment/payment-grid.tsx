@@ -217,13 +217,21 @@ const PaymentGrid: React.FC<{ className?: string; theme?: 'bw' }> = ({
 
   // Seed the DEFAULT gateway only while nothing is selected. This used to fire on every
   // settings refetch and overwrite the method the customer had just picked (D7).
+  // Guard: only seed a gateway the customer can actually SEE — a default that isn't
+  // in the enabled list became an invisible selection and a 422 at order time.
   useEffect(() => {
-    if (gateway) return;
-    if (settings && defaultGateway) {
-      setGateway(defaultGateway as PaymentGateway);
-    } else if (!isLoading) {
-      setGateway(PaymentGateway.COD);
-    }
+    if (gateway || isLoading) return;
+    const online: string[] = settings?.useEnableGateway
+      ? availableGateway.map((g: any) => String(g?.name ?? '').toUpperCase())
+      : [];
+    const selectable: string[] = [
+      ...online,
+      ...(cashOnDelivery ? [PaymentGateway.COD as string] : []),
+    ];
+    const seed = selectable.includes(defaultGateway)
+      ? defaultGateway
+      : selectable[0];
+    if (seed) setGateway(seed as PaymentGateway);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gateway, isLoading, defaultGateway, settings]);
 

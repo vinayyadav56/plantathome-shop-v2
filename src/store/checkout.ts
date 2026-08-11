@@ -116,6 +116,15 @@ export const guestNameAtom = atom(
     return set(checkoutAtom, { ...prev, customer_name: data });
   }
 );
+// Optional guest email — persisted in the checkout atom as `customer_email`;
+// the server sends the guest order-confirmation email when present.
+export const guestEmailAtom = atom(
+  (get) => (get(checkoutAtom).customer_email as string | undefined) ?? '',
+  (get, set, data: string) => {
+    const prev = get(checkoutAtom);
+    return set(checkoutAtom, { ...prev, customer_email: data });
+  }
+);
 export const orderNoteAtom = atom(
   (get) => get(checkoutAtom).note,
   (get, set, data: string) => {

@@ -62,6 +62,7 @@ export const PlaceOrderAction: React.FC<{
       verified_response,
       customer_contact,
       customer_name,
+      customer_email,
       payment_gateway,
       payment_sub_gateway,
       note,
@@ -161,13 +162,22 @@ export const PlaceOrderAction: React.FC<{
       Number.isFinite(Number((delivery_verification as any).lng))
         ? { lat: Number((delivery_verification as any).lat), lng: Number((delivery_verification as any).lng) }
         : null;
-    const addrLoc = (shipping_address as any)?.address?.location;
-    const customerLatLng =
-      dvLoc ||
-      (addrLoc && Number(addrLoc.lat) && Number(addrLoc.lng)
-        ? { lat: Number(addrLoc.lat), lng: Number(addrLoc.lng) }
-        : null) ||
-      getStoredLatLng();
+    // The address's own map pin is TOP-LEVEL on the address object (Address.location);
+    // reading only the nested `.address.location` dropped it and orders reached the
+    // courier with no drop coordinates.
+    const pinOf = (a: any) => {
+      const l = a?.location ?? a?.address?.location;
+      return l && Number(l.lat) && Number(l.lng)
+        ? { lat: Number(l.lat), lng: Number(l.lng) }
+        : null;
+    };
+    const shippingPin = pinOf(shipping_address);
+    const billingPin = pinOf(billing_address);
+    const customerLatLng = dvLoc || shippingPin || getStoredLatLng();
+    // Per-address location precedence: the address's OWN pin wins; customerLatLng
+    // is only the fallback for addresses without one.
+    const shippingLoc = shippingPin ?? customerLatLng;
+    const billingLoc = billingPin ?? customerLatLng;
 
     const isFullWalletPayment =
       use_wallet_points && payable_amount == 0 ? true : false;
@@ -190,6 +200,11 @@ export const PlaceOrderAction: React.FC<{
       delivery_time: delivery_time?.title,
       customer_contact,
       customer_name,
+      // Optional guest email — the server sends the order-confirmation email
+      // when present.
+      ...(typeof customer_email === 'string' && customer_email.trim()
+        ? { customer_email: customer_email.trim() }
+        : {}),
       note: finalNote,
       payment_gateway: gateWay,
       payment_sub_gateway,
@@ -197,10 +212,11 @@ export const PlaceOrderAction: React.FC<{
       isFullWalletPayment,
       billing_address: {
         ...(billing_address?.address && billing_address.address),
+        ...(billingLoc && { location: billingLoc }),
       },
       shipping_address: {
         ...(shipping_address?.address && shipping_address.address),
-        ...(customerLatLng && { location: customerLatLng }),
+        ...(shippingLoc && { location: shippingLoc }),
       },
       // Operations / courier-area order flags (persisted on the order).
       is_non_serviceable_order: courierMode,
