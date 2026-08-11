@@ -3,7 +3,7 @@
 import { getLayout } from '@/components/layouts/layout';
 import Order from '@/components/orders/order-view';
 import Seo from '@/components/seo/seo';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { PaymentStatus } from '@/types';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
 import { useOrder } from '@/framework/order';
@@ -27,15 +27,22 @@ export default function OrderPage() {
     payment_intent?.payment_intent_info &&
     !payment_intent?.payment_intent_info?.is_redirect;
 
+  // Auto-open ONCE per payment intent. The old deps included the intent OBJECT, whose
+  // identity changes on every refetch — dismissing the Razorpay window triggered a refetch,
+  // which re-fired this effect and reopened the window forever (D11).
+  const openedForRef = useRef<string | null>(null);
   useEffect(() => {
-    if (isPaymentModalEnabled) {
+    const intentId = payment_intent?.payment_intent_info?.payment_id ?? null;
+    if (isPaymentModalEnabled && intentId && openedForRef.current !== intentId) {
+      openedForRef.current = intentId;
       openModal('PAYMENT_MODAL', {
         paymentGateway: payment_intent?.payment_gateway,
         paymentIntentInfo: payment_intent?.payment_intent_info,
         trackingNumber: tracking_number,
       });
     }
-  }, [payment_status, payment_intent?.payment_intent_info]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPaymentModalEnabled, payment_intent?.payment_intent_info?.payment_id]);
 
   if (isLoading) {
     return <Spinner showText={false} />;

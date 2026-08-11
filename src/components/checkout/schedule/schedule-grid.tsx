@@ -24,11 +24,14 @@ export const ScheduleGrid: React.FC<ScheduleProps> = ({
   }: any = useSettings();
 
   const [selectedSchedule, setSchedule] = useAtom(deliveryTimeAtom);
+  // Seed the FIRST slot only while nothing is selected — this used to run on every settings
+  // refetch (new array identity), silently discarding the slot the customer had picked.
   useEffect(() => {
-    if (!isEmpty(schedules) && isArray(schedules)) {
+    if (!selectedSchedule && !isEmpty(schedules) && isArray(schedules)) {
       setSchedule(schedules[0]);
     }
-  }, [schedules]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schedules, selectedSchedule]);
   return (
     <div className={className}>
       <div className="pa-checkout-step-header">

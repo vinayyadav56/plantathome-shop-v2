@@ -14,7 +14,7 @@ export default function PincodeServiceability() {
   const [shipping] = useAtom(shippingAddressAtom);
   const [verifiedResponse] = useAtom(verifiedResponseAtom);
   const zip = (shipping as any)?.address?.zip as string | undefined;
-  const { result, loading, checked } = usePincodeServiceability(zip);
+  const { result, loading, checked, error, retry } = usePincodeServiceability(zip);
   const coverage = (verifiedResponse as any)?.coverage;
 
   if (!zip) return null;
@@ -22,6 +22,18 @@ export default function PincodeServiceability() {
     return (
       <div className="pa-pin pa-pin--checking">
         Checking delivery availability for {zip}…
+      </div>
+    );
+  }
+  // The check itself failed (network/server) — say so instead of rendering nothing.
+  // Ordering stays fail-open (coverage is advisory), but silence read as "all good".
+  if (error) {
+    return (
+      <div className="pa-pin pa-pin--checking" role="status">
+        Couldn&apos;t verify delivery to {zip}.{' '}
+        <button type="button" className="font-semibold underline" onClick={() => retry()}>
+          Retry
+        </button>
       </div>
     );
   }

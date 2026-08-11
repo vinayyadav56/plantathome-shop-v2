@@ -20,18 +20,22 @@ export function usePincodeServiceability(pincode?: string | null) {
   const clean = (pincode ?? '').replace(/\D/g, '');
   const enabled = clean.length >= 4;
 
-  const { data, isLoading, isFetching } = useQuery<PincodeServiceability>(
+  const { data, isLoading, isFetching, isError, refetch } = useQuery<PincodeServiceability>(
     ['pincode-check', clean],
     () =>
       HttpClient.get<PincodeServiceability>('delivery-pincodes/check', {
         pincode: clean,
       }),
-    { enabled, staleTime: 5 * 60 * 1000, retry: false },
+    { enabled, staleTime: 5 * 60 * 1000, retry: 1 },
   );
 
   return {
     result: enabled ? data : undefined,
     loading: enabled && (isLoading || isFetching),
     checked: enabled && !!data,
+    // Surfaced so the UI can SAY the check failed instead of silently rendering nothing
+    // (ordering still fails open — coverage is advisory, but invisibility isn't).
+    error: enabled && isError,
+    retry: refetch,
   };
 }

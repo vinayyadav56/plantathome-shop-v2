@@ -249,7 +249,10 @@ export default function CreateOrUpdateAddressForm() {
     data: { customerId, address, type },
   } = useModalState();
 
-  const { mutate: updateProfile } = useUpdateUser();
+  // isLoading was never destructured, so the form's Save button (which already accepts a
+  // loading prop) sat inert-looking with no double-click guard — every extra click fired
+  // another PUT /users/:id (D12).
+  const { mutate: updateProfile, isLoading } = useUpdateUser();
 
   const onSubmit = (values: FormValues) => {
     const loc: any = values.location ?? {};
@@ -282,6 +285,7 @@ export default function CreateOrUpdateAddressForm() {
       </h1>
       <AddressForm
         onSubmit={onSubmit}
+        isLoading={isLoading}
         defaultValues={{
           title: address?.title ?? '',
           type: address?.type ?? type,

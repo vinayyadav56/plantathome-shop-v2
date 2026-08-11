@@ -65,8 +65,31 @@ const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
     return <div>{children}</div>;
   }
 
-  // Session is being fetched, or no user.
-  // If no user, useEffect() will redirect.
+  // Authorized (cookie present) but /me FAILED with something other than 401 — a 500, a
+  // timeout, offline. This used to fall through to the spinner below forever ("the redirect
+  // effect" never existed): the unresponsive-checkout bug. Show the truth + a way forward.
+  if (isAuthorized && error && hasMounted) {
+    return (
+      <div className="flex min-h-[50vh] w-full flex-col items-center justify-center gap-4 px-4 text-center">
+        <p className="text-lg font-semibold text-heading">
+          We couldn&apos;t load your account
+        </p>
+        <p className="max-w-sm text-sm text-body">
+          Something went wrong while checking your session. Your cart is safe — try again in a
+          moment.
+        </p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="rounded-md bg-accent px-6 py-2.5 text-sm font-semibold text-light hover:bg-accent-hover"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // Session is still being fetched.
   return <Loader showText={false} />;
 };
 

@@ -23,13 +23,16 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import { API_ENDPOINTS } from './client/api-endpoints';
 import client from './client';
 import { useAtom } from 'jotai';
-import { verifiedResponseAtom } from '@/store/checkout';
+import { clearCheckoutAtom, verifiedResponseAtom } from '@/store/checkout';
+import { useCart } from '@/store/quick-cart/cart.context';
 import { useRouter } from '@/compat/next-router';
 import { Routes } from '@/config/routes';
 import { mapPaginatorData } from '@/framework/utils/data-mappers';
 import { isArray, isObject, isEmpty } from 'lodash';
 import { useMemo } from 'react';
 import { resolveOrderToken, saveOrderToken } from '@/lib/order-token';
+import { cartFingerprint } from '@/lib/checkout-totals';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 export function useOrders(options?: Partial<OrderQueryOptions>) {
   const { locale } = useRouter();
@@ -238,11 +241,7 @@ export function useCreateRefund() {
         toast.success(`${t('text-refund-request-submitted')}`);
       },
       onError: (error) => {
-        const {
-          response: { data },
-        }: any = error ?? {};
-
-        toast.error(`${t(data?.message)}`);
+        toast.error(getErrorMessage(error, t('text-something-wrong') ?? 'Refund request failed — please try again.'));
       },
       onSettled: () => {
         queryClient.invalidateQueries(API_ENDPOINTS.ORDERS);
@@ -269,6 +268,8 @@ export function useCreateOrder() {
   const router = useRouter();
   const { locale } = router;
   const { t } = useTranslation();
+  const { resetCart } = useCart();
+  const [, resetCheckout] = useAtom(clearCheckoutAtom);
   const { mutate: createOrder, isLoading } = useMutation(client.orders.create, {
     onSuccess: ({
       tracking_number,
@@ -277,6 +278,13 @@ export function useCreateOrder() {
       tracking_token,
     }) => {
       if (tracking_number) {
+        // The order EXISTS — consume the cart + checkout state HERE, at the moment of
+        // creation. This used to live in the shared OrderView, which is also rendered by
+        // order HISTORY and the payment page — so merely opening a past order emptied the
+        // live cart (D4).
+        resetCart();
+        //@ts-ignore
+        resetCheckout();
         // Persist the per-order token so a guest can view their confirmation,
         // payment and thank-you pages after this redirect (and on reload).
         if (tracking_token) saveOrderToken(tracking_number, tracking_token);
@@ -303,12 +311,19 @@ export function useCreateOrder() {
             `${Routes.order(tracking_number)}/payment${tokenQuery}`
           );
         }
+      } else {
+        // 200 without a tracking_number: the server answered but we can't navigate. This
+        // used to be a SILENT no-op — button re-enabled, no toast, while the order may
+        // exist server-side. Say so, and steer away from a blind duplicate retry (D14).
+        toast.error(
+          'We could not confirm your order. Please check "My Orders" before trying again.',
+        );
       }
     },
-    onError: (error) => {
-      const {
-        response: { data },
-      }: any = error ?? {};
+    onError: (error: any) => {
+      // Safe access — the old `const { response: { data } } = error` itself threw inside
+      // this handler on a network error with no response (D15).
+      const data = error?.response?.data;
       // Shopping-City hard gate (422): the API encodes a structured payload in
       // message — surface the dedicated mismatch dialog instead of a raw toast.
       if (data?.code === 'CITY_OUT_OF_STOCK') {
@@ -331,7 +346,9 @@ export function useCreateOrder() {
       } catch {
         /* not the gate — fall through to the generic toast */
       }
-      toast.error(data?.message);
+      toast.error(
+        getErrorMessage(error, 'We could not place your order — please try again.'),
+      );
     },
   });
 
@@ -393,22 +410,24 @@ export function useVerifyOrder() {
   const [_, setVerifiedResponse] = useAtom(verifiedResponseAtom);
 
   return useMutation(client.orders.verify, {
-    onSuccess: (data) => {
+    onSuccess: (data, variables: any) => {
       //@ts-ignore
       if (data?.errors as string) {
         //@ts-ignore
         toast.error(data?.errors[0]?.message);
       } else if (data) {
-        // FIXME
+        // Stamp WHAT was verified: the summary/totals stay valid only while the cart
+        // matches this fingerprint. verified_response persists in localStorage, and a
+        // stale one used to submit yesterday's tax/shipping/amount silently (D8).
         //@ts-ignore
-        setVerifiedResponse(data);
+        setVerifiedResponse({
+          ...data,
+          __fingerprint: cartFingerprint(variables?.products ?? []),
+        });
       }
     },
     onError: (error) => {
-      const {
-        response: { data },
-      }: any = error ?? {};
-      toast.error(data?.message);
+      toast.error(getErrorMessage(error, 'We could not verify your cart — please try again.'));
     },
   });
 }
@@ -424,10 +443,7 @@ export function useOrderPayment() {
         queryClient.refetchQueries(API_ENDPOINTS.ORDERS_DOWNLOADS);
       },
       onError: (error) => {
-        const {
-          response: { data },
-        }: any = error ?? {};
-        toast.error(data?.message);
+        toast.error(getErrorMessage(error, 'Payment could not be processed — please try again.'));
       },
     }
   );

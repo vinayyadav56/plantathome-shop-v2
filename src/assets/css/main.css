@@ -327,13 +327,19 @@
     @apply font-body;
   }
 
+  /* Headings use the BODY font sitewide (weight/color carry hierarchy — owner pattern
+     2026-07-27). Expressed here as a plain base rule instead of the old
+     `h1-h5 { font-family: var(--font-body) !important }` override, which (a) silently
+     excluded h6 (it rendered in the display serif), and (b) blocked the font-heading /
+     font-display-serif utility classes on real heading elements. The display serif stays
+     opt-in via .font-display-serif / font-heading for product names + brand moments. */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    @apply font-heading;
+    @apply font-body;
   }
 
   a {
@@ -342,10 +348,6 @@
 
   body {
     background-color: #fafaf8;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
   }
 }
 /* trailing @imports moved to app/layout.tsx import order (Turbopack requires @import at top) */

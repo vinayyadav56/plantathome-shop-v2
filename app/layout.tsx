@@ -59,13 +59,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             so headings + content share one typeface with no flash. */}
         <Script id="typo-prepaint" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: TYPO_PREPAINT_SCRIPT }} />
 
-        {/* Fonts load ONLY via the typo/DS prepaint scripts above (default
-            Inter, injected before first paint). The preconnects stay because
-            that injected stylesheet still comes from Google Fonts. */}
+        {/* Inter is the global body font — load it as a REAL document stylesheet so the
+            first paint uses it (the prepaint script alone injected it late = FOUT). The id
+            matches the script's `pah-font-inter`, so it won't inject a duplicate; a custom
+            admin font still overrides via the prepaint. The old link here loaded Hanken
+            Grotesk + Jost, faces nothing resolves to anymore — dead weight on every page. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Jost:wght@300;400;500;600&display=swap"
+          id="pah-font-inter"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
         {/* Google Analytics (V1 _document.tsx) */}

@@ -55,7 +55,7 @@ const UnverifiedItemList = ({ hideTitle = false }: { hideTitle?: boolean }) => {
       <div className="mt-3">
         <div className="pa-order-row">
           <span>{t('text-sub-total')}</span>
-          <span style={{ fontWeight: 600, color: '#1A1A1A' }}>{subtotal}</span>
+          <span className="font-semibold text-heading">{subtotal}</span>
         </div>
         <div className="pa-order-row">
           <span>{t('text-tax')}</span>

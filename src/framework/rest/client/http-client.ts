@@ -13,7 +13,9 @@ const Axios = axios.create({
     typeof window === 'undefined'
       ? process.env.NEXT_PUBLIC_REST_API_ENDPOINT
       : '/rest-api',
-  timeout: 5000000,
+  // 30s. This was 5,000,000 ms (~83 minutes) — a hung request pinned every loading state
+  // (and the disabled Place Order button) for as long, with no error ever arriving.
+  timeout: 30_000,
   headers: {
     'Content-Type': 'application/json',
   },

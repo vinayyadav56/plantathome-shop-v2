@@ -51,9 +51,13 @@ interface PaymentGroupOptionProps {
 // ];
 
 const PaymentGroupOption: React.FC<PaymentGroupOptionProps> = ({
-  payment: { name, value, icon },
+  payment,
   theme,
 }) => {
+  // A gateway name from settings that isn't in the methods map used to destructure
+  // undefined here and crash the whole order-summary column. Skip it instead.
+  if (!payment) return null;
+  const { name, value, icon } = payment;
   return (
     <RadioGroup.Option value={value} key={value}>
       {({ checked }) => (
@@ -90,19 +94,14 @@ const PaymentGrid: React.FC<{ className?: string; theme?: 'bw' }> = ({
     (!settings?.useCashOnDelivery && !settings?.paymentGateway) ||
     settings?.useCashOnDelivery;
 
-  // default payment gateway
-  // const defaultPaymentGateway = settings?.defaultPaymentGateway.toUpperCase();
-
-  const [defaultGateway, setDefaultGateway] = useState(
-    settings?.defaultPaymentGateway?.toUpperCase() || ''
-  );
-  const [cashOnDelivery, setCashOnDelivery] = useState(
+  // DERIVED from settings on every render — these were one-shot useState(settings?…)
+  // captured before /settings resolved, so a late fetch left the grid with zero online
+  // gateways and COD as the only option until a hard reload.
+  const defaultGateway = settings?.defaultPaymentGateway?.toUpperCase() || '';
+  const cashOnDelivery =
     (!settings?.useCashOnDelivery && !settings?.paymentGateway) ||
-      settings?.useCashOnDelivery
-  );
-  const [availableGateway, setAvailableGateway] = useState(
-    settings?.paymentGateway || []
-  );
+    settings?.useCashOnDelivery;
+  const availableGateway = settings?.paymentGateway || [];
 
   // FixME
   // @ts-ignore
@@ -216,15 +215,17 @@ const PaymentGrid: React.FC<{ className?: string; theme?: 'bw' }> = ({
   //   }
   // }, [isLoading, cashOnDelivery, defaultGateway, availableGateway]);
 
+  // Seed the DEFAULT gateway only while nothing is selected. This used to fire on every
+  // settings refetch and overwrite the method the customer had just picked (D7).
   useEffect(() => {
-    if (settings && availableGateway) {
-      setGateway(
-        settings?.defaultPaymentGateway?.toUpperCase() as PaymentGateway
-      );
-    } else {
+    if (gateway) return;
+    if (settings && defaultGateway) {
+      setGateway(defaultGateway as PaymentGateway);
+    } else if (!isLoading) {
       setGateway(PaymentGateway.COD);
     }
-  }, [isLoading, cashOnDelivery, defaultGateway, availableGateway]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gateway, isLoading, defaultGateway, settings]);
 
   const PaymentMethod = AVAILABLE_PAYMENT_METHODS_MAP[gateway];
   const Component = PaymentMethod?.component ?? CashOnDelivery;

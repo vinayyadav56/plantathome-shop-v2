@@ -13,10 +13,12 @@ export default function AddOrUpdateContact() {
   const useOtp = settings?.useOtp;
   const { closeModal } = useModalAction();
   const { me } = useUser();
-  const { mutate: updateProfile } = useUpdateUser();
+  const { mutate: updateProfile, isLoading } = useUpdateUser();
   const [contactNumber, setContactNumber] = useAtom(customerContactAtom);
 
   function onSubmit({ phone_number }: { phone_number: string }) {
+    if (isLoading) return; // double-submit guard — each extra click fired another PUT
+
     // Keep the checkout state in sync immediately…
     setContactNumber(phone_number);
     // …and persist to the user profile so it survives reloads / future visits.

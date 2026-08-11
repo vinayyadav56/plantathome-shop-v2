@@ -17,6 +17,9 @@ interface VerifiedResponse {
   unavailable_products: any[];
   wallet_amount: number;
   wallet_currency: number;
+  // Identity of the cart rows this verification covered (cartFingerprint) — the
+  // response is only trusted while the live cart still matches it.
+  __fingerprint?: string;
 }
 
 interface CheckoutState {

@@ -89,18 +89,22 @@ export function useVerifyCoupon() {
   const { mutate, isLoading } = useMutation(client.coupons.verify, {
     onSuccess: (data: any) => {
       if (!data.is_valid) {
+        // Invalid code → error ONLY. applyCoupon used to run unconditionally here,
+        // writing `undefined` over a coupon the customer had already applied (D13).
         setFormError({
           code: t(`common:${data?.message}`),
         });
+        return;
       }
+      setFormError(null);
       applyCoupon(data?.coupon);
+      toast.success(t('common:text-coupon-applied') ?? 'Coupon applied');
     },
-    onError: (error) => {
-      const {
-        response: { data },
-      }: any = error ?? {};
-
-      toast.error(data?.message);
+    onError: (error: any) => {
+      // Safe access — the destructure threw on network errors with no response.
+      toast.error(
+        error?.response?.data?.message ?? 'Could not verify the coupon — please try again.',
+      );
     },
   });
 

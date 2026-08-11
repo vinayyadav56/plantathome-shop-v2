@@ -34,7 +34,7 @@ const ItemCard = ({ item, notAvailable }: Props) => {
         >
           {item.name}
           {item?.in_flash_sale && (
-            <span style={{ marginLeft: 4, fontSize: 10, background: '#FEE2E2', color: '#991B1B', padding: '1px 5px', borderRadius: 4 }}>
+            <span className="ml-1 rounded bg-[#FEE2E2] px-1.5 py-px text-[10px] font-medium text-[#991B1B]">
               SALE
             </span>
           )}

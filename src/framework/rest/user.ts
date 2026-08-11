@@ -48,7 +48,9 @@ export function useUser() {
     client.users.me,
     {
       enabled: isAuthorized,
-      retry: false,
+      // One retry: with retry:false a single transient /me failure was terminal — the
+      // checkout's PrivateRoute then had no user and no way forward (infinite spinner).
+      retry: 1,
       onSuccess: (data) => {
         if (emailVerified === false) {
           setEmailVerified(true);

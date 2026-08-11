@@ -37,13 +37,19 @@ export default function GuestCheckoutPage() {
   const router = useRouter();
   const { settings, isLoading } = useSettings();
   const guestCheckout = settings?.guestCheckout;
+  // Reset ONCE on entry. This effect used to depend on `settings` with an unconditional
+  // reset — useSettings refetches on mount/focus and returns a fresh object, so every
+  // refetch wiped the guest's contact, addresses, schedule and verified summary mid-checkout.
   useEffect(() => {
     //@ts-ignore
     resetCheckout();
-    if(!isLoading && !guestCheckout ) {
-     router.replace(Routes.home);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (!isLoading && !guestCheckout) {
+      router.replace(Routes.home);
     }
-  }, [resetCheckout, settings]);
+  }, [isLoading, guestCheckout, router]);
 
   if (isLoading) {
     return <Spinner showText={false} />;

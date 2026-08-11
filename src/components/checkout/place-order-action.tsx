@@ -14,10 +14,8 @@ import {
 import CityMismatchDialog from './city-mismatch-dialog';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { checkoutAtom, discountAtom, walletAtom } from '@/store/checkout';
-import {
-  calculatePaidTotal,
-  calculateTotal,
-} from '@/store/quick-cart/cart.utils';
+import { calculateTotal } from '@/store/quick-cart/cart.utils';
+import { computeCheckoutTotals } from '@/lib/checkout-totals';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from '@/compat/next-router';
 import { useLogout, useUser } from '@/framework/user';
@@ -119,26 +117,22 @@ export const PlaceOrderAction: React.FC<{
     (item) => !verified_response?.unavailable_products?.includes(item.id),
   );
 
-  // Prefer the server-authoritative amount from /checkout/verify (margin-over-cost
-  // pricing for vendor-cost-sheet products). Falls back to the client cart total
-  // for products without a cost sheet — identical value, so nothing changes there.
-  const clientSubtotal = calculateTotal(available_items);
-  const subtotal =
-    verified_response?.amount != null && Number(verified_response.amount) > 0
-      ? Number(verified_response.amount)
-      : clientSubtotal;
+  // ONE totals computation, shared verbatim with the order summary — what the customer
+  // saw is exactly what is submitted. (This used to diverge: percentage coupons were
+  // submitted flat, and free-shipping totals still included the fee shown as ₹0.)
   const { settings } = useSettings();
-  const freeShippingAmount = settings?.freeShippingAmount;
-  const freeShipping = settings?.freeShipping;
-  let freeShippings = freeShipping && Number(freeShippingAmount) <= subtotal;
-  const total = calculatePaidTotal(
-    {
-      totalAmount: subtotal,
-      tax: verified_response?.total_tax!,
-      shipping_charge: verified_response?.shipping_charge!,
-    },
-    Number(discount),
-  );
+  const totals = computeCheckoutTotals({
+    clientSubtotal: calculateTotal(available_items),
+    verifiedAmount: verified_response?.amount,
+    totalTax: verified_response?.total_tax,
+    shippingCharge: verified_response?.shipping_charge,
+    coupon,
+    freeShippingEnabled: settings?.freeShipping,
+    freeShippingAmount: settings?.freeShippingAmount,
+  });
+  const subtotal = totals.subtotal;
+  const freeShippings = totals.freeShipping;
+  const total = totals.total;
   const submitOrder = () => {
     // Fold the optional shared-location check into the order note so it's
     // persisted + visible to admins without an API change.
@@ -186,10 +180,12 @@ export const PlaceOrderAction: React.FC<{
       products: available_items?.map((item) => formatOrderedProduct(item)),
       amount: subtotal,
       coupon_id: Number(coupon?.id),
-      discount: discount ?? 0,
+      // The RESOLVED currency discount (percentage/free-shipping computed), matching the
+      // summary — not the raw coupon.amount, which recorded a 10% coupon as flat ₹10.
+      discount: totals.discount ?? 0,
       paid_total: total,
-      sales_tax: verified_response?.total_tax,
-      delivery_fee: freeShippings ? 0 : verified_response?.shipping_charge,
+      sales_tax: totals.tax,
+      delivery_fee: totals.effectiveShipping,
       total,
       delivery_time: delivery_time?.title,
       customer_contact,

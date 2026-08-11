@@ -1,7 +1,3 @@
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
-import { useCart } from '@/store/quick-cart/cart.context';
-import { clearCheckoutAtom } from '@/store/checkout';
 import { useOrderShipments } from '@/framework/order';
 import { OrderStatus, RefundStatus } from '@/types';
 import SuborderItems from '@/components/orders/suborder-items';
@@ -49,15 +45,9 @@ function TerminalStatusBanner({ status }: { status: string }) {
 }
 
 function OrderView({ order, settings, loadingStatus }: any) {
-  const { resetCart } = useCart();
-  const [, resetCheckout] = useAtom(clearCheckoutAtom);
-
-  useEffect(() => {
-    resetCart();
-    //@ts-ignore
-    resetCheckout();
-  }, [resetCart, resetCheckout]);
-
+  // NOTE: no cart/checkout reset here. This view renders order HISTORY and the payment page
+  // too — resetting on mount emptied the live cart whenever a customer opened a past order.
+  // The reset now happens once, in useCreateOrder's success handler (the order consumed it).
   const { shipments } = useOrderShipments({
     tracking_number: order?.tracking_number,
   });

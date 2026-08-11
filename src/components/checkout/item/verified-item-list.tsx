@@ -4,10 +4,8 @@ import EmptyCartIcon from '@/components/icons/empty-cart';
 import { CloseIcon } from '@/components/icons/close-icon';
 import { useTranslation } from 'next-i18next';
 import { useCart } from '@/store/quick-cart/cart.context';
-import {
-  calculatePaidTotal,
-  calculateTotal,
-} from '@/store/quick-cart/cart.utils';
+import { calculateTotal } from '@/store/quick-cart/cart.utils';
+import { computeCheckoutTotals } from '@/lib/checkout-totals';
 import { useAtom } from 'jotai';
 import {
   couponAtom,
@@ -24,7 +22,6 @@ import Wallet from '@/components/checkout/wallet/wallet';
 import { useSettings } from '@/framework/settings';
 import { ShoppingBag } from '@/components/ui/icon';
 import cn from 'classnames';
-import { CouponType } from '@/types';
 
 interface Props {
   className?: string;
@@ -45,67 +42,45 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
     (item) => !verifiedResponse?.unavailable_products?.includes(item.id)
   );
 
+  // ONE totals computation, shared verbatim with PlaceOrderAction — what this summary
+  // shows is exactly what gets submitted (percentage coupons, free shipping and all).
+  const totals = computeCheckoutTotals({
+    clientSubtotal: calculateTotal(available_items),
+    verifiedAmount: verifiedResponse?.amount,
+    totalTax: verifiedResponse?.total_tax,
+    shippingCharge: verifiedResponse?.shipping_charge,
+    coupon,
+    freeShippingEnabled: freeShipping,
+    freeShippingAmount,
+  });
+  const freeShippings = totals.freeShipping;
+  const calculateDiscount = totals.discount;
+  const totalPrice = verifiedResponse ? totals.total : 0;
+
   const { price: tax } = usePrice(
-    verifiedResponse && {
-      amount: verifiedResponse.total_tax ?? 0,
-    }
+    verifiedResponse && { amount: totals.tax }
   );
-
   const { price: shipping } = usePrice(
-    verifiedResponse && {
-      amount: verifiedResponse.shipping_charge ?? 0,
-    }
+    verifiedResponse && { amount: verifiedResponse.shipping_charge ?? 0 }
   );
-  const base_amount = calculateTotal(available_items);
   const { price: sub_total } = usePrice(
-    verifiedResponse && {
-      amount: base_amount,
-    }
+    verifiedResponse && { amount: totals.subtotal }
   );
-  // Calculate Discount base on coupon type
-  let calculateDiscount = 0;
-
-  switch (coupon?.type) {
-    case CouponType.PERCENTAGE:
-      calculateDiscount = (base_amount * Number(discount)) / 100
-      break;
-    case CouponType.FREE_SHIPPING:
-      calculateDiscount =  verifiedResponse ? verifiedResponse.shipping_charge : 0
-      break;
-    default:
-      calculateDiscount = Number(discount)
-  }
-
   const { price: discountPrice } = usePrice(
     //@ts-ignore
-    discount && {
-      amount: Number(calculateDiscount),
-    }
+    discount && { amount: totals.discount }
   );
-  let freeShippings = freeShipping && Number(freeShippingAmount) <= base_amount
-  const totalPrice = verifiedResponse
-    ? calculatePaidTotal(
-      {
-        totalAmount: base_amount,
-        tax: verifiedResponse?.total_tax,
-        shipping_charge: freeShippings ? 0 : verifiedResponse?.shipping_charge,
-      },
-      Number(calculateDiscount)
-    )
-    : 0;
   const { price: total } = usePrice(
-    verifiedResponse && {
-      amount: totalPrice,
-    }
+    verifiedResponse && { amount: totalPrice }
   );
   return (
     <div className={cn('pa-order-summary', className)}>
       <h3 className="pa-order-summary-title">
-        <ShoppingBag size={16} style={{ color: '#2C5F2E' }} aria-hidden />
+        <ShoppingBag size={16} className="text-[#2C5F2E]" aria-hidden />
         {t('text-your-order')}
       </h3>
 
-      <div style={{ marginBottom: 12 }}>
+      <div className="mb-3">
         {!isEmptyCart ? (
           items?.map((item) => {
             const notAvailable = verifiedResponse?.unavailable_products?.find(
@@ -124,10 +99,10 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
         )}
       </div>
 
-      <div style={{ borderTop: '1px solid rgba(46,107,74,0.10)', paddingTop: 12 }}>
+      <div className="border-t border-[#2E6B4A]/10 pt-3">
         <div className="pa-order-row">
           <span>{t('text-sub-total')}</span>
-          <span style={{ fontWeight: 600, color: '#2E6B4A' }}>{sub_total}</span>
+          <span className="font-semibold text-[#2E6B4A]">{sub_total}</span>
         </div>
         <div className="pa-order-row">
           <span>{t('text-tax')}</span>
@@ -137,34 +112,32 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
           <span>
             {t('text-shipping')}
             {freeShippings && (
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#2E6B4A', marginLeft: 4 }}>
-                (FREE)
-              </span>
+              <span className="ml-1 text-xs font-bold text-[#2E6B4A]">(FREE)</span>
             )}
           </span>
-          <span style={{ color: freeShippings ? '#2E6B4A' : undefined }}>
+          <span className={cn(freeShippings && 'text-[#2E6B4A]')}>
             {freeShippings ? '₹0' : shipping}
           </span>
         </div>
 
         {discount && coupon ? (
           <div className="pa-order-row">
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span className="flex items-center gap-1">
               {t('text-discount')}
-              <span style={{ fontSize: 11, color: '#2E6B4A', fontWeight: 600 }}>
+              <span className="text-xs font-semibold text-[#2E6B4A]">
                 ({coupon?.code})
               </span>
-              <button onClick={() => setCoupon(null)} style={{ color: '#E53E3E', marginLeft: 2, lineHeight: 1 }}>
+              <button onClick={() => setCoupon(null)} className="ml-0.5 leading-none text-[#E53E3E]">
                 <CloseIcon className="w-3 h-3" />
               </button>
             </span>
-            <span style={{ color: '#E53E3E', fontWeight: 600 }}>
+            <span className="font-semibold text-[#E53E3E]">
               {calculateDiscount > 0 ? '-' : ''}{discountPrice}
             </span>
           </div>
         ) : (
-          <div style={{ marginTop: 8, marginBottom: 4 }}>
-            <Coupon subtotal={base_amount} />
+          <div className="mt-2 mb-1">
+            <Coupon subtotal={totals.subtotal} />
           </div>
         )}
 

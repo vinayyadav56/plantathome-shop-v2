@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useRazorpay, { RazorpayOptions } from '@/lib/use-razorpay';
 import { formatAddress } from '@/lib/format-address';
 import { PaymentGateway, PaymentIntentInfo } from '@/types';
@@ -27,6 +27,10 @@ const RazorpayPaymentModal: React.FC<Props> = ({
     tracking_number: trackingNumber,
   });
   const { createOrderPayment } = useOrderPayment();
+  // Script-load failure (ad-blocker, CSP, offline) used to be an UNHANDLED rejection that
+  // rendered null: no modal, no error, no way forward, order left unpaid (D10).
+  const [loadError, setLoadError] = useState(false);
+  const launchedRef = useRef(false);
 
   // @ts-ignore
   const { customer_name, customer_contact, customer, billing_address } =
@@ -68,17 +72,58 @@ const RazorpayPaymentModal: React.FC<Props> = ({
         },
       },
     };
-    const razorpay = (window as any).Razorpay(options);
+    // checkout.js expects construction with `new`.
+    const razorpay = new (window as any).Razorpay(options);
     return razorpay.open();
   }, [isLoading, isSettingsLoading]);
 
-  useEffect(() => {
-    if (!isLoading && !isSettingsLoading) {
-      (async () => {
-        await paymentHandle();
-      })();
+  const launch = useCallback(async () => {
+    setLoadError(false);
+    try {
+      await paymentHandle();
+    } catch {
+      setLoadError(true);
     }
-  }, [isLoading, isSettingsLoading]);
+  }, [paymentHandle]);
+
+  useEffect(() => {
+    // Launch ONCE per modal open — the old effect re-fired on every refetch-driven
+    // identity change and could relaunch the Razorpay window.
+    if (!isLoading && !isSettingsLoading && !launchedRef.current) {
+      launchedRef.current = true;
+      void launch();
+    }
+  }, [isLoading, isSettingsLoading, launch]);
+
+  if (loadError) {
+    return (
+      <div className="m-auto flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-light p-6 text-center">
+        <p className="text-base font-semibold text-heading">
+          Payment window couldn&apos;t load
+        </p>
+        <p className="text-sm text-body">
+          The Razorpay checkout script failed to load — this can happen with ad-blockers or a
+          flaky connection. Your order is saved; nothing was charged.
+        </p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={closeModal}
+            className="rounded-md border border-border-200 px-5 py-2 text-sm font-medium text-heading"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            onClick={() => void launch()}
+            className="rounded-md bg-accent px-5 py-2 text-sm font-semibold text-light hover:bg-accent-hover"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading || isSettingsLoading) {
     return <Spinner showText={false} />;

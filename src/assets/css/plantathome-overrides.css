@@ -110,12 +110,11 @@ body {
   line-height: 1.6;
 }
 
-/* Headings use the BODY font sitewide — weight and color carry the hierarchy
-   (user pattern, 2026-07-27). The display serif (--font-heading) is reserved
-   for PRODUCT NAMES and deliberate brand moments via .font-display-serif or a
-   font-heading class on non-heading elements (card names are <button>s). */
-h1, h2, h3, h4, h5 {
-  font-family: var(--font-body) !important;
+/* Heading metrics only — the FONT comes from the base layer (main.css: h1-h6 use the
+   body font; weight and color carry the hierarchy — user pattern, 2026-07-27). The old
+   `font-family: var(--font-body) !important` here is gone: it excluded h6 and blocked
+   the font-heading/font-display-serif utilities on heading elements. h6 now included. */
+h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0;
   line-height: 1.08;
   font-weight: 600;
