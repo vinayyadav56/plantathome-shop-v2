@@ -1,12 +1,14 @@
 /**
- * Website font family — a single, admin-switchable font applied to EVERYTHING
- * (headings, subheadings, and body) so the whole storefront uses one typeface.
- * Default: Inter. Driven by `settings.options.typography.fontFamily`.
+ * Website fonts — admin-switchable via `settings.options.typography`
+ * (fontFamily = body axis, headingFontFamily = heading axis).
  *
- * This intentionally supersedes the design-system's split heading/body pairing:
- * it sets --font-heading, --font-body, --font-eyebrow and --font-sans to the one
- * family, and is applied AFTER the design-system applier so it wins. The rem type
- * scale (--h1..--h6 / --fs-*) is untouched, so the size hierarchy is preserved.
+ * PRECEDENCE (the fix for "Design System fonts never apply"): this applier runs
+ * AFTER the design-system applier, but an axis only wins when the admin has
+ * EXPLICITLY configured it. An unset axis (null/undefined) DEFERS — the
+ * design-system font pairing's value stays. The old behavior treated "unset"
+ * as "force the default" (Inter body / Cormorant headings), which silently
+ * clobbered every Design System font pairing on every load. The rem type scale
+ * (--h1..--h6 / --fs-*) is untouched either way.
  */
 
 export const TYPO_STORAGE_KEY = 'pah-font-family';
@@ -119,44 +121,61 @@ export function ensureFontLoaded(family: string, hrefOverride?: string | null): 
 }
 
 /** Apply the website fonts via CSS vars + persist for the next load's
- *  pre-paint script. Browser only. Two axes:
- *  - body family → --font-body / --font-sans / --font-eyebrow (default Inter)
- *  - heading family → --font-heading (default Cormorant Garamond; the '' sentinel
- *    or "Same as body" collapses headings back onto the body stack)
- *  headingFamily === undefined/null means "not configured" → serif default;
- *  '' means the admin explicitly chose one face sitewide. */
+ *  pre-paint script. Browser only. Two INDEPENDENT axes:
+ *  - body family → --font-body / --font-sans / --font-eyebrow
+ *  - heading family → --font-heading ('' = "Same as body": collapses headings
+ *    onto the body stack via var(--font-body), so it follows whatever body
+ *    resolves to — typography's or the design system's)
+ *  An axis that is null/undefined is NOT CONFIGURED and must DEFER to the
+ *  design-system font pairing (applied just before this) — never overwrite it
+ *  with a default. Explicit values (a family name, or '' for headings) win. */
 export function applyTypography(
   family: string | undefined | null,
   headingFamily?: string | null,
   persist = true,
 ): void {
-  const fam = (family && String(family).trim()) || DEFAULT_FONT;
-  const headFam =
-    headingFamily === undefined || headingFamily === null
-      ? DEFAULT_HEADING_FONT
-      : String(headingFamily).trim();
   if (typeof document === 'undefined') return;
-  ensureFontLoaded(fam);
-  const stack = fontStack(fam);
-  const headStack = headingFontStack(headFam);
-  if (headStack) ensureFontLoaded(headFam, headingFontCssUrl(headFam));
   const root = document.documentElement;
-  root.style.setProperty('--font-heading', headStack ?? stack);
-  root.style.setProperty('--font-body', stack);
-  root.style.setProperty('--font-eyebrow', stack);
-  root.style.setProperty('--font-sans', stack);
+
+  const bodyConfigured = !(family === undefined || family === null || String(family).trim() === '');
+  const fam = bodyConfigured ? String(family).trim() : DEFAULT_FONT;
+  const stack = fontStack(fam);
+  if (bodyConfigured) {
+    ensureFontLoaded(fam);
+    root.style.setProperty('--font-body', stack);
+    root.style.setProperty('--font-eyebrow', stack);
+    root.style.setProperty('--font-sans', stack);
+  }
+
+  const headingConfigured = !(headingFamily === undefined || headingFamily === null);
+  const headFam = headingConfigured ? String(headingFamily).trim() : '';
+  const headStack = headingConfigured ? headingFontStack(headFam) : null;
+  if (headingConfigured) {
+    if (headStack) {
+      ensureFontLoaded(headFam, headingFontCssUrl(headFam));
+      root.style.setProperty('--font-heading', headStack);
+    } else {
+      // '' sentinel — one face sitewide, tracking whatever body resolves to.
+      root.style.setProperty('--font-heading', 'var(--font-body)');
+    }
+  }
+
   if (persist) {
     try {
       localStorage.setItem(
         TYPO_STORAGE_KEY,
         JSON.stringify({
-          v: 2,
-          family: fam,
-          stack,
-          url: fontCssUrl(fam),
-          heading: headStack
-            ? { family: headFam, stack: headStack, url: headingFontCssUrl(headFam) }
-            : null,
+          v: 3,
+          // null = axis not configured → the pre-paint DEFERS to the
+          // design-system pre-paint for that axis.
+          family: bodyConfigured ? fam : null,
+          stack: bodyConfigured ? stack : null,
+          url: bodyConfigured ? fontCssUrl(fam) : null,
+          heading: !headingConfigured
+            ? null
+            : headStack
+              ? { family: headFam, stack: headStack, url: headingFontCssUrl(headFam) }
+              : { collapse: true },
         }),
       );
     } catch {
@@ -166,21 +185,21 @@ export function applyTypography(
 }
 
 /**
- * Inline pre-paint script (string). Reads the persisted fonts (default Inter
- * body + Cormorant Garamond headings) and writes the font CSS vars + injects the
- * font <link>s BEFORE first paint, so there is no flash of the previous/
- * design-system font. Must be placed AFTER the design-system pre-paint script
- * in the layout so these values win.
- * Payload versions: v2 = {v:2, family, stack, url, heading:{...}|null}; a stale
- * v1 payload (no `v`) predates the heading axis → paint the DEFAULT heading
- * serif (matches the server default; the applier re-persists v2 on load).
+ * Inline pre-paint script (string). Reads the persisted EXPLICIT font choices
+ * and writes the font CSS vars + injects the font <link>s BEFORE first paint.
+ * Placed AFTER the design-system pre-paint in the layout — but an axis only
+ * overrides the design-system value when the admin explicitly configured it:
+ * - v3 payload: {v:3, family|null, stack|null, url|null,
+ *                heading: {family,stack,url} | {collapse:true} | null}
+ *   null axis ⇒ DEFER (leave whatever the design-system pre-paint painted).
+ * - stale v1/v2 payloads: apply the BODY (always explicit there) but NOT the
+ *   heading — v2 persisted the default serif as if it were a choice, which is
+ *   exactly the clobber this fixes. The applier re-persists v3 on first load.
  */
 export const TYPO_PREPAINT_SCRIPT = `(function(){try{
-var DEF={family:'Inter',stack:"'Inter', ${FALLBACK}",url:'https://fonts.googleapis.com/css2?family=Inter:${FONT_WEIGHTS};900&display=swap',heading:{family:'${DEFAULT_HEADING_FONT}',stack:"'${DEFAULT_HEADING_FONT}', ${SERIF_FALLBACK}",url:'${headingFontCssUrl(DEFAULT_HEADING_FONT)}'}};
-var d=DEF;try{var s=localStorage.getItem('${TYPO_STORAGE_KEY}');if(s){var p=JSON.parse(s);if(p&&p.stack)d=p;}}catch(e){}
-var h=(d.v===2)?d.heading:DEF.heading;
+var s=localStorage.getItem('${TYPO_STORAGE_KEY}');if(!s)return;var d=JSON.parse(s);if(!d)return;
 var r=document.documentElement;
-r.style.setProperty('--font-heading',(h&&h.stack)||d.stack);r.style.setProperty('--font-body',d.stack);r.style.setProperty('--font-eyebrow',d.stack);r.style.setProperty('--font-sans',d.stack);
 var add=function(fam,url){if(!url)return;var id='pah-font-'+(fam||'system').toLowerCase().replace(/\\s+/g,'-');if(!document.getElementById(id)){var l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=url;document.head.appendChild(l);}};
-add(d.family,d.url);if(h)add(h.family,h.url);
+if(d.stack){r.style.setProperty('--font-body',d.stack);r.style.setProperty('--font-eyebrow',d.stack);r.style.setProperty('--font-sans',d.stack);add(d.family,d.url);}
+if(d.v===3&&d.heading){if(d.heading.collapse){r.style.setProperty('--font-heading','var(--font-body)');}else if(d.heading.stack){r.style.setProperty('--font-heading',d.heading.stack);add(d.heading.family,d.heading.url);}}
 }catch(e){}})();`;

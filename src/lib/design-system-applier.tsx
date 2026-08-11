@@ -5,14 +5,15 @@ import { applyDesignSystem } from '@/lib/design-system';
 import { applyTypography } from '@/lib/typography';
 
 /**
- * Applies the admin-configured Design System (accent / density / buttons) AND the
- * website fonts (settings.options.typography.fontFamily body + .headingFontFamily
- * display serif, defaults Inter + Cormorant Garamond) to the storefront at runtime,
- * persisting both for the next load's pre-paint scripts. Renders nothing.
+ * Applies the admin-configured Design System (font pairing / accent / density /
+ * buttons) AND the website fonts (settings.options.typography) to the
+ * storefront at runtime, persisting both for the next load's pre-paint
+ * scripts. Renders nothing.
  *
- * The two are applied in ONE effect so the typography is ALWAYS set LAST, after
- * the design system's own --font-heading/--font-body writes — guaranteeing the
- * admin font choices win (no race with a separate applier that might not re-run).
+ * The two are applied in ONE effect so typography runs LAST — but a typography
+ * axis only overrides the design-system pairing when the admin EXPLICITLY set
+ * it (a family, or '' = same-as-body for headings). An unset axis defers, so
+ * the Design System page's font pairing actually reaches the storefront.
  */
 export default function DesignSystemApplier() {
   const { settings } = useSettings() as any;

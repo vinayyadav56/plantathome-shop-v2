@@ -159,8 +159,12 @@ export const DENSITIES = [
   { id: 'compact', name: 'Compact' },
 ] as const;
 
+// The UNSET fallback must reproduce the storefront's SHIPPED look (Inter body
+// + Cormorant headings) — not the "recommended" pairing — so a site that never
+// configured a design system keeps rendering byte-identically. `recommended`
+// remains a UI badge only.
 export const DEFAULT_FONT_PAIRING =
-  FONT_PAIRINGS.find((p) => p.recommended) ?? FONT_PAIRINGS[FONT_PAIRINGS.length - 1];
+  FONT_PAIRINGS.find((p) => p.id === 'cormorant-inter') ?? FONT_PAIRINGS[0];
 export const DEFAULT_COLOR_SCHEME = COLOR_SCHEMES[0];
 
 // Defaults reproduce the storefront's shipped look: forest-700 solid buttons
