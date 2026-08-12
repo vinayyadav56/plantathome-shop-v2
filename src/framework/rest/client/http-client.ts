@@ -89,7 +89,15 @@ Axios.interceptors.response.use(
             }, 5000);
           });
         }
-        Router.replace(Routes.login);
+        // Preserve where they were: a bare replace(login) dropped the
+        // destination, so an expired session on /checkout landed you on the
+        // homepage after signing back in.
+        const from = Router.asPath;
+        const redirect = from && !from.startsWith('/signin') ? from : undefined;
+        Router.replace({
+          pathname: Routes.login,
+          ...(redirect ? { query: { redirect } } : {}),
+        } as any);
       }
     }
     // 403: deliberately no logout and no navigation.

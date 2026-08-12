@@ -267,6 +267,20 @@ export function useSocialLogin() {
   });
 }
 
+/** Human copy for the server's structured OTP failure codes. */
+function otpErrorMessage(code: string | undefined, fallback: string): string {
+  switch (code) {
+    case 'INVALID_PHONE':
+      return 'Enter a valid mobile number including the country code.';
+    case 'WHATSAPP_SEND_FAILED':
+      return "We couldn't reach that number on WhatsApp. Try SMS instead.";
+    case 'OTP_SEND_FAILED':
+      return "We couldn't send the code right now — please try again.";
+    default:
+      return fallback;
+  }
+}
+
 export function useSendOtpCode({
   verifyOnly,
 }: Partial<{ verifyOnly: boolean }> = {}) {
@@ -274,22 +288,34 @@ export function useSendOtpCode({
   const [otpState, setOtpState] = useAtom(optAtom);
 
   const { mutate, isLoading } = useMutation(client.users.sendOtpCode, {
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       if (!data.success) {
-        setServerError(data.message!);
+        setServerError(otpErrorMessage(data.code, data.message!));
         return;
       }
+      setServerError(null);
       setOtpState({
         ...otpState,
         otpId: data?.id!,
         isContactExist: data?.is_contact_exist!,
         phoneNumber: data?.phone_number!,
+        // Prefer the SERVER's resolved gateway over our request intent: a
+        // request that sent no channel still has to verify against whichever
+        // gateway actually issued the code.
+        channel: data?.channel ?? (variables as any)?.channel ?? 'sms',
+        // Countdowns come from the server's policy, never hardcoded here.
+        expiresIn: data?.expires_in ?? otpState.expiresIn,
+        resendAfter: data?.resend_after ?? otpState.resendAfter,
         step: data?.is_contact_exist! ? 'OtpForm' : 'RegisterForm',
         ...(verifyOnly && { step: 'OtpForm' }),
       });
     },
-    onError: (error: Error) => {
-      console.error(error.message);
+    onError: (error: any) => {
+      // A 422/502 lands here (non-2xx): surface the server's structured code.
+      const data = error?.response?.data;
+      setServerError(
+        otpErrorMessage(data?.code, getErrorMessage(error, 'text-otp-verify-failed')),
+      );
     },
   });
 
@@ -362,6 +388,8 @@ export function useOtpLogin() {
       ...input,
       phone_number: otpState.phoneNumber,
       otp_id: otpState.otpId!,
+      // Echo the SEND channel — the server re-resolves the gateway from it.
+      channel: otpState.channel,
     });
   }
 

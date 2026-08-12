@@ -795,6 +795,8 @@ export type SocialLoginInputType = {
 };
 export type SendOtpCodeInputType = {
   phone_number: string;
+  /** 'whatsapp' routes to the Meta Cloud API gateway; omitted = server default. */
+  channel?: 'sms' | 'whatsapp';
 };
 
 export interface RegisterUserInput {
@@ -838,26 +840,43 @@ export interface AuthResponse {
   permissions: string[];
 }
 
+/** OTP delivery channel. 'whatsapp' routes to the Meta Cloud API gateway. */
+export type OtpChannel = 'sms' | 'whatsapp';
+
 export interface OTPResponse {
   message: string;
   success: boolean;
   provider: string;
+  /** The RESOLVED gateway ('whatsapp' | 'msg91' | 'twilio' …) — echo it back on verify/login. */
+  channel?: string;
   id: string;
   phone_number: string;
   is_contact_exist: boolean;
+  /** Server-authoritative countdowns (seconds) — never hardcode these in the UI. */
+  expires_in?: number;
+  resend_after?: number;
+  /** Structured failure code, e.g. WHATSAPP_SEND_FAILED / INVALID_PHONE. */
+  code?: string;
 }
+
 
 export interface VerifyOtpInputType {
   phone_number: string;
   code: string;
   otp_id: string;
+  /** Must echo the send channel — only the issuing gateway can verify its code. */
+  channel?: string;
 }
 
 export interface OtpLoginInputType {
   phone_number: string;
   code: string;
   otp_id: string;
+  /** Must echo the send channel — only the issuing gateway can verify its code. */
+  channel?: string;
   name?: string;
+  first_name?: string;
+  last_name?: string;
   email?: string;
 }
 
