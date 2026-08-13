@@ -304,9 +304,12 @@ export default function ForgotUserPassword({ onBack, inline = false }: ForgotUse
             <Logo />
           </div>
         )}
-        <p className="mt-4 mb-7 text-center text-sm leading-relaxed text-body sm:mt-5 sm:mb-10 md:text-base">
-          {t('forgot-password-helper')}
-        </p>
+        {/* The page heading already carries this line when inline. */}
+        {!inline && (
+          <p className="mt-4 mb-7 text-center text-sm leading-relaxed text-body sm:mt-5 sm:mb-10 md:text-base">
+            {t('forgot-password-helper')}
+          </p>
+        )}
         <RenderFormSteps />
         <div className="relative mt-9 mb-7 flex flex-col items-center justify-center text-sm text-heading sm:mt-11 sm:mb-8">
           <hr className="w-full" />

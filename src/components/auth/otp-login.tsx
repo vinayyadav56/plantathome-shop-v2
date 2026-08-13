@@ -157,7 +157,10 @@ export default function OtpLoginView({ channel: channelProp, onBack, inline = fa
           <Logo />
         </div>
       )}
-      {channel === 'whatsapp' ? (
+      {/* Inline, the page's own heading already says which channel this is and
+          what happens next — repeating it here printed the same sentence twice
+          in a row. The modal has no heading of its own, so it keeps the banner. */}
+      {inline ? null : channel === 'whatsapp' ? (
         <div className="mt-5 mb-6 text-center sm:mt-6">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#25D366]/10 px-3 py-1 text-xs font-semibold text-[#128C7E]">
             <WhatsAppIcon className="h-4 w-4" />
