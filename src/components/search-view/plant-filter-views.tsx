@@ -95,8 +95,8 @@ export function PlacementFilterView() {
             onClick={() => push('placement', on ? undefined : v)}
             className={
               on
-                ? 'rounded-full bg-[#2E5E2A] px-3 py-2 text-sm font-semibold text-white transition'
-                : 'rounded-full px-3 py-2 text-sm font-semibold text-body transition hover:bg-forest-900/5'
+                ? 'rounded-full bg-[#2E5E2A] px-3 py-2 text-[13px] font-semibold text-white transition'
+                : 'rounded-full px-3 py-2 text-[13px] font-semibold text-body transition hover:bg-forest-900/5'
             }
           >
             {v}
@@ -118,7 +118,7 @@ export function PetFriendlyFilterView() {
   return (
     <label className="flex cursor-pointer items-center justify-between gap-3">
       <span className="flex flex-col">
-        <span className="text-sm font-medium text-heading">Pet friendly only</span>
+        <span className="text-[13px] font-medium text-heading">Pet friendly only</span>
         <span className="text-xs text-body">
           Safe around cats and dogs{typeof count === 'number' ? ` · ${count} plants` : ''}
         </span>
@@ -181,8 +181,8 @@ export function SizeFilterView() {
             onClick={() => toggle(v)}
             className={
               on
-                ? 'rounded-full bg-[#EAF4EA] px-4 py-2 text-sm font-semibold text-[#2E5E2A] ring-1 ring-[#2E5E2A]/30 transition'
-                : 'rounded-full border border-forest-900/10 bg-white px-4 py-2 text-sm font-semibold text-body transition hover:border-forest-900/25'
+                ? 'rounded-full bg-[#EAF4EA] px-4 py-2 text-[13px] font-semibold text-[#2E5E2A] ring-1 ring-[#2E5E2A]/30 transition'
+                : 'rounded-full border border-forest-900/10 bg-white px-4 py-2 text-[13px] font-semibold text-body transition hover:border-forest-900/25'
             }
           >
             {v}

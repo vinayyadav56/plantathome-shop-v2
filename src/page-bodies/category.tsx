@@ -139,7 +139,7 @@ export default function CategoryPage() {
 
           {/* description */}
           {(category?.details || category?.description) && (
-            <p className="mt-4 max-w-2xl font-hanken text-[14px] leading-[1.6] text-white/78 sm:text-[15.5px]">
+            <p className="mt-4 max-w-2xl font-hanken text-[14px] leading-[1.6] text-white/[0.78] sm:text-[15.5px]">
               {category?.details || category?.description}
             </p>
           )}

@@ -105,7 +105,7 @@ const Sorting: React.FC<Props> = ({ variant = 'radio' }) => {
                         />
                         <RadioGroup.Label
                           as="p"
-                          className={`text-sm ${
+                          className={`text-[13px] ${
                             checked ? 'font-medium text-forest-900' : 'text-body'
                           }`}
                         >

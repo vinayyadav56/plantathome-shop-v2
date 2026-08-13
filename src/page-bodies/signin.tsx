@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from '@/compat/next-router';
 import Link from 'next/link';
 import { useAtom } from 'jotai';
@@ -15,10 +15,13 @@ import { RegisterForm } from '@/components/auth/register-form';
 const OtpLoginView = dynamic(() => import('@/components/auth/otp-login'));
 const ForgotUserPassword = dynamic(() => import('@/components/auth/forgot-password'));
 import { authorizationAtom } from '@/store/authorization-atom';
+import { Routes } from '@/config/routes';
 import Seo from '@/components/seo/seo';
 
 /** The four things the right-hand column can show. */
 type AuthView = 'login' | 'register' | 'whatsapp' | 'forgot';
+
+const SWAP_EASE: [number, number, number, number] = [0.04, 0.62, 0.23, 0.98];
 
 /**
  * Dedicated split-screen sign-in / sign-up page (replaces the login popup).
@@ -42,6 +45,20 @@ function SignInPage() {
     typeof router.query.redirect === 'string' && router.query.redirect.startsWith('/')
       ? router.query.redirect
       : '/';
+
+  // Only the active view is mounted, so the column's height now changes on every
+  // swap. Measuring the live box is what lets that change be animated rather than
+  // snapped. A ResizeObserver rather than a swap-time measurement because the
+  // forms also grow in place — a server-error alert, a validation message.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxHeight, setBoxHeight] = useState<number>();
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setBoxHeight(entry.contentRect.height));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Any auth method (password / Google / WhatsApp) flips the atom → leave the page.
   useEffect(() => {
@@ -96,13 +113,23 @@ function SignInPage() {
                     : 'Reset your password'}
             </h1>
             <p className="mb-7 mt-1 text-[14px] text-stone-500">
-              {mode === 'login'
-                ? t('login-helper')
-                : mode === 'register'
-                  ? t('registration-helper')
-                  : mode === 'whatsapp'
-                    ? 'We will send a 6-digit code to your WhatsApp number.'
-                    : t('forgot-password-helper')}
+              {mode === 'login' && t('login-helper')}
+              {mode === 'whatsapp' && 'We will send a 6-digit code to your WhatsApp number.'}
+              {mode === 'forgot' && t('forgot-password-helper')}
+              {/* `registration-helper` is a fragment ("…you agree to our"); the two
+                  words that finish it are separate keys meant to be inlined as links. */}
+              {mode === 'register' && (
+                <>
+                  {t('registration-helper')}{' '}
+                  <Link href={Routes.terms} className="underline hover:no-underline">
+                    {t('text-terms')}
+                  </Link>
+                  {' & '}
+                  <Link href={Routes.privacy} className="underline hover:no-underline">
+                    {t('text-policy')}
+                  </Link>
+                </>
+              )}
             </p>
 
             {/* segmented toggle — only for the two tabbed forms. WhatsApp and
@@ -127,47 +154,49 @@ function SignInPage() {
             {/* Every view renders HERE, in the column, rather than punching out
                 into a dialog over the page it was launched from.
 
-                Both tabbed forms stay mounted and stacked in one grid cell so the
-                column keeps the taller form's height and the tab swap does not
-                make the page jump. Cross-fade only — animating height between two
-                forms of different length is what made the old swap feel jumpy. */}
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={isTabbed ? 'tabbed' : mode}
-                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
-                transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.04, 0.62, 0.23, 0.98] }}
-              >
-                {isTabbed ? (
-                  <div className="grid">
-                    <div
-                      className={`[grid-area:1/1] ${mode === 'login' ? '' : 'invisible'}`}
-                      aria-hidden={mode !== 'login'}
-                    >
+                Exactly one view is mounted at a time: keeping both tabbed forms
+                stacked put two inputs named "email" and two named "password" at
+                the same coordinates, which is what autofill and password managers
+                act on regardless of `invisible`. The column height that stacking
+                used to reserve is animated instead.
+
+                Only the login/register pair is height-pinned. WhatsApp and reset
+                arrive as their own chunk and render empty for a beat, so pinning
+                them would animate the column down to nothing and back. */}
+            <motion.div
+              initial={false}
+              animate={{ height: isTabbed ? boxHeight ?? 'auto' : 'auto' }}
+              transition={{ duration: reduceMotion || !isTabbed ? 0 : 0.28, ease: SWAP_EASE }}
+            >
+              <div ref={boxRef}>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={mode}
+                    initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
+                    transition={{ duration: reduceMotion ? 0 : 0.22, ease: SWAP_EASE }}
+                  >
+                    {mode === 'login' ? (
                       <LoginForm
                         onSwitchToRegister={() => setMode('register')}
                         onForgot={() => setMode('forgot')}
                         onWhatsapp={() => setMode('whatsapp')}
                       />
-                    </div>
-                    <div
-                      className={`[grid-area:1/1] ${mode === 'register' ? '' : 'invisible'}`}
-                      aria-hidden={mode !== 'register'}
-                    >
+                    ) : mode === 'register' ? (
                       <RegisterForm
                         onSwitchToLogin={() => setMode('login')}
                         onWhatsapp={() => setMode('whatsapp')}
                       />
-                    </div>
-                  </div>
-                ) : mode === 'whatsapp' ? (
-                  <OtpLoginView inline channel="whatsapp" onBack={() => setMode('login')} />
-                ) : (
-                  <ForgotUserPassword inline onBack={() => setMode('login')} />
-                )}
-              </motion.div>
-            </AnimatePresence>
+                    ) : mode === 'whatsapp' ? (
+                      <OtpLoginView inline channel="whatsapp" onBack={() => setMode('login')} />
+                    ) : (
+                      <ForgotUserPassword inline onBack={() => setMode('login')} />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>

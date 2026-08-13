@@ -103,6 +103,13 @@ const SidebarFilter: React.FC<{
     <div
       className={classNames(
         'flex h-full w-full flex-col rounded-xl border-forest-900/10 bg-white',
+        // 13px facet scale, forced from the panel root. Checkbox and SearchBox
+        // are app-wide primitives that hardcode `text-sm` on their own label /
+        // input, and Tailwind emits arbitrary sizes BEFORE the named scale, so
+        // a `text-[13px]` handed down as a prop loses the cascade. A descendant
+        // selector (0,1,1) beats the primitive's own class without resizing
+        // every checkbox and search field in the app.
+        '[&_input]:text-[13px] [&_label]:text-[13px]',
         inRail ? 'md:h-auto md:border' : 'lg:h-auto lg:border',
         className
       )}
@@ -122,7 +129,7 @@ const SidebarFilter: React.FC<{
             <span className="sr-only">{t('text-close')}</span>
           </button>
 
-          <h3 className="text-base font-medium text-forest-900 lg:text-lg">
+          <h3 className="text-[15px] font-semibold text-forest-900">
             {t('text-filter')}
           </h3>
         </div>

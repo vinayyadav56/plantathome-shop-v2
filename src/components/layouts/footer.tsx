@@ -175,7 +175,7 @@ const Footer = () => {
             <h3 className="font-cormorant mt-4 text-[2.2rem] font-medium leading-[1.02] tracking-[0.01em] text-white sm:text-[2.8rem]">
               {t('footer-newsletter-heading')}
             </h3>
-            <p className="mt-3 max-w-[440px] font-hanken text-[14.5px] leading-relaxed text-white/68">
+            <p className="mt-3 max-w-[440px] font-hanken text-[14.5px] leading-relaxed text-white/[0.68]">
               {t('footer-newsletter-subheading')}
             </p>
           </div>
@@ -189,7 +189,7 @@ const Footer = () => {
         {/* brand column */}
         <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:max-w-[300px]">
           <WordmarkStacked light className="[&_*]:!text-white" />
-          <p className="mt-4 text-[13.5px] leading-relaxed text-white/62">{t('footer-brand-description')}</p>
+          <p className="mt-4 text-[13.5px] leading-relaxed text-white/[0.62]">{t('footer-brand-description')}</p>
 
           {/* contact */}
           <div className="mt-5 flex flex-col gap-2.5">

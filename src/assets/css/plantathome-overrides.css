@@ -356,8 +356,11 @@ button[data-variant="normal"]:hover:not(:disabled),
 .pa-btn-lg { padding: 15px 30px; font-size: 15px; }
 .pa-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 .pa-btn:active:not(:disabled) { transform: scale(0.97); }
-/* Safety net: every filled/accent CTA keeps WHITE text on hover. */
-button[data-variant="normal"]:hover, .btn-accent:hover, .pa-btn-primary:hover,
+/* Safety net: every filled/accent CTA keeps WHITE text on hover.
+   .pa-btn-primary is deliberately NOT in this list: .pa-btn-primary:hover above
+   already sets white, and the hero's white-pill variant wants GREEN on hover —
+   an !important here made that CTA white-on-white the moment you moused over it. */
+button[data-variant="normal"]:hover, .btn-accent:hover,
 .pa-btn-secondary:hover, .pa-btn-outline:hover, .pa-place-order-btn:hover { color: #fff !important; }
 
 /* ── HERO SECTION ───────────────────────────────────────────── */
@@ -447,7 +450,12 @@ button[data-variant="normal"]:hover, .btn-accent:hover, .pa-btn-primary:hover,
   flex-wrap: wrap;
   margin-bottom: 48px;
 }
-.pa-btn-primary {
+/* Hero-only restyle of the two CTA variants: white-on-photo, only legible over
+   the dark hero scrim. MUST stay scoped to .pa-hero — unscoped these redeclared
+   .pa-btn-primary/.pa-btn-secondary later in the file than the canonical block
+   above, so every light-surface CTA in the app inherited the on-photo colours
+   and "secondary" rendered white-on-white. */
+.pa-hero .pa-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -465,12 +473,12 @@ button[data-variant="normal"]:hover, .btn-accent:hover, .pa-btn-primary:hover,
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   white-space: nowrap;
 }
-.pa-btn-primary:hover {
+.pa-hero .pa-btn-primary:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 32px rgba(0,0,0,0.25);
   color: var(--pa-primary);
 }
-.pa-btn-secondary {
+.pa-hero .pa-btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -488,7 +496,7 @@ button[data-variant="normal"]:hover, .btn-accent:hover, .pa-btn-primary:hover,
   backdrop-filter: blur(8px);
   white-space: nowrap;
 }
-.pa-btn-secondary:hover {
+.pa-hero .pa-btn-secondary:hover {
   background: rgba(255,255,255,0.22);
   border-color: rgba(255,255,255,0.6);
   transform: translateY(-2px);
@@ -592,7 +600,7 @@ button[data-variant="normal"]:hover, .btn-accent:hover, .pa-btn-primary:hover,
 @media (max-width: 480px) {
   .pa-hero-inner { padding-top: 80px; min-height: 70vh; }
   .pa-hero-h1 { font-size: 36px; }
-  .pa-btn-primary, .pa-btn-secondary { padding: 13px 22px; font-size: 14px; }
+  .pa-hero .pa-btn-primary, .pa-hero .pa-btn-secondary { padding: 13px 22px; font-size: 14px; }
 }
 
 /* ── CATEGORY SECTION ───────────────────────────────────────── */

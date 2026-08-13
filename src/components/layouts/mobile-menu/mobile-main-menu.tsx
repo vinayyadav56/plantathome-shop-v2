@@ -43,7 +43,7 @@ export default function MobileMainMenu() {
               className={`flex min-h-[38px] items-center justify-center rounded-full px-1.5 py-1.5 text-center text-[12.5px] font-bold leading-tight transition ${
                 currentSlug === tp.slug
                   ? 'bg-leaf text-white'
-                  : 'bg-forest/8 text-forest'
+                  : 'bg-forest/[0.08] text-forest'
               }`}
             >
               {tp.name}

@@ -93,7 +93,7 @@ const PriceFilter = () => {
       <div className="mt-4 grid grid-cols-2 gap-3">
         <label className="flex flex-col items-start rounded-[10px] border border-forest-900/10 bg-white p-2.5 focus-within:border-forest-900/30">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">From</span>
-          <span className="flex w-full items-center text-sm font-bold text-forest-900">
+          <span className="flex w-full items-center text-[13px] font-bold text-forest-900">
             ₹
             <input
               type="number"
@@ -103,13 +103,13 @@ const PriceFilter = () => {
               value={String(state[0])}
               onChange={(e) => handleChange([Number(e.target.value || sliderMin), Number(state[1])])}
               aria-label="Minimum price"
-              className="w-full border-0 bg-transparent p-0 pl-0.5 text-sm font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-full border-0 bg-transparent p-0 pl-0.5 text-[13px] font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </span>
         </label>
         <label className="flex flex-col rounded-[10px] border border-forest-900/10 bg-white p-2.5 focus-within:border-forest-900/30">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">To</span>
-          <span className="flex w-full items-center text-sm font-bold text-forest-900">
+          <span className="flex w-full items-center text-[13px] font-bold text-forest-900">
             ₹
             <input
               type="number"
@@ -119,7 +119,7 @@ const PriceFilter = () => {
               value={String(state[1])}
               onChange={(e) => handleChange([Number(state[0]), Number(e.target.value || sliderMax)])}
               aria-label="Maximum price"
-              className="w-full border-0 bg-transparent p-0 pl-0.5 text-sm font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-full border-0 bg-transparent p-0 pl-0.5 text-[13px] font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </span>
         </label>

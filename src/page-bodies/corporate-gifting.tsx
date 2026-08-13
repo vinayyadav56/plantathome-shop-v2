@@ -160,7 +160,7 @@ export default function CorporateGiftingPage() {
       {/* HERO */}
       <section className="relative isolate overflow-hidden">
         <img src={heroImg} alt="Corporate plant gifting" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-forest-900/92 via-forest-800/72 to-forest-700/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-forest-900/[0.92] via-forest-800/[0.72] to-forest-700/35" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:py-24">
           <div className="text-white">
             <span className="font-jost inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] backdrop-blur">🎁 Corporate Gifting</span>
