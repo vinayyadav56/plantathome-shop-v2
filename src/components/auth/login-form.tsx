@@ -30,9 +30,13 @@ type LoginFormProps = {
    *  instead of opening the register modal. */
   onSwitchToRegister?: () => void;
   onForgot?: () => void;
+  /** Same idea for the WhatsApp step: on /signin it renders in the column
+   *  rather than popping a dialog over the page it is already on. Absent
+   *  (header, checkout) it falls back to the modal, unchanged. */
+  onWhatsapp?: () => void;
 };
 
-export function LoginForm({ onSwitchToRegister, onForgot }: LoginFormProps = {}) {
+export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFormProps = {}) {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { openModal } = useModalAction();
@@ -129,7 +133,7 @@ export function LoginForm({ onSwitchToRegister, onForgot }: LoginFormProps = {})
         <Button
           className="h-11 w-full !bg-[#25D366] !text-light hover:!bg-[#1da851] sm:h-12"
           disabled={isLoading}
-          onClick={() => openModal('OTP_LOGIN', { channel: 'whatsapp' })}
+          onClick={onWhatsapp ?? (() => openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
         >
           <WhatsAppIcon className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" />
           Continue with WhatsApp

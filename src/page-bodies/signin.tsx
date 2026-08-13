@@ -6,10 +6,19 @@ import Link from 'next/link';
 import { useAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import dynamic from 'next/dynamic';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { LoginForm } from '@/components/auth/login-form';
 import { RegisterForm } from '@/components/auth/register-form';
+
+// Only pulled in when the operator actually chooses them, same as the modal registry does.
+const OtpLoginView = dynamic(() => import('@/components/auth/otp-login'));
+const ForgotUserPassword = dynamic(() => import('@/components/auth/forgot-password'));
 import { authorizationAtom } from '@/store/authorization-atom';
 import Seo from '@/components/seo/seo';
+
+/** The four things the right-hand column can show. */
+type AuthView = 'login' | 'register' | 'whatsapp' | 'forgot';
 
 /**
  * Dedicated split-screen sign-in / sign-up page (replaces the login popup).
@@ -21,9 +30,13 @@ function SignInPage() {
   const { t } = useTranslation('common');
   const router = useRouter();
   const [isAuthorized] = useAtom(authorizationAtom);
-  const [mode, setMode] = useState<'login' | 'register'>(
+  const [mode, setMode] = useState<AuthView>(
     router.query.mode === 'register' ? 'register' : 'login',
   );
+  const reduceMotion = useReducedMotion();
+  // login/register are the two tabbed forms; whatsapp/forgot are full replacements
+  // for the column, reached from inside those forms.
+  const isTabbed = mode === 'login' || mode === 'register';
 
   const redirect =
     typeof router.query.redirect === 'string' && router.query.redirect.startsWith('/')
@@ -74,45 +87,87 @@ function SignInPage() {
             </Link>
 
             <h1 className="font-pahserif text-[28px] font-medium text-forest-900">
-              {mode === 'login' ? t('signin-welcome') : t('signin-create-account')}
+              {mode === 'login'
+                ? t('signin-welcome')
+                : mode === 'register'
+                  ? t('signin-create-account')
+                  : mode === 'whatsapp'
+                    ? 'Continue with WhatsApp'
+                    : 'Reset your password'}
             </h1>
             <p className="mb-7 mt-1 text-[14px] text-stone-500">
-              {mode === 'login' ? t('login-helper') : t('registration-helper')}
+              {mode === 'login'
+                ? t('login-helper')
+                : mode === 'register'
+                  ? t('registration-helper')
+                  : mode === 'whatsapp'
+                    ? 'We will send a 6-digit code to your WhatsApp number.'
+                    : t('forgot-password-helper')}
             </p>
 
-            {/* segmented toggle */}
-            <div className="mb-7 grid grid-cols-2 gap-1 rounded-xl bg-sage-100 p-1">
-              {(['login', 'register'] as const).map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setMode(m)}
-                  className={`rounded-lg py-2.5 text-[13.5px] font-semibold transition ${
-                    mode === m ? 'bg-white text-forest-900 shadow-sm' : 'text-forest-700/70 hover:text-forest-900'
-                  }`}
-                >
-                  {m === 'login' ? t('signin-tab-login') : t('signin-tab-register')}
-                </button>
-              ))}
-            </div>
+            {/* segmented toggle — only for the two tabbed forms. WhatsApp and
+                password reset replace the column and carry their own way back. */}
+            {isTabbed && (
+              <div className="mb-7 grid grid-cols-2 gap-1 rounded-xl bg-sage-100 p-1">
+                {(['login', 'register'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setMode(m)}
+                    className={`rounded-lg py-2.5 text-[13.5px] font-semibold transition ${
+                      mode === m ? 'bg-white text-forest-900 shadow-sm' : 'text-forest-700/70 hover:text-forest-900'
+                    }`}
+                  >
+                    {m === 'login' ? t('signin-tab-login') : t('signin-tab-register')}
+                  </button>
+                ))}
+              </div>
+            )}
 
-            {/* Both forms stay mounted, stacked in the same grid cell, so the
-                column keeps the taller form's height — switching tabs no longer
-                makes the page jump up and down. */}
-            <div className="grid">
-              <div
-                className={`[grid-area:1/1] ${mode === 'login' ? '' : 'invisible'}`}
-                aria-hidden={mode !== 'login'}
+            {/* Every view renders HERE, in the column, rather than punching out
+                into a dialog over the page it was launched from.
+
+                Both tabbed forms stay mounted and stacked in one grid cell so the
+                column keeps the taller form's height and the tab swap does not
+                make the page jump. Cross-fade only — animating height between two
+                forms of different length is what made the old swap feel jumpy. */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={isTabbed ? 'tabbed' : mode}
+                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
+                transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.04, 0.62, 0.23, 0.98] }}
               >
-                <LoginForm onSwitchToRegister={() => setMode('register')} />
-              </div>
-              <div
-                className={`[grid-area:1/1] ${mode === 'register' ? '' : 'invisible'}`}
-                aria-hidden={mode !== 'register'}
-              >
-                <RegisterForm onSwitchToLogin={() => setMode('login')} />
-              </div>
-            </div>
+                {isTabbed ? (
+                  <div className="grid">
+                    <div
+                      className={`[grid-area:1/1] ${mode === 'login' ? '' : 'invisible'}`}
+                      aria-hidden={mode !== 'login'}
+                    >
+                      <LoginForm
+                        onSwitchToRegister={() => setMode('register')}
+                        onForgot={() => setMode('forgot')}
+                        onWhatsapp={() => setMode('whatsapp')}
+                      />
+                    </div>
+                    <div
+                      className={`[grid-area:1/1] ${mode === 'register' ? '' : 'invisible'}`}
+                      aria-hidden={mode !== 'register'}
+                    >
+                      <RegisterForm
+                        onSwitchToLogin={() => setMode('login')}
+                        onWhatsapp={() => setMode('whatsapp')}
+                      />
+                    </div>
+                  </div>
+                ) : mode === 'whatsapp' ? (
+                  <OtpLoginView inline channel="whatsapp" onBack={() => setMode('login')} />
+                ) : (
+                  <ForgotUserPassword inline onBack={() => setMode('login')} />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>

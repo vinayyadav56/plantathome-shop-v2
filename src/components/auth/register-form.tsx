@@ -33,9 +33,12 @@ type RegisterFormValues = {
 type RegisterFormProps = {
   /** When provided (page context), switches to the login view in place. */
   onSwitchToLogin?: () => void;
+  /** Renders the WhatsApp step in the page column instead of a dialog. Absent
+   *  (header, checkout) it falls back to the modal, unchanged. */
+  onWhatsapp?: () => void;
 };
 
-export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
+export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps = {}) {
   const { t } = useTranslation('common');
   const { openModal } = useModalAction();
   const { mutate, isLoading, formError } = useRegister();
@@ -130,7 +133,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps = {}) {
         <Button
           className="h-11 w-full !bg-[#25D366] !text-light hover:!bg-[#1da851] sm:h-12"
           disabled={isLoading}
-          onClick={() => openModal('OTP_LOGIN', { channel: 'whatsapp' })}
+          onClick={onWhatsapp ?? (() => openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
         >
           <WhatsAppIcon className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" />
           Continue with WhatsApp

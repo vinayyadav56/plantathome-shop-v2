@@ -1,4 +1,5 @@
 import { useTranslation } from 'next-i18next';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import Alert from '@/components/ui/alert';
 import { useAtom } from 'jotai';
 import { useEffect } from 'react';
@@ -15,6 +16,7 @@ import type { OtpChannel } from '@/types';
 function OtpLogin({ channel }: { channel: OtpChannel }) {
   const { t } = useTranslation('common');
   const [otpState, setOtpState] = useAtom(optAtom);
+  const reduceMotion = useReducedMotion();
 
   const {
     mutate: sendOtpCode,
@@ -61,6 +63,19 @@ function OtpLogin({ channel }: { channel: OtpChannel }) {
 
   return (
     <div className="mt-4">
+      {/* Phone → code → details is a sequence, so it should read as one. Each step
+          used to hard-cut while the surrounding dialog animated, which is what made
+          the flow feel like three separate screens. Height animates too, because
+          these steps are genuinely different lengths. */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={otpState.step}
+          initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={reduceMotion ? { opacity: 1 } : { opacity: 0, height: 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.25, ease: [0.04, 0.62, 0.23, 0.98] }}
+          className="overflow-hidden"
+        >
       {otpState.step === 'PhoneNumber' && (
         <>
           <Alert
@@ -102,21 +117,46 @@ function OtpLogin({ channel }: { channel: OtpChannel }) {
           onSubmit={onOtpLoginSubmission}
         />
       )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
 
-export default function OtpLoginView() {
+type OtpLoginViewProps = {
+  /** Inline callers pass the channel directly; modal callers still get it from payload. */
+  channel?: OtpChannel;
+  /** Inline: go back to the login view in place. Modal: defaults to reopening LOGIN_VIEW. */
+  onBack?: () => void;
+  /**
+   * Rendered inside the /signin column rather than a dialog. Drops the
+   * full-viewport shell and the logo — the page already carries both, and a
+   * second brand mark stacked inside the form column reads as a modal that
+   * forgot to open.
+   */
+  inline?: boolean;
+};
+
+export default function OtpLoginView({ channel: channelProp, onBack, inline = false }: OtpLoginViewProps = {}) {
   const { t } = useTranslation('common');
   const { openModal } = useModalAction();
   const { data } = useModalState() as { data?: { channel?: OtpChannel } };
-  const channel: OtpChannel = data?.channel === 'whatsapp' ? 'whatsapp' : 'sms';
+  const channel: OtpChannel =
+    channelProp ?? (data?.channel === 'whatsapp' ? 'whatsapp' : 'sms');
 
   return (
-    <div className="flex h-screen w-screen flex-col justify-center bg-light px-5 py-6 sm:p-8 md:h-auto md:max-w-md md:rounded-xl">
-      <div className="flex justify-center">
-        <Logo />
-      </div>
+    <div
+      className={
+        inline
+          ? 'flex flex-col'
+          : 'flex h-screen w-screen flex-col justify-center bg-light px-5 py-6 sm:p-8 md:h-auto md:max-w-md md:rounded-xl'
+      }
+    >
+      {!inline && (
+        <div className="flex justify-center">
+          <Logo />
+        </div>
+      )}
       {channel === 'whatsapp' ? (
         <div className="mt-5 mb-6 text-center sm:mt-6">
           <span className="inline-flex items-center gap-2 rounded-full bg-[#25D366]/10 px-3 py-1 text-xs font-semibold text-[#128C7E]">
@@ -142,7 +182,7 @@ export default function OtpLoginView() {
       <div className="text-center text-sm text-body sm:text-base">
         {t('text-back-to')}{' '}
         <button
-          onClick={() => openModal('LOGIN_VIEW')}
+          onClick={onBack ?? (() => openModal('LOGIN_VIEW'))}
           className="font-semibold text-accent underline transition-colors duration-200 hover:text-accent-hover hover:no-underline focus:text-accent-hover focus:no-underline focus:outline-0 ltr:ml-1 rtl:mr-1"
         >
           {t('text-login')}

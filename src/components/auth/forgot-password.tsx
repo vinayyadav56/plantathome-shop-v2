@@ -279,16 +279,31 @@ export const updateFormState = (
     ...payload,
   };
 };
-export default function ForgotUserPassword() {
+type ForgotUserPasswordProps = {
+  /** Inline: return to the login view in place. Modal: reopens LOGIN_VIEW. */
+  onBack?: () => void;
+  /** Rendered inside the /signin column rather than a dialog — see OtpLoginView. */
+  inline?: boolean;
+};
+
+export default function ForgotUserPassword({ onBack, inline = false }: ForgotUserPasswordProps = {}) {
   const { t } = useTranslation('common');
   const { openModal } = useModalAction();
 
   return (
     <StateMachineProvider>
-      <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-light py-6 px-5 sm:p-8 md:h-auto md:min-h-0 md:max-w-[480px] md:rounded-xl">
-        <div className="flex justify-center">
-          <Logo />
-        </div>
+      <div
+        className={
+          inline
+            ? 'flex flex-col'
+            : 'flex h-full min-h-screen w-screen flex-col justify-center bg-light py-6 px-5 sm:p-8 md:h-auto md:min-h-0 md:max-w-[480px] md:rounded-xl'
+        }
+      >
+        {!inline && (
+          <div className="flex justify-center">
+            <Logo />
+          </div>
+        )}
         <p className="mt-4 mb-7 text-center text-sm leading-relaxed text-body sm:mt-5 sm:mb-10 md:text-base">
           {t('forgot-password-helper')}
         </p>
@@ -302,7 +317,7 @@ export default function ForgotUserPassword() {
         <div className="text-center text-sm text-body sm:text-base">
           {t('text-back-to')}{' '}
           <button
-            onClick={() => openModal('LOGIN_VIEW')}
+            onClick={onBack ?? (() => openModal('LOGIN_VIEW'))}
             className="ms-1 font-semibold text-accent underline transition-colors duration-200 hover:text-accent-hover hover:no-underline focus:text-accent-hover focus:no-underline focus:outline-0"
           >
             {t('text-login')}
