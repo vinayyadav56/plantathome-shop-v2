@@ -5,17 +5,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
-import { ArrowRight, Headset, RotateCcw, ShieldCheck, Sprout } from '@/components/ui/icon';
-
-// Two words each: the labels have to survive a quarter of the rail at 1280px
-// without wrapping, and every claim here is one the storefront already makes.
-const PERKS = [
-  // Sized by the parent's [&>svg] rules (responsive), so no `size` prop here.
-  { label: 'Nursery fresh', icon: <Sprout aria-hidden /> },
-  { label: 'Care experts', icon: <Headset aria-hidden /> },
-  { label: 'Easy returns', icon: <RotateCcw aria-hidden /> },
-  { label: 'Secure payments', icon: <ShieldCheck aria-hidden /> },
-];
+import { ArrowRight } from '@/components/ui/icon';
 
 export function SpringSaleBand() {
   const { t } = useTranslation('common');
@@ -42,20 +32,18 @@ export function SpringSaleBand() {
           }}
         />
 
-        {/* soft radial glow on left */}
+        {/* soft radial glow behind the offer */}
         <div className="pointer-events-none absolute inset-y-0 left-0 w-[380px] bg-[radial-gradient(ellipse_at_10%_50%,rgba(74,222,128,0.13)_0%,transparent_65%)]" />
 
-        {/* Below md the offer stacks ON TOP of the perks: side-by-side at 640px
-            leaves the perk grid ~120px per column, which is what forced the
-            labels onto two lines. */}
-        <div className="relative z-10 flex flex-col gap-5 px-5 py-5 sm:px-8 md:flex-row md:items-center md:gap-0 lg:px-10 lg:py-6">
+        {/* One message, set well. The trust claims that used to sit on the right
+            are TrustRow's job — it already makes all four, in better copy, at the
+            foot of this same page. Repeating them here diluted the offer and cost
+            it the width it needed to carry the section on its own. */}
+        <div className="relative z-10 flex flex-col gap-5 px-5 py-6 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-10 lg:py-7">
 
-          {/* ── LEFT — the offer. It keeps the only saturated colour in the
-                strip (gold figure, green badge, CTA) so it stays the single
-                focal point and the perks read as a quiet footnote to it. ── */}
-          <div className="md:w-[188px] md:shrink-0 lg:w-[220px]">
-            {/* pulsing badge */}
-            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-[#4ADE80]/25 bg-[#4ADE80]/10 px-3 py-1 lg:mb-3">
+          <div className="min-w-0 lg:flex lg:items-center lg:gap-7">
+            {/* pulsing live badge */}
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#4ADE80]/25 bg-[#4ADE80]/10 px-3 py-1 lg:mb-0 lg:shrink-0">
               <span className="relative flex h-[6px] w-[6px]">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ADE80] opacity-70" />
                 <span className="relative inline-flex h-[6px] w-[6px] rounded-full bg-[#4ADE80]" />
@@ -65,47 +53,25 @@ export function SpringSaleBand() {
               </span>
             </div>
 
-            {/* discount */}
-            <div className="whitespace-nowrap font-pahserif text-[27px] font-bold leading-none tracking-[-0.01em] text-[#F2E3B8] lg:text-[34px]">
-              {t('home-sale-discount')}
-            </div>
-            <div className="mt-1 whitespace-nowrap font-hanken text-[10.5px] leading-snug text-white/80 lg:text-[11px]">
-              {t('home-sale-condition')}
-            </div>
-
-            {/* CTA */}
-            <Link
-              href="/plants/search"
-              className="mt-2.5 inline-flex items-center gap-1.5 rounded-[9px] bg-ds-cta px-3.5 py-1.5 font-hanken text-[11.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] lg:mt-3 lg:px-4 lg:py-2 lg:text-[12.5px]"
-            >
-              {t('home-sale-cta')}
-              <ArrowRight size={12} aria-hidden />
-            </Link>
-          </div>
-
-          {/* Separator between the two messages: a rule under the offer while
-              stacked, a full-height hairline once they sit side by side. */}
-          <div className="h-px w-full bg-white/10 md:mx-6 md:h-auto md:w-px md:self-stretch lg:mx-8" />
-
-          {/* ── RIGHT — trust rail. Equal grid tracks rather than
-                justify-between: the four items then keep the same rhythm at
-                every width, and the hairline can ride the column edge instead
-                of being injected as a flex child that only exists from lg. ── */}
-          <div className="grid flex-1 grid-cols-2 gap-x-4 gap-y-4 sm:gap-x-5 xl:grid-cols-4">
-            {PERKS.map((p) => (
-              <div
-                key={p.label}
-                className="flex min-w-0 items-center gap-2.5 border-white/10 even:border-l even:ps-4 sm:gap-3 xl:border-l xl:ps-4 xl:first:border-l-0 xl:first:ps-0"
-              >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/20 text-white/70 lg:h-10 lg:w-10 [&>svg]:h-[13px] [&>svg]:w-[13px] lg:[&>svg]:h-4 lg:[&>svg]:w-4">
-                  {p.icon}
-                </span>
-                <span className="truncate font-hanken text-[11px] font-semibold leading-[1.35] text-white/90 lg:text-[12.5px]">
-                  {p.label}
-                </span>
+            <div className="min-w-0">
+              {/* The gold figure is the only saturated colour left in the strip,
+                  so it reads as the focal point without competing for it. */}
+              <div className="font-pahserif text-[30px] font-bold leading-none tracking-[-0.01em] text-[#F2E3B8] sm:text-[36px] lg:text-[42px]">
+                {t('home-sale-discount')}
               </div>
-            ))}
+              <div className="mt-1.5 font-hanken text-[12.5px] leading-snug text-white/80 lg:text-[14px]">
+                {t('home-sale-condition')}
+              </div>
+            </div>
           </div>
+
+          <Link
+            href="/plants/search"
+            className="inline-flex shrink-0 items-center gap-2 self-start rounded-[10px] bg-ds-cta px-5 py-2.5 font-hanken text-[13px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] lg:self-auto lg:px-6 lg:py-3 lg:text-[14px]"
+          >
+            {t('home-sale-cta')}
+            <ArrowRight size={14} aria-hidden />
+          </Link>
 
         </div>
       </div>
