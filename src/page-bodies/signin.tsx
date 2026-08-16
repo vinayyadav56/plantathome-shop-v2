@@ -12,8 +12,18 @@ import { LoginForm } from '@/components/auth/login-form';
 import { RegisterForm } from '@/components/auth/register-form';
 
 // Only pulled in when the operator actually chooses them, same as the modal registry does.
-const OtpLoginView = dynamic(() => import('@/components/auth/otp-login'));
-const ForgotUserPassword = dynamic(() => import('@/components/auth/forgot-password'));
+// `loading` matters as much as the split here: without a fallback these render NOTHING while the
+// chunk downloads, so choosing "Continue with WhatsApp" collapsed the column to zero height and
+// then sprang it back open when the code landed. The placeholder holds the space instead.
+const ChunkPlaceholder = () => (
+  <div aria-hidden className="h-[268px] w-full animate-pulse rounded-xl bg-sage-100/60" />
+);
+const OtpLoginView = dynamic(() => import('@/components/auth/otp-login'), {
+  loading: ChunkPlaceholder,
+});
+const ForgotUserPassword = dynamic(() => import('@/components/auth/forgot-password'), {
+  loading: ChunkPlaceholder,
+});
 import { authorizationAtom } from '@/store/authorization-atom';
 import { Routes } from '@/config/routes';
 import Seo from '@/components/seo/seo';
@@ -112,7 +122,11 @@ function SignInPage() {
                     ? 'Continue with WhatsApp'
                     : 'Reset your password'}
             </h1>
-            <p className="mb-7 mt-1 text-[14px] text-stone-500">
+            {/* min-h reserves the taller of the two states. The register copy wraps to two
+                lines and the login copy does not, so without this the tab strip and the entire
+                form below shifted down every time you switched tabs — over the very heading you
+                were reading. */}
+            <p className="mb-7 mt-1 min-h-[2.5rem] text-[14px] text-stone-500 sm:min-h-[1.25rem]">
               {mode === 'login' && t('login-helper')}
               {mode === 'whatsapp' && 'We will send a 6-digit code to your WhatsApp number.'}
               {mode === 'forgot' && t('forgot-password-helper')}
@@ -160,13 +174,18 @@ function SignInPage() {
                 act on regardless of `invisible`. The column height that stacking
                 used to reserve is animated instead.
 
-                Only the login/register pair is height-pinned. WhatsApp and reset
-                arrive as their own chunk and render empty for a beat, so pinning
-                them would animate the column down to nothing and back. */}
+                Only the login/register pair is height-pinned; WhatsApp and reset
+                measure themselves.
+
+                The swap to WhatsApp/reset used to be given duration 0, because those
+                chunks rendered empty for a beat and animating to that meant collapsing
+                the column to nothing and springing back. They have a loading placeholder
+                now, so there is a real height to travel to and the animation can stay on
+                — which is the whole point: it should read the same however you got here. */}
             <motion.div
               initial={false}
               animate={{ height: isTabbed ? boxHeight ?? 'auto' : 'auto' }}
-              transition={{ duration: reduceMotion || !isTabbed ? 0 : 0.28, ease: SWAP_EASE }}
+              transition={{ duration: reduceMotion ? 0 : 0.28, ease: SWAP_EASE }}
             >
               <div ref={boxRef}>
                 <AnimatePresence mode="wait" initial={false}>

@@ -46,7 +46,9 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
       </div>
 
       <RadioGroup value={deliverTo} onChange={setDeliverTo}>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {/* Two per row on mobile too. These are a binary choice, so stacking them pushed the
+            rest of the step below the fold for no benefit; the text shrinks instead. */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {[
             { value: 'me', title: 'Deliver to Me', sub: 'Use one of my addresses' },
             {
@@ -58,14 +60,18 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
             <RadioGroup.Option key={opt.value} value={opt.value}>
               {({ checked }) => (
                 <div
-                  className={`cursor-pointer rounded-xl border p-4 transition-colors ${
+                  className={`h-full cursor-pointer rounded-xl border p-3 transition-colors sm:p-4 ${
                     checked
                       ? 'border-forest-800 bg-forest-800/5 ring-1 ring-forest-800'
                       : 'border-border-200 hover:border-forest-800/40'
                   }`}
                 >
-                  <p className="text-sm font-semibold text-heading">{opt.title}</p>
-                  <p className="mt-0.5 text-xs text-stone-500">{opt.sub}</p>
+                  <p className="text-[13px] font-semibold leading-snug text-heading sm:text-sm">
+                    {opt.title}
+                  </p>
+                  <p className="mt-0.5 text-[11px] leading-snug text-stone-500 sm:text-xs">
+                    {opt.sub}
+                  </p>
                 </div>
               )}
             </RadioGroup.Option>

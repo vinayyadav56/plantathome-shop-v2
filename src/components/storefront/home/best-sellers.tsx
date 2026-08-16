@@ -8,7 +8,10 @@ import { Icon } from '../icons';
 import { useTypes } from '@/framework/type';
 import { useProducts } from '@/framework/product';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
-import ProductCard from '@/components/products/cards/home-mini';
+// The SAME card the listing page uses. The homepage had its own `home-mini` variant, so a plant
+// wore different typography and lost its Ask AI / New badges depending on which page you found it
+// on. One card means one answer, and it cannot drift again.
+import ProductCard from '@/components/products/cards/plantathome';
 
 
 
@@ -96,7 +99,7 @@ export function BestSellers({
               </div>
             ))}
         {!loading && list.length === 0 && (
-          <p className="col-span-full w-full py-10 text-center text-[13px] text-stone-500">
+          <p className="pah-rail-full col-span-full w-full py-10 text-center text-[13px] text-stone-500">
             {t('home-bestsellers-empty')}
           </p>
         )}

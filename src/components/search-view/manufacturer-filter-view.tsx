@@ -59,7 +59,7 @@ const ManufacturerFilterView = ({ manufacturers }: Props) => {
       )}
       <Scrollbar style={{ maxHeight: '400px' }} className="pb-6">
         <span className="sr-only">{t('text-manufacturers')}</span>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-2">
           <CheckboxGroup values={state} onChange={handleChange}>
             {visible.filter(Boolean).map((plan) => (
               <Checkbox

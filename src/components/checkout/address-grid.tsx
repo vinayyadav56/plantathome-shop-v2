@@ -140,8 +140,10 @@ export const AddressGrid: React.FC<AddressesProps> = ({
             <RadioGroup value={selectedAddress} onChange={pick}>
               <RadioGroup.Label className="sr-only">{label}</RadioGroup.Label>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                {/* h-full on the Option: it is the grid item, so the card can only stretch to
+                    the row height if its wrapper does too. */}
                 {matching.map((address) => (
-                  <RadioGroup.Option value={address} key={address?.id}>
+                  <RadioGroup.Option value={address} key={address?.id} className="h-full">
                     {({ checked }: { checked: boolean }) => (
                       <AddressCard
                         checked={checked}
@@ -177,7 +179,7 @@ export const AddressGrid: React.FC<AddressesProps> = ({
                     type="button"
                     key={address?.id}
                     onClick={() => pick(address)}
-                    className="text-left"
+                    className="h-full text-left"
                   >
                     <AddressCard
                       checked={false}

@@ -104,7 +104,16 @@ export default function useLocation({ onChange, onChangeCurrentLocation, setInpu
     }
 
     if (setInputValue) {
-      setInputValue(place?.formatted_address);
+      // Establishments (a nursery, a mall, a metro station) have a name that the formatted address
+      // does not repeat — "DLF Cyber City" resolves to "Phase 2, Sector 24, Gurugram…", which is
+      // not what the shopper typed or recognises. Lead with the name when it adds something.
+      const label = place?.formatted_address ?? '';
+      const name = place?.name ?? '';
+      setInputValue(
+        name && !label.toLowerCase().startsWith(name.toLowerCase())
+          ? `${name}, ${label}`
+          : label,
+      );
     }
   };
 

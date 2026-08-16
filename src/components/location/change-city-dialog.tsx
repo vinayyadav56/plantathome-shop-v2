@@ -86,7 +86,9 @@ export default function ChangeCityDialog({ open, targetCity, onClose, onSwitched
 
   return (
     <Transition show={open} as={Fragment}>
-      <Dialog onClose={busy ? () => {} : done} className="relative z-[75]">
+      {/* z-95: also launched from a dialog, and it can sit on top of the picker above. It tied
+          with the city-mismatch prompt at z-75 and won only by DOM order, which is not a rule. */}
+      <Dialog onClose={busy ? () => {} : done} className="relative z-[95]">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-200"

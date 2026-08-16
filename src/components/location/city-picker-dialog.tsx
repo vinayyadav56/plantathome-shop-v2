@@ -114,7 +114,10 @@ export default function CityPickerDialog({
     <Transition show={open} as={Fragment}>
       <Dialog
         onClose={blocking ? () => {} : onClose}
-        className="relative z-[70]"
+        // z-90: this dialog is opened FROM other dialogs (the checkout city-mismatch prompt at
+        // z-75, the city switcher), so it has to outrank them. At z-70 it opened *underneath* the
+        // prompt that asked for it — the shopper saw the backdrop darken and nothing else.
+        className="relative z-[90]"
       >
         <Transition.Child
           as={Fragment}

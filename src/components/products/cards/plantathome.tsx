@@ -280,13 +280,17 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <Link
               {...PRODUCT_LINK_PROPS}
               href={Routes.product(product.slug)}
+              // The name is truncated to one line, so a long or awkward one is unreadable with no
+              // way to see the rest. `title` is the one tooltip that works on both a desktop hover
+              // and a mobile long-press without shipping a popover — same approach as cart-item.
+              title={product.name}
               className="block w-full truncate text-left text-[0.9rem] font-medium leading-none text-[#184A31] transition hover:text-forest-700"
             >
               {product.name}
             </Link>
             {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
             {sciName ? (
-              <p className="mt-[5px] truncate text-[clamp(10.5px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
+              <p title={sciName} className="mt-[5px] truncate text-[clamp(10.5px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
             ) : null}
           </div>
           {/* Rating only. The "New" chip that used to be the else-branch here

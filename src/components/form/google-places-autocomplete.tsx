@@ -56,13 +56,20 @@ export default function GooglePlacesAutocomplete({
           'address_components',
           'geometry.location',
           'formatted_address',
+          // Establishments return their name here and nowhere else — without it a shopper who
+          // picks "DLF Cyber City" gets a blank box back.
+          'name',
         ]}
-        types={['address']}
+        // NO `types` filter on purpose. It used to be `['address']`, which restricts predictions to
+        // precise street addresses and drops establishments, landmarks, sublocalities and plain
+        // geocodes — so searching "Saket Metro", "DLF Cyber City" or "Sector 44" returned nothing,
+        // which is how most people here describe where they live. Omitting it returns every type;
+        // the legacy widget only accepts ONE type from its list, so there is no way to ask for
+        // addresses AND establishments together.
         restrictions={{ country: 'in' }}
       >
         <input
           type="text"
-          {...register('location')}
           placeholder={t('common:placeholder-search-location')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}

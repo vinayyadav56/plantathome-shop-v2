@@ -58,21 +58,66 @@ export async function validateCartCity(
 }
 
 /**
- * Client-side mirror of the server's city alias normalizer (AvailabilityService::
- * normalizeCityKey) — ONLY for grouping/labels in the UI; the server remains the
+ * Client-side city comparison — ONLY for grouping/labels in the UI; the server remains the
  * authority at checkout.
+ *
+ * Districts are handled by RULE, not by a list. This used to be a hand-copied mirror of the
+ * server's alias table and it had drifted to six entries: it knew "new delhi" but not "South
+ * Delhi", "North Delhi" or the seven other NCT districts Google actually returns, so a Delhi
+ * shopper failed every comparison the UI made about their own city. A copied table is a second
+ * source of truth for a question the server already answers; the rule cannot drift.
  */
+const SUBDIVISION_PREFIXES = [
+  'north east',
+  'north west',
+  'south east',
+  'south west',
+  'north',
+  'south',
+  'east',
+  'west',
+  'central',
+  'new',
+];
+
+const SUBDIVISION_SUFFIXES = ['city', 'suburban', 'urban', 'rural'];
+
+/** Historical renames — genuinely different names for the same place, not districts. */
 const CITY_ALIASES: Record<string, string> = {
   gurgaon: 'gurugram',
   bangalore: 'bengaluru',
   bombay: 'mumbai',
   calcutta: 'kolkata',
   madras: 'chennai',
-  'new delhi': 'delhi',
 };
 
+/**
+ * ⚠️ Strips the administrative qualifier unconditionally, which the SERVER does not — the server
+ * also checks the remainder is a city we ship to, so it can leave a genuine district like
+ * "East Siang" alone. The browser has no city list to make that check, so this is safe for
+ * comparing two places against each other and never for deciding what to display or store.
+ */
 export function normalizeCityClient(city?: string | null): string {
-  const key = String(city ?? '').trim().toLowerCase();
+  // Collapse INTERNAL whitespace too: the geo master really contains "North East  Delhi".
+  let key = String(city ?? '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+  if (!key) return '';
+
+  for (const prefix of SUBDIVISION_PREFIXES) {
+    if (key.startsWith(`${prefix} `)) {
+      key = key.slice(prefix.length + 1);
+      break;
+    }
+  }
+  for (const suffix of SUBDIVISION_SUFFIXES) {
+    if (key.endsWith(` ${suffix}`)) {
+      key = key.slice(0, -(suffix.length + 1));
+      break;
+    }
+  }
+
   return CITY_ALIASES[key] ?? key;
 }
 

@@ -164,6 +164,14 @@ h1, h2, h3, h4, h5, h6 {
   width: var(--rail-w, 42%);
   scroll-snap-align: start;
 }
+/* An escape hatch for full-width children of a rail. `.pah-rail` is `display:flex !important`, so
+   Tailwind's `col-span-full` is inert inside it and `.pah-rail > *` pins every child to one card's
+   width — which is why a section's empty-state sentence wrapped onto two lines at every breakpoint
+   instead of reading as one line. Any full-width row in a rail needs this. */
+.pah-rail > .pah-rail-full {
+  flex: 1 1 100%;
+  width: 100%;
+}
 /* small uppercase eyebrow labels (editorial luxury) */
 .pa-eyebrow, [class*="eyebrow"], .uppercase.tracking-\[0\.22em\] {
   font-family: var(--font-eyebrow);
@@ -2429,7 +2437,16 @@ textarea:focus {
   background: #F4F7F1;
   padding: 16px;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-  min-height: 80px;
+  /* Fill the grid cell rather than hugging the text. A bare min-height left every card a
+     different size, so a one-line address and a four-line one sat side by side at different
+     heights with the row's edges never lining up. */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 104px;
+  /* The action buttons are absolutely positioned bottom-right; without a reserved gutter they
+     print on top of the last line of a long address. */
+  padding-bottom: 44px;
 }
 .pa-address-card:hover {
   border-color: rgba(44,95,46,0.4);
@@ -2574,6 +2591,19 @@ textarea:focus {
   border-color: rgba(46,107,74,0.2) !important;
   background: #F4F7F1 !important;
 }
+/* The bootstrap stylesheet react-phone-input-2 ships gives the flag dropdown its own right-hand
+   border, which lands 1px inside the field's rounded edge and reads as a broken/doubled box.
+   The dropdown sits INSIDE the control, so it needs no outline of its own. */
+.react-tel-input .flag-dropdown,
+.react-tel-input .flag-dropdown.open,
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus {
+  border-right: 0 !important;
+  background: transparent !important;
+}
+.react-tel-input .selected-flag { border-radius: 10px 0 0 10px !important; }
+/* Match the field's real corner radius so the focus ring traces one continuous shape. */
+.react-tel-input .form-control { border-width: 1px !important; }
 
 /* ── Empty cart in order summary ─────────────────────────────── */
 .pa-order-summary svg[width="100"] {
