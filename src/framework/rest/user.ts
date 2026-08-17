@@ -457,6 +457,7 @@ export function useResendVerificationEmail() {
 export function useLogout() {
   const queryClient = useQueryClient();
   const { removeToken } = useToken();
+  const router = useRouter();
   const [_, setAuthorized] = useAtom(authorizationAtom);
   const [_r, resetCheckout] = useAtom(clearCheckoutAtom);
 
@@ -475,6 +476,15 @@ export function useLogout() {
     },
     onSettled: () => {
       queryClient.clear();
+      // Signing out CHOOSES where you land, instead of leaving it to whichever page you
+      // happened to be on. Nothing here navigated before: on an account page PrivateRoute
+      // swapped in its inline login form, and anywhere else you simply stayed put — so the
+      // same action ended somewhere different every time, and from most of the site it looked
+      // like being dumped back on the homepage with no sign anything had happened.
+      //
+      // onSettled, not onSuccess: a logout whose API call fails has still cleared the local
+      // session, and leaving someone on an account page in that state is the worst outcome.
+      router.replace(Routes.login);
     },
   });
   function handleLogout() {
