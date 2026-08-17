@@ -1,12 +1,15 @@
 import { Image } from '@/components/ui/image';
-import Link from '@/components/ui/link';
 import { Routes } from '@/config/routes';
+import Breadcrumb from '@/components/ui/breadcrumb';
+import { useUser } from '@/framework/user';
 
 /**
  * Full-bleed hero for the tracking page: breadcrumb, page title and a soft
  * botanical photo bleeding in from the right (hidden on small screens).
  */
 export default function TrackingHero({ trackingNumber }: { trackingNumber?: string }) {
+  const { isAuthorized } = useUser();
+
   return (
     <section className="relative overflow-hidden bg-[#F1EFE6]">
       <div className="absolute inset-y-0 right-0 hidden w-[46%] md:block">
@@ -22,25 +25,19 @@ export default function TrackingHero({ trackingNumber }: { trackingNumber?: stri
       </div>
 
       <div className="relative mx-auto w-full max-w-[1280px] px-4 pb-10 pt-5 sm:px-6 md:pb-14">
-        <nav aria-label="Breadcrumb" className="mb-8 md:mb-10">
-          <ol className="flex flex-wrap items-center gap-1.5 text-[13px] text-[#8C8A81]">
-            <li>
-              <Link href={Routes.home} className="transition-colors hover:text-forest-900">
-                Home
-              </Link>
-            </li>
-            <li aria-hidden="true">&rsaquo;</li>
-            <li>
-              <Link href={Routes.orders} className="transition-colors hover:text-forest-900">
-                My Orders
-              </Link>
-            </li>
-            <li aria-hidden="true">&rsaquo;</li>
-            <li className="font-medium text-forest-900">
-              Order #{trackingNumber ?? ''}
-            </li>
-          </ol>
-        </nav>
+        {/* The parent crumb depends on how you got here: "My Orders" is behind auth, so for a
+            GUEST lookup arriving from /track-order that link was a dead end at the login wall —
+            their way back is the tracking form. */}
+        <Breadcrumb
+          className="mb-8 md:mb-10"
+          items={[
+            { label: 'Home', href: Routes.home },
+            isAuthorized
+              ? { label: 'My Orders', href: Routes.orders }
+              : { label: 'Track Order', href: Routes.trackOrder },
+            { label: `Order #${trackingNumber ?? ''}` },
+          ]}
+        />
 
         <h1 className="text-4xl font-medium tracking-tight text-forest-900 sm:text-5xl">
           Track Your Order

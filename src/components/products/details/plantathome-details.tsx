@@ -10,6 +10,7 @@ import isEqual from 'lodash/isEqual';
 
 import { useQuery } from 'react-query';
 import { Routes } from '@/config/routes';
+import Breadcrumb from '@/components/ui/breadcrumb';
 import type { Product } from '@/types';
 import usePrice from '@/lib/use-price';
 import { HttpClient } from '@/framework/client/http-client';
@@ -304,12 +305,17 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
       'Plant Replacement Guarantee',
     ];
 
-  /* breadcrumb crumbs */
+  /* breadcrumb crumbs — omission over dead links. When the API returns a product without its
+     `type`, this used to render "Home / Shop / All Products / <name>" with both middle crumbs
+     pointing at `/`: a trail that describes nothing and navigates nowhere. A crumb we cannot
+     link truthfully is simply left out. */
   const firstCat = categories?.[0];
   const crumbs: { label: string; href?: string }[] = [
     { label: 'Home', href: Routes.home },
-    { label: type?.name ?? 'Shop', href: type?.slug ? `/${type.slug}` : Routes.home },
-    ...(firstCat ? [{ label: firstCat.name, href: `/${type?.slug}/search?category=${firstCat.slug}` }] : [{ label: 'All Products', href: type?.slug ? `/${type.slug}` : Routes.home }]),
+    ...(type?.slug ? [{ label: type.name, href: `/${type.slug}` }] : []),
+    ...(type?.slug && firstCat
+      ? [{ label: firstCat.name, href: `/${type.slug}/search?category=${firstCat.slug}` }]
+      : []),
     { label: name },
   ];
 
@@ -325,21 +331,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
         {/* breadcrumb */}
         {!isModal && (
           <>
-            <nav className="flex flex-wrap items-center gap-2 text-[12.5px]">
-              {crumbs.map((c, i) => {
-                const last = i === crumbs.length - 1;
-                return (
-                  <span key={i} className="flex items-center gap-2">
-                    {c.href && !last ? (
-                      <Link href={c.href} className="text-forest-800/80 transition hover:text-forest-900">{c.label}</Link>
-                    ) : (
-                      <span className={last ? 'font-medium text-clay-600' : 'text-forest-800/80'}>{c.label}</span>
-                    )}
-                    {!last && <span className="text-forest-800/40"><ChevronRight size={16} aria-hidden /></span>}
-                  </span>
-                );
-              })}
-            </nav>
+            <Breadcrumb items={crumbs} />
             <div className="mt-5 h-px w-full bg-kraft-300/70" />
           </>
         )}

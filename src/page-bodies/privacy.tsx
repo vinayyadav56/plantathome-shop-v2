@@ -6,6 +6,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'next-i18next';
 import { GetStaticProps } from 'next';
 import Seo from '@/components/seo/seo';
+import PageBanner from '@/components/banners/page-banner';
 import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
 
 function makeTitleToDOMId(title: string) {
@@ -19,11 +20,11 @@ export default function PrivacyPage() {
   return (
     <>
       <Seo title="Privacy" url="privacy" />
+      {/* Same full-bleed banner as /terms — the two policy pages are siblings and read as one
+          family, but this one had a bare header while terms carried the kraft banner + trail. */}
+      <PageBanner title={t(title)} breadcrumbTitle="Home" />
       <section className="mx-auto w-full max-w-7xl g-light-a px-5 py-8 lg:py-10 lg:px-8 xl:py-14 xl:px-16 2xl:px-20">
-        <header className="mb-10 sm:mt-2 lg:mb-14 xl:mt-4">
-          <h1 className="mb-4 font-cormorant text-2xl font-medium text-forest-900 sm:mb-5 sm:text-4xl md:text-3xl 2xl:mb-7 2xl:text-5xl">
-            {t(title)}
-          </h1>
+        <header className="mb-10">
           <p className="px-0.5 text-sm text-body-dark md:text-base 2xl:text-lg">
             {date}
           </p>

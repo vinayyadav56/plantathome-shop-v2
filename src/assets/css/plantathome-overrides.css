@@ -2243,18 +2243,6 @@ select:focus {
 }
 
 /* Breadcrumb */
-.pa-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #6B8C6B;
-  margin-bottom: 20px;
-}
-.pa-breadcrumb a { color: var(--ds-accent, #2E5E2A); text-decoration: none; }
-.pa-breadcrumb a:hover { text-decoration: underline; }
-.pa-breadcrumb-sep { color: rgba(46,107,74,0.3); }
-
 /* Toast/notification overrides */
 .Toastify__toast--success {
   background: var(--ds-accent, #2E5E2A) !important;

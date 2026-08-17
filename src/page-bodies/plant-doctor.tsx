@@ -1,5 +1,6 @@
 'use client';
 
+import Breadcrumb from '@/components/ui/breadcrumb';
 import { BrandSpinner } from '@/components/ui/plant-loader';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -873,6 +874,10 @@ export default function PlantDoctorPage() {
         title="Plant Doctor — instant AI plant health diagnosis"
         description="Snap a photo of an unwell plant and get an instant AI diagnosis — disease, pests, watering or nutrient issues — with clear fixes and remedies available in India."
         url="plant-doctor"
+      />
+      <Breadcrumb
+        className="mx-auto w-full max-w-7xl px-5 pt-4 sm:px-8"
+        items={[{ label: 'Home', href: Routes.home }, { label: 'Plant Doctor' }]}
       />
 
       {/* ── HERO ── */}

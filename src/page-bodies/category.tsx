@@ -19,6 +19,8 @@ import { useHomeConfig } from '@/lib/use-home-config';
 import { productPlaceholder } from '@/lib/placeholders';
 import { drawerAtom } from '@/store/drawer-atom';
 import type { Product } from '@/types';
+import Breadcrumb from '@/components/ui/breadcrumb';
+import { Routes } from '@/config/routes';
 import { ArrowLeft } from '@/components/ui/icon';
 
 
@@ -110,7 +112,21 @@ export default function CategoryPage() {
 
         <div className="relative mx-auto flex min-h-[220px] max-w-7xl flex-col justify-end px-5 py-8 sm:min-h-[280px] sm:px-8 lg:min-h-[340px] lg:px-16 lg:py-11">
 
-          {/* breadcrumb */}
+          {/* The visible trail matches the BreadcrumbList JSON-LD the route already emits —
+              structured data told Google "Home / Categories / X" while the page showed only a
+              back pill, so what crawlers indexed and what people saw disagreed. On the dark
+              hero the component's colors invert via the wrapper below. */}
+          <div className="mb-3 [&_a:hover]:!text-white [&_a]:!text-white/70 [&_li>span]:!text-white [&_svg]:!text-white/40">
+            <Breadcrumb
+              items={[
+                { label: 'Home', href: Routes.home },
+                { label: 'Categories', href: Routes.categories },
+                { label: category?.name ?? '' },
+              ]}
+            />
+          </div>
+
+          {/* back pill */}
           {typeSlug && (
             <Link
               href={`/${typeSlug}/search`}

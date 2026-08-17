@@ -1,17 +1,30 @@
-import Link from 'next/link';
-import { HomeIconNew } from '@/components/icons/home-icon-new';
 import { Routes } from '@/config/routes';
-import { ArrowNext } from '@/components/icons';
+import Breadcrumb, { type Crumb } from '@/components/ui/breadcrumb';
 
 type PageBannerProps = {
   title: string;
   breadcrumbTitle: string;
+  /**
+   * Optional intermediate crumbs between Home and the page itself, for pages with real depth —
+   * the old hand-rolled pair could only ever say "Home / X", so /customer-refund-policies had no
+   * way to show the Help section it lives under.
+   */
+  items?: Crumb[];
 };
 
 /* Brand page banner — warm kraft band + serif heading, matching the homepage
    design language (was the legacy slate Pickbazar banner). Used by help, terms,
-   offers, refund policies, flash sales and the shop info pages. */
-const PageBanner = ({ title, breadcrumbTitle }: PageBannerProps) => {
+   offers, refund policies, flash sales and the shop info pages.
+
+   The trail inside renders through the ONE Breadcrumb component, not its own
+   markup — this banner was one of four unrelated breadcrumb implementations. */
+const PageBanner = ({ title, breadcrumbTitle, items }: PageBannerProps) => {
+  const crumbs: Crumb[] = [
+    { label: breadcrumbTitle || 'Home', href: Routes.home },
+    ...(items ?? []),
+    ...(title ? [{ label: title }] : []),
+  ];
+
   return (
     <div className="flex w-full justify-center border-b border-kraft-200/70 bg-[#F0EDE4] py-16 md:min-h-[230px] lg:min-h-[260px]">
       <div className="relative flex w-full flex-col items-center justify-center px-5">
@@ -22,32 +35,7 @@ const PageBanner = ({ title, breadcrumbTitle }: PageBannerProps) => {
         ) : (
           ''
         )}
-        <div className="flex items-center font-hanken">
-          <ul className="flex w-full items-center overflow-hidden">
-            {breadcrumbTitle ? (
-              <li className="px-2.5 text-sm text-forest-800 transition duration-200 ease-in hover:text-forest-600 ltr:first:pl-0 ltr:last:pr-0 rtl:first:pr-0 rtl:last:pl-0">
-                <Link href={Routes.home} className="inline-flex items-center">
-                  <HomeIconNew className="ltr:mr-1.5 rtl:ml-1.5" />
-                  {breadcrumbTitle}
-                </Link>
-              </li>
-            ) : (
-              ''
-            )}
-            {title ? (
-              <>
-                <li className="mt-[1px] text-base text-stone-400">
-                  <ArrowNext className="h-4 w-4" />
-                </li>
-                <li className="px-2.5 text-sm text-stone-500 transition duration-200 ease-in ltr:first:pl-0 ltr:last:pr-0 rtl:first:pr-0 rtl:last:pl-0">
-                  {title}
-                </li>
-              </>
-            ) : (
-              ''
-            )}
-          </ul>
-        </div>
+        <Breadcrumb items={crumbs} className="font-hanken" />
       </div>
     </div>
   );

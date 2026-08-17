@@ -3,7 +3,7 @@ import NotFound from '@/components/ui/not-found';
 import CategoriesLoader from '@/components/ui/loaders/categories-loader';
 import CategoryCard from '@/components/ui/category-card';
 import { useRouter } from '@/compat/next-router';
-import CategoryBreadcrumb from '@/components/ui/category-breadcrumb-card';
+import CategoryFilterPills from '@/components/ui/category-filter-pills';
 import Scrollbar from '@/components/ui/scrollbar';
 import isEmpty from 'lodash/isEmpty';
 import { useTranslation } from 'next-i18next';
@@ -100,7 +100,7 @@ const FilterCategoryGrid: React.FC<FilterCategoryGridProps> = ({
                   query?.category,
               })}
             >
-              <CategoryBreadcrumb
+              <CategoryFilterPills
                 categories={[...parentCategories, selectedCategory]}
               />
               

@@ -15,6 +15,9 @@ import { motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from '@/compat/next-router';
+import Breadcrumb from '@/components/ui/breadcrumb';
+import { useType } from '@/framework/type';
+import { Routes } from '@/config/routes';
 import StickyBox from 'react-sticky-box';
 
 import dynamic from 'next/dynamic';
@@ -37,6 +40,9 @@ export default function SearchPage() {
   const router = useRouter();
   const { query } = router;
   const { searchType, ...restQuery }: any = query;
+  // The vertical for the breadcrumb. The listing is THE shopping surface and had no trail at
+  // all — no way to see which vertical you were browsing or step back up to it.
+  const { type: verticalType } = useType(typeof searchType === 'string' ? searchType : '');
   const {
     products,
     isLoading,
@@ -61,6 +67,16 @@ export default function SearchPage() {
   return (
     <div className="w-full">
       <FeaturedPlants />
+      <Breadcrumb
+        className="mb-4"
+        items={[
+          { label: 'Home', href: Routes.home },
+          ...(verticalType?.name && typeof searchType === 'string'
+            ? [{ label: verticalType.name, href: `/${searchType}` }]
+            : []),
+          { label: 'All Products' },
+        ]}
+      />
       <div className="flex flex-col items-center justify-between mb-7 md:flex-row">
         {/* //FIXME: */}
         <SearchCount

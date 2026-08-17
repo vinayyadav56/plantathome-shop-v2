@@ -1,5 +1,7 @@
 'use client';
 
+import Breadcrumb from '@/components/ui/breadcrumb';
+import { Routes } from '@/config/routes';
 import { useForm } from 'react-hook-form';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -309,6 +311,10 @@ export default function GardenServicePage() {
         title="Garden Service — bespoke home gardens, planted & maintained"
         description="Get a free, no-obligation garden plan tailored to your balcony, terrace or backyard. Hand-picked plants, premium soil, tools and scheduled gardener visits — all tracked in your account."
         url="garden-service"
+      />
+      <Breadcrumb
+        className="mx-auto w-full max-w-7xl px-5 pt-4 sm:px-8"
+        items={[{ label: 'Home', href: Routes.home }, { label: 'Garden Service' }]}
       />
 
       {/* ── HERO — full-bleed photo, forest scrim, lead form above the fold ── */}

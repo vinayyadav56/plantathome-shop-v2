@@ -2,13 +2,13 @@ import cn from 'classnames';
 import { Image } from '@/components/ui/image';
 import { productPlaceholder } from '@/lib/placeholders';
 
-interface BreadcrumbButtonProps {
+interface FilterPillButtonProps {
   text: string;
   image?: any;
   onClick: () => void;
 }
 
-const BreadcrumbButton: React.FC<BreadcrumbButtonProps> = ({
+const FilterPillButton: React.FC<FilterPillButtonProps> = ({
   text,
   image,
   onClick,
@@ -37,4 +37,4 @@ const BreadcrumbButton: React.FC<BreadcrumbButtonProps> = ({
   </button>
 );
 
-export default BreadcrumbButton;
+export default FilterPillButton;

@@ -1,5 +1,6 @@
 'use client';
 
+import Breadcrumb from '@/components/ui/breadcrumb';
 import { useTranslation } from 'next-i18next';
 import SuperAdminContactForm from '@/components/settings/super-admin-contact-form';
 import { getLayout } from '@/components/layouts/layout';
@@ -21,6 +22,10 @@ export const ContactPage = () => {
   return (
     <>
       <Seo title={'Contact'} url={'contact'} />
+      <Breadcrumb
+        className="mx-auto w-full max-w-7xl px-5 pt-4 sm:px-8"
+        items={[{ label: 'Home', href: Routes.home }, { label: 'Contact' }]}
+      />
       <div className="w-full g-light-a">
         <div className="mx-auto flex w-full max-w-7xl flex-col px-5 py-10 pb-20 md:flex-row md:pb-10 xl:py-14 xl:px-8 xl:pb-14 2xl:px-14">
           {/* sidebar */}

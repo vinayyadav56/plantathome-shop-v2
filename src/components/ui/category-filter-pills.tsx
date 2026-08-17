@@ -1,17 +1,20 @@
+// Renamed from `category-breadcrumb-card`: this is a row of category FILTER pills, not a
+// breadcrumb — the old name kept surfacing in every search for breadcrumb code. The one page
+// breadcrumb lives in components/ui/breadcrumb.tsx.
 import { useRouter } from '@/compat/next-router';
 import { Image } from '@/components/ui/image';
 import CategoryImg from '@/assets/category-img.png';
 import ArrowForward from '@/assets/arrow-forward.png';
-import BreadcrumbButton from '@/components/ui/breadcrumb-button';
+import FilterPillButton from '@/components/ui/filter-pill-button';
 import { useTranslation } from 'next-i18next';
 
-interface BreadcrumbButtonProps {
+interface FilterPillButtonProps {
   text: string;
   image?: any;
   onClick: () => void;
 }
 
-const BreadcrumbWithIndicator: React.FC<BreadcrumbButtonProps> = ({
+const BreadcrumbWithIndicator: React.FC<FilterPillButtonProps> = ({
   text,
   image,
   onClick,
@@ -26,15 +29,15 @@ const BreadcrumbWithIndicator: React.FC<BreadcrumbButtonProps> = ({
         height={32}
       />
     </span>
-    <BreadcrumbButton text={text} image={image} onClick={onClick} />
+    <FilterPillButton text={text} image={image} onClick={onClick} />
   </>
 );
 
-interface CategoryBreadcrumbProps {
+interface CategoryFilterPillsProps {
   categories: any;
 }
 
-const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
+const CategoryFilterPills: React.FC<CategoryFilterPillsProps> = ({
   categories,
 }) => {
   const { t } = useTranslation('common');
@@ -71,7 +74,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
 
   return (
     <div className="flex items-center space-x-5 rtl:space-x-reverse">
-      <BreadcrumbButton
+      <FilterPillButton
         text={t('text-all-categories')}
         onClick={resetCategoryClick}
       />
@@ -88,4 +91,4 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
   );
 };
 
-export default CategoryBreadcrumb;
+export default CategoryFilterPills;

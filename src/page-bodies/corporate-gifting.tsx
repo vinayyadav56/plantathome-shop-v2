@@ -1,5 +1,7 @@
 'use client';
 
+import Breadcrumb from '@/components/ui/breadcrumb';
+import { Routes } from '@/config/routes';
 import { useForm } from 'react-hook-form';
 import { goToSignin } from '@/lib/go-to-signin';
 import { useState } from 'react';
@@ -156,6 +158,10 @@ export default function CorporateGiftingPage() {
         title="Corporate Plant Gifting — festive hampers & employee kits"
         description="Memorable, sustainable plant gifts for employees, clients and festive occasions. Ready-to-buy hampers and kits, or enquire for bespoke bulk gifting tailored to your brand."
         url="corporate-gifting"
+      />
+      <Breadcrumb
+        className="mx-auto w-full max-w-7xl px-5 pt-4 sm:px-8"
+        items={[{ label: 'Home', href: Routes.home }, { label: 'Corporate Gifting' }]}
       />
       {/* HERO */}
       <section className="relative isolate overflow-hidden">

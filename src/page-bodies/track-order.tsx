@@ -1,5 +1,6 @@
 'use client';
 
+import Breadcrumb from '@/components/ui/breadcrumb';
 import { useState } from 'react';
 import { useRouter } from '@/compat/next-router';
 import { getLayout } from '@/components/layouts/layout';
@@ -18,7 +19,12 @@ export default function TrackOrderPage() {
   }
 
   return (
-    <div className="flex min-h-[70vh] w-full items-center justify-center bg-[linear-gradient(180deg,#FFFFFF_0%,#F6FAF7_50%,#EFF4EC_100%)] px-4 py-16">
+    <div className="flex min-h-[70vh] w-full flex-col bg-[linear-gradient(180deg,#FFFFFF_0%,#F6FAF7_50%,#EFF4EC_100%)] px-4 py-6">
+      <Breadcrumb
+        className="mx-auto w-full max-w-7xl px-1 sm:px-4"
+        items={[{ label: 'Home', href: Routes.home }, { label: 'Track Order' }]}
+      />
+      <div className="flex w-full flex-1 items-center justify-center py-10">
       <div className="w-full max-w-md rounded-2xl border border-kraft-200/80 bg-white p-8 shadow-[0_8px_30px_-12px_rgba(34,48,26,0.18)]">
         <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage-100">
           <ShoppingBag size={20} style={{ color: '#2E5E3A' }} aria-hidden />
@@ -50,6 +56,7 @@ export default function TrackOrderPage() {
         <p className="mt-4 text-center text-xs text-stone-400">
           You can find your tracking number in your order confirmation email or SMS.
         </p>
+      </div>
       </div>
     </div>
   );
