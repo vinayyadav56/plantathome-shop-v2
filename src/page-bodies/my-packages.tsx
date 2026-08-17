@@ -2,8 +2,7 @@
 
 import PrivateRoute from '@/lib/private-route';
 import React from 'react';
-import { getLayout as getSiteLayout } from '@/components/layouts/layout';
-import DashboardSidebar from '@/components/dashboard/sidebar';
+import DashboardLayout from '@/layouts/_dashboard';
 import { useMyGardenPackages, usePayGardenPackage, GardenPackage } from '@/framework/garden';
 
 
@@ -129,15 +128,11 @@ export default function MyPackagesPage() {
   );
 }
 
-const getLayout = (page: React.ReactElement) =>
-  getSiteLayout(
-    // See orders.tsx — the old `hidden … xl:block` removed all account nav
-    // below 1280px, including the sidebar's own mobile tab strip.
-    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-1920 bg-light lg:bg-[#F8F7F2] lg:flex-row xl:py-14 xl:px-8 2xl:px-14">
-      <DashboardSidebar className="w-full shrink-0 ltr:lg:mr-8 rtl:lg:ml-8 lg:w-80" />
-      {page}
-    </div>
-  );
+// The account sidebar lives in ONE layout, shared with profile/wishlists/questions/reports and the
+// rest. This page used to build its own wrapper at a different max-width, and because the wrapper is
+// mx-auto, a different width means a different centred left edge — the sidebar visibly jumped
+// sideways on every navigation (136px between profile and here). Same nav, same place.
+const getLayout = (page: React.ReactElement) => <DashboardLayout>{page}</DashboardLayout>;
 
 MyPackagesPage.getLayout = getLayout;
 MyPackagesPage.authenticationRequired = true;

@@ -10,8 +10,7 @@ import isEmpty from 'lodash/isEmpty';
 import OrderDetails from '@/components/orders/order-details';
 import OrderListMobile from '@/components/orders/order-list-mobile';
 import NotFound from '@/components/ui/not-found';
-import { getLayout as getSiteLayout } from '@/components/layouts/layout';
-import DashboardSidebar from '@/components/dashboard/sidebar';
+import DashboardLayout from '@/layouts/_dashboard';
 
 
 function NoOrderFound() {
@@ -80,18 +79,11 @@ export default function OrdersPage() {
   );
 }
 
-const getLayout = (page: React.ReactElement) =>
-  getSiteLayout(
-    // `hidden … xl:block` used to remove the ENTIRE sidebar below 1280px, which
-    // killed its own built-in <lg pill-tab strip too — sub-xl users had zero
-    // account navigation on this page. Render it at every width and split at lg
-    // (the sidebar's internal breakpoint): <lg gets the horizontal tab strip,
-    // lg+ gets the card sidebar. Same fix as my-packages.tsx.
-    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-7xl bg-light lg:bg-[#F8F7F2] lg:flex-row xl:py-14 xl:px-8 2xl:px-14">
-      <DashboardSidebar className="w-full shrink-0 ltr:lg:mr-8 rtl:lg:ml-8 lg:w-80" />
-      {page}
-    </div>
-  );
+// The account sidebar lives in ONE layout, shared with profile/wishlists/questions/reports and the
+// rest. This page used to build its own wrapper at a different max-width, and because the wrapper is
+// mx-auto, a different width means a different centred left edge — the sidebar visibly jumped
+// sideways on every navigation (136px between profile and here). Same nav, same place.
+const getLayout = (page: React.ReactElement) => <DashboardLayout>{page}</DashboardLayout>;
 
 // OrdersPage.authenticationRequired = true;
 
