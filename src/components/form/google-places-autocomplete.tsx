@@ -77,6 +77,18 @@ export default function GooglePlacesAutocomplete({
             );
           }}
         />
+        {/* "Use my current location" belongs on BOTH paths — it is the fastest route to a correct
+            pin and has nothing to do with which autocomplete API is in play. */}
+        <div className="absolute top-0 right-0 flex h-12 w-12 items-center justify-center text-accent">
+          <CurrentLocation
+            className="h-5 w-5 cursor-pointer hover:text-accent"
+            onClick={() => {
+              setSearchError(null);
+              getCurrentLocation();
+              setInputValue(location?.formattedAddress!);
+            }}
+          />
+        </div>
         {searchError && (
           <p className="mt-1 text-xs text-red-500" role="alert">
             {searchError}
