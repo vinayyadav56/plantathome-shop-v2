@@ -161,19 +161,19 @@ const OrderDetails = ({ order, loadingStatus }: Props) => {
 
         <div className="flex flex-col gap-2.5 md:border-l md:border-kraft-200 md:pl-8">
           <div className="flex justify-between">
-            <span className="text-sm text-stone-500">{t('text-sub-total')}</span>
+            <span className="whitespace-nowrap text-sm text-stone-500">{t('text-sub-total')}</span>
             <span className="text-sm text-forest-900">{amount}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-stone-500">{t('text-discount')}</span>
+            <span className="whitespace-nowrap text-sm text-stone-500">{t('text-discount')}</span>
             <span className="text-sm text-forest-900">{discount}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-stone-500">{t('text-delivery-fee')}</span>
+            <span className="whitespace-nowrap text-sm text-stone-500">{t('text-delivery-fee')}</span>
             <span className="text-sm text-forest-900">{delivery_fee}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-stone-500">{t('text-tax')}</span>
+            <span className="whitespace-nowrap text-sm text-stone-500">{t('text-tax')}</span>
             <span className="text-sm text-forest-900">{sales_tax}</span>
           </div>
           <div className="mt-1 flex justify-between border-t border-kraft-200 pt-2.5">
