@@ -169,6 +169,17 @@ export const AddressForm: React.FC<any> = ({
                           // @ts-ignore
                           onChangeCurrentLocation={fill}
                           data={getValues('location')!}
+                          // Rank predictions near the pin when the form already has one (editing a
+                          // saved address, or after the shopper dragged the pin). Nationally-ranked
+                          // predictions are why "Sector 14" offered four different cities.
+                          biasTo={
+                            (watch('location') as any)?.lat && (watch('location') as any)?.lng
+                              ? {
+                                  lat: Number((watch('location') as any).lat),
+                                  lng: Number((watch('location') as any).lng),
+                                }
+                              : null
+                          }
                         />
                       );
                     }}

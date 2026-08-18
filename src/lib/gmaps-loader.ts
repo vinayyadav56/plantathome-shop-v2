@@ -16,4 +16,9 @@ export const GMAPS_LOADER_OPTIONS = {
   id: 'pah-gmaps',
   googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ?? '',
   libraries,
+  // Every customer of this shop is in India. Without `region` Google ranks predictions for the
+  // caller's inferred locale, so a shopper typing "Sector 14" competed with same-named places
+  // worldwide instead of the one down the road. `language` pins the returned formatted addresses.
+  region: 'IN',
+  language: 'en',
 };

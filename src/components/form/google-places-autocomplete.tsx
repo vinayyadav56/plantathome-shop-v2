@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PlacesSearch from '@/components/form/places-search';
 import { Autocomplete as GoogleAutocomplete } from '@react-google-maps/api';
 // React 19 children-prop typing workaround for the class component
 const Autocomplete = GoogleAutocomplete as any;
@@ -16,15 +17,25 @@ export default function GooglePlacesAutocomplete({
   onChangeCurrentLocation,
   data,
   disabled = false,
+  biasTo,
 }: {
   register: any;
-  onChange?: () => void;
+  // Typed zero-arg but always CALLED with the resolved location — useLocation passes it through
+  // on the legacy path too. Widened so both paths type-check honestly.
+  onChange?: (location?: GoogleMapLocation) => void;
   onChangeCurrentLocation?: () => void;
   data?: GoogleMapLocation;
   disabled?: boolean;
+  /** Rank predictions near a pin the form already has. */
+  biasTo?: { lat: number; lng: number } | null;
 }) {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
+  // The legacy widget is only reached when the new Places API is genuinely absent — see
+  // PlacesSearch. Google stopped activating the legacy API for new Cloud projects, and on such a
+  // project it fails SILENTLY: the input works, no prediction ever appears.
+  const [legacyFallback, setLegacyFallback] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [
     onLoad,
     onUnmount,
@@ -42,6 +53,37 @@ export default function GooglePlacesAutocomplete({
 
   if (loadError) {
     return <div>{t('common:text-map-cant-load')}</div>;
+  }
+  if (isLoaded && !legacyFallback) {
+    return (
+      <div className="relative">
+        <PlacesSearch
+          className="[&>*]:h-12 [&>*]:w-full"
+          placeholder={t('common:placeholder-search-location') ?? ''}
+          defaultValue={inputValue}
+          disabled={disabled}
+          biasTo={biasTo}
+          onUnavailable={() => setLegacyFallback(true)}
+          onError={setSearchError}
+          onPick={(location, raw) => {
+            setSearchError(null);
+            onChange?.(location as any);
+            const label = raw?.formatted_address ?? '';
+            const name = raw?.name ?? '';
+            setInputValue(
+              name && !label.toLowerCase().startsWith(name.toLowerCase())
+                ? `${name}, ${label}`
+                : label,
+            );
+          }}
+        />
+        {searchError && (
+          <p className="mt-1 text-xs text-red-500" role="alert">
+            {searchError}
+          </p>
+        )}
+      </div>
+    );
   }
   return isLoaded ? (
     <div className="relative">

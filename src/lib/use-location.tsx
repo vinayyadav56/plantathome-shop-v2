@@ -20,7 +20,7 @@ export const fullAddressAtom = atom((get) => {
 });
 
 
-function getLocation(placeOrResult: any) {
+export function getLocation(placeOrResult: any) {
   // Declare the location variable with the Location interface
   const location: GoogleMapLocation = {
     lat: placeOrResult?.geometry?.location.lat(),
@@ -67,6 +67,31 @@ function getLocation(placeOrResult: any) {
 
   // Return the location object
   return location;
+}
+
+/**
+ * Adapt a Place from the NEW Places API (PlaceAutocompleteElement) to the legacy shape
+ * `getLocation` parses.
+ *
+ * The two APIs disagree on every name: `addressComponents[].longText` vs `long_name`,
+ * `place.location` (a LatLng) vs `place.geometry.location`, `formattedAddress` vs
+ * `formatted_address`. Adapting here means the parser — including the hard-won
+ * `extractCorrectCity` priority rules — is shared by both paths instead of forked.
+ */
+export function legacyShapeFromNewPlace(place: any) {
+  const loc = place?.location;
+  const lat = typeof loc?.lat === 'function' ? loc.lat() : Number(loc?.lat);
+  const lng = typeof loc?.lng === 'function' ? loc.lng() : Number(loc?.lng);
+  return {
+    formatted_address: place?.formattedAddress ?? '',
+    name: place?.displayName ?? '',
+    geometry: { location: { lat: () => lat, lng: () => lng } },
+    address_components: (place?.addressComponents ?? []).map((c: any) => ({
+      long_name: c.longText ?? c.long_name ?? '',
+      short_name: c.shortText ?? c.short_name ?? '',
+      types: c.types ?? [],
+    })),
+  };
 }
 
 interface UseLocationProps { 

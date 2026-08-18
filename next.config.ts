@@ -41,11 +41,15 @@ const AGENTATION_CONNECT = IS_PRODUCTION_SITE
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://maps.googleapis.com",
+  // `blob:` + worker-src: current Maps JS builds instantiate the Places autocomplete from a blob
+  // worker. Without them the browser blocks it and the search silently returns nothing — the same
+  // symptom as a bad key, from a completely different cause. The admin already allowed both.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.googletagmanager.com https://static.cloudflareinsights.com https://checkout.razorpay.com https://maps.googleapis.com",
+  "worker-src 'self' blob:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
   "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
   "img-src 'self' data: blob: https:",
-  "connect-src 'self' https://api.plantathome.in https://staging-api.plantathome.in https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com" +
+  "connect-src 'self' https://api.plantathome.in https://staging-api.plantathome.in https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://*.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com https://maps.gstatic.com" +
     AGENTATION_CONNECT,
   "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com",
   "frame-ancestors 'none'",
