@@ -43,7 +43,7 @@ const OrderItemList = (_: any, record: any) => {
         <div className="mb-1 flex space-x-1 rtl:space-x-reverse">
           <Link
             href={Routes.product(record?.slug)}
-            className="inline-block overflow-hidden truncate text-sm text-body transition-colors hover:text-accent hover:underline"
+            className="inline-block overflow-hidden truncate text-sm text-forest-900 transition-colors hover:text-forest-700 hover:underline"
             locale={record?.language}
           >
             {name}
@@ -55,7 +55,7 @@ const OrderItemList = (_: any, record: any) => {
             {record.unit}
           </span>
         </div>
-        <span className="mb-1 inline-block overflow-hidden truncate text-sm font-semibold text-accent">
+        <span className="mb-1 inline-block overflow-hidden truncate text-sm font-semibold text-forest-700">
           {price}
         </span>
       </div>
@@ -96,7 +96,7 @@ export const OrderItems = ({
       align: 'center',
       width: 100,
       render: function renderQuantity(pivot: any) {
-        return <p className="text-base">{pivot?.order_quantity ?? 1}</p>;
+        return <p className="text-sm text-forest-900">{pivot?.order_quantity ?? 1}</p>;
       },
     },
     {

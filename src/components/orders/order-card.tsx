@@ -2,7 +2,7 @@ import usePrice from '@/lib/use-price';
 import dayjs from 'dayjs';
 import cn from 'classnames';
 import { useTranslation } from 'next-i18next';
-import StatusColor from './status-color';
+import { PILL_BASE, statusPill } from './status-pill';
 
 type OrderCardProps = {
   order: any;
@@ -10,12 +10,14 @@ type OrderCardProps = {
   onClick?: (e: any) => void;
 };
 
+/**
+ * House card, not the legacy grey slab: white surface, kraft border, 16px radius,
+ * status as the shared account-area pill. Weight and colour carry hierarchy —
+ * the order number is the strongest thing on the card, labels stay quiet.
+ */
 const OrderCard: React.FC<OrderCardProps> = ({ onClick, order, isActive }) => {
   const { t } = useTranslation('common');
-  const { id, order_status, created_at, delivery_time } = order;
-  const { price: amount } = usePrice({
-    amount: order?.amount,
-  });
+  const { id, order_status, created_at } = order;
   const { price: total } = usePrice({
     amount: order?.total,
   });
@@ -25,56 +27,32 @@ const OrderCard: React.FC<OrderCardProps> = ({ onClick, order, isActive }) => {
       onClick={onClick}
       role="button"
       className={cn(
-        'mb-4 flex w-full shrink-0 cursor-pointer flex-col overflow-hidden rounded border-2 border-transparent bg-gray-100 last:mb-0',
-        isActive === true && '!border-accent'
+        'mb-3 flex w-full shrink-0 cursor-pointer flex-col overflow-hidden rounded-2xl border bg-white transition-colors last:mb-0',
+        isActive
+          ? 'border-[var(--ds-accent,#4E8B31)] ring-1 ring-[var(--ds-accent,#4E8B31)]'
+          : 'border-kraft-200 hover:border-forest-900/25',
       )}
     >
-      <div className="flex items-center justify-between border-b border-border-200 py-3 px-5 md:px-3 lg:px-5 ">
-        <span className="flex shrink-0 text-sm font-bold text-heading ltr:mr-4 rtl:ml-4 lg:text-base">
-          {t('text-order')}
-          <span className="font-normal">#{id}</span>
+      <div className="flex items-center justify-between gap-3 border-b border-kraft-200 px-4 py-3">
+        <span className="shrink-0 text-sm font-semibold text-forest-900">
+          {t('text-order')} <span className="font-normal text-stone-500">#{id}</span>
         </span>
         <span
-          // className="max-w-full truncate whitespace-nowrap rounded bg-blue-100 px-3 py-2 text-sm text-blue-500"
-          className={`max-w-full truncate whitespace-nowrap rounded ${StatusColor(
-            order?.order_status
-          )} px-3 py-2 text-sm`}
+          className={cn(PILL_BASE, statusPill(order_status), 'max-w-full truncate')}
           title={t(order_status)}
         >
           {t(order_status)}
         </span>
       </div>
 
-      <div className="flex flex-col p-5 md:p-3 lg:px-4 lg:py-5">
-        <p className="mb-4 flex w-full items-center justify-between text-sm text-heading last:mb-0">
-          <span className="w-24 shrink-0 overflow-hidden">
-            {t('text-order-date')}
-          </span>
-          <span className="ltr:mr-auto rtl:ml-auto">:</span>
-          <span className="ltr:ml-1 rtl:mr-1">
-            {dayjs(created_at).format('MMMM D, YYYY')}
-          </span>
+      <div className="flex flex-col gap-2.5 px-4 py-3.5">
+        <p className="flex items-baseline justify-between gap-3 text-[13px]">
+          <span className="text-stone-500">{t('text-order-date')}</span>
+          <span className="text-forest-900">{dayjs(created_at).format('MMM D, YYYY')}</span>
         </p>
-        <p className="mb-4 flex w-full items-center justify-between text-sm text-heading last:mb-0">
-          <span className="w-24 shrink-0 overflow-hidden">
-            {t('text-deliver-time')}
-          </span>
-          <span className="ltr:mr-auto rtl:ml-auto">:</span>
-          <span className="truncate ltr:ml-1 rtl:mr-1">{delivery_time}</span>
-        </p>
-        <p className="mb-4 flex w-full items-center justify-between text-sm font-bold text-heading last:mb-0">
-          <span className="w-24 shrink-0 overflow-hidden">
-            {t('text-amount')}
-          </span>
-          <span className="ltr:mr-auto rtl:ml-auto">:</span>
-          <span className="ltr:ml-1 rtl:mr-1">{amount}</span>
-        </p>
-        <p className="mb-4 flex w-full items-center justify-between text-sm font-bold text-heading last:mb-0">
-          <span className="w-24 flex-shrink-0 overflow-hidden">
-            {t('text-total-price')}
-          </span>
-          <span className="ltr:mr-auto rtl:ml-auto">:</span>
-          <span className="ltr:ml-1 rtl:mr-1">{total}</span>
+        <p className="flex items-baseline justify-between gap-3 text-[13px]">
+          <span className="text-stone-500">{t('text-total-price')}</span>
+          <span className="text-sm font-semibold text-forest-900">{total}</span>
         </p>
       </div>
     </div>

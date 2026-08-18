@@ -1,16 +1,13 @@
 import { useTranslation } from 'next-i18next';
 import cn from 'classnames';
-import StatusColor from '@/components/orders/status-color';
-import Badge from '@/components/ui/badge';
+import { PILL_BASE, statusPill } from '@/components/orders/status-pill';
 import PayNowButton from '@/components/payment/pay-now-button';
 import { isPaymentPending } from '@/lib/is-payment-pending';
 import { SpinnerLoader } from '@/components/ui/loaders/spinner/spinner';
 import ChangeGateway from '@/components/payment/gateway-control/change-gateway';
 import { useSettings } from '@/framework/settings';
 import { isEmpty } from 'lodash';
-import { useEffect, useState } from 'react';
-import { useModalState } from '@/components/ui/modal/modal.context';
-import { Order, PaymentGateway, RefundStatus } from '@/types';
+import { Order, RefundStatus } from '@/types';
 
 interface OrderViewHeaderProps {
   order: Order;
@@ -19,10 +16,41 @@ interface OrderViewHeaderProps {
   loading?: boolean;
 }
 
+/**
+ * The status strip. It was a hardcoded blue-grey (#F7F8FA — a colour from nowhere in the
+ * design system) with 9px Badge chips and a lattice of `order-2 basis-full` hacks to survive
+ * mobile. Now: the house warm surface, the shared status pills at a legible size, and a plain
+ * wrapping flex row that stacks naturally.
+ */
+function StatusCell({
+  label,
+  value,
+  loading,
+}: {
+  label: string;
+  value?: string | null;
+  loading?: boolean;
+}) {
+  const { t } = useTranslation('common');
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+        {label}
+      </span>
+      {loading ? (
+        <SpinnerLoader />
+      ) : (
+        <span className={cn(PILL_BASE, statusPill(value), 'capitalize')}>
+          {t(value ?? '')}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function OrderViewHeader({
   order,
-  wrapperClassName = 'lg:px-11 lg:py-5 p-6',
-  buttonSize = 'medium',
+  wrapperClassName = 'px-5 py-4',
   loading = false,
 }: OrderViewHeaderProps) {
   const { settings, isLoading } = useSettings();
@@ -34,94 +62,37 @@ export default function OrderViewHeader({
     order?.payment_status,
   );
   const paymentGateway = settings?.paymentGateway;
+  const refundApproved =
+    order?.refund?.status === RefundStatus?.APPROVED?.toLowerCase();
+
   return (
-    <div className={cn(`bg-[#F7F8FA] ${wrapperClassName}`)}>
-      <div className="flex flex-col flex-wrap items-center justify-between mb-0 text-base font-bold gap-x-8 text-heading sm:flex-row lg:flex-nowrap">
-        <div
-          className={`order-2 grid w-full grid-cols-1 gap-6 xs:flex-nowrap sm:order-1 ${
-            !isPaymentActionPending
-              ? 'max-w-full basis-full justify-between'
-              : 'max-w-full basis-full justify-between lg:ltr:mr-auto'
-          } ${
-            order?.refund?.status === RefundStatus?.APPROVED?.toLowerCase()
-              ? 'md:grid-cols-3'
-              : 'md:grid-cols-2'
-          }`}
-        >
-          <div className="flex items-center gap-3">
-            <span className="block text-xs shrink-0 grow-0 basis-auto xs:text-base lg:inline-block">
-              {t('text-order-status')} :
-            </span>
-            <div className="w-full lg:w-auto">
-              {loading ? (
-                <SpinnerLoader />
-              ) : (
-                <Badge
-                  text={t(order?.order_status)}
-                  color={StatusColor(order?.order_status)}
-                  className="min-h-[2rem] items-center justify-center text-[9px] !leading-none xs:text-sm"
-                />
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-3 md:ml-auto">
-            <span className="block text-xs shrink-0 grow-0 basis-auto xs:text-base lg:inline-block">
-              {t('text-payment-status')} :
-            </span>
-            <div className="w-full lg:w-auto">
-              {loading ? (
-                <SpinnerLoader />
-              ) : (
-                <Badge
-                  text={t(order?.payment_status)}
-                  color={StatusColor(order?.payment_status)}
-                  className="min-h-[2rem] items-center justify-center truncate whitespace-nowrap text-[9px] !leading-none xs:text-sm"
-                />
-              )}
-            </div>
-          </div>
-          {order?.refund?.status === RefundStatus?.APPROVED?.toLowerCase() ? (
-            <div className="flex items-center gap-3">
-              <span className="block text-xs shrink-0 grow-0 basis-auto xs:text-base lg:inline-block">
-                Refund Status
-              </span>
-              <div className="w-full lg:w-auto">
-                {loading ? (
-                  <SpinnerLoader />
-                ) : (
-                  <Badge
-                    text={t(order?.refund?.status)}
-                    color={StatusColor(order?.payment_status)}
-                    className="min-h-[2rem] items-center justify-center truncate whitespace-nowrap text-[9px] capitalize !leading-none xs:text-sm"
-                  />
-                )}
-              </div>
-            </div>
-          ) : (
-            ''
-          )}
-        </div>
-        {!isLoading && !isEmpty(paymentGateway) ? (
-          <>
-            {isPaymentActionPending && (
-              <span className="order-2 w-full max-w-full mt-5 shrink-0 basis-full sm:order-1 lg:mt-0 lg:w-auto lg:max-w-none lg:basis-auto lg:ltr:ml-auto lg:rtl:mr-auto">
-                {/* <PayNowButton trackingNumber={order?.tracking_number} /> */}
-                <PayNowButton
-                  trackingNumber={order?.tracking_number}
-                  order={order}
-                />
-              </span>
-            )}
+    <div className={cn('rounded-xl bg-[#F8F7F2]', wrapperClassName)}>
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <StatusCell
+          label={t('text-order-status')}
+          value={order?.order_status}
+          loading={loading}
+        />
+        <StatusCell
+          label={t('text-payment-status')}
+          value={order?.payment_status}
+          loading={loading}
+        />
+        {refundApproved ? (
+          <StatusCell
+            label={t('text-refund-status')}
+            value={order?.refund?.status}
+            loading={loading}
+          />
+        ) : null}
+
+        {!isLoading && !isEmpty(paymentGateway) && isPaymentActionPending ? (
+          <div className="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
+            <PayNowButton trackingNumber={order?.tracking_number} order={order} />
             {/* @ts-ignore */}
-            {paymentGateway?.length > 1 && isPaymentActionPending && (
-              <span className="order-2 w-full max-w-full mt-5 shrink-0 basis-full sm:order-1 lg:mt-0 lg:w-auto lg:max-w-none lg:basis-auto lg:ltr:ml-auto lg:rtl:mr-auto">
-                <ChangeGateway order={order} />
-              </span>
-            )}
-          </>
-        ) : (
-          ''
-        )}
+            {paymentGateway?.length > 1 ? <ChangeGateway order={order} /> : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

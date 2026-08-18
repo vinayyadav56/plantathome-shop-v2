@@ -3076,3 +3076,25 @@ html[data-density='compact'] { --density: 0.78; }
    needs a different weight can still say so with a utility class, which is the
    behaviour an !important here would have taken away. */
 h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+
+/* ── Customer order-details items table ────────────────────────────────────
+   `orderDetailsTable` sat on the rc-table for years with no rule anywhere —
+   the table fell through to the global grey Pickbazar rc-table skin. Scoped
+   here so the account area's item lists read like the rest of the site. */
+.orderDetailsTable .rc-table-thead th {
+  background: #F8F7F2 !important;
+  border-color: #E9E3D6 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #78716C !important; /* stone-500 */
+}
+.orderDetailsTable .rc-table-tbody td {
+  border-color: #F1EDE3 !important;
+  font-size: 13px !important;
+  color: #16301A !important; /* forest-900 */
+}
+.orderDetailsTable .rc-table-cell-row-hover {
+  background: #FAFAF8 !important;
+}

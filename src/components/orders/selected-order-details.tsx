@@ -29,7 +29,7 @@ export default function SelectedOrderDetails({
 
   if (isLoading || !order) {
     return (
-      <div className="flex w-full items-center justify-center p-8 md:w-2/3">
+      <div className="flex min-w-0 flex-1 items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8 shadow-sm">
         <Spinner simple className="h-10 w-10" />
       </div>
     );

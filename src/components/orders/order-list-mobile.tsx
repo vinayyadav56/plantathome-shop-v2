@@ -1,5 +1,4 @@
 import type { Order } from '@/types';
-import Button from '@/components/ui/button';
 import { useTranslation } from 'next-i18next';
 import Collapse from 'rc-collapse';
 import 'rc-collapse/assets/index.css';
@@ -26,16 +25,10 @@ const OrderListMobile: React.FC<OrdersWithLoaderProps> = ({
   const [selectedOrder, setSelectedOrder] = useSelectedOrder();
 
   return (
-    <div className="flex w-full flex-col md:hidden">
+    <div className="flex w-full flex-col lg:hidden">
       <div className="flex h-full w-full flex-col px-0 pb-5">
-        <h3 className="pb-5 text-xl font-medium text-heading">
-          {t('profile-sidebar-orders')}
-        </h3>
-        <Collapse
-          accordion={true}
-          defaultActiveKey="active"
-          expandIcon={() => null}
-        >
+        <h1 className="pb-5 font-pahserif text-2xl font-medium text-forest-900">{t('profile-sidebar-orders')}</h1>
+        <Collapse accordion={true} expandIcon={() => null}>
           {orders.map((order, index: number) => (
             <Collapse.Panel
               header={
@@ -46,7 +39,6 @@ const OrderListMobile: React.FC<OrdersWithLoaderProps> = ({
                   isActive={order?.id === selectedOrder?.id}
                 />
               }
-              headerClass="accordion-title"
               key={index}
               className="mb-4"
             >
@@ -59,19 +51,20 @@ const OrderListMobile: React.FC<OrdersWithLoaderProps> = ({
               )}
             </Collapse.Panel>
           ))}
+        </Collapse>
 
           {hasNextPage && (
             <div className="mt-8 flex justify-center">
-              <Button
-                loading={isLoadingMore}
+              <button type="button"
                 onClick={onLoadMore}
-                className="h-11 text-sm font-semibold md:text-base"
+              disabled={isLoadingMore}
+                className="pa-btn pa-btn-secondary pa-btn-sm disabled:cursor-wait disabled:opacity-60"
               >
                 {t('text-load-more')}
-              </Button>
+              </button>
             </div>
           )}
-        </Collapse>
+
       </div>
     </div>
   );

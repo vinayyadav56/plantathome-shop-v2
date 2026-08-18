@@ -11,13 +11,13 @@ import isEmpty from 'lodash/isEmpty';
 import OrderDetails from '@/components/orders/order-details';
 import OrderListMobile from '@/components/orders/order-list-mobile';
 import NotFound from '@/components/ui/not-found';
-import { getLayout as getSiteLayout } from '@/components/layouts/layout';
-import DashboardSidebar from '@/components/dashboard/sidebar';
+import DashboardLayout from '@/layouts/_dashboard';
+import { useTranslation } from 'next-i18next';
 
 
 function NoOrderFound() {
   return (
-    <div className="my-auto flex h-[80vh] w-full items-center justify-center rounded bg-light p-5 md:p-8">
+    <div className="flex min-h-[40vh] w-full items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8">
       <NotFound text="text-no-order-found" />
     </div>
   );
@@ -26,6 +26,7 @@ function NoOrderFound() {
 
 
 export default function OrdersPage() {
+  const { t } = useTranslation('common');
   const {
     orders,
     isLoading,
@@ -44,7 +45,7 @@ export default function OrdersPage() {
 
   if (isLoading && isEmpty(ordersItem)) {
     return (
-      <div className="my-auto flex h-[80vh] w-full items-center justify-center rounded bg-light p-5 md:p-8">
+      <div className="flex min-h-[40vh] w-full items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8">
         <Spinner simple className="w-10 h-10" />
       </div>
     );
@@ -56,7 +57,10 @@ export default function OrdersPage() {
   return (
     <>
       <Seo noindex={true} nofollow={true} />
-      <div className="hidden w-full overflow-hidden md:flex">
+      <h1 className="mb-6 hidden font-pahserif text-2xl font-medium text-forest-900 lg:block">
+        {t('profile-sidebar-orders')}
+      </h1>
+      <div className="hidden w-full gap-6 lg:flex">
         <OrderList
           orders={ordersItem}
           isLoadingMore={isLoadingMore}
@@ -82,18 +86,11 @@ export default function OrdersPage() {
   );
 }
 
-const getLayout = (page: React.ReactElement) =>
-  getSiteLayout(
-    // `hidden … xl:block` used to remove the ENTIRE sidebar below 1280px, which
-    // killed its own built-in <lg pill-tab strip too — sub-xl users had zero
-    // account navigation on this page. Render it at every width and split at lg
-    // (the sidebar's internal breakpoint): <lg gets the horizontal tab strip,
-    // lg+ gets the card sidebar. Same fix as my-packages.tsx.
-    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-7xl bg-light lg:bg-[#F8F7F2] lg:flex-row xl:py-14 xl:px-8 2xl:px-14">
-      <DashboardSidebar className="w-full shrink-0 ltr:lg:mr-8 rtl:lg:ml-8 lg:w-80" />
-      {page}
-    </div>
-  );
+// The account sidebar lives in ONE layout, shared with profile/wishlists/my-packages-adjacent
+// pages. The hand-rolled max-w-7xl wrapper here was one of three competing account containers.
+// (This move was reverted once during the order-history crash scare; the crash turned out to be
+// the pivot-less list rows, fixed and pinned in selected-order-details — safe now.)
+const getLayout = (page: React.ReactElement) => <DashboardLayout>{page}</DashboardLayout>;
 
 // OrdersPage.authenticationRequired = true;
 
