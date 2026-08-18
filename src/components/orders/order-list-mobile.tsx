@@ -5,7 +5,7 @@ import Collapse from 'rc-collapse';
 import 'rc-collapse/assets/index.css';
 import OrderCard from './order-card';
 import { useSelectedOrder } from './order-list';
-import OrderDetails from './order-details';
+import SelectedOrderDetails from './selected-order-details';
 
 interface OrdersWithLoaderProps {
   hasNextPage: boolean;
@@ -51,8 +51,9 @@ const OrderListMobile: React.FC<OrdersWithLoaderProps> = ({
               className="mb-4"
             >
               {selectedOrder && (
-                <OrderDetails
-                  order={orders.find(({ id }) => id === selectedOrder.id)!}
+                <SelectedOrderDetails
+                  selected={selectedOrder}
+                  listOrder={orders.find(({ id }) => id === selectedOrder.id)}
                   loadingStatus={loadingStatus}
                 />
               )}

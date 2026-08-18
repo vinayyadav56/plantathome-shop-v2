@@ -96,7 +96,7 @@ export const OrderItems = ({
       align: 'center',
       width: 100,
       render: function renderQuantity(pivot: any) {
-        return <p className="text-base">{pivot.order_quantity}</p>;
+        return <p className="text-base">{pivot?.order_quantity ?? 1}</p>;
       },
     },
     {

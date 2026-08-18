@@ -5,6 +5,7 @@ import OrderList, { useSelectedOrder } from '@/components/orders/order-list';
 import Seo from '@/components/seo/seo';
 import ErrorMessage from '@/components/ui/error-message';
 import { useOrders } from '@/framework/order';
+import SelectedOrderDetails from '@/components/orders/selected-order-details';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
 import isEmpty from 'lodash/isEmpty';
 import OrderDetails from '@/components/orders/order-details';
@@ -21,6 +22,8 @@ function NoOrderFound() {
     </div>
   );
 }
+
+
 
 export default function OrdersPage() {
   const {
@@ -61,10 +64,9 @@ export default function OrdersPage() {
           hasMore={hasMore}
         />
         {selectedOrder && (
-          <OrderDetails
-            order={
-              ordersItem.find((order: any) => order.id === selectedOrder.id)!
-            }
+          <SelectedOrderDetails
+            selected={selectedOrder}
+            listOrder={ordersItem.find((order: any) => order.id === selectedOrder.id)}
             loadingStatus={isLoadingStatus}
           />
         )}
