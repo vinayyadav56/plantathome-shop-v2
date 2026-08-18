@@ -126,13 +126,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 /* Profile-picture uploader — frame the generic FileInput dropzone into a
    compact sage-tinted card matching the account "Profile Picture" reference. */
-.pah-avatar-uploader { width: 168px; }
+/* Avatar uploader: brand-tint the tile only. The old rule also pinned min-height:150px on a
+   168px column — a reserved blank block for a 64px control, exactly the pattern the compact
+   uploader exists to remove. */
 .pah-avatar-uploader .border-dashed,
 .pah-avatar-uploader [class*="border-dashed"] {
-  border-radius: 16px;
   background: var(--ds-accent-soft, #e7eee2);
   border-color: rgba(46, 94, 42, 0.25);
-  min-height: 150px;
 }
 
 /* (The .font-pahserif/.font-cormorant sans escape hatches are gone: those

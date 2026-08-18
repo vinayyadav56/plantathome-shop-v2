@@ -44,9 +44,11 @@ export const useUploads = ({ onChange, defaultFiles }: any) => {
   const [files, setFiles] = useState<FileWithPath[]>(
     getPreviewImage(defaultFiles)
   );
+  const [error, setError] = useState<string | null>(null);
 
   const { mutate: upload, isLoading } = useMutation(client.settings.upload, {
     onSuccess: (data) => {
+      setError(null);
       if (onChange) {
         const dataAfterRemoveTypename = data?.map(
           ({ __typename, ...rest }: any) => rest
@@ -55,13 +57,35 @@ export const useUploads = ({ onChange, defaultFiles }: any) => {
         setFiles(getPreviewImage(dataAfterRemoveTypename));
       }
     },
+    // A rejected upload (413, 422 — wrong type, too large) used to vanish: no onError existed,
+    // so the spinner stopped and nothing said why the photo never appeared.
+    onError: (err: any) => {
+      const firstFieldError = (
+        Object.values(err?.response?.data?.errors ?? {})[0] as string[] | undefined
+      )?.[0];
+      setError(
+        err?.response?.data?.message ??
+          firstFieldError ??
+          'Upload failed — check the file type and size.'
+      );
+    },
   });
 
   function handleSubmit(data: File[]) {
     upload(data);
   }
 
-  return { mutate: handleSubmit, isLoading, files };
+  /** Drop one uploaded file and tell the form. The uploader had no remove at all — a wrong
+   *  photo could only be fixed by re-uploading a full replacement set. */
+  function removeFile(index: number) {
+    const remaining = files.filter((_, i) => i !== index);
+    setFiles(remaining);
+    if (onChange) {
+      onChange(remaining.map(({ preview, ...rest }: any) => rest));
+    }
+  }
+
+  return { mutate: handleSubmit, isLoading, files, error, removeFile };
 };
 
 export function useSubscription() {
