@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
+import { useHomeConfig, resolveImageUrl } from '@/lib/use-home-config';
 
 /**
  * Mobile counterpart of the desktop "all our worlds" verticals band — a compact
@@ -15,15 +16,23 @@ import { getVerticalMeta } from '@/components/storefront/verticals';
 export function VerticalsRail() {
   const { t } = useTranslation('common');
   const { types, isLoading } = useTypes({ limit: TYPES_PER_PAGE } as any);
+  // Admin-uploaded tile art (Storefront Content → Six Worlds) — the desktop band already
+  // honoured this; the rail hardcoded meta.scenes[0], so images an admin uploaded simply
+  // never appeared on the layout the homepage actually renders.
+  const { verticalsBand } = useHomeConfig();
+  const tileFor = (slug: string) =>
+    (verticalsBand?.tiles ?? []).find((tile) => tile?.typeSlug === slug);
 
   const list = (types ?? []).map((ty: any) => {
     const meta = getVerticalMeta(ty.slug, ty.name);
+    const cfg = tileFor(ty.slug);
     return {
       slug: ty.slug,
       name: ty.name ?? meta.label,
-      img: meta.scenes[0],
+      img: resolveImageUrl(cfg?.image ?? null) || meta.scenes[0],
       href: meta.shopPath ?? meta.path,
-      comingSoon: Boolean(meta.comingSoon),
+      comingSoon:
+        typeof cfg?.comingSoon === 'boolean' ? cfg.comingSoon : Boolean(meta.comingSoon),
     };
   });
 
