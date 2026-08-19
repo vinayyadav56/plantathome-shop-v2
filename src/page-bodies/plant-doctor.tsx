@@ -900,7 +900,7 @@ export default function PlantDoctorPage() {
             </span>
           </div>
 
-          <h1 className="mt-6 text-[2.3rem] font-medium leading-[1.08] tracking-[-0.02em] text-[#184A31] sm:text-[3.4rem]">
+          <h1 className="mt-6 text-[34px] font-medium leading-[1.08] tracking-[-0.02em] text-[#184A31] sm:text-[46px] lg:text-[52px]">
             Is your plant unwell?
             <br className="hidden sm:block" /> Find out in seconds.
           </h1>

@@ -149,7 +149,7 @@ export default function CategoryPage() {
           </div>
 
           {/* H1 */}
-          <h1 className="font-pahserif text-[2.6rem] font-medium leading-tight tracking-[-0.015em] text-white sm:text-[3.4rem] lg:text-[4rem]">
+          <h1 className="font-pahserif text-[34px] font-medium leading-tight tracking-[-0.015em] text-white sm:text-[46px] lg:text-[52px]">
             {category?.name ?? (loadingCategory ? 'Loading…' : 'Category')}
           </h1>
 

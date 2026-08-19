@@ -170,7 +170,7 @@ export default function CorporateGiftingPage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:py-24">
           <div className="text-white">
             <span className="font-jost inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.2em] backdrop-blur">🎁 Corporate Gifting</span>
-            <h1 className="font-cormorant mt-5 text-[2.6rem] font-medium leading-[1.02] tracking-[-0.015em] sm:text-6xl">Gift something that <span className="italic text-sage-300">grows</span></h1>
+            <h1 className="font-cormorant mt-5 text-[34px] font-medium leading-[1.02] tracking-[-0.015em] sm:text-[46px] lg:text-[52px]">Gift something that <span className="italic text-sage-300">grows</span></h1>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-cream-50/90">
               Memorable, sustainable plant gifts for clients and teams — custom branded, delivered in bulk across India. Buy a ready hamper or get a tailored quote.
             </p>

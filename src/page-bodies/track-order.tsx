@@ -29,7 +29,7 @@ export default function TrackOrderPage() {
         <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage-100">
           <ShoppingBag size={20} style={{ color: '#2E5E3A' }} aria-hidden />
         </div>
-        <h1 className="font-pahserif text-2xl font-medium text-forest-900">Track Your Order</h1>
+        <h1 className="font-pahserif text-[30px] font-medium text-forest-900 md:text-[36px]">Track Your Order</h1>
         <p className="mt-1.5 text-sm text-stone-500">
           Enter your order tracking number to see its current status and delivery
           progress.

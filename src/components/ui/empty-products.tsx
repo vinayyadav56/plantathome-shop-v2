@@ -63,7 +63,9 @@ export function EmptyProducts({
       </h3>
       <p className="mt-3 max-w-md text-[14px] leading-relaxed text-stone-500 sm:text-[15px]">{sub}</p>
 
-      <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row">
+      {/* Three CTAs side-by-side exceed a 768px viewport once "Change delivery city" shows —
+          wrap instead of spilling (this row was the only horizontal overflow on the site). */}
+      <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
         <Link href="/plants/search" className="pa-btn pa-btn-primary">
           Browse all plants
           <ArrowRight size={16} aria-hidden />

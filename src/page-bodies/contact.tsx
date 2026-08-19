@@ -134,7 +134,7 @@ export const ContactPage = () => {
 
           {/* Contact form */}
           <div className="order-1 mb-8 w-full rounded-xl border border-forest-900/10 bg-white p-5 md:order-2 md:mb-0 md:p-8 ltr:md:ml-7 rtl:md:mr-7 ltr:lg:ml-9 rtl:lg:mr-9">
-            <h1 className="mb-7 font-pahserif text-2xl font-medium text-forest-900 md:text-3xl">
+            <h1 className="mb-7 font-pahserif text-[30px] font-medium text-forest-900 md:text-[36px] lg:text-[42px]">
               {t('text-questions-comments')}
             </h1>
             <SuperAdminContactForm />
