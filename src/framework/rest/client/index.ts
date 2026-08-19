@@ -127,6 +127,8 @@ class Client {
       growth,
       pet_friendly,
       sizes,
+      difficulty,
+      terms,
       ...params
     }: Partial<ProductQueryOptions>) =>
       HttpClient.get<ProductPaginator>(API_ENDPOINTS.PRODUCTS, {
@@ -155,6 +157,11 @@ class Client {
           'plantAttribute.indoor_outdoor': placement,
           'plantAttribute.growth_rate': growth,
           'plantAttribute.pet_friendly': pet_friendly,
+          'plantAttribute.difficulty_level': difficulty,
+          // Admin-defined characteristics (Suitable Spaces, Special Characteristics, and
+          // anything an admin adds later). ONE param carries every dynamic facet as a
+          // comma-joined term-slug list, so a new attribute needs no client change.
+          'plantTerms.slug': terms,
           // The Size axis (Small/Medium/Large) lives on variations.
           'variations.value': sizes,
           status: 'publish',

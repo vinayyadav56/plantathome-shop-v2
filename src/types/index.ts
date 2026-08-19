@@ -52,6 +52,9 @@ export interface SearchParamOptions {
   'plantAttribute.indoor_outdoor': string;
   'plantAttribute.growth_rate': string;
   'plantAttribute.pet_friendly': string;
+  'plantAttribute.difficulty_level': string;
+  /** Admin-defined characteristic terms (one param for every dynamic attribute). */
+  'plantTerms.slug': string;
   'variations.value': string;
   rating: string;
   question: string;
@@ -127,6 +130,9 @@ export interface ProductQueryOptions extends QueryOptions {
   growth: string;
   pet_friendly: string;
   sizes: string;
+  difficulty: string;
+  /** Comma-joined term slugs across every admin-defined attribute. */
+  terms: string;
 }
 
 /** GET products/filter-facets — the server's filter-rail option source. */
@@ -140,7 +146,27 @@ export interface FilterFacets {
     difficulty_level: { value: string; count: number }[];
     pet_friendly: { true: number; false: number };
     price: { min: number; max: number; histogram: { from: number; to: number; count: number }[] };
+    /** Admin-defined attributes — rendered generically, never hardcoded here. */
+    dynamic?: DynamicFacet[];
   };
+}
+
+export interface DynamicFacet {
+  slug: string;
+  name: string;
+  type: string;
+  terms: { slug: string; value: string; count: number }[];
+}
+
+export interface PlantCollection {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+  image?: { original?: string; thumbnail?: string } | null;
+  rules: Record<string, string>;
+  seo_title?: string | null;
+  seo_description?: string | null;
 }
 
 export interface PopularProductQueryOptions extends QueryOptions {

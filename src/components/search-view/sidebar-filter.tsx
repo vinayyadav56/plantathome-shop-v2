@@ -10,7 +10,11 @@ import ManufacturerFilter from '@/components/search-view/manufacturer-filter-vie
 import {
   FacetFilterView, PlacementFilterView, PetFriendlyFilterView, SizeFilterView,
   usePlantFilterCounts,
+  DynamicFacetView,
+  useDynamicFacetCount,
 } from '@/components/search-view/plant-filter-views';
+import { useFilterFacets } from '@/framework/product';
+import type { DynamicFacet } from '@/types';
 import classNames from 'classnames';
 import { useAtom } from 'jotai';
 import { drawerAtom } from '@/store/drawer-atom';
@@ -18,6 +22,16 @@ import ArrowNarrowLeft from '@/components/icons/arrow-narrow-left';
 import { useIsRTL } from '@/lib/locals';
 import Button from '@/components/ui/button';
 import AppliedFilters from '@/components/search-view/applied-filters';
+
+/** One admin-defined attribute as a collapsible section (own hook call ⇒ own component). */
+const DynamicFacetSection = ({ facet }: { facet: DynamicFacet }) => {
+  const count = useDynamicFacetCount(facet);
+  return (
+    <FieldWrapper title={facet.name} count={count} defaultOpen={false}>
+      <DynamicFacetView facet={facet} />
+    </FieldWrapper>
+  );
+};
 
 const FieldWrapper = ({ children, title, count, defaultOpen }: any) => (
   <div className="border-b border-forest-900/10 pb-2 last:border-0">
@@ -98,6 +112,8 @@ const SidebarFilter: React.FC<{
   const manufacturerCount = useParamCount('manufacturer');
   const priceCount = useParamCount('price') ? 1 : 0;
   const plantCounts = usePlantFilterCounts();
+  const { data: facetData } = useFilterFacets();
+  const dynamicFacets = facetData?.facets?.dynamic ?? [];
 
   return (
     <div
@@ -181,6 +197,15 @@ const SidebarFilter: React.FC<{
         <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
           <PetFriendlyFilterView />
         </FieldWrapper>
+        <FieldWrapper title="Difficulty" count={plantCounts.difficulty} defaultOpen={false}>
+          <FacetFilterView param="difficulty" facetKey="difficulty_level" />
+        </FieldWrapper>
+
+        {/* Admin-defined attributes. The server tells us which sections exist and what is
+            in them, so a new characteristic appears here without a release. */}
+        {dynamicFacets.map((facet) => (
+          <DynamicFacetSection key={facet.slug} facet={facet} />
+        ))}
 
         {/* Secondary filters start collapsed — declutters the panel and defers
             their metadata fetch until the shopper opens the section. Any active

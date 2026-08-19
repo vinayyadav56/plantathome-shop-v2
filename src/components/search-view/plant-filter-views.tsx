@@ -1,4 +1,5 @@
 import { useRouter } from '@/compat/next-router';
+import type { DynamicFacet } from '@/types';
 import { useFilterFacets } from '@/framework/product';
 import Checkbox from '@/components/ui/forms/checkbox/checkbox';
 
@@ -33,12 +34,48 @@ const usePushParam = () => {
   };
 };
 
-/** Generic facet-driven checkbox section (Sunlight / Watering / Growth). */
+/**
+ * Admin-defined attribute section (Suitable Spaces, Special Characteristics, and whatever
+ * an admin adds next). Every dynamic facet shares ONE url param — `terms` — holding term
+ * slugs, so adding an attribute in the admin makes a new filter section appear here with
+ * no client change. That is the point of the taxonomy work: no hardcoded filter lists.
+ */
+export function DynamicFacetView({ facet }: { facet: DynamicFacet }) {
+  const selected = useParamValues('terms');
+  const push = usePushParam();
+
+  if (!facet.terms.length) return null;
+
+  const toggle = (slug: string) =>
+    push(
+      'terms',
+      selected.includes(slug) ? selected.filter((v) => v !== slug) : [...selected, slug],
+    );
+
+  return (
+    <div className="flex flex-col space-y-3.5">
+      {facet.terms.map((t) => (
+        <div key={t.slug} className="flex items-center justify-between gap-2">
+          <Checkbox
+            name={`term-${t.slug}`}
+            value={t.slug}
+            label={t.value}
+            checked={selected.includes(t.slug)}
+            onChange={() => toggle(t.slug)}
+          />
+          <span className="text-xs tabular-nums text-stone-400">{t.count}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Generic facet-driven checkbox section (Sunlight / Watering / Growth / Difficulty). */
 export function FacetFilterView({
   param,
   facetKey,
 }: {
-  param: 'sunlight' | 'water' | 'growth';
+  param: 'sunlight' | 'water' | 'growth' | 'difficulty';
   facetKey: 'sunlight' | 'water_requirement' | 'growth_rate' | 'difficulty_level';
 }) {
   const { data } = useFilterFacets();
@@ -202,5 +239,13 @@ export function usePlantFilterCounts() {
   const { query } = useRouter();
   const placement = typeof query.placement === 'string' && query.placement ? 1 : 0;
   const pet = query.pet_friendly === 'true' ? 1 : 0;
-  return { sunlight, water, growth, sizes, placement, pet };
+  const difficulty = useParamValues('difficulty').length;
+  const terms = useParamValues('terms');
+  return { sunlight, water, growth, sizes, placement, pet, difficulty, terms };
+}
+
+/** How many of THIS dynamic facet's terms are currently selected (header badge). */
+export function useDynamicFacetCount(facet: DynamicFacet): number {
+  const selected = useParamValues('terms');
+  return facet.terms.filter((t) => selected.includes(t.slug)).length;
 }
