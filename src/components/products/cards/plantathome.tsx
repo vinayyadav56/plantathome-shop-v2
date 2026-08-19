@@ -9,7 +9,7 @@ import { Routes } from '@/config/routes';
 // Still needed for Ask AI — the product quick-view popup is gone (cards link
 // straight to the product page), but this card opens the ASK_AI modal too.
 import { useModalAction } from '@/components/ui/modal/modal.context';
-import { Heart as HeartGlyph, ShoppingBag, Sparkles, Star } from '@/components/ui/icon';
+import { Heart as HeartGlyph, Star } from '@/components/ui/icon';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
@@ -69,7 +69,6 @@ const GoldStar = () => (
 );
 
 /* ─── Cart icon for the CTA ────────────────────────────────────── */
-const CartGlyph = () => <ShoppingBag size={18} aria-hidden />;
 
 type Props = {
   product: Product;
@@ -250,9 +249,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
             /* Same clamp insets as the wishlist heart opposite it — it used a
                fixed bottom-3/left-3, so it only lined up with the other
                overlays at one card width. */
-            className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
+            className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 inline-flex items-center rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
           >
-            <Sparkles size={12} fill="currentColor" aria-hidden />
             Ask AI
           </button>
         )}
@@ -410,9 +408,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
                  as heavy slabs on wide cards. Kept in lockstep with the qty stepper
                  below and add-to-cart-btn/add-to-cart, which share this baseline —
                  changing one alone breaks the action row's alignment. */
-              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 rounded-[12px] bg-ds-btn text-[clamp(12px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-[12px] bg-ds-btn px-2 text-[clamp(12px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
-              <CartGlyph />
+              {/* Cart glyph dropped: on a ~150px two-up card it ate the width the label
+                  needed, crowding "Select Options". The wording alone is unambiguous —
+                  this opens the product page to choose a size, it does not add to cart. */}
               Select Options
             </Link>
           ) : (
