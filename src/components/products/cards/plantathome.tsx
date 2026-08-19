@@ -336,10 +336,19 @@ const PlantAtHomeCard: React.FC<Props> = ({
               and an empty strip would just be the dead space we removed. */}
           {facts.length > 0 && (
             <div className="mb-[clamp(7px,2.8cqw,11px)] flex flex-nowrap items-center gap-1.5 overflow-hidden">
-              {facts.slice(0, 3).map((f) => (
+              {facts.slice(0, 3).map((f, i) => (
                 <span
                   key={f.label}
-                  className="truncate whitespace-nowrap rounded-full bg-[#F3F8EC] px-[clamp(6px,2.4cqw,9px)] py-[4px] text-[clamp(9px,2.9cqw,11px)] font-medium leading-none text-[#24693E]"
+                  className={[
+                    // shrink-0: flex was allowed to compress these to fit three across a
+                    // ~165px two-up mobile card, which rendered them as "P…", "F…", "Mo…" —
+                    // present but unreadable. A chip now keeps its natural width…
+                    'shrink-0 max-w-[46%] truncate whitespace-nowrap rounded-full bg-[#F3F8EC] px-[clamp(6px,2.4cqw,9px)] py-[4px] text-[clamp(9px,2.9cqw,11px)] font-medium leading-none text-[#24693E]',
+                    // …and instead we show only as many as genuinely fit: two on a phone
+                    // grid, all three once the card is wide enough. The list layout is
+                    // full-width even on mobile, so it keeps all three.
+                    !isList && i === 2 ? 'hidden sm:inline-block' : '',
+                  ].join(' ')}
                 >
                   {f.label}
                 </span>
