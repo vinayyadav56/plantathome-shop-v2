@@ -103,7 +103,7 @@
   "profile-sidebar-logout": "Logout",
   "password-successful": "Password changed successfully",
   "error-enough-permission": "Doesn't have enough permission",
-  "error-credential-wrong": "The credentials was wrong!",
+  "error-credential-wrong": "Incorrect email or password.",
   "login-helper": "Login with your email & password",
   "error-email-format": "The provided email address format is not valid",
   "error-email-required": "You must need to provide your email address",

@@ -160,7 +160,11 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
           onClick={onClick}
           disabled={disabled}
           title={disabled ? 'Out Of Stock' : ''}
-          className="flex h-7 w-7 items-center justify-center rounded border border-border-200 bg-light text-sm text-accent transition-colors hover:border-accent hover:bg-accent hover:text-light focus:border-accent focus:bg-accent focus:text-light focus:outline-0 md:h-9 md:w-9"
+          // hover/focus text is `!`-prefixed because .text-accent carries `!important`
+          // (plantathome-overrides.css), which otherwise wins and leaves the + icon accent-green
+          // on an accent-green fill — invisible. Not converted to .pa-btn-outline like the
+          // checkout CTA: this is a 7x7 icon square, and .pa-btn's padding/radius would reshape it.
+          className="flex h-7 w-7 items-center justify-center rounded border border-border-200 bg-light text-sm text-accent transition-colors hover:border-accent hover:bg-accent hover:!text-light focus:border-accent focus:bg-accent focus:!text-light focus:outline-0 md:h-9 md:w-9"
         >
           <span className="sr-only">{t('text-plus')}</span>
           <PlusIcon className="h-5 w-5 stroke-2" />

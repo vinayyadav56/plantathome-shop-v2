@@ -87,7 +87,12 @@ function DeliveryLocationVerification({
           type="button"
           onClick={handleShareLocation}
           disabled={loading}
-          className="inline-flex items-center gap-2 rounded-lg border border-accent px-4 py-2.5 text-sm font-semibold text-accent transition hover:bg-accent hover:text-white disabled:opacity-60"
+          // .pa-btn-outline, not an ad-hoc class string: `hover:text-white` was silently dead
+          // here because .text-accent carries `!important` (plantathome-overrides.css), so on
+          // hover the label stayed accent-green on an accent-green background — invisible, icon
+          // included. The canonical CTA set is already inside that file's `color:#fff !important`
+          // hover safety net, so it cannot regress the same way.
+          className="pa-btn pa-btn-outline pa-btn-sm disabled:opacity-60"
         >
           <Crosshair size={16} aria-hidden />
           {loading

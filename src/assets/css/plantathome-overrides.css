@@ -100,6 +100,13 @@ html { scroll-behavior: smooth; }
 /* Never allow horizontal page scroll from stray offscreen decorations or
    dev overlays. `clip` (not `hidden`) so position:sticky keeps working. */
 html { overflow-x: clip; }
+/* Reserve the scrollbar gutter so content never reflows when a page crosses the
+   viewport height. Without it, anything that grows the document — a validation
+   alert appearing on a min-h-screen page, a list loading a row — makes the
+   scrollbar appear, narrows the containing block, and re-lays-out the whole page
+   very slightly smaller. It reads as the page "zooming out". Reported on /signin,
+   where a failed login adds ~76px to a vertically-centred column. */
+html { scrollbar-gutter: stable; }
 
 body {
   font-family: var(--font-body) !important;
