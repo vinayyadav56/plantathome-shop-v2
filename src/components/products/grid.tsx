@@ -10,6 +10,7 @@ import ErrorMessage from '@/components/ui/error-message';
 import { useProducts } from '@/framework/product';
 import { PRODUCTS_PER_PAGE } from '@/framework/client/variables';
 import type { Product } from '@/types';
+import { PRODUCT_GRID_CLASS } from '@/components/products/product-grid-class';
 
 interface Props {
   limit?: number;
@@ -82,10 +83,11 @@ export function Grid({
             // [container-type:inline-size], which makes every size inside it a
             // cqw clamp against the CARD's width. Halve the card and the name,
             // price, chips and badges scale themselves.
-            'grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(250px,1fr))] sm:gap-4':
-              column === 'auto',
-            'grid grid-cols-2 gap-3 gap-y-5 sm:gap-4 md:gap-5 md:gap-y-8 min-[900px]:grid-cols-3 lg:gap-6 xl:grid-cols-4':
-              column === 'five' || column === 'six',
+            // One ladder for every card grid (PRODUCT_GRID_CLASS). `auto` used to run its own
+            // auto-fill minmax(250px) and `five`/`six` a fixed 2/3/4 — a third and fourth
+            // variant of the same idea, disagreeing with the home rails at every iPad width.
+            [PRODUCT_GRID_CLASS]:
+              column === 'auto' || column === 'five' || column === 'six',
             // List view: one full-width row per product. The card lays itself
             // out horizontally off its own `layout` prop.
             'flex flex-col gap-4': column === 'list',

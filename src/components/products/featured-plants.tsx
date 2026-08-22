@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 import { useBestSellingProducts } from '@/framework/product';
 import { Sparkles } from '@/components/ui/icon';
 import { PlantAtHomeCardSkeleton } from '@/components/products/cards/plantathome';
+import { PRODUCT_GRID_CLASS } from '@/components/products/product-grid-class';
 
 /**
  * One row of placeholder cards, used for EVERY state in which the real cards
@@ -15,7 +16,7 @@ import { PlantAtHomeCardSkeleton } from '@/components/products/cards/plantathome
  */
 function FeaturedRowPlaceholder() {
   return (
-    <div className="grid grid-cols-2 gap-4 px-1 sm:grid-cols-3">
+    <div className={`${PRODUCT_GRID_CLASS} px-1`}>
       {Array.from({ length: 3 }).map((_, i) => (
         <PlantAtHomeCardSkeleton key={i} />
       ))}
