@@ -152,12 +152,21 @@ const GetLayout = (page: React.ReactElement) => {
               should use the whole viewport (user: "too much space on the
               left/right side"). */}
           <div className="flex w-full min-h-screen px-4 py-10 sm:px-5 rtl:space-x-reverse md:space-x-6 lg:space-x-8 lg:px-6 xl:py-14 xl:px-8">
-            <div className="hidden w-72 shrink-0 md:block lg:w-80">
+            {/* The rail appears at lg, not md. At md-to-lg (an iPad in PORTRAIT, 768-834) a
+                288px rail left roughly 480px for the grid, which is less than a phone gives it —
+                two cards at ~229px, narrower than the 2-up a 375px phone renders. Below lg the
+                floating filter button opens the same filters in a drawer. */}
+            <div className="hidden w-72 shrink-0 lg:block lg:w-80">
               <StickyBox offsetTop={140} offsetBottom={30}>
                 <SidebarFilter inRail />
               </StickyBox>
             </div>
-            {page}
+            {/* min-w-0 is load-bearing, not defensive. A flex item defaults to
+                min-width:auto, so this column refused to shrink below the grid's min-content
+                width (788px for two cards). With the rail beside it that came to ~1120px inside
+                an 828px row: 286px of horizontal overflow, and the second card clipped off the
+                right edge of every iPad screenshot. flex-1 lets it take the remaining space. */}
+            <div className="min-w-0 flex-1">{page}</div>
           </div>
         </div>
         <MobileNavigation>
@@ -183,7 +192,7 @@ const GetLayout = (page: React.ReactElement) => {
                   view: 'SEARCH_FILTER',
                 })
               }
-              className="fixed bottom-24 z-40 flex h-12 items-center justify-center gap-2 rounded-full bg-ds-btn px-4 text-[13px] font-semibold text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
+              className="fixed bottom-24 z-40 flex h-12 items-center justify-center gap-2 rounded-full bg-ds-btn px-4 text-[13px] font-semibold text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white lg:hidden"
             >
               <FilterIcon width="17.05" height="18" />
               <span>{t('text-filter')}</span>
