@@ -4,7 +4,11 @@ import PrivateRoute from '@/lib/private-route';
 import { useState, useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { useTranslation } from 'next-i18next';
-import { billingAddressAtom, shippingAddressAtom } from '@/store/checkout';
+import {
+  billingAddressAtom,
+  shippingAddressAtom,
+  checkoutStepAtom,
+} from '@/store/checkout';
 import dynamic from 'next/dynamic';
 import { getLayout } from '@/components/layouts/layout';
 import { AddressType } from '@/framework/utils/constants';
@@ -73,6 +77,14 @@ export default function CheckoutPage() {
       setShippingAddress(billingAddress as any);
     }
   }, [sameAsBilling, billingAddress, setShippingAddress]);
+
+  // Publish the wizard position for sidebar actions (Check Availability guides
+  // the shopper to the incomplete step / jumps to Review after a verify).
+  const [, setWizardBridge] = useAtom(checkoutStepAtom);
+  useEffect(() => {
+    setWizardBridge({ step, last: 3, setStep });
+    return () => setWizardBridge(null);
+  }, [step, setWizardBridge]);
 
   // One panel per wizard step (reuses the existing grid components + flow).
   const panels: WizardPanel[] = [

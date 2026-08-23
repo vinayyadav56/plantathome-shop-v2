@@ -139,6 +139,16 @@ export const verifiedResponseAtom = atom(
     return set(checkoutAtom, { ...prev, verified_response: data });
   }
 );
+// Wizard bridge: the stepped /checkout page publishes its position here so
+// sidebar actions (Check Availability) can guide the shopper to the right step
+// instead of dead-ending on a disabled Place Order. null = no wizard on this
+// page (guest/digital checkout keep their single-page behavior).
+export const checkoutStepAtom = atom<{
+  step: number;
+  last: number;
+  setStep: (n: number) => void;
+} | null>(null);
+
 export const couponAtom = atom(
   (get) => get(checkoutAtom).coupon,
   (get, set, data: Coupon | null) => {
