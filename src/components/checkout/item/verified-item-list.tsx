@@ -29,7 +29,7 @@ interface Props {
 }
 const VerifiedItemList: React.FC<Props> = ({ className }) => {
   const { t } = useTranslation('common');
-  const { items, isEmpty: isEmptyCart } = useCart();
+  const { items, isEmpty: isEmptyCart, clearItemFromCart } = useCart();
   const [verifiedResponse] = useAtom(verifiedResponseAtom);
   const [coupon, setCoupon] = useAtom(couponAtom);
   const [discount] = useAtom(discountAtom);
@@ -91,6 +91,29 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
         {t('text-your-order')}
       </h3>
 
+      {/* A stale cart is normal, not an error: anything carted before a product left the
+          catalogue comes back from verify as unavailable. It used to sit there as a bare red
+          "Unavailable" with no explanation and no way out — the operator read it as the checkout
+          being broken. Name what happened and offer the one action that unblocks the order. */}
+      {items?.some((item) => isExcluded(item)) && (
+        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+          <p className="text-xs leading-relaxed text-amber-800">
+            {t('text-unavailable-items-note')}
+          </p>
+          <button
+            type="button"
+            className="mt-1.5 text-xs font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700"
+            onClick={() =>
+              items
+                .filter((item) => isExcluded(item))
+                .forEach((item) => clearItemFromCart(item.id))
+            }
+          >
+            {t('text-remove-unavailable-items')}
+          </button>
+        </div>
+      )}
+
       <div className="mb-3">
         {!isEmptyCart ? (
           items?.map((item) => {
@@ -100,6 +123,7 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
                 item={item}
                 key={item.id}
                 notAvailable={!!notAvailable}
+                onRemove={notAvailable ? () => clearItemFromCart(item.id) : undefined}
               />
             );
           })
@@ -156,7 +180,9 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
         </div>
       </div>
 
-      {isAuthorized && verifiedResponse && (
+      {/* Only when there is actually a balance to spend: a zero-point wallet rendered two
+          rows of zeros and a dead checkbox on every single order. */}
+      {isAuthorized && verifiedResponse && Number(verifiedResponse.wallet_amount) > 0 && (
         <Wallet
           totalPrice={totalPrice}
           walletAmount={verifiedResponse.wallet_amount}

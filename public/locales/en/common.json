@@ -268,7 +268,7 @@
   "text-price": "Price",
   "text-no-order-found": "Sorry, No Order Found :(",
   "text-choose-payment": "Choose Payment Method",
-  "text-cod-message": "Please Pay After You Receive Your Goods!",
+  "text-cod-message": "Pay in cash when your order arrives at your door.",
   "text-login-mobile": "Login with Mobile number",
   "text-send-otp": "Send OTP",
   "text-otp-code": "OTP Code",
@@ -700,5 +700,8 @@
   "text-watering": "Watering",
   "text-growth-rate": "Growth Rate",
   "text-pet-friendly": "Pet Friendly",
-  "text-refund-status": "Refund status"
+  "text-refund-status": "Refund status",
+  "text-unavailable-items-note": "Some items in your cart are no longer available and won't be charged.",
+  "text-remove-unavailable-items": "Remove unavailable items",
+  "text-unavailable-item-reason": "No longer available in your city."
 }
