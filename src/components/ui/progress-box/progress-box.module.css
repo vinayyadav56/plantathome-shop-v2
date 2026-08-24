@@ -40,3 +40,10 @@
 .progress_wrapper.checked .status_wrapper {
   @apply bg-accent text-light;
 }
+
+/* The step the order is ON right now — requested purple + blinking (deliberate
+   one-off outside the green design system; annotation mt6vke7o-tfdgg9).
+   motion-safe keeps it static for prefers-reduced-motion users. */
+.progress_wrapper.current .status_wrapper {
+  @apply border-solid border-violet-600 bg-violet-600 text-light motion-safe:animate-pulse;
+}

@@ -8,7 +8,7 @@ import { useLogout, useUser } from '@/framework/user';
 import { useSettings } from '@/framework/settings';
 import { Routes } from '@/config/routes';
 import { isStripeAvailable } from '@/lib/is-stripe-available';
-import { Bell, CircleHelp, CreditCard, Download, FileText, Heart, Sprout, Lock, LogOut, Package, Plus, RotateCcw, ShoppingBag, User } from '@/components/ui/icon';
+import { Bell, CircleHelp, CreditCard, Download, FileText, Heart, Wallet, Lock, LogOut, Package, Plus, RotateCcw, ShoppingBag, User } from '@/components/ui/icon';
 
 type Props = { className?: string };
 
@@ -83,7 +83,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         {/* wallet points */}
         <div className="rounded-2xl border border-forest-900/10 bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
-            <Sprout size={18} className="text-forest-600" aria-hidden />
+            <Wallet size={18} className="text-forest-600" aria-hidden />
             <span className="text-body-sm font-semibold text-forest-900">{t('wallet-points')}</span>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">

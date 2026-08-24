@@ -5,7 +5,7 @@ import cn from 'classnames';
 import { PILL_BASE, statusPill } from './status-pill';
 import Link from '@/components/ui/link';
 import { Routes } from '@/config/routes';
-import { Eye } from '@/components/icons/eye-icon';
+import { Truck } from '@/components/ui/icon';
 import { OrderItems } from './order-items';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { SadFaceIcon } from '@/components/icons/sad-face';
@@ -122,8 +122,8 @@ const OrderDetails = ({ order, loadingStatus }: Props) => {
             href={Routes.order(tracking_number)}
             className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[var(--ds-accent,#4E8B31)] px-4 py-2 text-sm font-semibold text-[var(--ds-accent-ink,#2E5E2A)] transition-colors hover:bg-[var(--ds-accent-soft,#EAF4E6)]"
           >
-            <Eye width={18} />
-            {t('text-sub-orders')}
+            <Truck width={18} />
+            {t('nav-menu-track-order')}
           </Link>
         </div>
       </div>
@@ -141,7 +141,7 @@ const OrderDetails = ({ order, loadingStatus }: Props) => {
       <div className="grid grid-cols-1 gap-x-8 gap-y-5 border-b border-kraft-200 px-5 py-5 md:grid-cols-[3fr_2fr]">
         <div className="flex flex-col gap-4">
           <div>
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-stone-500">
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-forest-900">
               {t('text-shipping-address')}
             </span>
             <span className="text-sm leading-relaxed text-stone-600">
@@ -150,7 +150,7 @@ const OrderDetails = ({ order, loadingStatus }: Props) => {
           </div>
 
           <div>
-            <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-stone-500">
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-forest-900">
               {t('text-billing-address')}
             </span>
             <span className="text-sm leading-relaxed text-stone-600">
