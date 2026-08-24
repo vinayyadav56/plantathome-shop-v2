@@ -1,6 +1,5 @@
 'use client';
 
-import PrivateRoute from '@/lib/private-route';
 import { CalendarGhostIcon } from '@/components/icons/calendar';
 import { IosGhostArrowLeft } from '@/components/icons/chevron-left';
 import Card from '@/components/ui/cards/card';
@@ -9,7 +8,6 @@ import { NotifySingleContentLoader } from '@/components/ui/loaders/notify-loader
 import NotFound from '@/components/ui/not-found';
 import { Routes } from '@/config/routes';
 import { useNotifyLog } from '@/framework/notify-logs';
-import DashboardLayout from '@/layouts/_dashboard';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import timezone from 'dayjs/plugin/timezone';
@@ -98,10 +96,6 @@ const NotifyLogPage = () => {
   );
 };
 
-NotifyLogPage.authenticationRequired = true;
-NotifyLogPage.getLayout = function getLayout(page: React.ReactElement) {
-  return <DashboardLayout>{page}</DashboardLayout>;
-};
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   return {
@@ -114,10 +108,8 @@ export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
 export default NotifyLogPage;
 
 
-/* ── App Router body wrapper (added by port; V1 _app.tsx getLayout semantics) ── */
+/* ── App Router body wrapper — chrome + auth live in app/(account)/layout.tsx ── */
 
 export function PageBody(props: any) {
-  const page = <NotifyLogPage {...props} />;
-  const withLayout = (NotifyLogPage as any).getLayout ? (NotifyLogPage as any).getLayout(page) : page;
-  return <PrivateRoute>{withLayout}</PrivateRoute>;
+  return <NotifyLogPage {...props} />;
 }

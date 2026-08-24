@@ -90,13 +90,7 @@ const ProfileForm = ({ user }: { user: User }) => {
       }}
     >
       {({ register, control, formState: { errors } }) => (
-        <Card className="relative w-full overflow-hidden">
-          {/* decorative plant illustration, top-right */}
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="pointer-events-none absolute -top-3 h-28 w-28 text-forest-500/15 ltr:-right-3 rtl:-left-3">
-            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z" />
-            <path d="M2 21c0-3 1.85-5.4 5.08-6" />
-          </svg>
-
+        <Card className="w-full">
           {/* header */}
           <div className="mb-7">
             <h2 className="font-pahserif text-[24px] font-medium text-forest-900">

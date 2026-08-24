@@ -60,7 +60,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
               key={i}
               href={item.href}
               className={classNames(
-                'shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[13px] font-semibold transition',
+                'shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-body-sm font-semibold transition',
                 pathname === item.href
                   ? 'border-transparent bg-ds-accent text-white'
                   : 'border-forest-900/10 bg-white text-forest-900 hover:bg-[var(--ds-accent-soft)]',
@@ -71,7 +71,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
           ))}
           <button
             onClick={() => logout()}
-            className="shrink-0 whitespace-nowrap rounded-full border border-red-200 bg-white px-4 py-2 text-[13px] font-semibold text-red-500 transition hover:bg-red-50"
+            className="shrink-0 whitespace-nowrap rounded-full border border-red-200 bg-white px-4 py-2 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
           >
             {t('profile-sidebar-logout')}
           </button>
@@ -84,17 +84,17 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         <div className="rounded-2xl border border-forest-900/10 bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
             <Sprout size={18} className="text-forest-600" aria-hidden />
-            <span className="text-[15px] font-bold text-forest-900">{t('wallet-points')}</span>
+            <span className="text-body-sm font-semibold text-forest-900">{t('wallet-points')}</span>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
             {walletStats.map((s) => (
               <div key={s.k}>
-                <div className={classNames('text-[22px] font-extrabold leading-none tabular-nums', s.accent ? 'text-forest-600' : 'text-forest-900')}>{s.v}</div>
-                <div className="mt-1.5 text-[11px] font-medium text-stone-500">{s.k}</div>
+                <div className={classNames('text-card-title font-semibold leading-none tabular-nums', s.accent ? 'text-forest-600' : 'text-forest-900')}>{s.v}</div>
+                <div className="mt-1.5 text-caption font-medium text-stone-500">{s.k}</div>
               </div>
             ))}
           </div>
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-sage-100 px-3.5 py-2.5 text-[12px] font-semibold text-forest-700">
+          <div className="mt-4 flex items-center gap-2 rounded-xl bg-sage-100 px-3.5 py-2.5 text-caption font-semibold text-forest-700">
             <Plus size={16} className="shrink-0" aria-hidden />
             {t('earn-more-points')}
           </div>
@@ -110,7 +110,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
                   <Link
                     href={item.href}
                     className={classNames(
-                      'flex items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-semibold transition',
+                      'flex items-center gap-3 rounded-xl px-4 py-2.5 text-body-sm font-semibold transition',
                       active ? 'bg-ds-accent text-white' : 'text-forest-900 hover:bg-[var(--ds-accent-soft)]',
                     )}
                   >
@@ -124,7 +124,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
           <div className="border-t border-forest-900/10 p-2.5">
             <button
               onClick={() => logout()}
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-semibold text-red-500 transition hover:bg-red-50"
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
             >
               <LogOut size={18} className="shrink-0" aria-hidden />
               {t('profile-sidebar-logout')}
@@ -135,8 +135,8 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         {/* promo */}
         <div className="overflow-hidden rounded-2xl border border-forest-900/10 bg-sage-100/70">
           <div className="px-5 pt-5">
-            <h3 className="font-pahserif text-[20px] font-medium leading-tight text-forest-900">{t('promo-title')}</h3>
-            <p className="mt-2 text-[13px] leading-snug text-stone-600">{t('promo-sub')}</p>
+            <h3 className="text-card-title font-semibold leading-tight text-forest-900">{t('promo-title')}</h3>
+            <p className="mt-2 text-body-sm leading-snug text-stone-600">{t('promo-sub')}</p>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

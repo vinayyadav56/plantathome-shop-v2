@@ -1,9 +1,6 @@
 'use client';
 
-import PrivateRoute from '@/lib/private-route';
 import React from 'react';
-import { getLayout as getSiteLayout } from '@/components/layouts/layout';
-import DashboardSidebar from '@/components/dashboard/sidebar';
 import { useMyGardenPackages, usePayGardenPackage, GardenPackage } from '@/framework/garden';
 
 
@@ -129,24 +126,8 @@ export default function MyPackagesPage() {
   );
 }
 
-const getLayout = (page: React.ReactElement) =>
-  getSiteLayout(
-    // See orders.tsx — the old `hidden … xl:block` removed all account nav
-    // below 1280px, including the sidebar's own mobile tab strip.
-    <div className="flex flex-col items-start w-full px-5 py-10 mx-auto max-w-1920 bg-light lg:bg-[#F8F7F2] lg:flex-row xl:py-14 xl:px-8 2xl:px-14">
-      <DashboardSidebar className="w-full shrink-0 ltr:lg:mr-8 rtl:lg:ml-8 lg:w-80" />
-      {page}
-    </div>
-  );
-
-MyPackagesPage.getLayout = getLayout;
-MyPackagesPage.authenticationRequired = true;
-
-
-/* ── App Router body wrapper (added by port; V1 _app.tsx getLayout semantics) ── */
+/* ── App Router body wrapper — chrome + auth live in app/(account)/layout.tsx ── */
 
 export function PageBody(props: any) {
-  const page = <MyPackagesPage {...props} />;
-  const withLayout = (MyPackagesPage as any).getLayout ? (MyPackagesPage as any).getLayout(page) : page;
-  return <PrivateRoute>{withLayout}</PrivateRoute>;
+  return <MyPackagesPage {...props} />;
 }

@@ -1,13 +1,11 @@
 'use client';
 
-import PrivateRoute from '@/lib/private-route';
 import NotificationLists from '@/components/notifications/notification-lists';
 import Card from '@/components/ui/cards/card';
 import ErrorMessage from '@/components/ui/error-message';
 import { NotifyLoader } from '@/components/ui/loaders/notify-loader';
 import NotFound from '@/components/ui/not-found';
 import { useNotification } from '@/context/notify-content';
-import DashboardLayout from '@/layouts/_dashboard';
 import rangeMap from '@/lib/range-map';
 import { NotifyLogs } from '@/types';
 import { isEmpty } from 'lodash';
@@ -83,16 +81,10 @@ export default function NotifyLogsPage() {
     </Card>
   );
 }
-NotifyLogsPage.authenticationRequired = true;
-NotifyLogsPage.getLayout = function getLayout(page: React.ReactElement) {
-  return <DashboardLayout>{page}</DashboardLayout>;
-};
 
 
-/* ── App Router body wrapper (added by port; V1 _app.tsx getLayout semantics) ── */
+/* ── App Router body wrapper — chrome + auth live in app/(account)/layout.tsx ── */
 
 export function PageBody(props: any) {
-  const page = <NotifyLogsPage {...props} />;
-  const withLayout = (NotifyLogsPage as any).getLayout ? (NotifyLogsPage as any).getLayout(page) : page;
-  return <PrivateRoute>{withLayout}</PrivateRoute>;
+  return <NotifyLogsPage {...props} />;
 }

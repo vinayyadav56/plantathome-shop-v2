@@ -1,6 +1,5 @@
 'use client';
 
-import PrivateRoute from '@/lib/private-route';
 import OrderList, { useSelectedOrder } from '@/components/orders/order-list';
 import Seo from '@/components/seo/seo';
 import ErrorMessage from '@/components/ui/error-message';
@@ -11,7 +10,6 @@ import isEmpty from 'lodash/isEmpty';
 import OrderDetails from '@/components/orders/order-details';
 import OrderListMobile from '@/components/orders/order-list-mobile';
 import NotFound from '@/components/ui/not-found';
-import DashboardLayout from '@/layouts/_dashboard';
 import { useTranslation } from 'next-i18next';
 
 
@@ -90,17 +88,13 @@ export default function OrdersPage() {
 // pages. The hand-rolled max-w-7xl wrapper here was one of three competing account containers.
 // (This move was reverted once during the order-history crash scare; the crash turned out to be
 // the pivot-less list rows, fixed and pinned in selected-order-details — safe now.)
-const getLayout = (page: React.ReactElement) => <DashboardLayout>{page}</DashboardLayout>;
 
 // OrdersPage.authenticationRequired = true;
 
-OrdersPage.getLayout = getLayout;
 
 
-/* ── App Router body wrapper (added by port; V1 _app.tsx getLayout semantics) ── */
+/* ── App Router body wrapper — chrome + auth live in app/(account)/layout.tsx ── */
 
 export function PageBody(props: any) {
-  const page = <OrdersPage {...props} />;
-  const withLayout = (OrdersPage as any).getLayout ? (OrdersPage as any).getLayout(page) : page;
-  return <PrivateRoute>{withLayout}</PrivateRoute>;
+  return <OrdersPage {...props} />;
 }

@@ -2,7 +2,7 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import AddressCard from '@/components/address/address-card';
 import { useTranslation } from 'next-i18next';
 import { AddressType } from '@/framework/utils/constants';
-import { Plus } from '@/components/ui/icon';
+import { Check, Plus } from '@/components/ui/icon';
 import { useUpdateAddressMutation } from '@/framework/user';
 
 interface AddressesProps {
@@ -22,6 +22,7 @@ function AddressGroup({
   onDelete,
   onSetDefault,
   emptyText,
+  sameAsText,
 }: {
   title: string;
   items: any[];
@@ -30,6 +31,8 @@ function AddressGroup({
   onDelete: (a: any) => void;
   onSetDefault: (a: any) => void;
   emptyText: string;
+  /** Shown instead of the empty state when this group mirrors the other one. */
+  sameAsText?: string;
 }) {
   return (
     <div className="min-w-0">
@@ -49,6 +52,11 @@ function AddressGroup({
             />
           ))}
         </div>
+      ) : sameAsText ? (
+        <p className="flex items-center gap-2 rounded-xl border border-forest-900/15 bg-sage-50 px-4 py-6 text-[13px] font-medium text-forest-700">
+          <Check size={16} aria-hidden className="shrink-0" />
+          {sameAsText}
+        </p>
       ) : (
         <p className="rounded-xl border border-dashed border-forest-900/15 px-4 py-6 text-[13px] text-stone-400">
           {emptyText}
@@ -118,7 +126,18 @@ export const ProfileAddressGrid: React.FC<AddressesProps> = ({
       {list.length ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <AddressGroup title={t('billing-address')} items={[...billing, ...untyped]} userId={userId} onEdit={onEdit} onDelete={onDelete} onSetDefault={onSetDefault} emptyText={t('text-no-address')} />
-          <AddressGroup title={t('shipping-address')} items={shipping} userId={userId} onEdit={onEdit} onDelete={onDelete} onSetDefault={onSetDefault} emptyText={t('text-no-address')} />
+          {/* Checkout's "same as billing" is never persisted as a shipping row, so an
+              empty shipping column with billing present means exactly that choice. */}
+          <AddressGroup
+            title={t('shipping-address')}
+            items={shipping}
+            userId={userId}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onSetDefault={onSetDefault}
+            emptyText={t('text-no-address')}
+            sameAsText={billing.length || untyped.length ? t('text-same-as-billing') : undefined}
+          />
         </div>
       ) : (
         <p className="rounded-xl border border-dashed border-forest-900/15 px-5 py-8 text-center text-[13px] text-stone-400">

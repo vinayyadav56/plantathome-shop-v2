@@ -184,6 +184,7 @@
   "text-search-placeholder": "Search your products from here",
   "text-search-placeholder-minimal": "Search (type at least 3 character)",
   "text-no-address": "No Address Found",
+  "text-same-as-billing": "Same as billing address",
   "text-have-coupon": "Do you have coupon?",
   "text-enter-coupon": "Enter coupon code here",
   "text-coupon-required": "Coupon code is required",

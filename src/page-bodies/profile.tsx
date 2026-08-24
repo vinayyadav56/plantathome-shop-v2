@@ -1,6 +1,5 @@
 'use client';
 
-import PrivateRoute from '@/lib/private-route';
 import ProfileAddressGrid from '@/components/profile/profile-address';
 import Card from '@/components/ui/cards/card';
 import { useTranslation } from 'next-i18next';
@@ -9,7 +8,6 @@ import ProfileContact from '@/components/profile/profile-contact';
 import ProfileContactDetails from '@/components/profile/profile-contact-details';
 import Seo from '@/components/seo/seo';
 import { useUser } from '@/framework/user';
-import DashboardLayout from '@/layouts/_dashboard';
 import ProfileUpdateEmail from "@/components/profile/profile-update-email";
 
 const ProfilePage = () => {
@@ -43,18 +41,11 @@ const ProfilePage = () => {
   );
 };
 
-ProfilePage.authenticationRequired = true;
-
-ProfilePage.getLayout = function getLayout(page: React.ReactElement) {
-  return <DashboardLayout>{page}</DashboardLayout>;
-};
 export default ProfilePage;
 
 
-/* ── App Router body wrapper (added by port; V1 _app.tsx getLayout semantics) ── */
+/* ── App Router body wrapper — chrome + auth live in app/(account)/layout.tsx ── */
 
 export function PageBody(props: any) {
-  const page = <ProfilePage {...props} />;
-  const withLayout = (ProfilePage as any).getLayout ? (ProfilePage as any).getLayout(page) : page;
-  return <PrivateRoute>{withLayout}</PrivateRoute>;
+  return <ProfilePage {...props} />;
 }

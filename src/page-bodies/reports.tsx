@@ -1,9 +1,7 @@
 'use client';
 
-import PrivateRoute from '@/lib/private-route';
 import Card from '@/components/ui/cards/card';
 import Seo from '@/components/seo/seo';
-import DashboardLayout from '@/layouts/_dashboard';
 import MyReports from '@/components/reports/report-view';
 
 const MyReportsPage = () => {
@@ -17,19 +15,13 @@ const MyReportsPage = () => {
   );
 };
 
-MyReportsPage.authenticationRequired = true;
 
-MyReportsPage.getLayout = function getLayout(page: React.ReactElement) {
-  return <DashboardLayout>{page}</DashboardLayout>;
-};
 
 export default MyReportsPage;
 
 
-/* ── App Router body wrapper (added by port; V1 _app.tsx getLayout semantics) ── */
+/* ── App Router body wrapper — chrome + auth live in app/(account)/layout.tsx ── */
 
 export function PageBody(props: any) {
-  const page = <MyReportsPage {...props} />;
-  const withLayout = (MyReportsPage as any).getLayout ? (MyReportsPage as any).getLayout(page) : page;
-  return <PrivateRoute>{withLayout}</PrivateRoute>;
+  return <MyReportsPage {...props} />;
 }
