@@ -111,6 +111,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'plantathome-media-prod.s3.ap-south-1.amazonaws.com' },
+      // Media CDN (CloudFront over the media bucket)
+      { protocol: 'https', hostname: 'cdn.plantathome.in' },
+      { protocol: 'https', hostname: 'd2jm6s9d83m98n.cloudfront.net' },
       { protocol: 'https', hostname: 'plantathome.s3.ap-south-1.amazonaws.com' },
       { protocol: 'https', hostname: 'pickbazarlaravel.s3.ap-southeast-1.amazonaws.com' },
       { protocol: 'https', hostname: 'pixarlaravel.s3.ap-southeast-1.amazonaws.com' },
