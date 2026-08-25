@@ -231,6 +231,9 @@ export default function LiveTrackingCard({
   );
 
   const live = Boolean(data?.available) && Boolean(KEY);
+  // Collapsible now that this card sits in the sidebar rather than the main
+  // column — open by default so an active delivery is seen immediately.
+  const [expanded, setExpanded] = useState(true);
 
   // Shipment that carries courier identity (a split order shows the rest in
   // the per-parcel cards below).
@@ -254,21 +257,49 @@ export default function LiveTrackingCard({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E7E5DC] bg-white shadow-sm">
-      <div className="flex items-center justify-between px-5 pb-4 pt-5 sm:px-6">
-        <h3 className="text-base font-medium text-forest-900">Live Tracking</h3>
-        <div className="flex items-center gap-2 text-xs text-[#9B998F]">
-          {updatedLabel ? <span>Last updated: {updatedLabel}</span> : null}
-          <button
-            type="button"
-            aria-label="Refresh tracking"
-            onClick={() => refetch()}
-            className="rounded-full p-1 text-[#8C8A81] transition-colors hover:bg-[#F3F1EA] hover:text-forest-900"
-          >
-            <RefreshIcon className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
-      </div>
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        aria-expanded={expanded}
+        className="flex w-full items-center justify-between px-5 pb-4 pt-5 text-left sm:px-6"
+      >
+        <span className="flex items-center gap-2">
+          <h3 className="text-base font-medium text-forest-900">Live Tracking</h3>
+          {live && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-green-700">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+              </span>
+              Live
+            </span>
+          )}
+        </span>
+        <span className="flex items-center gap-2 text-xs text-[#9B998F]">
+          {expanded && updatedLabel ? <span>Last updated: {updatedLabel}</span> : null}
+          {expanded && (
+            <span
+              role="button"
+              tabIndex={0}
+              aria-label="Refresh tracking"
+              onClick={(e) => {
+                e.stopPropagation();
+                refetch();
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && refetch()}
+              className="rounded-full p-1 text-[#8C8A81] transition-colors hover:bg-[#F3F1EA] hover:text-forest-900"
+            >
+              <RefreshIcon className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+            </span>
+          )}
+          <ChevronRightIcon
+            className={`h-4 w-4 text-[#B8B6AD] transition-transform ${expanded ? 'rotate-90' : ''}`}
+          />
+        </span>
+      </button>
 
+      {expanded && (
+        <>
       <div className="px-5 sm:px-6">
         <div className="relative h-[280px] overflow-hidden rounded-xl border border-[#EDEBE2] sm:h-[320px]">
           {live ? <LiveMap data={data} /> : <PlaceholderMap />}
@@ -363,6 +394,8 @@ export default function LiveTrackingCard({
           {data?.courier?.stale ? ' · location updating…' : ''}.
         </p>
       ) : null}
+        </>
+      )}
     </div>
   );
 }

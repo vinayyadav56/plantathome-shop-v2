@@ -105,8 +105,13 @@ function SignInPage() {
           </div>
         </div>
 
-        {/* right — form */}
-        <div className="flex w-full flex-col justify-center px-5 py-10 sm:px-10 lg:w-1/2 lg:px-16">
+        {/* right — form.
+            Anchored near the top rather than vertically centered: Register's box is
+            taller than Login's (extra field, terms line), and centering a variable-height
+            column translates the WHOLE thing — heading and tab strip included — every time
+            you switch tabs. Anchoring keeps the top edge, where the eye and the tabs are,
+            still; only the whitespace below grows or shrinks. */}
+        <div className="flex w-full flex-col px-5 pb-10 pt-16 sm:px-10 sm:pt-20 lg:w-1/2 lg:px-16 lg:pt-24">
           <div className="mx-auto w-full max-w-[420px]">
             {/* mobile brand */}
             <Link href="/" className="mb-8 inline-flex font-pahserif text-[22px] font-bold text-forest-900 lg:hidden">
