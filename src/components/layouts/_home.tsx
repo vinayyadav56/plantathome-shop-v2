@@ -35,8 +35,10 @@ export default function HomeLayout({
     <div className="flex min-h-screen flex-col transition-colors duration-150" style={{ background: 'var(--pa-bg)' }}>
       {/* Brand header is sticky/solid (see header.tsx). On the home it shows from md+
           (tablet/desktop use the production home); the phone home (<md) carries its
-          own app bar, so the prod header is suppressed there. */}
-      {pahMobile ? <div className="hidden md:block">{headerEl}</div> : headerEl}
+          own app bar, so the prod header is suppressed there. md:contents dissolves
+          the wrapper box so the navbar's position:sticky works against the
+          page-height flex column instead of a header-height cage. */}
+      {pahMobile ? <div className="max-md:hidden md:contents">{headerEl}</div> : headerEl}
 
       <main id="main-content" className="min-h-screen flex-1">{children}</main>
 

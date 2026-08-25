@@ -47,7 +47,9 @@ export function PlantCompanyHome({
           bottom. Full-bleed 100%-width hero (per feedback). */}
       <div className="relative">
         <HeroPlant />
-        <div className="absolute bottom-0 left-0 right-0 z-[5] pb-5 sm:pb-6">
+        {/* z-20: must beat the hero's own z-10 content box, whose bottom padding
+            overlaps this strip and would otherwise swallow the cards' clicks. */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 pb-5 sm:pb-6">
           <CategoryRow />
         </div>
       </div>

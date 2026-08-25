@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCategories } from '@/framework/category';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
-import { ArrowRight, Droplet, Flower2, ShoppingBag, Sprout, Wrench } from '@/components/ui/icon';
+import { ArrowRight, ChevronRight, Droplet, Flower2, ShoppingBag, Sprout, Wrench } from '@/components/ui/icon';
 
 // Same query as collections.tsx (shared react-query cache). limit=1000 makes the
 // categories API truncate its JSON mid-stream — see collections.tsx.
@@ -46,52 +46,65 @@ function Thumb({ src, fallback }: { src: string; fallback: JSX.Element }) {
 export function CategoryRow() {
   const { categories: raw, isLoading } = useCategories({ limit: HOME_CATEGORIES_LIMIT, parent: 'null' } as any);
   const { homeCategories } = useHomeConfig();
-  // Six slots, not five: the row was shrunk (annotation) specifically to make
-  // room for another vertical's card. Which six is admin curation's call.
-  const categories = applyCuration(raw ?? [], homeCategories).slice(0, 6);
+  // Twelve slots feeding a scrollable rail (six visible, the rest behind the
+  // arrow). Which twelve — and their order — is admin curation's call.
+  const categories = applyCuration(raw ?? [], homeCategories).slice(0, 12);
+  const railRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <section className="relative z-[5]">
       <div className="mx-auto max-w-none px-5 sm:px-8 lg:px-16">
-        <div className="pah-rail [--rail-w:46%] md:[--rail-w:calc((100%_-_40px)/6)] lg:[--rail-w:calc((100%_-_60px)/6)] grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3">
-
-          {isLoading && categories.length === 0
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[76px] animate-pulse rounded-[14px] bg-white/60" />
-              ))
-            : categories.map((c: any, i: number) => {
-                const img = c.image?.original ?? c.image?.thumbnail ?? '';
-                return (
-                  <motion.div
-                    key={c.id ?? c.slug}
-                    initial={{ y: 20 }}
-                    whileInView={{ y: 0 }}
-                    viewport={{ once: true, margin: '-20px' }}
-                    transition={{ duration: 0.5, delay: (i % 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Link
-                      href={`/c/${c.slug}`}
-                      className="group flex h-[76px] overflow-hidden rounded-[14px] border border-kraft-200 bg-white shadow-[0_6px_18px_rgba(5,16,8,0.14)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_14px_32px_rgba(5,16,8,0.2)] md:h-[68px] lg:h-[76px]"
+        {/* white panel the cards sit on (per reference) */}
+        <div className="relative rounded-[20px] bg-white p-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
+          <div
+            ref={railRef}
+            className="flex gap-4 overflow-x-auto scroll-smooth pr-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {isLoading && categories.length === 0
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="h-[88px] min-w-[210px] flex-none animate-pulse rounded-2xl bg-black/[0.05]" />
+                ))
+              : categories.map((c: any, i: number) => {
+                  const img = c.image?.original ?? c.image?.thumbnail ?? '';
+                  return (
+                    <motion.div
+                      key={c.id ?? c.slug}
+                      className="min-w-[210px] max-w-[230px] flex-none"
+                      initial={{ y: 20 }}
+                      whileInView={{ y: 0 }}
+                      viewport={{ once: true, margin: '-20px' }}
+                      transition={{ duration: 0.5, delay: (i % 6) * 0.06, ease: [0.22, 1, 0.36, 1] }}
                     >
-                      {/* text — left */}
-                      <div className="flex min-w-0 flex-1 flex-col justify-center p-2.5 md:p-2 lg:p-2.5">
-                        <p className="line-clamp-2 font-hanken text-[13px] font-bold leading-tight text-forest-900 md:text-[11px] lg:text-[13px]">
-                          {c.name}
-                        </p>
-                        <p className="mt-1 flex items-center gap-1 font-hanken text-[11px] font-semibold leading-none text-forest-900 transition-colors duration-200 group-hover:text-forest-700 md:text-[9.5px] lg:text-[11px]">
-                          Shop Now
-                          <ArrowRight size={12} className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
-                        </p>
-                      </div>
+                      <Link
+                        href={`/c/${c.slug}`}
+                        className="group flex h-full items-center gap-3.5 rounded-2xl border border-[#eee] bg-white p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#e0e0e0] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)]"
+                      >
+                        {/* product photo — left, 56×56 */}
+                        <div className="h-14 w-14 shrink-0 overflow-hidden">
+                          <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
+                        </div>
+                        <div className="flex min-w-0 flex-col gap-1">
+                          <h4 className="line-clamp-2 text-[0.95rem] font-semibold leading-tight text-[#1a2e1f]">{c.name}</h4>
+                          <span className="inline-flex items-center gap-1 text-[0.85rem] font-medium text-[#2e7d32]">
+                            Shop Now
+                            <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-0.5" aria-hidden />
+                          </span>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+          </div>
 
-                      {/* product photo — right */}
-                      <div className="h-full w-[38%] shrink-0 overflow-hidden rounded-r-[14px]">
-                        <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
+          {/* rail scroller — touch scrolls natively below md */}
+          <button
+            type="button"
+            aria-label="Scroll categories"
+            onClick={() => railRef.current?.scrollBy({ left: 452, behavior: 'smooth' })}
+            className="absolute right-2 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#eee] bg-white text-[#1a2e1f] shadow-[0_2px_10px_rgba(0,0,0,0.1)] transition-colors hover:text-[#2e7d32] md:grid"
+          >
+            <ChevronRight size={20} aria-hidden />
+          </button>
         </div>
       </div>
     </section>

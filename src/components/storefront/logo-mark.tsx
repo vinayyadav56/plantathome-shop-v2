@@ -124,7 +124,7 @@ export function BrandLogo({
           // (brightness-0 invert) — the green-on-green asset was invisible.
           // Needs a transparent-background logo; an opaque one should be
           // re-uploaded as headerLogoLight instead.
-          className={`h-11 w-auto object-contain object-left ${light ? 'brightness-0 invert' : ''}`}
+          className={`h-[42px] w-auto object-contain object-left ${light ? 'brightness-0 invert' : ''}`}
         />
       </span>
     );

@@ -20,7 +20,7 @@ import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import Search from '@/components/ui/search/search';
-import { ChevronDown, Heart, Truck } from '@/components/ui/icon';
+import { ChevronDown, CircleHelp, Heart, Truck } from '@/components/ui/icon';
 
 
 
@@ -76,9 +76,9 @@ const NAV_TAIL: NavItem[] = [
 ];
 
 /**
- * PlantAtHome brand header — clean white bar with a top announcement strip,
- * centred nav, inline search, profile + cart. Transparent over the home hero,
- * solid white everywhere else. Wired to the real cart drawer, login + search.
+ * PlantAtHome brand header — solid dark announcement strip (static, scrolls
+ * away) over a sticky white frosted navbar with centred nav, inline search,
+ * profile + cart. Wired to the real cart drawer, login + search.
  */
 const Header = ({ layout }: { layout?: string }) => {
   const { t } = useTranslation('common');
@@ -90,26 +90,6 @@ const Header = ({ layout }: { layout?: string }) => {
 
   const [searchOpen, setSearchOpen] = useAtom(displayMobileHeaderSearchAtom);
   const [menuOpen, setMenuOpen] = React.useState(false);
-
-  // Transparent over the homepage hero, then a smooth transition to the solid
-  // white bar after a small scroll. Every other page (no hero behind the nav) is
-  // solid from the top. The homepage hero is pulled up behind the sticky header
-  // (negative margin) so the transparent state reveals the cinematic hero.
-  // The homepage is served by the optional-catch-all route, so router.pathname is
-  // '/[[...pages]]' — use asPath (the real URL) to detect it.
-  const isHome = (router?.asPath?.split(/[?#]/)[0] || '/') === '/';
-  const [scrolled, setScrolled] = React.useState(false);
-  React.useEffect(() => {
-    if (!isHome) {
-      setScrolled(false);
-      return;
-    }
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [isHome]);
-  const position = isHome ? 'fixed' : 'sticky';
 
   const openCart = () => setDrawer({ display: true, view: 'cart' });
 
@@ -157,40 +137,49 @@ const Header = ({ layout }: { layout?: string }) => {
     return [...verticals, ...NAV_TAIL];
   }, [types]);
 
-  const iconBtn = 'grid h-10 w-10 place-items-center rounded-full text-white transition hover:bg-white/10';
+  const iconBtn = 'grid h-10 w-10 place-items-center rounded-full text-[#1a2e1f] transition hover:bg-black/[0.06]';
 
   return (
     <>
+      {/* announcement bar — solid near-black strip, static (only the navbar
+          below is sticky, so this scrolls away naturally). City switcher stays
+          left for the city-first delivery UX. */}
+      <div className="bg-[#0b1f12] text-sm font-medium text-[#e8f5e9]">
+        <div className="relative mx-auto flex max-w-[1440px] items-center justify-between gap-3 px-6 py-2">
+          <CitySwitcher tone="light" />
+          {/* xl+: below that the absolute-centered promo collides with the
+              Track Order / Help & Support links on the right */}
+          <span className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 items-center gap-2.5 whitespace-nowrap xl:flex">
+            <Truck size={15} className="shrink-0 text-sage-300" aria-hidden />
+            FREE SHIPPING on orders above ₹499
+            <span className="h-3 w-px bg-white/30" />
+            Extra 5% OFF on prepaid orders
+          </span>
+          <span className="flex items-center gap-4">
+            <Link href="/track-order" className="inline-flex items-center gap-1.5 transition-colors hover:text-white">
+              <Truck size={15} aria-hidden />
+              Track Order
+            </Link>
+            <Link href="/help" className="hidden items-center gap-1.5 transition-colors hover:text-white sm:inline-flex">
+              <CircleHelp size={15} aria-hidden />
+              Help &amp; Support
+            </Link>
+          </span>
+        </div>
+      </div>
+
       <motion.header
         id="site-header"
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease: EXPO }}
-        className={`${position} inset-x-0 top-0 z-50 w-full bg-[#10230f]/70 backdrop-blur-2xl backdrop-saturate-150 transition-shadow duration-300 ${
-          scrolled ? 'shadow-[0_4px_24px_rgba(0,0,0,0.35)]' : ''
-        }`}
+        className="sticky top-0 z-50 w-full border-b border-black/[0.06] bg-white/[0.85] backdrop-blur-[12px]"
       >
-        {/* announcement bar — frosted near-black strip, slides away on scroll.
-            City switcher stays left for the city-first delivery UX. */}
-        <div className={`overflow-hidden border-b border-white/10 bg-[#0A0D0A]/75 text-white backdrop-blur-xl transition-all duration-300 ${scrolled ? 'max-h-0 opacity-0' : 'max-h-12 opacity-100'}`}>
-          <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-2 text-[11px] font-medium tracking-wide sm:px-8 lg:px-16">
-
-            <CitySwitcher tone="light" />
-            <span className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 items-center gap-2.5 whitespace-nowrap lg:flex">
-              <Truck size={14} className="shrink-0 text-sage-300" aria-hidden />
-              FREE SHIPPING on orders above ₹499
-              <span className="h-3 w-px bg-white/30" />
-              Extra 5% OFF on prepaid orders
-            </span>
-            <span aria-hidden className="hidden w-20 sm:block" />
-          </div>
-        </div>
-
         {/* main bar */}
-        <div className="relative mx-auto flex max-w-7xl items-center px-5 py-2.5 sm:px-8 lg:px-16">
+        <div className="relative mx-auto flex max-w-[1440px] items-center gap-6 px-6 py-3.5">
           {/* Logo */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
-            <BrandLogo light />
+            <BrandLogo />
           </Link>
 
           {/* ── nav — centered between logo and actions, flat on the dark bar.
@@ -200,16 +189,16 @@ const Header = ({ layout }: { layout?: string }) => {
               with logo/actions through the whole lg range (1024–1210), so
               768–1279 uses the hamburger's full-screen menu instead. */}
           <nav className="hidden min-w-0 flex-1 justify-center xl:flex">
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-2">
               {NAV.map((n) =>
                 n.menu ? (
                   <div key={n.label} className="group relative">
                     <Link
                       href={n.href}
-                      className="inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.15] hover:text-white"
+                      className="inline-flex items-center gap-1 whitespace-nowrap px-1 py-2 text-[0.95rem] font-medium text-[#1a2e1f] transition-colors duration-200 hover:text-[#2e7d32]"
                     >
                       {n.label}
-                      <ChevronDown size={12} className="opacity-50 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
+                      <ChevronDown size={12} className="opacity-60 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
                     </Link>
                     {/* dropdown — glass panel */}
                     <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
@@ -230,7 +219,9 @@ const Header = ({ layout }: { layout?: string }) => {
                   <Link
                     key={n.label}
                     href={n.href}
-                    className="whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/90 transition-colors hover:bg-white/[0.15] hover:text-white"
+                    className={`whitespace-nowrap px-1 py-2 text-[0.95rem] font-medium transition-colors duration-200 hover:text-[#2e7d32] ${
+                      n.href === '/offers' ? 'text-[#2e7d32]' : 'text-[#1a2e1f]'
+                    }`}
                   >
                     {n.label}
                   </Link>
@@ -243,33 +234,29 @@ const Header = ({ layout }: { layout?: string }) => {
           <div className="ml-auto flex items-center gap-3">
             <div className="hidden items-center gap-1 md:flex">
               {/* Search */}
-              <button type="button" onClick={() => setSearchOpen(true)} className="grid h-10 w-10 place-items-center rounded-lg text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label={t('text-search') ?? 'Search'}>
+              <button type="button" onClick={() => setSearchOpen(true)} className="grid h-10 w-10 place-items-center rounded-lg text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label={t('text-search') ?? 'Search'}>
                 <SearchIcon className="h-[18px] w-[18px]" />
               </button>
-              {/* Track Order */}
-              <Link href="/track-order" className="flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label="Track Order">
-                <Truck size={18} aria-hidden />
-                <span className="hidden text-[11px] font-medium leading-none xl:inline">Track Order</span>
-              </Link>
+              <span aria-hidden className="mx-1.5 h-6 w-px bg-black/10" />
               {/* Wishlist */}
-              <Link href="/wishlists" className="flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label="Wishlist">
+              <Link href="/wishlists" className="flex flex-col items-center gap-1 px-2.5 py-1 text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label="Wishlist">
                 <Heart size={18} aria-hidden />
-                <span className="hidden text-[11px] font-medium leading-none xl:inline">Wishlist</span>
+                <span className="text-[0.75rem] font-medium leading-none">Wishlist</span>
               </Link>
               {/* Cart */}
-              <button ref={cartBtnRef} data-cart-target type="button" onClick={openCart} className="flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label="Cart">
+              <button ref={cartBtnRef} data-cart-target type="button" onClick={openCart} className="flex flex-col items-center gap-1 px-2.5 py-1 text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label="Cart">
                 <span className="relative">
                   <Icon.bag className="h-[18px] w-[18px]" />
-                  <span className="absolute -right-1.5 -top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full bg-ds-accent px-1 text-[9px] font-bold text-white">
+                  <span className="absolute -right-2 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#2e7d32] px-0.5 text-[0.65rem] font-semibold text-white">
                     {totalUniqueItems}
                   </span>
                 </span>
-                <span className="hidden text-[11px] font-medium leading-none xl:inline">Cart</span>
+                <span className="text-[0.75rem] font-medium leading-none">Cart</span>
               </button>
               {/* Login */}
-              <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1 rounded-lg px-2.5 py-1.5 text-white/90 transition-colors hover:bg-white/10 hover:text-white" aria-label={isAuthorize ? 'My account' : 'Login'}>
+              <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1 px-2.5 py-1 text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label={isAuthorize ? 'My account' : 'Login'}>
                 <Icon.user className="h-[18px] w-[18px]" />
-                <span className="hidden text-[11px] font-medium leading-none xl:inline">{isAuthorize ? 'Account' : 'Login'}</span>
+                <span className="text-[0.75rem] font-medium leading-none">{isAuthorize ? 'Account' : 'Login'}</span>
               </button>
             </div>
 
@@ -277,7 +264,7 @@ const Header = ({ layout }: { layout?: string }) => {
             <button type="button" onClick={() => setSearchOpen(true)} className={`${iconBtn} md:hidden`} aria-label={t('text-search') ?? 'Search'}>
               <SearchIcon className="h-[18px] w-[18px]" />
             </button>
-            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-9 w-9 place-items-center rounded-full bg-white/15 text-white backdrop-blur xl:hidden" aria-label="Menu">
+            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-9 w-9 place-items-center rounded-full bg-black/[0.06] text-[#1a2e1f] xl:hidden" aria-label="Menu">
               <Icon.menu className="h-5 w-5" />
             </button>
           </div>
