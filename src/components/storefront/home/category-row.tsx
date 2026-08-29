@@ -54,8 +54,10 @@ export function CategoryRow() {
 
   return (
     <section className="relative">
-      {/* warm-glass panel the cards float on (design spec §8) */}
-      <div className="relative rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-3 shadow-[0_22px_60px_rgba(6,25,11,0.18),0_3px_10px_rgba(6,25,11,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[24px] backdrop-saturate-[1.3]">
+      {/* warm-glass panel the cards float on (design spec §8). Total height is
+          pinned to the navbar pill: 56 card + 8 rail py + 12 panel p + 2
+          border = 78px (annotation: strip = navbar height). */}
+      <div className="relative rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-1.5 shadow-[0_22px_60px_rgba(6,25,11,0.18),0_3px_10px_rgba(6,25,11,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[24px] backdrop-saturate-[1.3]">
         <div
           ref={railRef}
           // py-1 gives the 3px hover lift headroom INSIDE the scroll box —
@@ -66,14 +68,14 @@ export function CategoryRow() {
         >
           {isLoading && categories.length === 0
             ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[80px] min-w-[210px] flex-none animate-pulse rounded-2xl bg-black/[0.05]" />
+                <div key={i} className="h-[56px] min-w-[190px] flex-none animate-pulse rounded-xl bg-black/[0.05]" />
               ))
             : categories.map((c: any, i: number) => {
                 const img = c.image?.original ?? c.image?.thumbnail ?? '';
                 return (
                   <motion.div
                     key={c.id ?? c.slug}
-                    className="min-w-[210px] flex-[1_0_210px]"
+                    className="min-w-[190px] flex-[1_0_190px]"
                     initial={{ y: 20 }}
                     whileInView={{ y: 0 }}
                     viewport={{ once: true, margin: '-20px' }}
@@ -81,20 +83,17 @@ export function CategoryRow() {
                   >
                     <Link
                       href={`/c/${c.slug}`}
-                      className="group flex h-[80px] items-center rounded-2xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2.5 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
+                      className="group flex h-[56px] items-center rounded-xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
                     >
-                      {/* product photo — left, 56×56 on a soft radial tile */}
-                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-[13px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
+                      {/* product photo — left, 40×40 on a soft radial tile */}
+                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
                       </div>
-                      <div className="flex min-w-0 flex-col justify-center gap-1.5 pl-3 pr-1">
-                        {/* strictly one line, small and light (annotation) */}
-                        <h4 className="truncate text-[13px] font-normal leading-[1.3] text-[#1b2b1e]">{c.name}</h4>
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium text-[#39772b]">
-                          Shop Now
-                          <ArrowRight size={14} className="shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-                        </span>
-                      </div>
+                      {/* 56px fits one text row: name + arrow, no "Shop Now" line */}
+                      <h4 className="min-w-0 flex-1 truncate pl-2.5 pr-1 text-[13px] font-normal leading-none text-[#1b2b1e]">
+                        {c.name}
+                      </h4>
+                      <ArrowRight size={14} className="mr-1 shrink-0 text-[#39772b] transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                     </Link>
                   </motion.div>
                 );
@@ -106,7 +105,7 @@ export function CategoryRow() {
           type="button"
           aria-label="Scroll categories"
           onClick={() => railRef.current?.scrollBy({ left: 452, behavior: 'smooth' })}
-          className="absolute right-3 top-1/2 z-10 hidden h-[46px] w-[46px] -translate-y-1/2 place-items-center rounded-full border border-[rgba(30,70,38,0.12)] bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(235,241,231,0.9))] text-[#23442b] shadow-[0_6px_18px_rgba(15,45,20,0.12)] transition-all duration-200 hover:scale-[1.06] hover:shadow-[0_10px_25px_rgba(15,45,20,0.18)] md:grid"
+          className="absolute right-2 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[rgba(30,70,38,0.12)] bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(235,241,231,0.9))] text-[#23442b] shadow-[0_6px_18px_rgba(15,45,20,0.12)] transition-all duration-200 hover:scale-[1.06] hover:shadow-[0_10px_25px_rgba(15,45,20,0.18)] md:grid"
         >
           <ChevronRight size={20} aria-hidden />
         </button>
