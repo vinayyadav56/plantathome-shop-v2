@@ -26,6 +26,7 @@ const STATIC_ROUTES = [
   '/track-order',
   '/terms',
   '/privacy',
+  '/data-deletion',
   // '/refunds' removed: that is the ACCOUNT refunds page (its page body even
   // declares noindex) — the public policy page is /customer-refund-policies.
   '/customer-refund-policies',

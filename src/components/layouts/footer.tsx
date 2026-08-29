@@ -286,6 +286,7 @@ const Footer = () => {
           <div className="flex flex-wrap items-center gap-5">
             <Link href="/privacy" className="text-white/45 transition hover:text-white">{t('footer-privacy')}</Link>
             <Link href="/terms" className="text-white/45 transition hover:text-white">{t('footer-terms')}</Link>
+            <Link href="/data-deletion" className="text-white/45 transition hover:text-white">Data Deletion</Link>
             <Link href="/track-order" className="text-white/45 transition hover:text-white">{t('footer-track-order')}</Link>
             <span className="h-4 w-px bg-white/10" />
             <div className="flex items-center gap-1.5">

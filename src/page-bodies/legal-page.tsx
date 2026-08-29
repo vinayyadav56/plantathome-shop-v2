@@ -13,7 +13,13 @@ import { LEGAL_DEFAULTS, type LegalDoc } from '@/framework/static/legal-content'
  * legal-content.ts, so the pages can never render empty. Both sources pass
  * through the shared sanitizer before injection.
  */
-export default function LegalPage({ doc }: { doc: 'privacy' | 'terms' }) {
+const DOC_SLUGS = {
+  privacy: 'privacy',
+  terms: 'terms',
+  dataDeletion: 'data-deletion',
+} as const;
+
+export default function LegalPage({ doc }: { doc: keyof typeof DOC_SLUGS }) {
   const { settings } = useSettings();
   const saved = (settings as any)?.legalPages?.[doc] as Partial<LegalDoc> | undefined;
   const fallback = LEGAL_DEFAULTS[doc];
@@ -27,7 +33,7 @@ export default function LegalPage({ doc }: { doc: 'privacy' | 'terms' }) {
 
   return (
     <>
-      <Seo title={title} url={doc} />
+      <Seo title={title} url={DOC_SLUGS[doc]} />
       <PageBanner title={title} breadcrumbTitle="Home" />
       <section className="mx-auto w-full max-w-screen-lg g-light-a px-5 py-8 lg:py-10 xl:py-14">
         <p className="mb-8 text-sm text-body-dark md:text-base">

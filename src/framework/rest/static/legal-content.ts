@@ -206,7 +206,48 @@ const TERMS_HTML = `
 ${CONTACT_HTML}
 <p>By accessing or using PlantAtHome's website, products, services, or communication channels, you acknowledge that you have read, understood, and agreed to these Terms of Service.</p>`;
 
-export const LEGAL_DEFAULTS: Record<'privacy' | 'terms', LegalDoc> = {
+const DATA_DELETION_HTML = `
+<p>PlantAtHome is operated by <strong>Silvestrix Green LLP</strong>.</p>
+<p>We respect your right to request the deletion of your personal information. This page explains how you can request the deletion of data associated with your use of PlantAtHome's website, products, services, and communication channels, including WhatsApp.</p>
+
+<h2>How to Request Data Deletion</h2>
+<p>If you would like PlantAtHome to delete your personal information, you may submit a data deletion request using the following method:</p>
+<h3>Submit a Request by Email</h3>
+<p>Send an email to: <strong><a href="mailto:data@plantathome.in">data@plantathome.in</a></strong></p>
+<p>Use the subject line: <strong>Data Deletion Request</strong></p>
+<p>Please include the following information:</p>
+<ul><li>Your full name</li><li>Your registered mobile or WhatsApp number</li><li>Your email address, if applicable</li><li>Any other information that may help us identify your account or records</li></ul>
+<p>We may request additional information to verify your identity before processing your request.</p>
+
+<h2>What Data May Be Deleted</h2>
+<p>Upon receiving and verifying a valid request, we will take reasonable steps to delete or anonymize applicable personal information associated with you, which may include:</p>
+<ul><li>Name</li><li>Phone number</li><li>WhatsApp-related contact information</li><li>Email address</li><li>Account information</li><li>Customer support records</li><li>Other personal information that is no longer required to be retained</li></ul>
+
+<h2>Information We May Need to Retain</h2>
+<p>In certain circumstances, we may be required or permitted to retain some information for legitimate purposes, including:</p>
+<ul><li>Compliance with applicable laws and regulations</li><li>Tax and accounting requirements</li><li>Fraud prevention and security</li><li>Resolution of disputes</li><li>Enforcement of legal agreements</li></ul>
+<p>Where information must be retained, it will be kept only for as long as necessary for the relevant legal or legitimate purpose.</p>
+
+<h2>WhatsApp Data</h2>
+<p>If you have communicated with PlantAtHome through WhatsApp, you may request the deletion of personal information held by PlantAtHome in connection with those communications.</p>
+<p>Please note that the deletion of information held by PlantAtHome does not necessarily delete information independently retained by WhatsApp, Meta, or other third-party service providers. Such information may be governed by the respective privacy policies and data management procedures of those providers.</p>
+
+<h2>Request Processing</h2>
+<p>After receiving your request:</p>
+<ul><li>We may verify your identity.</li><li>We will review your request.</li><li>We will process the deletion of applicable information where required or appropriate.</li><li>We may notify you once your request has been processed.</li></ul>
+<p>We aim to process valid requests within a reasonable timeframe, subject to applicable legal requirements and operational requirements.</p>
+
+<h2>Contact Us</h2>
+<p>For questions or requests related to the deletion of your personal information, please contact:</p>
+<p><strong>PlantAtHome</strong><br/>Operated by <strong>Silvestrix Green LLP</strong></p>
+<p><strong>Email:</strong> <a href="mailto:data@plantathome.in">data@plantathome.in</a></p>
+
+<h2>Important Information</h2>
+<p>Submitting a data deletion request may affect your ability to use certain PlantAtHome services in the future.</p>
+<p>This page should be read together with our <a href="/privacy"><strong>Privacy Policy</strong></a> and <a href="/terms"><strong>Terms of Service</strong></a>.</p>`;
+
+export const LEGAL_DEFAULTS: Record<'privacy' | 'terms' | 'dataDeletion', LegalDoc> = {
   privacy: { title: 'Privacy Policy', updatedAt: 'August 29, 2026', body: PRIVACY_HTML },
   terms: { title: 'Terms of Service', updatedAt: 'August 29, 2026', body: TERMS_HTML },
+  dataDeletion: { title: 'Data Deletion Instructions', updatedAt: 'August 29, 2026', body: DATA_DELETION_HTML },
 };
