@@ -9,13 +9,22 @@ import {
   Droplet,
   ExternalLink,
   Flower2,
+  Gift,
   Globe,
+  Heart,
+  Home,
+  Leaf,
+  Package,
   Sprout, Menu,
   Play,
   Plus,
   ShieldCheck,
   ShoppingBag,
+  Sparkles,
+  Star,
+  Sun,
   Truck,
+  Wrench,
   type LucideIcon,
 } from '@/components/ui/icon';
 
@@ -43,6 +52,19 @@ const GLYPHS: Record<string, LucideIcon> = {
   shield: ShieldCheck,
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
+  // admin-pickable section-heading glyphs (homeSections[].icon); unknown or
+  // blank names fall back to Sprout below, so any string is safe to store.
+  flower: Flower2,
+  sprout: Sprout,
+  realLeaf: Leaf,
+  sun: Sun,
+  heart: Heart,
+  gift: Gift,
+  star: Star,
+  home: Home,
+  package: Package,
+  sparkles: Sparkles,
+  tools: Wrench,
 };
 
 export function LineIcon({

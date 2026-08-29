@@ -45,6 +45,8 @@ export type HomeSection = {
   maxCategories?: number;
   maxProducts?: number;
   order?: number;
+  /** LineIcon glyph name for the section heading; blank/unknown → Sprout. */
+  icon?: string;
 };
 
 /** Admin-editable "Six worlds" verticals band (settings.options.verticalsBand). */

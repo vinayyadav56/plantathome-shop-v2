@@ -148,9 +148,10 @@ const Header = ({ layout }: { layout?: string }) => {
       {/* announcement bar — dark-green gradient strip with a faint lime glow,
           static (only the glass pill below is sticky, so this scrolls away
           naturally). City switcher stays left for the city-first delivery UX. */}
-      <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-[0.9rem] font-medium text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
+      <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-[13px] font-normal text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
         <div className="relative z-[1] mx-auto grid h-full max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 xl:px-12">
-          <span className="flex items-center">
+          <span className="flex items-center gap-1.5">
+            <span className="text-white/70">Delivering to</span>
             <CitySwitcher tone="light" />
           </span>
           {/* center — true grid centering; xl+ only so it never crowds the links */}
@@ -175,12 +176,13 @@ const Header = ({ layout }: { layout?: string }) => {
         </div>
       </div>
 
-      <motion.header
+      {/* Plain <header>, deliberately NOT a motion element: framer SSRs the
+          entrance's initial state (opacity:0, translateY) into the HTML, so
+          the navbar painted blank until hydration. -mt tucks the pill close
+          under the announcement bar. */}
+      <header
         id="site-header"
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: EXPO }}
-        className="pointer-events-none sticky top-2 z-50 w-full px-5"
+        className="pointer-events-none sticky top-2 z-50 -mt-1.5 w-full px-5"
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
@@ -312,7 +314,7 @@ const Header = ({ layout }: { layout?: string }) => {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.header>
+      </header>
 
       {/* full-screen mobile overlay */}
       <AnimatePresence>

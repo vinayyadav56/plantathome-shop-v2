@@ -38,11 +38,11 @@ export default function CitySwitcher({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex items-center gap-1.5 text-sm font-medium ${color} ${className}`}
+        className={`inline-flex items-center gap-1.5 ${tone === 'light' ? 'text-[13px] font-normal' : 'text-sm font-medium'} ${color} ${className}`}
         aria-label="Change shopping city"
       >
         <MapPin size={14} aria-hidden />
-        <span className="font-semibold">{city ?? 'Select city'}</span>
+        <span className={tone === 'light' ? 'font-medium' : 'font-semibold'}>{city ?? 'Select city'}</span>
         <span className={tone === 'light' ? 'text-white/60' : 'text-stone-400'}>
           · Change
         </span>

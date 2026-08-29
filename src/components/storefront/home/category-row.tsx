@@ -58,11 +58,15 @@ export function CategoryRow() {
       <div className="relative rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-3 shadow-[0_22px_60px_rgba(6,25,11,0.18),0_3px_10px_rgba(6,25,11,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[24px] backdrop-saturate-[1.3]">
         <div
           ref={railRef}
-          className="flex gap-2.5 overflow-x-auto scroll-smooth pr-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          // py-1 gives the 3px hover lift headroom INSIDE the scroll box —
+          // Chrome counts transformed boxes in scrollable overflow, so without
+          // it the rail gains a 3px vertical scroll; overflow-y-hidden is the
+          // backstop (annotation: "no top-bottom scroll in this section").
+          className="flex gap-2.5 overflow-x-auto overflow-y-hidden scroll-smooth py-1 pr-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {isLoading && categories.length === 0
             ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[88px] min-w-[210px] flex-none animate-pulse rounded-2xl bg-black/[0.05]" />
+                <div key={i} className="h-[80px] min-w-[210px] flex-none animate-pulse rounded-2xl bg-black/[0.05]" />
               ))
             : categories.map((c: any, i: number) => {
                 const img = c.image?.original ?? c.image?.thumbnail ?? '';
@@ -77,18 +81,18 @@ export function CategoryRow() {
                   >
                     <Link
                       href={`/c/${c.slug}`}
-                      className="group flex h-[88px] items-center rounded-2xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2.5 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
+                      className="group flex h-[80px] items-center rounded-2xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2.5 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
                     >
-                      {/* product photo — left, 64×64 on a soft radial tile */}
-                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[13px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
+                      {/* product photo — left, 56×56 on a soft radial tile */}
+                      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-[13px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
                       </div>
-                      <div className="flex min-w-0 flex-col justify-center gap-2 pl-3 pr-1">
-                        {/* same face/size/weight as the product-card plant name (annotation) */}
-                        <h4 className="line-clamp-2 text-[0.9rem] font-medium leading-[1.3] text-[#1b2b1e]">{c.name}</h4>
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-[#39772b]">
+                      <div className="flex min-w-0 flex-col justify-center gap-1.5 pl-3 pr-1">
+                        {/* strictly one line, small and light (annotation) */}
+                        <h4 className="truncate text-[13px] font-normal leading-[1.3] text-[#1b2b1e]">{c.name}</h4>
+                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] font-medium text-[#39772b]">
                           Shop Now
-                          <ArrowRight size={15} className="shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+                          <ArrowRight size={14} className="shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
                         </span>
                       </div>
                     </Link>

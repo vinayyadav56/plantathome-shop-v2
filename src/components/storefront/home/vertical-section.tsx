@@ -56,7 +56,7 @@ function CategoryCard({ c }: { c: CardData }) {
           </span>
         )}
       </span>
-      <span className="mt-3 font-hanken text-[14px] font-bold leading-tight text-forest-900 transition-colors group-hover:text-forest-700">
+      <span className="mt-3 font-pahserif text-[15px] font-medium leading-tight text-forest-900 transition-colors group-hover:text-forest-700">
         {c.name}
       </span>
     </Link>
@@ -155,7 +155,9 @@ export function VerticalSection({
                       three-stroke shape that read as amateur next to it.
                       Hidden below sm so the heading and "View All" have the
                       room to share one row on a phone. */}
-                  <LineIcon name="leaf" className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
+                  {/* admin-configurable per section (homeSections[].icon);
+                      LineIcon falls back to Sprout on unknown/blank names */}
+                  <LineIcon name={section.icon || 'leaf'} className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
                 </h2>
               </div>
               <Link
