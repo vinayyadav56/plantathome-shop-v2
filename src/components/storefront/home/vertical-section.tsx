@@ -177,17 +177,15 @@ export function VerticalSection({
               overflow, a card is left half visible at the right — that half card
               is what says "this scrolls", with no fade or arrow needed.
 
-              `[&>*]:!grow` is what stops that becoming a dead gap on short rows.
-              .pah-rail pins every child to `flex: 0 0 var(--rail-w)`; adding
-              flex-grow means a row with fewer cards than fit stretches them to
-              fill the width exactly, while an overflowing row has no free space
-              to distribute and keeps its half-card peek. One rule, both cases —
-              no gap either way.
+              No flex-grow on the children: it used to stretch short rows to
+              fill the width, but that re-inflates the circles and defeats the
+              requested fixed 30%-smaller size (annotation 2026-08-29) — a short
+              row now simply leaves trailing space.
 
               No `justify-center`: these rows are unbounded, so overflow is the
               normal case, and centring a scrolling rail clips its leading cards.
             */}
-            <div className="pah-rail grid grid-cols-2 gap-[18px] [&>*]:!grow [--rail-w:31%] sm:grid-cols-3 sm:[--rail-w:calc((100%_-_54px)/3.5)] md:[--rail-w:calc((100%_-_72px)/5.5)] lg:[--rail-w:calc((100%_-_90px)/6.5)]">
+            <div className="pah-rail grid grid-cols-2 gap-[18px] [--rail-w:22%] sm:grid-cols-3 sm:[--rail-w:calc((100%_-_54px)/5)] md:[--rail-w:calc((100%_-_72px)/8)] lg:[--rail-w:calc((100%_-_90px)/9.3)]">
               {isLoading && cards.length === 0
                 ? Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex flex-col items-center gap-3">

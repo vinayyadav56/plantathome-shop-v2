@@ -312,7 +312,7 @@ export function HeroPlant() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-none px-5 pb-[130px] pt-[150px] max-lg:pb-[120px] sm:px-8 lg:px-16 lg:pt-[170px]">
+      <div className="relative z-10 mx-auto max-w-none px-5 pb-[120px] pt-[135px] max-lg:pb-[110px] sm:px-8 lg:px-16 lg:pt-[150px]">
         <div className="max-w-2xl">
           <motion.span
             initial={{ opacity: 0, y: 14 }}

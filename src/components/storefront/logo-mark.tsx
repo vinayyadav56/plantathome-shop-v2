@@ -127,7 +127,7 @@ export function BrandLogo({
           // mix-blend-multiply melts the asset's opaque white background into
           // the light glass pill (white × anything = anything); the dark/light
           // logic is untouched — the light variant is forced white via invert.
-          className={`h-auto max-h-[64px] w-[190px] object-contain object-left ${light ? 'brightness-0 invert' : 'mix-blend-multiply'}`}
+          className={`h-auto max-h-[52px] w-[190px] object-contain object-left ${light ? 'brightness-0 invert' : 'mix-blend-multiply'}`}
         />
       </span>
     );

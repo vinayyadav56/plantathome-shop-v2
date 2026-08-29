@@ -62,7 +62,7 @@ export function CategoryRow() {
         >
           {isLoading && categories.length === 0
             ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[104px] min-w-[210px] flex-none animate-pulse rounded-2xl bg-black/[0.05]" />
+                <div key={i} className="h-[88px] min-w-[210px] flex-none animate-pulse rounded-2xl bg-black/[0.05]" />
               ))
             : categories.map((c: any, i: number) => {
                 const img = c.image?.original ?? c.image?.thumbnail ?? '';
@@ -77,14 +77,15 @@ export function CategoryRow() {
                   >
                     <Link
                       href={`/c/${c.slug}`}
-                      className="group flex h-[104px] items-center rounded-2xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2.5 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
+                      className="group flex h-[88px] items-center rounded-2xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2.5 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
                     >
-                      {/* product photo — left, 82×82 on a soft radial tile */}
-                      <div className="h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[13px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
+                      {/* product photo — left, 64×64 on a soft radial tile */}
+                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[13px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
                       </div>
                       <div className="flex min-w-0 flex-col justify-center gap-2 pl-3 pr-1">
-                        <h4 className="line-clamp-2 text-[15px] font-semibold leading-[1.3] text-[#1b2b1e]">{c.name}</h4>
+                        {/* same face/size/weight as the product-card plant name (annotation) */}
+                        <h4 className="line-clamp-2 text-[0.9rem] font-medium leading-[1.3] text-[#1b2b1e]">{c.name}</h4>
                         <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-[#39772b]">
                           Shop Now
                           <ArrowRight size={15} className="shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />

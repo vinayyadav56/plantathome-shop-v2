@@ -148,7 +148,7 @@ const Header = ({ layout }: { layout?: string }) => {
       {/* announcement bar — dark-green gradient strip with a faint lime glow,
           static (only the glass pill below is sticky, so this scrolls away
           naturally). City switcher stays left for the city-first delivery UX. */}
-      <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-sm font-medium text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
+      <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-[0.9rem] font-medium text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
         <div className="relative z-[1] mx-auto grid h-full max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 xl:px-12">
           <span className="flex items-center">
             <CitySwitcher tone="light" />
@@ -185,7 +185,7 @@ const Header = ({ layout }: { layout?: string }) => {
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
             clipped child span instead. */}
-        <div className="pointer-events-auto relative mx-auto flex h-[72px] max-w-[1580px] items-center gap-6 rounded-[18px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[98px] lg:px-[42px]">
+        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1580px] items-center gap-6 rounded-[18px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:px-[42px]">
           {/* glass shine — top-half highlight, clipped to the pill radius */}
           <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[18px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
