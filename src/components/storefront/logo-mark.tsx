@@ -124,7 +124,10 @@ export function BrandLogo({
           // (brightness-0 invert) — the green-on-green asset was invisible.
           // Needs a transparent-background logo; an opaque one should be
           // re-uploaded as headerLogoLight instead.
-          className={`h-[42px] w-auto object-contain object-left ${light ? 'brightness-0 invert' : ''}`}
+          // mix-blend-multiply melts the asset's opaque white background into
+          // the light glass pill (white × anything = anything); the dark/light
+          // logic is untouched — the light variant is forced white via invert.
+          className={`h-auto max-h-[64px] w-[190px] object-contain object-left ${light ? 'brightness-0 invert' : 'mix-blend-multiply'}`}
         />
       </span>
     );

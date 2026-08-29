@@ -75,10 +75,14 @@ const NAV_TAIL: NavItem[] = [
   { label: 'Offers', href: '/offers' },
 ];
 
+// Gradient underline that grows from the center on hover (design spec §5).
+const NAV_UNDERLINE =
+  'after:absolute after:bottom-[3px] after:left-1/2 after:h-[2px] after:w-0 after:-translate-x-1/2 after:rounded-full after:bg-[linear-gradient(90deg,#70b943,#9bd85d)] after:transition-all after:duration-300 hover:after:w-[55%]';
+
 /**
- * PlantAtHome brand header — solid dark announcement strip (static, scrolls
- * away) over a sticky white frosted navbar with centred nav, inline search,
- * profile + cart. Wired to the real cart drawer, login + search.
+ * PlantAtHome brand header — gradient dark-green announcement strip (static,
+ * scrolls away) over a sticky floating warm-glass pill with centred nav,
+ * inline search, profile + cart. Wired to the real cart drawer, login + search.
  */
 const Header = ({ layout }: { layout?: string }) => {
   const { t } = useTranslation('common');
@@ -141,21 +145,24 @@ const Header = ({ layout }: { layout?: string }) => {
 
   return (
     <>
-      {/* announcement bar — solid near-black strip, static (only the navbar
-          below is sticky, so this scrolls away naturally). City switcher stays
-          left for the city-first delivery UX. */}
-      <div className="bg-[#0b1f12] text-sm font-medium text-[#e8f5e9]">
-        <div className="relative mx-auto flex max-w-[1440px] items-center justify-between gap-3 px-6 py-2">
-          <CitySwitcher tone="light" />
-          {/* xl+: below that the absolute-centered promo collides with the
-              Track Order / Help & Support links on the right */}
-          <span className="pointer-events-none absolute left-1/2 hidden -translate-x-1/2 items-center gap-2.5 whitespace-nowrap xl:flex">
-            <Truck size={15} className="shrink-0 text-sage-300" aria-hidden />
-            FREE SHIPPING on orders above ₹499
-            <span className="h-3 w-px bg-white/30" />
+      {/* announcement bar — dark-green gradient strip with a faint lime glow,
+          static (only the glass pill below is sticky, so this scrolls away
+          naturally). City switcher stays left for the city-first delivery UX. */}
+      <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-sm font-medium text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
+        <div className="relative z-[1] mx-auto grid h-full max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8 xl:px-12">
+          <span className="flex items-center">
+            <CitySwitcher tone="light" />
+          </span>
+          {/* center — true grid centering; xl+ only so it never crowds the links */}
+          <span className="hidden items-center gap-[22px] whitespace-nowrap tracking-[0.1px] xl:flex">
+            <span className="inline-flex items-center gap-2.5">
+              <Truck size={15} className="shrink-0 text-sage-300" aria-hidden />
+              FREE SHIPPING on orders above ₹499
+            </span>
+            <span aria-hidden className="h-[18px] w-px bg-[linear-gradient(to_bottom,transparent,rgba(255,255,255,0.35),transparent)]" />
             Extra 5% OFF on prepaid orders
           </span>
-          <span className="flex items-center gap-4">
+          <span className="col-start-3 flex items-center justify-end gap-[22px]">
             <Link href="/track-order" className="inline-flex items-center gap-1.5 transition-colors hover:text-white">
               <Truck size={15} aria-hidden />
               Track Order
@@ -173,11 +180,19 @@ const Header = ({ layout }: { layout?: string }) => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease: EXPO }}
-        className="sticky top-0 z-50 w-full border-b border-black/[0.06] bg-white/[0.85] backdrop-blur-[12px]"
+        className="pointer-events-none sticky top-2 z-50 w-full px-5"
       >
-        {/* main bar */}
-        <div className="relative mx-auto flex max-w-[1440px] items-center gap-6 px-6 py-3.5">
-          {/* Logo */}
+        {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
+            render inside it and would be clipped; the shine lives in its own
+            clipped child span instead. */}
+        <div className="pointer-events-auto relative mx-auto flex h-[72px] max-w-[1580px] items-center gap-6 rounded-[18px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[98px] lg:px-[42px]">
+          {/* glass shine — top-half highlight, clipped to the pill radius */}
+          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[18px]">
+            <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
+          </span>
+          {/* Logo — deliberately NOT position:relative/z-indexed: a stacking
+              context here would isolate the img's mix-blend-multiply (which
+              melts the asset's white background) from the glass behind it. */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
             <BrandLogo />
           </Link>
@@ -188,14 +203,14 @@ const Header = ({ layout }: { layout?: string }) => {
           {/* xl+ only: with 8 verticals the pill row measures ~730px and collides
               with logo/actions through the whole lg range (1024–1210), so
               768–1279 uses the hamburger's full-screen menu instead. */}
-          <nav className="hidden min-w-0 flex-1 justify-center xl:flex">
-            <div className="flex items-center gap-2">
+          <nav className="relative z-[2] hidden min-w-0 flex-1 justify-center xl:flex">
+            <div className="flex items-center gap-5 min-[1440px]:gap-[34px]">
               {NAV.map((n) =>
                 n.menu ? (
                   <div key={n.label} className="group relative">
                     <Link
                       href={n.href}
-                      className="inline-flex items-center gap-1 whitespace-nowrap px-1 py-2 text-[0.95rem] font-medium text-[#1a2e1f] transition-colors duration-200 hover:text-[#2e7d32]"
+                      className={`relative inline-flex items-center gap-[7px] whitespace-nowrap py-2 text-[15px] font-medium transition-colors duration-200 hover:text-[#397b2a] ${NAV_UNDERLINE} text-[#1d2b20]`}
                     >
                       {n.label}
                       <ChevronDown size={12} className="opacity-60 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
@@ -219,8 +234,8 @@ const Header = ({ layout }: { layout?: string }) => {
                   <Link
                     key={n.label}
                     href={n.href}
-                    className={`whitespace-nowrap px-1 py-2 text-[0.95rem] font-medium transition-colors duration-200 hover:text-[#2e7d32] ${
-                      n.href === '/offers' ? 'text-[#2e7d32]' : 'text-[#1a2e1f]'
+                    className={`relative whitespace-nowrap py-2 text-[15px] font-medium transition-colors duration-200 hover:text-[#397b2a] ${NAV_UNDERLINE} ${
+                      n.href === '/offers' ? 'text-[#397b2a]' : 'text-[#1d2b20]'
                     }`}
                   >
                     {n.label}
@@ -231,32 +246,32 @@ const Header = ({ layout }: { layout?: string }) => {
           </nav>
 
           {/* ── actions — right, stacked icon-over-label (per reference) ── */}
-          <div className="ml-auto flex items-center gap-3">
-            <div className="hidden items-center gap-1 md:flex">
+          <div className="relative z-[2] ml-auto flex items-center gap-3">
+            <div className="hidden items-center gap-4 md:flex">
               {/* Search */}
-              <button type="button" onClick={() => setSearchOpen(true)} className="grid h-10 w-10 place-items-center rounded-lg text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label={t('text-search') ?? 'Search'}>
-                <SearchIcon className="h-[18px] w-[18px]" />
+              <button type="button" onClick={() => setSearchOpen(true)} className="grid h-10 w-10 place-items-center rounded-lg text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={t('text-search') ?? 'Search'}>
+                <SearchIcon className="h-[21px] w-[21px]" />
               </button>
-              <span aria-hidden className="mx-1.5 h-6 w-px bg-black/10" />
+              <span aria-hidden className="h-10 w-px bg-[linear-gradient(to_bottom,transparent,rgba(24,50,29,0.18),transparent)]" />
               {/* Wishlist */}
-              <Link href="/wishlists" className="flex flex-col items-center gap-1 px-2.5 py-1 text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label="Wishlist">
-                <Heart size={18} aria-hidden />
-                <span className="text-[0.75rem] font-medium leading-none">Wishlist</span>
+              <Link href="/wishlists" className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Wishlist">
+                <Heart size={23} strokeWidth={1.7} aria-hidden />
+                <span className="leading-none">Wishlist</span>
               </Link>
               {/* Cart */}
-              <button ref={cartBtnRef} data-cart-target type="button" onClick={openCart} className="flex flex-col items-center gap-1 px-2.5 py-1 text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label="Cart">
+              <button ref={cartBtnRef} data-cart-target type="button" onClick={openCart} className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Cart">
                 <span className="relative">
-                  <Icon.bag className="h-[18px] w-[18px]" />
-                  <span className="absolute -right-2 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#2e7d32] px-0.5 text-[0.65rem] font-semibold text-white">
+                  <Icon.bag className="h-[23px] w-[23px]" />
+                  <span className="absolute -right-[9px] -top-[7px] flex h-[19px] min-w-[19px] items-center justify-center rounded-full border-2 border-white/90 bg-[linear-gradient(135deg,#5b9e35,#7fc54a)] px-[5px] text-[10px] font-bold text-white shadow-[0_3px_8px_rgba(55,130,40,0.3)]">
                     {totalUniqueItems}
                   </span>
                 </span>
-                <span className="text-[0.75rem] font-medium leading-none">Cart</span>
+                <span className="leading-none">Cart</span>
               </button>
               {/* Login */}
-              <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1 px-2.5 py-1 text-[#1a2e1f] transition-colors hover:text-[#2e7d32]" aria-label={isAuthorize ? 'My account' : 'Login'}>
-                <Icon.user className="h-[18px] w-[18px]" />
-                <span className="text-[0.75rem] font-medium leading-none">{isAuthorize ? 'Account' : 'Login'}</span>
+              <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={isAuthorize ? 'My account' : 'Login'}>
+                <Icon.user className="h-[23px] w-[23px]" />
+                <span className="leading-none">{isAuthorize ? 'Account' : 'Login'}</span>
               </button>
             </div>
 
@@ -270,7 +285,8 @@ const Header = ({ layout }: { layout?: string }) => {
           </div>
         </div>
 
-        {/* search overlay */}
+        {/* search overlay — its own floating glass panel below the pill (the
+            fixed-height pill can't grow to contain it) */}
         <AnimatePresence>
           {searchOpen && (
             <motion.div
@@ -278,7 +294,7 @@ const Header = ({ layout }: { layout?: string }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: EXPO }}
-              className="border-t border-black/[0.06] bg-white/[0.96] backdrop-blur-2xl"
+              className="pointer-events-auto mx-auto mt-2 max-w-[1580px] rounded-[18px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.94)_0%,rgba(248,247,241,0.88)_48%,rgba(255,255,255,0.92)_100%)] shadow-[0_18px_45px_rgba(5,24,10,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35]"
             >
               <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
                 <div className="flex-1">

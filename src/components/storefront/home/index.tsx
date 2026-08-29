@@ -45,11 +45,15 @@ export function PlantCompanyHome({
           Hero → Category → Spring Sale → Verticals → Collections → Bestsellers → Why Plants → Gifting → Trust */}
       {/* Hero + category cards in one stacking context — cards float at hero
           bottom. Full-bleed 100%-width hero (per feedback). */}
-      <div className="relative">
+      {/* Negative top margin pulls the hero up BEHIND the sticky glass pill so
+          the pill's blur has the green environment behind it (md+ only — the
+          phone home hides this header). Bottom margin clears the strip's 72px
+          overhang before the next band. */}
+      <div className="relative mb-24 md:-mt-[88px] md:mb-28 lg:-mt-[114px]">
         <HeroPlant />
         {/* z-20: must beat the hero's own z-10 content box, whose bottom padding
             overlaps this strip and would otherwise swallow the cards' clicks. */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 pb-5 sm:pb-6">
+        <div className="absolute -bottom-[72px] left-1/2 z-20 w-[calc(100%-32px)] max-w-[1530px] -translate-x-1/2 md:w-[calc(100%-96px)]">
           <CategoryRow />
         </div>
       </div>

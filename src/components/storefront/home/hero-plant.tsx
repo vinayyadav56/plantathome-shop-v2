@@ -292,7 +292,7 @@ export function HeroPlant() {
       ? Math.max(0, Math.min(100, slide.overlayOpacity)) / 100
       : 1;
   const gradeStyle = {
-    background: `linear-gradient(96deg, rgba(8,20,12,${0.82 * k}) 0%, rgba(10,26,16,${0.62 * k}) 28%, rgba(10,26,16,${0.38 * k}) 55%, rgba(10,26,16,${0.12 * k}) 80%, rgba(10,26,16,${0.02 * k}) 100%)`,
+    background: `linear-gradient(90deg, rgba(3,27,12,${0.88 * k}) 0%, rgba(5,32,14,${0.68 * k}) 32%, rgba(5,25,10,${0.18 * k}) 60%, rgba(0,0,0,${0.08 * k}) 100%)`,
   };
 
   return (
@@ -312,7 +312,7 @@ export function HeroPlant() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-none px-5 pb-[235px] pt-12 max-lg:pb-[210px] sm:px-8 lg:px-16">
+      <div className="relative z-10 mx-auto max-w-none px-5 pb-[130px] pt-[150px] max-lg:pb-[120px] sm:px-8 lg:px-16 lg:pt-[170px]">
         <div className="max-w-2xl">
           <motion.span
             initial={{ opacity: 0, y: 14 }}
