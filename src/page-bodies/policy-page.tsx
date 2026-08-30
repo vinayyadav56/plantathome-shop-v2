@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import Seo from '@/components/seo/seo';
 import PageBanner from '@/components/banners/page-banner';
+import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
 import { sanitizeContent } from '@/lib/sanitize-content';
 
 export type PublicPolicy = {
@@ -72,4 +73,14 @@ export default function PolicyPage({ policy }: { policy: PublicPolicy }) {
       </section>
     </>
   );
+}
+
+/* ── App Router body wrapper ──────────────────────────────────────────
+   The layout helper pulls in client-only modules (contexts, effects), so
+   it must be applied INSIDE this 'use client' boundary — a server page
+   importing it directly fails the Turbopack build even though tsc is
+   happy. Every other page-body in this repo wraps the same way. */
+
+export function PageBody({ policy }: { policy: PublicPolicy }) {
+  return getLayoutWithFooter(<PolicyPage policy={policy} />);
 }

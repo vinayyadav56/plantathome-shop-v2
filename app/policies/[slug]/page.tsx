@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadGeneralData } from '@/framework/ssr/prefetch';
-import PolicyPage, { type PublicPolicy } from '@/page-bodies/policy-page';
-import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
+import { PageBody, type PublicPolicy } from '@/page-bodies/policy-page';
 
 export const revalidate = 300;
 
@@ -54,7 +53,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
 
   return (
     <Hydrate state={dehydratedState}>
-      {getLayoutWithFooter(<PolicyPage policy={policy} />)}
+      <PageBody policy={policy} />
     </Hydrate>
   );
 }
