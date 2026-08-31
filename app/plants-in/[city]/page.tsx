@@ -13,6 +13,20 @@ import { PageBody } from '@/page-bodies/plants-in-city';
 
 export const revalidate = 300;
 
+/**
+ * SSG with on-demand fallback — REQUIRED for real 404/308 statuses, not just
+ * for speed: without generateStaticParams the route renders dynamically and
+ * Next streams the 200 shell (app/loading.tsx) before generateMetadata's
+ * notFound()/permanentRedirect() can set a status. With it, unknown params
+ * render blocking and the guards produce genuine 404s and 308s.
+ * Fail-soft: an unreachable API at build time returns [] and every city
+ * renders on demand instead.
+ */
+export async function generateStaticParams() {
+  const pages = await loadLocationPages();
+  return pages.map((p) => ({ city: p.slug }));
+}
+
 type Params = { params: Promise<{ city: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
