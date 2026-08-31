@@ -18,7 +18,13 @@ type Params = { params: Promise<{ city: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { city } = await params;
   const page = await loadLocationPage(city);
-  if (!page) return { robots: { index: false } };
+  // 404/redirect HERE, not just in the page body: app/loading.tsx makes Next
+  // flush a 200 + loader shell before the page component runs, so notFound()
+  // thrown there only downgrades to a streamed soft-404 (and the 308 becomes
+  // a soft client redirect). Metadata resolves before the shell flush — same
+  // rationale as the [searchType] vertical guard.
+  if (!page) notFound();
+  if (page.slug !== city) permanentRedirect(`/plants-in/${page.slug}`);
 
   const title = page.seo_title || `Buy Plants Online in ${page.city_name} | Plant Delivery | PlantAtHome`;
   const description =
