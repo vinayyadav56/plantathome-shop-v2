@@ -103,9 +103,38 @@ const nextConfig: NextConfig = {
     return [{ source: '/rest-api/:path*', destination: `${target}/:path*` }];
   },
   async redirects() {
+    // City alias slugs → canonical landing page, as REAL 308s at the edge.
+    // The in-page permanentRedirect() still covers any future alias, but the
+    // root app/loading.tsx streams a 200 shell before page code can set a
+    // status, so a render-time redirect degrades to a client-side hop —
+    // config redirects run before rendering and carry the real status.
+    // Mirrors AvailabilityService::aliasMap() in the API (stable, hardcoded).
+    const CITY_ALIASES: Record<string, string> = {
+      gurgaon: 'gurugram',
+      bangalore: 'bengaluru',
+      bombay: 'mumbai',
+      calcutta: 'kolkata',
+      madras: 'chennai',
+      'new-delhi': 'delhi',
+      'central-delhi': 'delhi',
+      'east-delhi': 'delhi',
+      'north-delhi': 'delhi',
+      'north-east-delhi': 'delhi',
+      'north-west-delhi': 'delhi',
+      'south-delhi': 'delhi',
+      'south-east-delhi': 'delhi',
+      'south-west-delhi': 'delhi',
+      'west-delhi': 'delhi',
+      shahdara: 'delhi',
+    };
     return [
       { source: '/shops', destination: '/', permanent: true },
       { source: '/shops/:path*', destination: '/', permanent: true },
+      ...Object.entries(CITY_ALIASES).map(([alias, canonical]) => ({
+        source: `/plants-in/${alias}`,
+        destination: `/plants-in/${canonical}`,
+        permanent: true,
+      })),
     ];
   },
   images: {
