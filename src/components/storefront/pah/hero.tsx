@@ -33,7 +33,8 @@ export function Hero() {
   return (
     <div className="relative">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={heroImg} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      {/* Decorative backdrop but ALSO the mobile LCP element — hint the fetch. */}
+      <img src={heroImg} alt="" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,30,18,0.72)_0%,rgba(15,30,18,0.34)_38%,rgba(15,30,18,0.26)_64%,rgba(15,30,18,0.40)_100%)]" />
 
       <div className="relative z-[2] px-5 pb-11 pt-3.5 text-white">
@@ -63,9 +64,12 @@ export function Hero() {
           <span className="mb-3.5 inline-flex items-center gap-[7px] rounded-full border border-[#86E0A3]/60 bg-[#0F1E12]/[0.55] px-[13px] py-[5px] font-hanken text-[10px] font-bold uppercase tracking-[0.18em] text-white">
             <span className="h-1.5 w-1.5 rounded-full bg-[#4ADE80] shadow-[0_0_6px_#4ADE80]" />{t('m-hero-badge')}
           </span>
-          <h1 className="m-0 whitespace-nowrap font-hanken text-[30px] font-medium leading-[1.12] tracking-[-0.02em] text-white">
+          {/* <p>, not <h1>: the desktop hero's h1 is in the same DOM (the two
+              homes are CSS-gated, not conditionally rendered), so this was a
+              second h1 on every homepage response. */}
+          <p className="m-0 whitespace-nowrap font-hanken text-[30px] font-medium leading-[1.12] tracking-[-0.02em] text-white">
             {t('m-hero-title-1')}<br /><span className="text-[#5FE08A]">{t('m-hero-title-2')}</span>
-          </h1>
+          </p>
 
           {/* chips pill (left) + offer card (right) */}
           <div className="mt-5 flex items-end justify-between gap-2">

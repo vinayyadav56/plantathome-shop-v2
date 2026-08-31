@@ -77,6 +77,11 @@ export default function SearchPage() {
           { label: 'All Products' },
         ]}
       />
+      {/* The page's H1 — visually hidden (the design leads with the results
+          grid), present for heading structure: this route had no h1 at all. */}
+      <h1 className="sr-only">
+        {verticalType?.name ? `Search ${verticalType.name}` : 'Search'} — PlantAtHome
+      </h1>
       <div className="flex flex-col items-center justify-between mb-7 md:flex-row">
         {/* //FIXME: */}
         <SearchCount

@@ -19,7 +19,6 @@ import { ModalProvider } from '@/components/ui/modal/modal.context';
 import ManagedModal from '@/components/ui/modal/managed-modal';
 import ManagedDrawer from '@/components/ui/drawer/managed-drawer';
 import FirstVisitLanguageModal from '@/components/ui/first-visit-language-modal';
-import DefaultSeo from '@/components/seo/default-seo';
 import { CartProvider } from '@/store/quick-cart/cart.context';
 import SocialLogin from '@/components/auth/social-login';
 import Maintenance from '@/components/maintenance/layout';
@@ -64,7 +63,9 @@ export default function AppProviders({ children }: { children: React.ReactNode }
                 {/* Applies the design system + the single website font (Inter). */}
                 <DesignSystemApplier />
                 <TrackingBridge />
-                <DefaultSeo />
+                {/* DefaultSeo removed: it rendered null via the next-seo shim.
+                    Its duties (admin SEO defaults, favicon, theme-color, manifest)
+                    live in app/layout.tsx generateMetadata now. */}
                 <CitySync />
                 <LocationGate />
                 <Maintenance>

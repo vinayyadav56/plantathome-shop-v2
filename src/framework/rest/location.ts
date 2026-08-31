@@ -50,3 +50,16 @@ export function useLookupCities(stateId?: number | string | null) {
     { staleTime: 1000 * 60 * 10, retry: 0, enabled: Boolean(stateId) },
   );
 }
+
+/**
+ * Active city landing pages (/plants-in/{slug}) for the footer's
+ * "Plant Delivery Across India" band. Public, cached, fail-safe — the band
+ * renders nothing while this is empty.
+ */
+export function useLocationPages() {
+  return useQuery<{ slug: string; city_name: string }[], Error>(
+    ['location-pages'],
+    () => HttpClient.get<{ slug: string; city_name: string }[]>(API_ENDPOINTS.LOCATION_PAGES),
+    { staleTime: 1000 * 60 * 30, retry: 0 },
+  );
+}

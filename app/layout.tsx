@@ -14,28 +14,72 @@ import '@/assets/css/toast-overrides.css';
 import { DS_PREPAINT_SCRIPT } from '@/lib/design-system';
 import { TYPO_PREPAINT_SCRIPT } from '@/lib/typography';
 import AppProviders from '@/app-shell/app-providers';
+import { API_URL, SITE_URL } from '@/lib/site-url';
 
-const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in'
-).replace(/\/$/, '');
+/**
+ * Root metadata is BUILT from admin Settings → SEO when values are set there
+ * (metaTitle, metaDescription, ogImage, twitterHandle) and falls back to the
+ * literals below. This used to be DefaultSeo's job — dead since the next-seo
+ * shim (src/compat/next-seo.tsx renders null), which silently disconnected
+ * the admin SEO panel from the live site.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  let seo: any = null;
+  let favicon: string | undefined;
+  if (API_URL) {
+    try {
+      const res = await fetch(`${API_URL}/settings`, { next: { revalidate: 300 } });
+      if (res.ok) {
+        const options = (await res.json())?.options;
+        seo = options?.seo ?? null;
+        favicon = options?.favicon?.original || undefined;
+      }
+    } catch {
+      /* fall back to the literals — a down API must not break metadata */
+    }
+  }
 
-export const metadata: Metadata = {
-  // metadataBase makes every relative canonical/og URL in child routes
-  // resolve against the real host — there was none before, so no route
-  // emitted a canonical at all.
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: 'PlantAtHome — Premium Plants Delivered',
-    template: '%s | PlantAtHome',
-  },
-  description:
-    'Bring Nature Home — plants, tools & farm-fresh produce delivered.',
-  openGraph: {
-    type: 'website',
-    siteName: 'PlantAtHome',
-    locale: 'en_IN',
-  },
-  twitter: { card: 'summary_large_image' },
+  return {
+    // metadataBase makes every relative canonical/og URL in child routes
+    // resolve against the real host — there was none before, so no route
+    // emitted a canonical at all.
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: seo?.metaTitle || 'PlantAtHome — Premium Plants Delivered',
+      template: '%s | PlantAtHome',
+    },
+    description:
+      seo?.metaDescription ||
+      'Buy plants online in India — indoor & outdoor plants, pots, tools and farm-fresh produce, hand-checked and delivered to your doorstep.',
+    ...(seo?.metaTags ? { keywords: seo.metaTags } : {}),
+    openGraph: {
+      type: 'website',
+      siteName: 'PlantAtHome',
+      locale: 'en_IN',
+      ...(seo?.ogImage?.original ? { images: [seo.ogImage.original] } : {}),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      ...(seo?.twitterHandle
+        ? { site: seo.twitterHandle.startsWith('@') ? seo.twitterHandle : `@${seo.twitterHandle}` }
+        : {}),
+    },
+    // Favicon/manifest links also died with DefaultSeo; admin favicon wins.
+    icons: favicon
+      ? { icon: favicon }
+      : {
+          icon: [
+            { url: '/favicon.ico', sizes: 'any' },
+            { url: '/icons/favicon-32.png', type: 'image/png', sizes: '32x32' },
+          ],
+          apple: '/icons/apple-icon-180.png',
+        },
+    manifest: '/manifest.json',
+  };
+}
+
+export const viewport = {
+  themeColor: '#0D3B2E', // same value the (dead) DefaultSeo carried
 };
 
 /**

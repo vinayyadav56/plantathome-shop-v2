@@ -4,6 +4,8 @@ import React from 'react';
 import { useTranslation } from 'next-i18next';
 import { useSettings, useSubscription } from '@/framework/settings';
 import { useTypes } from '@/framework/type';
+import { useLocationPages } from '@/framework/location';
+import { SOCIAL_URLS } from '@/lib/socials';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import { WordmarkStacked } from '@/components/storefront/logo-mark';
@@ -50,10 +52,10 @@ const COLS: { title: string; links: { name: string; href: string }[] }[] = [
 ];
 
 const SOCIALS: { name: string; href: string; icon: JSX.Element }[] = [
-  { name: 'Instagram', href: 'https://instagram.com/plantathome', icon: <InstagramIcon className="h-4 w-4" aria-hidden /> },
-  { name: 'Facebook', href: 'https://facebook.com/plantathome', icon: <FacebookIcon className="h-4 w-4" aria-hidden /> },
-  { name: 'YouTube', href: 'https://youtube.com/@plantathome', icon: <YouTubeIcon className="h-4 w-4" aria-hidden /> },
-  { name: 'Pinterest', href: 'https://pinterest.com/plantathome', icon: <PinterestIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'Instagram', href: SOCIAL_URLS.instagram, icon: <InstagramIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'Facebook', href: SOCIAL_URLS.facebook, icon: <FacebookIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'YouTube', href: SOCIAL_URLS.youtube, icon: <YouTubeIcon className="h-4 w-4" aria-hidden /> },
+  { name: 'Pinterest', href: SOCIAL_URLS.pinterest, icon: <PinterestIcon className="h-4 w-4" aria-hidden /> },
 ];
 
 const BADGES: { label: string; icon: JSX.Element }[] = [
@@ -118,6 +120,7 @@ const Footer = () => {
   // Shop column from the live catalogue (works on staging's 6 verticals and
   // production's 3, whose slugs differ) + the All Categories index.
   const { types } = useTypes({ limit: TYPES_PER_PAGE } as any);
+  const { data: locationPages } = useLocationPages();
   const cols = React.useMemo(() => {
     const shopLinks = (types ?? []).map((ty: any) => {
       const meta = getVerticalMeta(ty.slug, ty.name);
@@ -246,6 +249,40 @@ const Footer = () => {
           </div>
         ))}
       </div>
+
+      {/* ── Plant Delivery Across India — active city landing pages. Renders
+          nothing while the list is empty; the same links are server-rendered
+          on /plants-in and in the sitemap, so crawl coverage never depends on
+          this client fetch. ── */}
+      {Boolean(locationPages?.length) && (
+        <div className="relative z-[1] border-t border-white/[0.08]">
+          <div className="mx-auto w-full max-w-screen-2xl px-5 py-8 md:px-8">
+            <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/50">
+              Plant Delivery Across India
+            </h4>
+            <ul className="flex flex-wrap gap-x-5 gap-y-2">
+              {locationPages!.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/plants-in/${c.slug}`}
+                    className="text-[13px] text-white/70 transition-colors hover:text-white"
+                  >
+                    Plants in {c.city_name}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link
+                  href="/plants-in"
+                  className="text-[13px] text-[#4ADE80] transition-colors hover:text-white"
+                >
+                  All cities →
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* ── sustainability badge strip ── */}
       <div className="relative z-[1] border-t border-white/[0.08]">

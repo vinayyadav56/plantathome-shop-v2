@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadHomeData } from '@/framework/ssr/prefetch';
 import HomeScreen from '@/app-shell/home-screen';
+import { SITE_URL as SITE } from '@/lib/site-url';
+import { SOCIAL_URL_LIST } from '@/lib/socials';
 
 // Mirror V1's ISR: admin homepage changes reach the static home within 30s.
 export const revalidate = 30;
@@ -14,9 +16,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
 };
 
-const SITE = (
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in'
-).replace(/\/$/, '');
+
 
 /** Organization + WebSite (with sitelinks-search) — crawler-visible, server-rendered. */
 const HOME_JSONLD = {
@@ -28,6 +28,14 @@ const HOME_JSONLD = {
       name: 'PlantAtHome',
       url: SITE,
       logo: `${SITE}/icons/manifest-icon-192.png`,
+      sameAs: SOCIAL_URL_LIST,
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'hello@plantathome.in',
+        areaServed: 'IN',
+        availableLanguage: ['en', 'hi'],
+      },
     },
     {
       '@type': 'WebSite',

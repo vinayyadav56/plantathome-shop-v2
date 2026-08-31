@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL as BASE } from '@/lib/site-url';
 
 /** Dynamic, env-aware robots (replaces the stale static public/robots.txt that
  *  hardcoded the staging host). */
-const BASE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in').replace(/\/$/, '');
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -27,6 +27,9 @@ export default function robots(): MetadataRoute.Robots {
         '/notification',
         '/access-denied',
         '/refunds', // account refunds — the public policy page is /customer-refund-policies
+        // Internal search — force-dynamic with unbounded query permutations:
+        // a classic crawl-budget sink. The pages also declare meta-noindex.
+        '/*/search',
       ],
     },
     sitemap: `${BASE}/sitemap.xml`,

@@ -3,12 +3,11 @@ import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadProductData } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/product';
+import { SITE_URL as BASE } from '@/lib/site-url';
 
 export const revalidate = 60;
 
-const BASE = (
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in'
-).replace(/\/$/, '');
+
 
 const stripHtml = (s?: string) =>
   (s ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -24,22 +23,25 @@ export async function generateMetadata({
   const data = await loadProductData(slug);
   if (!data) return {};
   const p: any = data.product;
-  const description = stripHtml(p?.description).slice(0, 160);
+  // Admin-set SEO fields win; the name/description are the fallback.
+  const title = p?.seo_title || p?.name;
+  const description = p?.seo_description || stripHtml(p?.description).slice(0, 160);
   const url = `${BASE}/products/${slug}`;
   return {
-    title: p?.name, // root layout template appends "| PlantAtHome"
+    title, // root layout template appends "| PlantAtHome"
     description,
     alternates: { canonical: url },
+    ...(p?.noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'website',
       url,
-      title: p?.name,
+      title,
       description,
       images: p?.image?.original ? [p.image.original] : undefined,
     },
     twitter: {
       card: 'summary_large_image',
-      title: p?.name,
+      title,
       description,
       images: p?.image?.original ? [p.image.original] : undefined,
     },
@@ -92,6 +94,21 @@ function productJsonLd(p: any, url: string) {
   return data;
 }
 
+/** Home → vertical → product. Same server-side emission rationale as above. */
+function breadcrumbJsonLd(p: any, url: string) {
+  const items: any[] = [{ '@type': 'ListItem', position: 1, name: 'Home', item: BASE }];
+  if (p?.type?.slug && p?.type?.name) {
+    items.push({
+      '@type': 'ListItem',
+      position: items.length + 1,
+      name: p.type.name,
+      item: `${BASE}/${p.type.slug}`,
+    });
+  }
+  items.push({ '@type': 'ListItem', position: items.length + 1, name: p?.name, item: url });
+  return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items };
+}
+
 export default async function ProductRoute({
   params,
 }: {
@@ -110,6 +127,14 @@ export default async function ProductRoute({
           // tag early.
           __html: JSON.stringify(
             productJsonLd(data.product, `${BASE}/products/${slug}`),
+          ).replace(/</g, '\\u003c'),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            breadcrumbJsonLd(data.product, `${BASE}/products/${slug}`),
           ).replace(/</g, '\\u003c'),
         }}
       />

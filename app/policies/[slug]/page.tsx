@@ -3,10 +3,11 @@ import { notFound } from 'next/navigation';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadGeneralData } from '@/framework/ssr/prefetch';
 import { PageBody, type PublicPolicy } from '@/page-bodies/policy-page';
+import { SITE_URL as BASE } from '@/lib/site-url';
 
 export const revalidate = 300;
 
-const BASE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in').replace(/\/$/, '');
+
 const API = (process.env.NEXT_PUBLIC_REST_API_ENDPOINT || '').replace(/\/$/, '');
 
 /**

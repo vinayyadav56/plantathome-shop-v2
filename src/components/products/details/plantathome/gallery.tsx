@@ -98,7 +98,7 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName }) => {
               }`}
             >
               {src ? (
-                <Image src={src} alt="" fill sizes="68px" className="object-cover" />
+                <Image src={src} alt={`${productName} — photo ${i + 1}`} fill sizes="68px" className="object-cover" />
               ) : (
                 <span className="grid h-full w-full place-items-center text-forest-700/30"><Sprout size={16} aria-hidden /></span>
               )}

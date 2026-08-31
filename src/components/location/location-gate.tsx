@@ -104,7 +104,10 @@ export default function LocationGate() {
   // moment they navigate to any shopping surface (mustPick stays true).
   const { asPath } = useRouter();
   const path = (asPath || '').split('?')[0];
-  const exemptRoute = ['/signin', '/verify-email', '/access-denied'].some(
+  // /plants-in is exempt too: a search visitor landing on a city SEO page must
+  // read it, not hit a modal — the page's own "Shop plants in {city}" CTA is
+  // the explicit choice; the gate re-arms on any other shopping surface.
+  const exemptRoute = ['/signin', '/verify-email', '/access-denied', '/plants-in'].some(
     (p) => path === p || path.startsWith(`${p}/`),
   );
 

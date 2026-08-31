@@ -73,4 +73,5 @@ export const API_ENDPOINTS = {
   SHOP_MAINTENANCE_EVENT: 'shop-maintenance-event',
   LOCATIONS_STATES: '/locations/states',
   LOCATIONS_CITIES: '/locations/cities',
+  LOCATION_PAGES: '/locations/pages',
 };
