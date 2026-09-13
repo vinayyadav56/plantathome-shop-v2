@@ -68,9 +68,24 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   const calculateDiscount = totals.discount;
   const totalPrice = verifiedResponse ? totals.total : 0;
 
+  // GST breakdown from /checkout/verify. For tax-inclusive pricing the on-top tax
+  // (totals.tax) is 0 and the GST is embedded in the price — shown as an "incl."
+  // note. For tax-exclusive pricing it is added and split into CGST/SGST or IGST.
+  const vr: any = verifiedResponse ?? {};
+  const gstTotal = Number(vr.gst_total_tax ?? 0);
+  const cgstAmt = Number(vr.cgst_amount ?? 0);
+  const sgstAmt = Number(vr.sgst_amount ?? 0);
+  const igstAmt = Number(vr.igst_amount ?? 0);
+  const isInterState = Boolean(vr.is_inter_state);
+  const taxInclusive = totals.tax === 0 && gstTotal > 0;
+
   const { price: tax } = usePrice(
     verifiedResponse && { amount: totals.tax }
   );
+  const { price: gstInclPrice } = usePrice({ amount: gstTotal });
+  const { price: cgstPrice } = usePrice({ amount: cgstAmt });
+  const { price: sgstPrice } = usePrice({ amount: sgstAmt });
+  const { price: igstPrice } = usePrice({ amount: igstAmt });
   const { price: shipping } = usePrice(
     verifiedResponse && { amount: verifiedResponse.shipping_charge ?? 0 }
   );
@@ -137,10 +152,35 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
           <span>{t('text-sub-total')}</span>
           <span className="font-semibold text-[#2E6B4A]">{sub_total}</span>
         </div>
-        <div className="pa-order-row">
-          <span>{t('text-tax')}</span>
-          <span>{tax}</span>
-        </div>
+        {taxInclusive ? (
+          <div className="pa-order-row text-xs text-gray-500">
+            <span>{isInterState ? 'Incl. IGST' : 'Incl. GST (CGST + SGST)'}</span>
+            <span>{gstInclPrice}</span>
+          </div>
+        ) : totals.tax > 0 && (cgstAmt > 0 || sgstAmt > 0 || igstAmt > 0) ? (
+          isInterState ? (
+            <div className="pa-order-row">
+              <span>IGST</span>
+              <span>{igstPrice}</span>
+            </div>
+          ) : (
+            <>
+              <div className="pa-order-row">
+                <span>CGST</span>
+                <span>{cgstPrice}</span>
+              </div>
+              <div className="pa-order-row">
+                <span>SGST</span>
+                <span>{sgstPrice}</span>
+              </div>
+            </>
+          )
+        ) : totals.tax > 0 ? (
+          <div className="pa-order-row">
+            <span>{t('text-tax')}</span>
+            <span>{tax}</span>
+          </div>
+        ) : null}
         <div className="pa-order-row">
           <span>
             {t('text-shipping')}

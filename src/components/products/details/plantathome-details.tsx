@@ -464,6 +464,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {!hasVariations && (
               <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1">
                 {priceBlock}
+                <span className="w-full text-[11px] font-medium text-stone-400">
+                  incl. of all taxes
+                </span>
               </div>
             )}
 
