@@ -6,6 +6,8 @@ import { useAtom } from "jotai";
 import { useTranslation } from "next-i18next";
 import {
   billingAddressAtom,
+  deliveryTimeAtom,
+  customerContactAtom,
   shippingAddressAtom,
   checkoutStepAtom,
   verifiedResponseAtom,
@@ -122,13 +124,31 @@ export default function CheckoutPage() {
     }
   }, [sameAsBilling, billingAddress, setShippingAddress]);
 
+  // A restored (or effect-set) step is only legitimate while its prerequisites hold.
+  // Placing an order clears the checkout atoms, so a remembered "Review" would otherwise
+  // strand the next checkout on a step with no address — where Check Availability
+  // correctly refuses to verify and the click looks like it did nothing. Derived during
+  // render (no effect, no cascading state), and it also guarantees the wizard can never
+  // show Review for an incomplete checkout.
+  const [contactForStep] = useAtom(customerContactAtom);
+  const [shippingForStep] = useAtom(shippingAddressAtom);
+  const [deliveryTimeForStep] = useAtom(deliveryTimeAtom);
+  const furthestReachableStep = !contactForStep
+    ? 0
+    : !(billingAddress?.address ?? (shippingForStep as any)?.address)
+      ? 1
+      : !deliveryTimeForStep
+        ? 2
+        : 3;
+  const effectiveStep = Math.min(step, furthestReachableStep);
+
   // Publish the wizard position for sidebar actions (Check Availability guides
   // the shopper to the incomplete step / jumps to Review after a verify).
   const [, setWizardBridge] = useAtom(checkoutStepAtom);
   useEffect(() => {
-    setWizardBridge({ step, last: 3, setStep });
+    setWizardBridge({ step: effectiveStep, last: 3, setStep });
     return () => setWizardBridge(null);
-  }, [step, setWizardBridge]);
+  }, [effectiveStep, setWizardBridge, setStep]);
 
   // Advance to Review when a verify lands. This lives HERE (derived from the
   // same freshness check right-side-view.tsx renders by) and not in a mutate
@@ -245,12 +265,16 @@ export default function CheckoutPage() {
         </div>
 
         <div className="m-auto w-full max-w-5xl mb-8">
-          <CheckoutSteps current={step} onStepClick={setStep} />
+          <CheckoutSteps current={effectiveStep} onStepClick={setStep} />
         </div>
 
         <div className="m-auto flex w-full max-w-5xl flex-col items-center rtl:space-x-reverse lg:flex-row lg:items-start lg:space-x-8">
           <div className="w-full lg:max-w-2xl">
-            <CheckoutWizard step={step} setStep={setStep} panels={panels} />
+            <CheckoutWizard
+              step={effectiveStep}
+              setStep={setStep}
+              panels={panels}
+            />
           </div>
           <div className="mt-10 mb-10 w-full sm:mb-12 lg:mt-0 lg:mb-0 lg:w-96">
             <RightSideView />

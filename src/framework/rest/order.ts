@@ -10,29 +10,29 @@ import {
   PaymentGateway,
   QueryOptions,
   RefundPolicyQueryOptions,
-} from '@/types';
+} from "@/types";
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-} from 'react-query';
-import { useTranslation } from 'next-i18next';
-import { toast } from 'react-toastify';
-import { useModalAction } from '@/components/ui/modal/modal.context';
-import { API_ENDPOINTS } from './client/api-endpoints';
-import client from './client';
-import { useAtom } from 'jotai';
-import { clearCheckoutAtom, verifiedResponseAtom } from '@/store/checkout';
-import { useCart } from '@/store/quick-cart/cart.context';
-import { useRouter } from '@/compat/next-router';
-import { Routes } from '@/config/routes';
-import { mapPaginatorData } from '@/framework/utils/data-mappers';
-import { isArray, isObject, isEmpty } from 'lodash';
-import { useMemo } from 'react';
-import { resolveOrderToken, saveOrderToken } from '@/lib/order-token';
-import { cartFingerprint } from '@/lib/checkout-totals';
-import { firstFieldError, getErrorMessage } from '@/lib/get-error-message';
+} from "react-query";
+import { useTranslation } from "next-i18next";
+import { toast } from "react-toastify";
+import { useModalAction } from "@/components/ui/modal/modal.context";
+import { API_ENDPOINTS } from "./client/api-endpoints";
+import client from "./client";
+import { useAtom } from "jotai";
+import { clearCheckoutAtom, verifiedResponseAtom } from "@/store/checkout";
+import { useCart } from "@/store/quick-cart/cart.context";
+import { useRouter } from "@/compat/next-router";
+import { Routes } from "@/config/routes";
+import { mapPaginatorData } from "@/framework/utils/data-mappers";
+import { isArray, isObject, isEmpty } from "lodash";
+import { useMemo } from "react";
+import { resolveOrderToken, saveOrderToken } from "@/lib/order-token";
+import { cartFingerprint } from "@/lib/checkout-totals";
+import { firstFieldError, getErrorMessage } from "@/lib/get-error-message";
 
 export function useOrders(options?: Partial<OrderQueryOptions>) {
   const { locale } = useRouter();
@@ -58,7 +58,7 @@ export function useOrders(options?: Partial<OrderQueryOptions>) {
       getNextPageParam: ({ current_page, last_page }) =>
         last_page > current_page && { page: current_page + 1 },
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   function handleLoadMore() {
@@ -89,8 +89,9 @@ export function useOrder({ tracking_number }: { tracking_number: string }) {
   const token = useMemo(() => {
     const fromRouter = query?.token as string | undefined;
     const fromLocation =
-      typeof window !== 'undefined'
-        ? new URLSearchParams(window.location.search).get('token') ?? undefined
+      typeof window !== "undefined"
+        ? (new URLSearchParams(window.location.search).get("token") ??
+          undefined)
         : undefined;
     return resolveOrderToken(tracking_number, fromRouter ?? fromLocation);
   }, [tracking_number, query?.token]);
@@ -115,7 +116,7 @@ export function useOrder({ tracking_number }: { tracking_number: string }) {
         return failureCount < 2;
       },
       retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 4000),
-    }
+    },
   );
 
   return {
@@ -143,15 +144,15 @@ export function useOrderShipments({
       tracking_number
         ? resolveOrderToken(tracking_number, query?.token as string | undefined)
         : undefined,
-    [tracking_number, query?.token]
+    [tracking_number, query?.token],
   );
   const { data, isLoading, error } = useQuery<
     { shipments: OrderShipment[] },
     Error
   >(
-    [API_ENDPOINTS.ORDERS, tracking_number, 'shipments', token],
+    [API_ENDPOINTS.ORDERS, tracking_number, "shipments", token],
     () => client.orders.shipments(tracking_number!, token),
-    { enabled: Boolean(tracking_number), refetchOnWindowFocus: true, retry: 0 }
+    { enabled: Boolean(tracking_number), refetchOnWindowFocus: true, retry: 0 },
   );
 
   return {
@@ -161,7 +162,7 @@ export function useOrderShipments({
   };
 }
 
-export function useRefunds(options: Pick<QueryOptions, 'limit'>) {
+export function useRefunds(options: Pick<QueryOptions, "limit">) {
   const { locale } = useRouter();
 
   const formattedOptions = {
@@ -183,7 +184,7 @@ export function useRefunds(options: Pick<QueryOptions, 'limit'>) {
     {
       getNextPageParam: ({ current_page, last_page }) =>
         last_page > current_page && { page: current_page + 1 },
-    }
+    },
   );
 
   function handleLoadMore() {
@@ -203,9 +204,8 @@ export function useRefunds(options: Pick<QueryOptions, 'limit'>) {
   };
 }
 
-
 export const useDownloadableProducts = (
-  options: Pick<QueryOptions, 'limit'>
+  options: Pick<QueryOptions, "limit">,
 ) => {
   const { locale } = useRouter();
 
@@ -230,7 +230,7 @@ export const useDownloadableProducts = (
       getNextPageParam: ({ current_page, last_page }) =>
         last_page > current_page && { page: current_page + 1 },
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   function handleLoadMore() {
@@ -260,16 +260,22 @@ export function useCreateRefund() {
     client.orders.createRefund,
     {
       onSuccess: () => {
-        toast.success(`${t('text-refund-request-submitted')}`);
+        toast.success(`${t("text-refund-request-submitted")}`);
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, t('text-something-wrong') ?? 'Refund request failed — please try again.'));
+        toast.error(
+          getErrorMessage(
+            error,
+            t("text-something-wrong") ??
+              "Refund request failed — please try again.",
+          ),
+        );
       },
       onSettled: () => {
         queryClient.invalidateQueries(API_ENDPOINTS.ORDERS);
         closeModal();
       },
-    }
+    },
   );
 
   function formatRefundInput(input: CreateRefundInput) {
@@ -307,12 +313,21 @@ export function useCreateOrder() {
         resetCart();
         //@ts-ignore
         resetCheckout();
+        // The wizard position is remembered per session (so a reload keeps the customer's
+        // place); clear it here, because the checkout atoms this order just consumed are
+        // gone and the NEXT checkout must start at Contact rather than on a Review step
+        // with no address.
+        try {
+          sessionStorage.removeItem("pah-checkout-step");
+        } catch {
+          /* non-fatal */
+        }
         // Persist the per-order token so a guest can view their confirmation,
         // payment and thank-you pages after this redirect (and on reload).
         if (tracking_token) saveOrderToken(tracking_number, tracking_token);
         const tokenQuery = tracking_token
           ? `?token=${encodeURIComponent(tracking_token)}`
-          : '';
+          : "";
 
         if (
           [
@@ -326,11 +341,11 @@ export function useCreateOrder() {
 
         if (payment_intent?.payment_intent_info?.is_redirect) {
           return router.push(
-            payment_intent?.payment_intent_info?.redirect_url as string
+            payment_intent?.payment_intent_info?.redirect_url as string,
           );
         } else {
           return router.push(
-            `${Routes.order(tracking_number)}/payment${tokenQuery}`
+            `${Routes.order(tracking_number)}/payment${tokenQuery}`,
           );
         }
       } else {
@@ -348,20 +363,21 @@ export function useCreateOrder() {
       const data = error?.response?.data;
       // Shopping-City hard gate (422): the API encodes a structured payload in
       // message — surface the dedicated mismatch dialog instead of a raw toast.
-      if (data?.code === 'CITY_OUT_OF_STOCK') {
+      if (data?.code === "CITY_OUT_OF_STOCK") {
         toast.error(data?.message);
         return;
       }
       try {
         const parsed =
-          data?.code === 'SHOPPING_CITY_MISMATCH'
+          data?.code === "SHOPPING_CITY_MISMATCH"
             ? data
-            : typeof data?.message === 'string' && data.message.trim().startsWith('{')
+            : typeof data?.message === "string" &&
+                data.message.trim().startsWith("{")
               ? JSON.parse(data.message)
               : null;
-        if (parsed?.code === 'SHOPPING_CITY_MISMATCH') {
+        if (parsed?.code === "SHOPPING_CITY_MISMATCH") {
           window.dispatchEvent(
-            new CustomEvent('pah-city-mismatch', { detail: parsed }),
+            new CustomEvent("pah-city-mismatch", { detail: parsed }),
           );
           return;
         }
@@ -373,7 +389,10 @@ export function useCreateOrder() {
       // and COD_DISABLED carry a `message`, which getErrorMessage shows as-is.
       toast.error(
         firstFieldError(error) ??
-          getErrorMessage(error, 'We could not place your order — please try again.'),
+          getErrorMessage(
+            error,
+            "We could not place your order — please try again.",
+          ),
       );
     },
   });
@@ -383,15 +402,15 @@ export function useCreateOrder() {
       ...input,
       language: locale,
       invoice_translated_text: {
-        subtotal: t('order-sub-total'),
-        discount: t('order-discount'),
-        tax: t('order-tax'),
-        delivery_fee: t('order-delivery-fee'),
-        total: t('order-total'),
-        products: t('text-products'),
-        quantity: t('text-quantity'),
-        invoice_no: t('text-invoice-no'),
-        date: t('text-date'),
+        subtotal: t("order-sub-total"),
+        discount: t("order-discount"),
+        tax: t("order-tax"),
+        delivery_fee: t("order-delivery-fee"),
+        total: t("order-total"),
+        products: t("text-products"),
+        quantity: t("text-quantity"),
+        invoice_no: t("text-invoice-no"),
+        date: t("text-date"),
       },
     };
     createOrder(formattedInputs);
@@ -410,15 +429,15 @@ export function useGenerateDownloadableUrl() {
     {
       onSuccess: (data) => {
         function download(fileUrl: string, fileName: string) {
-          var a = document.createElement('a');
+          var a = document.createElement("a");
           a.href = fileUrl;
-          a.setAttribute('download', fileName);
+          a.setAttribute("download", fileName);
           a.click();
         }
 
-        download(data, 'record.name');
+        download(data, "record.name");
       },
-    }
+    },
   );
 
   function generateDownloadableUrl(digital_file_id: string) {
@@ -453,7 +472,12 @@ export function useVerifyOrder() {
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, 'We could not verify your cart — please try again.'));
+      toast.error(
+        getErrorMessage(
+          error,
+          "We could not verify your cart — please try again.",
+        ),
+      );
     },
   });
 }
@@ -469,9 +493,14 @@ export function useOrderPayment() {
         queryClient.refetchQueries(API_ENDPOINTS.ORDERS_DOWNLOADS);
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error, 'Payment could not be processed — please try again.'));
+        toast.error(
+          getErrorMessage(
+            error,
+            "Payment could not be processed — please try again.",
+          ),
+        );
       },
-    }
+    },
   );
 
   function formatOrderInput(input: CreateOrderPaymentInput) {
@@ -519,17 +548,21 @@ export function useGetPaymentIntentOriginal({
       enabled: false,
       onSuccess: (data) => {
         const url = data?.payment_intent_info?.redirect_url;
-        if (data?.payment_intent_info?.is_redirect && typeof url === 'string' && url) {
+        if (
+          data?.payment_intent_info?.is_redirect &&
+          typeof url === "string" &&
+          url
+        ) {
           return router.push(url);
         } else {
-          openModal('PAYMENT_MODAL', {
+          openModal("PAYMENT_MODAL", {
             paymentGateway: data?.payment_gateway,
             paymentIntentInfo: data?.payment_intent_info,
             trackingNumber: data?.tracking_number,
           });
         }
       },
-    }
+    },
   );
 
   return {
@@ -556,7 +589,7 @@ export function useGetPaymentIntent({
   form_change_gateway?: boolean;
 }) {
   const router = useRouter();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const { openModal, closeModal } = useModalAction();
 
   const { data, error, refetch, isFetching } = useQuery(
@@ -576,10 +609,10 @@ export function useGetPaymentIntent({
       // A gateway that is down/misconfigured must fail visibly (branded toast),
       // not silently strand the customer on a dead Pay Now button.
       onError: () => {
-        toast.error(t('text-payment-unavailable'));
+        toast.error(t("text-payment-unavailable"));
       },
       onSuccess: (item) => {
-        let data: any = '';
+        let data: any = "";
         if (isArray(item)) {
           data = { ...item };
           data = isEmpty(data) ? [] : data[0];
@@ -590,20 +623,24 @@ export function useGetPaymentIntent({
         // page — router.push(undefined) threw all the way to the route error
         // boundary ("This page didn't load") when a gateway was selected.
         const url = data?.payment_intent_info?.redirect_url;
-        if (data?.payment_intent_info?.is_redirect && typeof url === 'string' && url) {
+        if (
+          data?.payment_intent_info?.is_redirect &&
+          typeof url === "string" &&
+          url
+        ) {
           return router.push(url);
         } else if (data?.payment_intent_info?.is_redirect) {
-          toast.error(t('text-payment-unavailable'));
+          toast.error(t("text-payment-unavailable"));
         } else {
           if (recall_gateway) window.location.reload();
-          openModal('PAYMENT_MODAL', {
+          openModal("PAYMENT_MODAL", {
             paymentGateway: data?.payment_gateway,
             paymentIntentInfo: data?.payment_intent_info,
             trackingNumber: data?.tracking_number,
           });
         }
       },
-    }
+    },
   );
 
   return {
