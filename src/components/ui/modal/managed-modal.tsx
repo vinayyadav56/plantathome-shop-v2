@@ -1,92 +1,96 @@
-import { PlantLoader } from '@/components/ui/plant-loader';
-import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
-import Modal from '@/components/ui/modal/modal';
-import { useModalAction, useModalState } from './modal.context';
+import { PlantLoader } from "@/components/ui/plant-loader";
+import dynamic from "next/dynamic";
+import { retryImport } from "@/lib/lazy-with-retry";
+import { Suspense } from "react";
+import Modal from "@/components/ui/modal/modal";
+import { useModalAction, useModalState } from "./modal.context";
 
-const OtpLoginView = dynamic(() => import('@/components/auth/otp-login'));
+const OtpLoginView = dynamic(() => import("@/components/auth/otp-login"));
 const SizeGuideContent = dynamic(
-  () => import('@/components/products/details/size-guide-content')
+  () => import("@/components/products/details/size-guide-content"),
 );
-const Login = dynamic(() => import('@/components/auth/login-form'), {
+const Login = dynamic(() => import("@/components/auth/login-form"), {
   ssr: false,
 });
-const Register = dynamic(() => import('@/components/auth/register-form'));
+const Register = dynamic(() => import("@/components/auth/register-form"));
 const ForgotPassword = dynamic(
-  () => import('@/components/auth/forgot-password')
+  () => import("@/components/auth/forgot-password"),
 );
-const ShopInfoCard = dynamic(() => import('@/components/shops/sidebar'));
+const ShopInfoCard = dynamic(() => import("@/components/shops/sidebar"));
 const CreateOrUpdateAddressForm = dynamic(
-  () => import('@/components/address/address-form'),
-  { ssr: false }
+  () => import("@/components/address/address-form"),
+  { ssr: false },
 );
 const LocationBasedShopForm = dynamic(
-  () => import('@/components/form/location-based-shop-form'),
-  { ssr: false }
+  () => import("@/components/form/location-based-shop-form"),
+  { ssr: false },
 );
 const CreateOrUpdateGuestAddressForm = dynamic(
-  () => import('@/components/checkout/create-or-update-guest')
+  () => import("@/components/checkout/create-or-update-guest"),
 );
 const AddressDeleteView = dynamic(
-  () => import('@/components/address/delete-view')
+  () => import("@/components/address/delete-view"),
 );
 const AddOrUpdateCheckoutContact = dynamic(
-  () => import('@/components/checkout/contact/add-or-update')
+  () => import("@/components/checkout/contact/add-or-update"),
 );
 const ProfileAddOrUpdateContact = dynamic(
-  () => import('@/components/profile/profile-add-or-update-contact')
+  () => import("@/components/profile/profile-add-or-update-contact"),
 );
 const CreateRefundView = dynamic(
-  () => import('@/components/refunds/refund-form')
+  () => import("@/components/refunds/refund-form"),
 );
-const ReviewRating = dynamic(() => import('@/components/reviews/review-form'));
+const ReviewRating = dynamic(() => import("@/components/reviews/review-form"));
 const QuestionForm = dynamic(
-  () => import('@/components/questions/question-form')
+  () => import("@/components/questions/question-form"),
 );
-const AbuseReport = dynamic(() => import('@/components/reviews/abuse-report'));
+const AbuseReport = dynamic(() => import("@/components/reviews/abuse-report"));
 const ProductVariation = dynamic(
-  () => import('@/components/products/variation-modal')
+  () => import("@/components/products/variation-modal"),
 );
 const ReviewImageModal = dynamic(
-  () => import('@/components/reviews/review-image-modal')
+  () => import("@/components/reviews/review-image-modal"),
 );
+// lazyWithRetry, not plain dynamic: this chunk is fetched at the moment the customer
+// reaches payment, which is exactly when a tab opened before a deploy asks for a hashed
+// filename that no longer exists. See src/lib/lazy-with-retry.ts.
 const PaymentModal = dynamic(
-  () => import('@/components/payment/payment-modal'),
-  { ssr: false }
+  () => retryImport(() => import("@/components/payment/payment-modal")),
+  { ssr: false },
 );
 const StripeElementModal = dynamic(
-  () => import('@/components/payment/stripe-element-modal'),
-  { ssr: false }
+  () => import("@/components/payment/stripe-element-modal"),
+  { ssr: false },
 );
 const AddNewPaymentModal = dynamic(
-  () => import('@/components/payment/add-new-payment-modal'),
-  { ssr: false }
+  () => import("@/components/payment/add-new-payment-modal"),
+  { ssr: false },
 );
-const DeleteCardModal = dynamic(() => import('@/components/card/delete-view'));
+const DeleteCardModal = dynamic(() => import("@/components/card/delete-view"));
 const AddNewCardModal = dynamic(
-  () => import('@/components/card/add-new-card-modal'),
-  { ssr: false }
+  () => import("@/components/card/add-new-card-modal"),
+  { ssr: false },
 );
 
 const GateWayControlModal = dynamic(
-  () => import('@/components/payment/gateway-control/gateway-modal'),
-  { ssr: false }
+  () => import("@/components/payment/gateway-control/gateway-modal"),
+  { ssr: false },
 );
 
 const NewsLetterModal = dynamic(
-  () => import('@/components/maintenance/news-letter'),
-  { ssr: false }
+  () => import("@/components/maintenance/news-letter"),
+  { ssr: false },
 );
 
-const PromoPopup = dynamic(() => import('@/components/promo-popup'), {
+const PromoPopup = dynamic(() => import("@/components/promo-popup"), {
   ssr: false,
 });
 
-const ReviewPopupModal = dynamic(() => import('@/components/review-popup'), {
+const ReviewPopupModal = dynamic(() => import("@/components/review-popup"), {
   ssr: false,
 });
 
-const AskAiChat = dynamic(() => import('@/components/ask-ai/ask-ai-chat'), {
+const AskAiChat = dynamic(() => import("@/components/ask-ai/ask-ai-chat"), {
   ssr: false,
 });
 
@@ -95,15 +99,15 @@ const ManagedModal = () => {
   const { closeModal } = useModalAction();
 
   // Controlled payment modal [custom & default]
-  if (view === 'PAYMENT_MODAL') {
+  if (view === "PAYMENT_MODAL") {
     return <PaymentModal />;
   }
   // promo popup modal
-  if (view === 'PROMO_POPUP_MODAL') {
+  if (view === "PROMO_POPUP_MODAL") {
     return <PromoPopup />;
   }
   // promo popup modal
-  if (view === 'REVIEW_POPUP_MODAL') {
+  if (view === "REVIEW_POPUP_MODAL") {
     return <ReviewPopupModal />;
   }
   return (
@@ -124,49 +128,51 @@ const ManagedModal = () => {
           </div>
         }
       >
-        {view === 'LOGIN_VIEW' && <Login />}
-        {view === 'REGISTER' && <Register />}
-        {view === 'FORGOT_VIEW' && <ForgotPassword />}
-        {view === 'OTP_LOGIN' && <OtpLoginView />}
-        {view === 'REFUND_REQUEST' && <CreateRefundView />}
-        {view === 'ADD_OR_UPDATE_ADDRESS' && <CreateOrUpdateAddressForm />}
-        {view === 'ADD_OR_UPDATE_GUEST_ADDRESS' && (
+        {view === "LOGIN_VIEW" && <Login />}
+        {view === "REGISTER" && <Register />}
+        {view === "FORGOT_VIEW" && <ForgotPassword />}
+        {view === "OTP_LOGIN" && <OtpLoginView />}
+        {view === "REFUND_REQUEST" && <CreateRefundView />}
+        {view === "ADD_OR_UPDATE_ADDRESS" && <CreateOrUpdateAddressForm />}
+        {view === "ADD_OR_UPDATE_GUEST_ADDRESS" && (
           <CreateOrUpdateGuestAddressForm />
         )}
-        {view === 'LOCATION_BASED_SHOP' && <LocationBasedShopForm />}
-        {view === 'ADD_OR_UPDATE_CHECKOUT_CONTACT' && (
+        {view === "LOCATION_BASED_SHOP" && <LocationBasedShopForm />}
+        {view === "ADD_OR_UPDATE_CHECKOUT_CONTACT" && (
           <AddOrUpdateCheckoutContact />
         )}
-        {view === 'ADD_OR_UPDATE_PROFILE_CONTACT' && (
+        {view === "ADD_OR_UPDATE_PROFILE_CONTACT" && (
           <ProfileAddOrUpdateContact />
         )}
-        {view === 'DELETE_ADDRESS' && <AddressDeleteView />}
-        {view === 'SHOP_INFO' && (
+        {view === "DELETE_ADDRESS" && <AddressDeleteView />}
+        {view === "SHOP_INFO" && (
           <ShopInfoCard
             shop={data?.shop}
             cardClassName="!hidden"
             className="!flex !h-screen !w-screen max-w-screen-sm flex-col"
           />
         )}
-        {view === 'REVIEW_RATING' && <ReviewRating />}
-        {view === 'ABUSE_REPORT' && <AbuseReport data={data} />}
-        {view === 'QUESTION_FORM' && <QuestionForm />}
-        {view === 'SELECT_PRODUCT_VARIATION' && (
+        {view === "REVIEW_RATING" && <ReviewRating />}
+        {view === "ABUSE_REPORT" && <AbuseReport data={data} />}
+        {view === "QUESTION_FORM" && <QuestionForm />}
+        {view === "SELECT_PRODUCT_VARIATION" && (
           <ProductVariation productSlug={data} />
         )}
-        {view === 'REVIEW_IMAGE_POPOVER' && <ReviewImageModal />}
+        {view === "REVIEW_IMAGE_POPOVER" && <ReviewImageModal />}
         {/* Payment Modal */}
-        {view === 'USE_NEW_PAYMENT' && <AddNewPaymentModal />}
+        {view === "USE_NEW_PAYMENT" && <AddNewPaymentModal />}
         {/* Card/My Card Modal */}
-        {view === 'ADD_NEW_CARD' && <AddNewCardModal />}
-        {view === 'DELETE_CARD_MODAL' && <DeleteCardModal />}
-        {view === 'GATEWAY_MODAL' && <GateWayControlModal />}
-        {view === 'STRIPE_ELEMENT_MODAL' && <StripeElementModal />}
-        {view === 'NEWSLETTER_MODAL' && <NewsLetterModal />}
-        {view === 'ASK_AI' && <AskAiChat />}
-        {view === 'SIZE_GUIDE' && (
+        {view === "ADD_NEW_CARD" && <AddNewCardModal />}
+        {view === "DELETE_CARD_MODAL" && <DeleteCardModal />}
+        {view === "GATEWAY_MODAL" && <GateWayControlModal />}
+        {view === "STRIPE_ELEMENT_MODAL" && <StripeElementModal />}
+        {view === "NEWSLETTER_MODAL" && <NewsLetterModal />}
+        {view === "ASK_AI" && <AskAiChat />}
+        {view === "SIZE_GUIDE" && (
           <div className="w-full max-w-md rounded-2xl bg-white p-6">
-            <h3 className="mb-4 text-[15px] font-semibold text-forest-900">Size guide</h3>
+            <h3 className="mb-4 text-[15px] font-semibold text-forest-900">
+              Size guide
+            </h3>
             <SizeGuideContent
               sizeGuide={data?.sizeGuide}
               sizes={data?.sizes ?? []}

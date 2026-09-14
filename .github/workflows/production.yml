@@ -183,12 +183,33 @@ jobs:
             echo "==> Installing production dependencies (npm — V2 has package-lock.json)..."
             npm ci
 
-            echo "==> Clearing stale build output before artifact extraction..."
-            rm -rf .next
+            echo "==> Preserving the previous build's static assets..."
+            # DO NOT `rm -rf .next` here. Every build mints new hashed chunk filenames,
+            # and a browser tab opened before this deploy still references the OLD ones.
+            # Wiping .next made those files 404 instantly, so the tab's next lazy import
+            # — which on this site happens exactly when a customer clicks Check
+            # Availability or reaches payment — dead-ended their click. Keep the previous
+            # static tree, overlay the new one, and prune old chunks after a grace period.
+            ROLLOVER=/var/www/plantathome/shop-static-previous
+            mkdir -p "$ROLLOVER"
+            if [ -d .next/static ]; then
+              cp -a .next/static/. "$ROLLOVER"/ 2>/dev/null || true
+            fi
+            # Server output (BUILD_ID, server chunks, manifests) MUST be replaced wholesale —
+            # only the client-side static tree is additive.
+            rm -rf .next/server .next/cache .next/BUILD_ID .next/*.json
 
             echo "==> Deploying pre-built artifact from runner..."
             tar -xzf /tmp/shop-build.tar.gz
             rm -f /tmp/shop-build.tar.gz
+
+            echo "==> Restoring the previous build's chunks alongside the new ones..."
+            # `cp -n`: never overwrite a file this build produced.
+            cp -an "$ROLLOVER"/. .next/static/ 2>/dev/null || true
+            # Grace period: drop anything untouched for 3 days (≈ several deploys), so the
+            # directory cannot grow without bound.
+            find "$ROLLOVER" -type f -mtime +3 -delete 2>/dev/null || true
+            echo "    static files now served: $(find .next/static -type f | wc -l)"
 
             echo "==> Fixing build paths (runner path → EC2 path)..."
             # required-server-files.json is pretty-printed, so the key is

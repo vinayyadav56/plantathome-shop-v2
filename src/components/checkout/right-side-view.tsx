@@ -1,19 +1,17 @@
 import { verifiedResponseAtom } from '@/store/checkout';
 import { useAtom } from 'jotai';
 import isEmpty from 'lodash/isEmpty';
-import dynamic from 'next/dynamic';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { cartFingerprint } from '@/lib/checkout-totals';
 import { formatOrderedProduct } from '@/lib/format-ordered-product';
-const UnverifiedItemList = dynamic(
-  () => import('@/components/checkout/item/unverified-item-list')
-);
-const VerifiedItemList = dynamic(
-  () => import('@/components/checkout/item/verified-item-list')
-);
-const DeliveryEstimate = dynamic(
-  () => import('@/components/checkout/delivery-estimate')
-);
+// STATIC imports, deliberately. These three used to be next/dynamic, so the
+// VerifiedItemList chunk was fetched at the exact moment "Check Availability"
+// landed — and a tab opened before a deploy asks for a hashed filename the server
+// no longer has, which dead-ended the customer's click. They are small, always
+// rendered on this page, and on the money path: there is nothing to defer.
+import UnverifiedItemList from '@/components/checkout/item/unverified-item-list';
+import VerifiedItemList from '@/components/checkout/item/verified-item-list';
+import DeliveryEstimate from '@/components/checkout/delivery-estimate';
 
 export const RightSideView = ({
   hideTitle = false,

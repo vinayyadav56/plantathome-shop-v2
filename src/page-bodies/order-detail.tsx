@@ -17,7 +17,7 @@ export default function OrderPage() {
   const { settings } = useSettings();
 
   const { order, isLoading, isFetching, error, refetch } = useOrder({
-    tracking_number: query.tracking_number!.toString(),
+    tracking_number: query?.tracking_number?.toString() ?? '',
   });
 
   if (isLoading || (!order && isFetching)) {

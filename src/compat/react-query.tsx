@@ -50,7 +50,7 @@ type V3QueryOpts<TData, TError> = {
   refetchOnWindowFocus?: boolean;
   refetchOnMount?: boolean | 'always';
   refetchInterval?: number | false;
-  retry?: boolean | number;
+  retry?: boolean | number | ((failureCount: number, error: any) => boolean);
   keepPreviousData?: boolean;
   initialData?: TData | (() => TData);
   select?: (data: any) => TData;

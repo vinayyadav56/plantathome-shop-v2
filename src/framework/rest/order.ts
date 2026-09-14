@@ -100,7 +100,22 @@ export function useOrder({ tracking_number }: { tracking_number: string }) {
   >(
     [API_ENDPOINTS.ORDERS, tracking_number, token],
     () => client.orders.get(tracking_number, token),
-    { refetchOnWindowFocus: false }
+    {
+      refetchOnWindowFocus: false,
+      // Never fire without a tracking number (the route param can be absent for a frame
+      // after a client-side push) — an empty-id request 404s and caches that failure.
+      enabled: Boolean(tracking_number),
+      // The read immediately after checkout is the one that must not dead-end: a single
+      // blip used to leave "We couldn't load this order" until the customer retried by
+      // hand. Two bounded retries with backoff, and never retry a real 404/403 — those
+      // are answers, not blips.
+      retry: (failureCount: number, err: any) => {
+        const status = err?.response?.status;
+        if (status === 404 || status === 403 || status === 401) return false;
+        return failureCount < 2;
+      },
+      retryDelay: (attempt: number) => Math.min(1000 * 2 ** attempt, 4000),
+    }
   );
 
   return {

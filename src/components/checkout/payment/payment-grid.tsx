@@ -59,7 +59,7 @@ const PaymentGroupOption: React.FC<PaymentGroupOptionProps> = ({
   if (!payment) return null;
   const { name, value, icon } = payment;
   return (
-    <RadioGroup.Option value={value} key={value}>
+    <RadioGroup.Option value={value} key={value} aria-label={name}>
       {({ checked }) => (
         <div
           className={cn(
@@ -71,7 +71,13 @@ const PaymentGroupOption: React.FC<PaymentGroupOptionProps> = ({
           )}
         >
           {icon ? (
-            <>{icon}</>
+            <>
+              {icon}
+              {/* Icon-only tiles carried no accessible name at all: the radio was
+                  announced as an empty option. Keep the visual as-is, name it for
+                  assistive tech (and for the e2e checks that select by name). */}
+              <span className="sr-only">{name}</span>
+            </>
           ) : (
             <span className="text-xs font-semibold text-heading">{name}</span>
           )}
