@@ -1,4 +1,5 @@
 import {
+  LayoutGrid,
   ArrowRight,
   Bike,
   Box,
@@ -83,6 +84,9 @@ const GLYPHS: Record<string, LucideIcon> = {
   plant: PottedPlant,
   thermometer: Thermometer,
   humidity: Droplets,
+  // neutral section marks -- deliberately not botanical
+  grid: LayoutGrid,
+  dot: Dot,
 };
 
 export function LineIcon({

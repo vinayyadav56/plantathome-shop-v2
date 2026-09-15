@@ -71,6 +71,27 @@ const rawPalette = sh(
 ).filter((f) => f && !f.endsWith('index.tsx'));
 fail('A DB-keyed palette glyph bypasses paletteIcon(), so it misses the house stroke.', rawPalette);
 
+// ---- Rule 5b: every LineIcon/GsIcon name used must exist in its map --------
+// A name that isn't in the map hits the fallback and renders a neutral dot --
+// which looks deliberate, so it ships unnoticed. (This rule caught `grid`.)
+const mapKeys = (file) => {
+  const src = readFileSync(file, 'utf8');
+  const m = src.match(/const GLYPHS[^=]*=\s*\{([\s\S]*?)\n\};/);
+  return new Set(m ? [...m[1].matchAll(/^\s{2}([A-Za-z][A-Za-z0-9]*):/gm)].map((x) => x[1]) : []);
+};
+const unmapped = [];
+for (const [tag, file] of [
+  ['LineIcon', 'src/components/icons/line-icons.tsx'],
+  ['GsIcon', 'src/components/garden-service/icons.tsx'],
+]) {
+  const have = mapKeys(file);
+  const used = sh(`grep -rhoE '<${tag}[^>]*name="[a-zA-Z]+"' src --include="*.tsx" || true`)
+    .map((l) => (l.match(/name="([a-zA-Z]+)"/) || [])[1])
+    .filter(Boolean);
+  for (const u of new Set(used)) if (!have.has(u)) unmapped.push(`${tag} name="${u}" is not in ${file}`);
+}
+fail('An icon name is used but not mapped, so it silently hits the fallback.', unmapped);
+
 // ---- Rule 6: every brand-ramp class used actually exists in the config ------
 // A class for a rung that isn't defined emits NO css and fails silently, which
 // is how two icon colours were dead for months.
