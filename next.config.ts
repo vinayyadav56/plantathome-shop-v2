@@ -176,6 +176,17 @@ const nextConfig: NextConfig = {
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
+        // The kill-switch worker must never be answered from a cache, or a
+        // browser's update check keeps seeing the old Workbox bytes and the
+        // zombie worker survives. Browsers already bypass the HTTP cache for
+        // worker scripts; this makes it explicit for Cloudflare too.
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Service-Worker-Allowed', value: '/' },
+        ],
+      },
+      {
         // The site had NO security headers at all. Applied to everything.
         source: '/:path*',
         headers: SECURITY_HEADERS,

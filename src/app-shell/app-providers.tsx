@@ -13,6 +13,7 @@
 
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { API_ENDPOINTS } from '@/framework/client/api-endpoints';
 import { X } from '@/components/ui/icon';
 import { SearchProvider } from '@/components/ui/search/search.context';
 import { ModalProvider } from '@/components/ui/modal/modal.context';
@@ -39,19 +40,47 @@ import AgentationToolbar from '@/components/dev/agentation-toolbar';
 // → sync re-render per microtask → starves the very stream it waits on).
 import { ToastContainer, Bounce } from 'react-toastify';
 
-export default function AppProviders({ children }: { children: React.ReactNode }) {
-  const [queryClient] = React.useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 60 * 1000,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false,
-          },
+export default function AppProviders({
+  settings,
+  children,
+}: {
+  /** Server-fetched settings from app/layout.tsx. See the seeding note below. */
+  settings?: any;
+  children: React.ReactNode;
+}) {
+  const [queryClient] = React.useState(() => {
+    const client = new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 60 * 1000,
+          refetchOnWindowFocus: false,
+          refetchOnReconnect: false,
         },
-      }),
-  );
+      },
+    });
+
+    // Seed settings BEFORE any child renders. This initializer runs
+    // synchronously on the server and on the client, so both produce identical
+    // markup.
+    //
+    // Why it has to happen here and not in the page's <Hydrate>: DesignSystemApplier
+    // and Maintenance below both call useSettings(), which builds this query's
+    // cache entry during render. By the time <Hydrate> runs inside {children},
+    // the query already exists — and TanStack hydrates a pre-existing query in
+    // an effect rather than during render. Effects never run during SSR, so the
+    // server rendered every settings-driven component's fallback branch: the
+    // hardcoded wordmark instead of the uploaded logo, the built-in hero images
+    // instead of the configured slides. The client then swapped them after
+    // hydration, which is the "old logo first, new logo after a moment" the
+    // owner reported.
+    //
+    // The key must match useSettings() exactly — [SETTINGS, { language }] with
+    // language from the compat router, which is always 'en'.
+    if (settings) {
+      client.setQueryData([API_ENDPOINTS.SETTINGS, { language: 'en' }], settings);
+    }
+    return client;
+  });
   return (
     <div dir="ltr">
       <QueryClientProvider client={queryClient}>

@@ -22,13 +22,20 @@ export default function DesignSystemApplier() {
   const headingFontFamily: string | undefined =
     settings?.typography?.headingFontFamily;
 
+  // Only PERSIST once real settings have arrived. Persisting while settings are
+  // still absent wrote the DEFAULT theme to localStorage, which the next visit's
+  // pre-paint script then applied before the real theme loaded — a second source
+  // of "old look first, correct look after". Applying without persisting is
+  // still correct: the defaults are what the page would render anyway.
+  const hasSettings = Boolean(settings && Object.keys(settings).length > 0);
+
   useEffect(() => {
     // Design system first (sets its own font pairing) …
-    applyDesignSystem(designSystem, true);
+    applyDesignSystem(designSystem, hasSettings);
     // … then the website fonts win (Inter body + Cormorant headings by default).
     // Re-runs whenever the design system OR either font changes.
-    applyTypography(fontFamily, headingFontFamily, true);
-  }, [JSON.stringify(designSystem ?? null), fontFamily, headingFontFamily]);
+    applyTypography(fontFamily, headingFontFamily, hasSettings);
+  }, [JSON.stringify(designSystem ?? null), fontFamily, headingFontFamily, hasSettings]);
 
   return null;
 }

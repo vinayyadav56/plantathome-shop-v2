@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Script from 'next/script';
 
 // CSS import order mirrors V1 _app.tsx exactly (load-bearing). main.css used to
@@ -17,6 +18,34 @@ import AppProviders from '@/app-shell/app-providers';
 import { API_URL, SITE_URL } from '@/lib/site-url';
 
 /**
+ * Settings, fetched ONCE per request (React `cache` dedupes) and used for two
+ * things: the metadata below, and seeding the QueryClient in AppProviders.
+ *
+ * The seeding is the important half. Every settings-driven component
+ * (BrandLogo, the hero, DesignSystemApplier, Maintenance) falls back to a
+ * hardcoded default when settings are absent — and they WERE absent on the
+ * server, because AppProviders renders two `useSettings()` consumers before
+ * {children}, which creates the query before the page's <Hydrate> runs, and
+ * TanStack then defers hydrating a pre-existing query to an effect. Effects do
+ * not run during SSR, so the server shipped the fallback wordmark and the
+ * built-in hero images, and the client swapped in the real ones after
+ * hydration. That swap is what shoppers saw as "old logo, then new logo".
+ *
+ * 30s matches the home route's revalidate, so an admin logo change reaches the
+ * server-rendered HTML within one window instead of never.
+ */
+export const getSettings = cache(async (): Promise<any | null> => {
+  if (!API_URL) return null;
+  try {
+    const res = await fetch(`${API_URL}/settings`, { next: { revalidate: 30 } });
+    return res.ok ? await res.json() : null;
+  } catch {
+    // A down API must not break the page — components fall back exactly as before.
+    return null;
+  }
+});
+
+/**
  * Root metadata is BUILT from admin Settings → SEO when values are set there
  * (metaTitle, metaDescription, ogImage, twitterHandle) and falls back to the
  * literals below. This used to be DefaultSeo's job — dead since the next-seo
@@ -24,20 +53,9 @@ import { API_URL, SITE_URL } from '@/lib/site-url';
  * the admin SEO panel from the live site.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  let seo: any = null;
-  let favicon: string | undefined;
-  if (API_URL) {
-    try {
-      const res = await fetch(`${API_URL}/settings`, { next: { revalidate: 300 } });
-      if (res.ok) {
-        const options = (await res.json())?.options;
-        seo = options?.seo ?? null;
-        favicon = options?.favicon?.original || undefined;
-      }
-    } catch {
-      /* fall back to the literals — a down API must not break metadata */
-    }
-  }
+  const options = (await getSettings())?.options;
+  const seo: any = options?.seo ?? null;
+  const favicon: string | undefined = options?.favicon?.original || undefined;
 
   return {
     // metadataBase makes every relative canonical/og URL in child routes
@@ -88,7 +106,8 @@ export const viewport = {
  * stylesheet links to <head>). Font Awesome 6.5.2 CDN backs the pah mobile
  * home's fa-* icons.
  */
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getSettings();
   return (
     // The ds-prepaint script below mutates <html> (data-density + --ds-* inline
     // styles from the PERSISTED design system) before React hydrates, so from
@@ -138,7 +157,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
 
-        <AppProviders>{children}</AppProviders>
+        <AppProviders settings={settings}>{children}</AppProviders>
       </body>
     </html>
   );
