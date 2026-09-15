@@ -37,6 +37,7 @@ import {
   useQueryClient,
 } from 'react-query';
 import { toast } from 'react-toastify';
+import { requestGoogleAccessToken } from '@/lib/google-identity';
 
 export function useUser() {
   const [isAuthorized] = useAtom(authorizationAtom);
@@ -238,6 +239,34 @@ export function useLogin() {
   });
 
   return { mutate, isLoading, serverError, setServerError };
+}
+
+/**
+ * Google button: get an access token from Google Identity Services, then hand
+ * it to the same /social-login-token endpoint the app already uses.
+ */
+export function useGoogleLogin() {
+  const { closeModal } = useModalAction();
+  const social = useSocialLogin();
+  const [busy, setBusy] = useState(false);
+
+  async function login() {
+    setBusy(true);
+    try {
+      const token = await requestGoogleAccessToken();
+      if (!token) return; // shopper closed the Google popup
+      social.mutate(
+        { provider: 'google', access_token: token },
+        { onSuccess: (d: any) => { if (d?.token) closeModal(); } },
+      );
+    } catch (e: any) {
+      toast.error(e?.message || 'Google sign-in failed.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return { login, isLoading: busy || social.isLoading };
 }
 
 export function useSocialLogin() {

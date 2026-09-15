@@ -98,6 +98,7 @@ jobs:
           NEXT_PUBLIC_ADMIN_URL: https://admin.plantathome.in
           NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PROD_RAZORPAY_KEY_ID }}
           NEXT_PUBLIC_GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
           NEXT_PUBLIC_DEFAULT_LANGUAGE: en
           NEXT_PUBLIC_ENABLE_MULTI_LANG: 'false'
           NODE_OPTIONS: '--max-old-space-size=6144'

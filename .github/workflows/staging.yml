@@ -85,6 +85,7 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://plantathome-shop-staging.vercel.app
           NEXT_PUBLIC_ADMIN_URL: https://plantathome-admin-staging.vercel.app
           NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
           NEXT_PUBLIC_DEFAULT_LANGUAGE: en
           NEXT_PUBLIC_ENABLE_MULTI_LANG: 'false'
           NODE_OPTIONS: '--max-old-space-size=4096'
@@ -152,10 +153,12 @@ jobs:
             --build-env "NEXT_PUBLIC_ADMIN_URL=https://plantathome-admin-staging.vercel.app" \
             --build-env "NEXT_PUBLIC_DEFAULT_LANGUAGE=en" \
             --build-env "NEXT_PUBLIC_ENABLE_MULTI_LANG=false" \
-            --build-env "NEXT_PUBLIC_GOOGLE_MAP_API_KEY=$GOOGLE_MAP_API_KEY"
+            --build-env "NEXT_PUBLIC_GOOGLE_MAP_API_KEY=$GOOGLE_MAP_API_KEY" \
+            --build-env "NEXT_PUBLIC_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_SHOP_PROJECT_ID }}
           STAGING_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
           GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}
+          GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
