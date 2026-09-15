@@ -177,7 +177,7 @@ const Header = ({ layout }: { layout?: string }) => {
               links; the second promo needs the full 1440 to fit alongside */}
           <span className="hidden min-w-0 items-center gap-[22px] whitespace-nowrap tracking-[0.1px] xl:flex">
             <span className="inline-flex items-center gap-2.5">
-              <Truck size={15} className="shrink-0 text-sage-300" aria-hidden />
+              <Truck size={16} className="shrink-0 text-sage-300" aria-hidden />
               FREE SHIPPING on orders above ₹499
             </span>
             <span aria-hidden className="hidden h-[18px] w-px bg-[linear-gradient(to_bottom,transparent,rgba(255,255,255,0.35),transparent)] min-[1440px]:block" />
@@ -185,11 +185,11 @@ const Header = ({ layout }: { layout?: string }) => {
           </span>
           <span className="col-start-3 flex min-w-0 items-center justify-end gap-3 overflow-hidden whitespace-nowrap sm:gap-[22px]">
             <Link href="/track-order" className="inline-flex items-center gap-1.5 transition-colors hover:text-white">
-              <Truck size={15} aria-hidden />
+              <Truck size={16} aria-hidden />
               Track Order
             </Link>
             <Link href="/help" className="hidden items-center gap-1.5 transition-colors hover:text-white sm:inline-flex">
-              <CircleHelp size={15} aria-hidden />
+              <CircleHelp size={16} aria-hidden />
               Help &amp; Support
             </Link>
           </span>
@@ -281,7 +281,7 @@ const Header = ({ layout }: { layout?: string }) => {
               <span aria-hidden className="h-10 w-px bg-[linear-gradient(to_bottom,transparent,rgba(24,50,29,0.18),transparent)]" />
               {/* Wishlist */}
               <Link href="/wishlists" className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Wishlist">
-                <Heart size={23} aria-hidden />
+                <Heart size={24} aria-hidden />
                 <span className="leading-none">Wishlist</span>
               </Link>
               {/* Cart */}
@@ -331,7 +331,7 @@ const Header = ({ layout }: { layout?: string }) => {
               href="/track-order"
               className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-[#1a2e1f] transition-colors hover:text-forest-700"
             >
-              <Truck size={15} aria-hidden />
+              <Truck size={16} aria-hidden />
               Track Order
             </Link>
           </div>

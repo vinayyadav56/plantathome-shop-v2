@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import type { TablerIcon, IconProps as TablerIconProps } from '@tabler/icons-react';
 import {
   // commerce
@@ -135,13 +136,13 @@ import {
 /** ONE knob. Changing this number retunes every icon on the site. */
 export const ICON_STROKE = 1.75;
 
-export type IconSize = 12 | 14 | 16 | 20 | 24 | 32 | 40 | 48;
+export type IconSize = 12 | 14 | 16 | 18 | 20 | 24 | 32 | 40 | 48;
 
 /** Public prop shape. `stroke` is deliberately absent: the knob owns weight. */
-export type IconProps = Omit<TablerIconProps, 'stroke' | 'ref'>;
+export type IconProps = Omit<TablerIconProps, 'stroke' | 'ref' | 'size'> & { size?: IconSize };
 
 /** Frozen legacy type names -- ~14 files annotate maps with these. */
-export type LucideIcon = TablerIcon;
+export type LucideIcon = ForwardRefExoticComponent<IconProps & RefAttributes<SVGSVGElement>>;
 export type LucideProps = IconProps;
 
 /** Applies the house weight. A call site may still override fill/strokeWidth

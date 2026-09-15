@@ -1,5 +1,5 @@
 import Link from '@/components/ui/link';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/components/ui/icon';
 import cn from 'classnames';
 
 export interface Crumb {

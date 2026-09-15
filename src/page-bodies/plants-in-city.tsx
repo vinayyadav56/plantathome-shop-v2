@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MapPin, Truck } from 'lucide-react';
+import { MapPin, Truck } from '@/components/ui/icon';
 import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import Accordion from '@/components/ui/accordion';

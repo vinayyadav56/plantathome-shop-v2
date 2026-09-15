@@ -357,7 +357,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     onClick={onAskAi}
                     className="absolute bottom-2.5 left-2.5 z-[2] inline-flex items-center gap-1 rounded-full border border-black/5 bg-white/90 px-2.5 py-1.5 text-[11px] font-bold text-clay-700 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:bottom-3 sm:left-3"
                   >
-                    <Sparkles size={13} fill="currentColor" className="text-clay-600" aria-hidden /> Ask AI
+                    <Sparkles size={14} fill="currentColor" className="text-clay-600" aria-hidden /> Ask AI
                   </button>
                 ) : null
               }

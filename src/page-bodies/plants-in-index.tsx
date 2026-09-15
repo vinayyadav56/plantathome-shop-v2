@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { MapPin } from '@/components/ui/icon';
 import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import type { LocationPageSummary } from '@/framework/ssr/location-pages';
