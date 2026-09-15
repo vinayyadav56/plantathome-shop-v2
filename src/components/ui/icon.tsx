@@ -164,6 +164,14 @@ export type LucideProps = IconProps;
 
 /** Applies the house weight. A call site may still override fill/strokeWidth
  *  directly (the filled star, quote and play glyphs rely on that). */
+/** Wraps a raw library glyph in the house weight. Exported for the DB-keyed
+ *  palette files under icons/category and icons/groups, whose export names are
+ *  pinned by database records and so cannot be re-exported from this barrel. */
+export const paletteIcon = (Glyph: TablerIcon) =>
+  forwardRef<SVGSVGElement, IconProps>(function PaPaletteIcon(props, ref) {
+    return <Glyph stroke={ICON_STROKE} {...props} ref={ref} />;
+  });
+
 const g = (Glyph: TablerIcon) =>
   forwardRef<SVGSVGElement, IconProps>(function PaIcon(props, ref) {
     return <Glyph stroke={ICON_STROKE} {...props} ref={ref} />;

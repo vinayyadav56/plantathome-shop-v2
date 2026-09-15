@@ -40,7 +40,15 @@ const eslintConfig = defineConfig([
   },
   {
     // The barrel itself is the one place allowed to touch the library.
-    files: ["src/components/ui/icon.tsx", "src/components/ui/icon-set/**"],
+    files: [
+      "src/components/ui/icon.tsx",
+      "src/components/ui/icon-set/**",
+      // DB-keyed palettes: export names are pinned by database records, so these
+      // cannot be re-exported from the barrel. They still go through
+      // paletteIcon(), so the house stroke applies.
+      "src/components/icons/category/**",
+      "src/components/icons/groups/**",
+    ],
     rules: { "no-restricted-imports": "off" },
   },
 ]);

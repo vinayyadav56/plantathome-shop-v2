@@ -48,7 +48,14 @@ fail('An icon source hardcodes a colour; icons must follow currentColor.', hexHi
 // ---- Rule 3: the barrel is the only door ------------------------------------
 const importHits = sh(
   `grep -rn "from '@tabler/icons-react'\\|from 'lucide-react'" src app --include="*.tsx" --include="*.ts" || true`
-).filter((l) => !l.startsWith('src/components/ui/icon.tsx') && !l.includes('src/components/ui/icon-set/'));
+).filter(
+  (l) =>
+    !l.startsWith('src/components/ui/icon.tsx') &&
+    !l.includes('src/components/ui/icon-set/') &&
+    // DB-keyed palettes import the raw glyph deliberately; rule 5 below proves
+    // each of them still routes through paletteIcon(), so the knob applies.
+    !/^src\/components\/icons\/(category|groups)\//.test(l)
+);
 fail('The icon library was imported outside the barrel.', importHits);
 
 // ---- Rule 4: sizes stay on the scale ----------------------------------------
@@ -56,6 +63,12 @@ const SCALE = new Set([12, 14, 16, 18, 20, 24, 32, 40, 48]);
 const sizeHits = sh(`grep -rnoE "size=\\{[0-9]+\\}" src --include="*.tsx" || true`)
   .filter((l) => { const m = l.match(/size=\{(\d+)\}/); return m && !SCALE.has(+m[1]); });
 fail('An icon size is off the scale 12/14/16/18/20/24/32/40/48.', sizeHits);
+
+// ---- Rule 5: DB-keyed palettes must go through paletteIcon() -------------
+const rawPalette = sh(
+  `grep -rLn "paletteIcon" src/components/icons/category src/components/icons/groups --include="*.tsx" || true`
+).filter((f) => f && !f.endsWith('index.tsx'));
+fail('A DB-keyed palette glyph bypasses paletteIcon(), so it misses the house stroke.', rawPalette);
 
 if (failures) { console.error(`\n${failures} icon-rule violation(s).\n`); process.exit(1); }
 console.log('✓ icon rules: leaf-means-plant, currentColor-only, single-door imports, size scale');
