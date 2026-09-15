@@ -23,7 +23,13 @@ function Circle({ c }: { c: Category }) {
 }
 
 export function CategoryCircles() {
-  const { categories, isLoading } = useCategories({ limit: CATEGORIES_PER_PAGE, parent: 'null' });
+  // Same reason as the desktop strip: without `home` the API returns every
+  // top-level category in raw DB order, including the ones with no image.
+  const { categories, isLoading } = useCategories({
+    limit: CATEGORIES_PER_PAGE,
+    parent: 'null',
+    home: 1,
+  } as any);
   const { homeCategories } = useHomeConfig();
   const list = applyCuration((categories ?? []).filter((c) => c?.slug), homeCategories).slice(0, 12);
 

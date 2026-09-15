@@ -25,28 +25,40 @@ function Thumb({ src, fallback }: { src: string; fallback: JSX.Element }) {
     // Neutral radial tile matching the image tiles — a dark tile would clash
     // inside the light glass panel.
     return (
-      <div className="flex h-full w-full items-center justify-center text-[#39772b]/60">
+      <div className="flex h-full w-full items-center justify-center text-[#39772b]/80">
         {fallback}
       </div>
     );
   }
   return (
-    // Catalog shots are white-background JPEGs; object-contain over the soft
-    // radial tile lets the image's own white bg blend in, so the plant reads
-    // as a cutout (no crop).
+    // object-cover fills the tile. The previous object-contain + 5px padding
+    // letterboxed a 4:3 catalogue shot into ~30x22 of a 40px tile, which on a
+    // near-white radial background inside translucent white glass read as
+    // washed out. The phone twin (category-circles.tsx) has always used cover.
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt=""
       loading="lazy"
       onError={() => setErr(true)}
-      className="h-full w-full object-contain p-[5px] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
+      className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
     />
   );
 }
 
 export function CategoryRow() {
-  const { categories: raw, isLoading } = useCategories({ limit: HOME_CATEGORIES_LIMIT, parent: 'null' } as any);
+  // `home: 1` is what makes this strip obey the admin. The categories API
+  // filters on show_on_homepage + is_active and orders by homepage_sort_order
+  // ONLY when it is passed (CategoryController), and vertical-section.tsx
+  // already does. Without it the strip dumped every top-level category in raw
+  // DB order — including the ones with no image (16 of 39 in production, which
+  // is why shoppers saw grey placeholder tiles) and both halves of the
+  // duplicated Indoor/Outdoor/Flowering/Watering pairs.
+  const { categories: raw, isLoading } = useCategories({
+    limit: HOME_CATEGORIES_LIMIT,
+    parent: 'null',
+    home: 1,
+  } as any);
   const { homeCategories } = useHomeConfig();
   // Twelve slots feeding a scrollable rail (six visible, the rest behind the
   // arrow). Which twelve — and their order — is admin curation's call.
@@ -86,8 +98,10 @@ export function CategoryRow() {
                       href={`/c/${c.slug}`}
                       className="group flex h-[56px] items-center rounded-xl border border-[rgba(30,65,36,0.06)] bg-[linear-gradient(135deg,rgba(255,255,255,0.7),rgba(245,247,241,0.45))] p-2 transition-all duration-200 hover:-translate-y-[3px] hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(243,248,238,0.85))] hover:shadow-[0_10px_25px_rgba(15,55,24,0.1)]"
                     >
-                      {/* product photo — left, 40×40 on a soft radial tile */}
-                      <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
+                      {/* product photo — left, 44x44 on a soft radial tile. object-cover, not
+                          contain: at 40px with 5px padding a 4:3 shot rendered ~30x22 and
+                          read as washed out against the near-white tile. */}
+                      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={CATEGORY_FALLBACK} />
                       </div>
                       {/* 56px fits one text row: name + arrow, no "Shop Now" line */}
