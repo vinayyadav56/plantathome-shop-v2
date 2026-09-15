@@ -16,7 +16,6 @@ import { useWindowSize } from '@/lib/use-window-size';
 import { useType } from '@/framework/type';
 
 const CartCounterButton = dynamic(() => import('@/components/cart/cart-counter-button'), { ssr: false });
-const Classic = dynamic(() => import('@/components/layouts/classic'));
 const Standard = dynamic(() => import('@/components/layouts/standard'));
 const Modern = dynamic(() => import('@/components/layouts/modern'));
 const Minimal = dynamic(() => import('@/components/layouts/minimal'));

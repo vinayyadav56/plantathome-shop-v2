@@ -246,9 +246,6 @@ module.exports = {
       inset: {
         22: '5.25rem',
       },
-      strokeWidth: {
-        2.5: '2.5',
-      },
       boxShadow: {
         200: 'rgba(0, 0, 0, 0.16) 0px 3px 6px',
         300: 'rgba(0, 0, 0, 0.16) 0px 0px 6px',
