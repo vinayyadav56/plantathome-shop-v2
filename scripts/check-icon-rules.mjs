@@ -54,7 +54,8 @@ const importHits = sh(
     !l.includes('src/components/ui/icon-set/') &&
     // DB-keyed palettes import the raw glyph deliberately; rule 5 below proves
     // each of them still routes through paletteIcon(), so the knob applies.
-    !/^src\/components\/icons\/(category|groups)\//.test(l)
+    !/^src\/components\/icons\/(category|groups|social)\//.test(l) &&
+    !/^src\/components\/icons\/(whatsapp|google)\.tsx/.test(l)
 );
 fail('The icon library was imported outside the barrel.', importHits);
 
@@ -66,9 +67,35 @@ fail('An icon size is off the scale 12/14/16/18/20/24/32/40/48.', sizeHits);
 
 // ---- Rule 5: DB-keyed palettes must go through paletteIcon() -------------
 const rawPalette = sh(
-  `grep -rLn "paletteIcon" src/components/icons/category src/components/icons/groups --include="*.tsx" || true`
+  `grep -rLn "paletteIcon" src/components/icons/category src/components/icons/groups src/components/icons/social --include="*.tsx" || true`
 ).filter((f) => f && !f.endsWith('index.tsx'));
 fail('A DB-keyed palette glyph bypasses paletteIcon(), so it misses the house stroke.', rawPalette);
+
+// ---- Rule 6: every brand-ramp class used actually exists in the config ------
+// A class for a rung that isn't defined emits NO css and fails silently, which
+// is how two icon colours were dead for months.
+const cfg = readFileSync('tailwind.config.js', 'utf8');
+const rungs = (ramp) => {
+  const m = cfg.match(new RegExp(ramp + ':\\s*\\{([^}]*)\\}', 's'));
+  if (!m) return new Set();
+  return new Set([...m[1].matchAll(/^\s*(\d+|DEFAULT):/gm)].map((x) => x[1]));
+};
+const deadRamp = [];
+// NOTE: only CUSTOM ramps. `stone` is one of Tailwind's own palette names, so
+// extend merges into it and every default rung still emits CSS -- verified
+// against the built stylesheet.
+for (const ramp of ['forest', 'sage', 'clay', 'olive', 'kraft']) {
+  const have = rungs(ramp);
+  if (!have.size) continue;
+  const used = sh(
+    `grep -rhoE "(text|bg|border|ring|fill|stroke|from|to|via)-${ramp}-[0-9]+" src --include="*.tsx" || true`
+  );
+  for (const u of new Set(used)) {
+    const rung = u.split('-').pop();
+    if (!have.has(rung)) deadRamp.push(`${u}  (no "${rung}" rung in the ${ramp} ramp -- emits no CSS)`);
+  }
+}
+fail('A Tailwind brand-ramp class references a rung that does not exist.', deadRamp);
 
 if (failures) { console.error(`\n${failures} icon-rule violation(s).\n`); process.exit(1); }
 console.log('✓ icon rules: leaf-means-plant, currentColor-only, single-door imports, size scale');

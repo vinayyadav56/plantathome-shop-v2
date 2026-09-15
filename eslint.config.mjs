@@ -48,6 +48,10 @@ const eslintConfig = defineConfig([
       // paletteIcon(), so the house stroke applies.
       "src/components/icons/category/**",
       "src/components/icons/groups/**",
+      // brand marks: also DB-keyed, also wrapped in paletteIcon()
+      "src/components/icons/social/**",
+      "src/components/icons/whatsapp.tsx",
+      "src/components/icons/google.tsx",
     ],
     rules: { "no-restricted-imports": "off" },
   },

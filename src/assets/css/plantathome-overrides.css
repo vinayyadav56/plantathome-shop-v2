@@ -2025,7 +2025,7 @@ textarea:focus {
 .react-tel-input .form-control { border-width: 1px !important; }
 
 /* ── Empty cart in order summary ─────────────────────────────── */
-.pa-order-summary svg[width="100"] {
+.pa-order-summary .pa-empty-cart {
   opacity: 0.5;
 }
 

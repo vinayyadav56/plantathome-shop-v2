@@ -111,22 +111,34 @@ module.exports = {
         // ── Plant At Home Design System palette ──
         forest: {
           DEFAULT: '#2E5E2A', // primary brand green (buttons, mark)
+          950: '#0E2011', // deepest ink, for hover on the brightest bands
           900: '#16301A', // primary ink / wordmark
           800: '#1E4023',
           700: '#2E5E2A',
           600: '#3A6B33',
           500: '#4E8244', // leaf mid-tone
+          // 400/300/50 existed in ~30 call sites but NOT in this ramp, so those
+          // classes emitted no CSS at all: an icon container styled only
+          // `text-forest-300` fell back to body grey, and a chevron's
+          // `group-hover:text-forest-950` never fired, leaving it white on
+          // bright lime. Values track the sage ramp so the families agree.
+          400: '#8FAE80',
+          300: '#B3C9A8',
+          200: '#D2E0CB',
+          50: '#F1F6EE',
         },
         olive: { DEFAULT: '#6E8B4A', 500: '#6E8B4A' },
         sage: {
           DEFAULT: '#E7EEE2', // green tint background / chips
           400: '#8FAE80',
+          50: '#F4F8F1', // palest tint; bg-sage-50 was in use but undefined
           300: '#B3C9A8',
           200: '#D2E0CB',
           100: '#E7EEE2',
         },
         clay: {
           DEFAULT: '#C26B45', // warm accent, sale tags, pots
+          700: '#8C441F', // deepest clay; text-clay-700 was in use but undefined
           600: '#A8542F',
           500: '#C26B45',
           300: '#E0A989',

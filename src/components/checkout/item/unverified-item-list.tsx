@@ -44,7 +44,7 @@ const UnverifiedItemList = ({ hideTitle = false }: { hideTitle?: boolean }) => {
       )}
       {isEmpty ? (
         <div className="pa-empty-state" style={{ padding: '32px 0' }}>
-          <EmptyCartIcon width={100} height={120} />
+          <EmptyCartIcon width={100} height={120} className="pa-empty-cart" />
           <p className="pa-empty-state-sub" style={{ marginTop: 12 }}>
             {t('text-no-products')}
           </p>
