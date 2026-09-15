@@ -1,8 +1,11 @@
 name: AWS – Read-only Diagnostic
 
-# Read-only. Describes the production instance, volumes, addresses, NAT, RDS and
-# App Runner using the same credentials the deploy workflows use. Every command is
-# tolerant of a denied permission so one gap does not hide the rest.
+# Read-only, deliberately minimal. Answers two questions during an outage:
+#   1. do the repo's AWS credentials still work?
+#   2. is the production instance running, and are its status checks passing?
+# It prints NO console output, no volumes, no addresses, no databases — that
+# detail belongs in a local CLI session, not in a job log anyone with repo read
+# access can open. Every step tolerates a denied permission.
 on:
   workflow_dispatch:
 
@@ -17,40 +20,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION || 'ap-south-1' }}
 
-      - name: Identity
-        run: aws sts get-caller-identity --output table || true
+      - name: Credentials valid?
+        run: aws sts get-caller-identity --query 'Arn' --output text | sed -E 's#user/.*#user/<redacted>#' || true
 
-      - name: EC2 instances
-        run: |
-          aws ec2 describe-instances \
-            --query 'Reservations[].Instances[].{Id:InstanceId,State:State.Name,Type:InstanceType,Name:Tags[?Key==`Name`]|[0].Value,PublicIp:PublicIpAddress,Launched:LaunchTime}' \
-            --output table || true
-
-      - name: Instance status checks (incl. stopped)
+      - name: Production instance state
         run: |
           aws ec2 describe-instance-status --include-all-instances \
-            --query 'InstanceStatuses[].{Id:InstanceId,State:InstanceState.Name,SystemCheck:SystemStatus.Status,InstanceCheck:InstanceStatus.Status,Events:Events[].Description}' \
+            --instance-ids i-08cb1a1cf79628ab8 \
+            --query 'InstanceStatuses[].{State:InstanceState.Name,SystemCheck:SystemStatus.Status,InstanceCheck:InstanceStatus.Status,Events:Events[].Description}' \
             --output table || true
-
-      - name: Console output tail (prod box)
-        run: |
-          aws ec2 get-console-output --instance-id i-08cb1a1cf79628ab8 --latest \
-            --query Output --output text 2>/dev/null | tail -80 || true
-
-      - name: Volumes, snapshots, EIPs, NAT
-        run: |
-          echo "== volumes =="
-          aws ec2 describe-volumes --query 'Volumes[].{Id:VolumeId,GB:Size,Type:VolumeType,State:State,Attached:Attachments[0].InstanceId}' --output table || true
-          echo "== snapshots (owned) =="
-          aws ec2 describe-snapshots --owner-ids self --query 'Snapshots[].{Id:SnapshotId,GB:VolumeSize,Started:StartTime,Desc:Description}' --output table || true
-          echo "== elastic IPs =="
-          aws ec2 describe-addresses --query 'Addresses[].{Ip:PublicIp,Instance:InstanceId,NIC:NetworkInterfaceId,Alloc:AllocationId}' --output table || true
-          echo "== NAT gateways =="
-          aws ec2 describe-nat-gateways --query 'NatGateways[].{Id:NatGatewayId,State:State,Subnet:SubnetId,Ip:NatGatewayAddresses[0].PublicIp}' --output table || true
-
-      - name: RDS and App Runner (may be denied)
-        run: |
-          echo "== RDS =="
-          aws rds describe-db-instances --query 'DBInstances[].{Id:DBInstanceIdentifier,Engine:Engine,Class:DBInstanceClass,Status:DBInstanceStatus,GB:AllocatedStorage,Public:PubliclyAccessible,Created:InstanceCreateTime}' --output table || true
-          echo "== App Runner =="
-          aws apprunner list-services --query 'ServiceSummaryList[].{Name:ServiceName,Status:Status,Url:ServiceUrl}' --output table || true
