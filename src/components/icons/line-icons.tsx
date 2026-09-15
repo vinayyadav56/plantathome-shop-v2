@@ -1,4 +1,5 @@
 import {
+  Grain,
   LayoutGrid,
   ArrowRight,
   Bike,
@@ -75,11 +76,11 @@ const GLYPHS: Record<string, LucideIcon> = {
   home: Home,
   package: Package,
   sparkles: Sparkles,
-  tools: Wrench,
+  tools: Shovel,
   // plant-domain concepts (also admin-pickable)
   wind: Wind,
   paw: PawPrint,
-  soil: Shovel,
+  soil: Grain,
   prune: Scissors,
   plant: PottedPlant,
   thermometer: Thermometer,

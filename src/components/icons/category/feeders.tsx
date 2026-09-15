@@ -1,10 +1,9 @@
-import { IconBottle } from '@tabler/icons-react';
+import { IconSpray } from '@tabler/icons-react';
 import { paletteIcon } from '@/components/ui/icon';
 
 /**
- * DB-keyed palette glyph. The filename and export name are pinned by records
- * in the database -- redraw in place, NEVER rename.
- * Was a traced Pickbazar asset on its own viewBox with a hardcoded palette;
- * now the shared 24 grid at the house weight, following currentColor.
+ * DB-keyed palette glyph. Filename and export name are pinned by database
+ * records -- redraw in place, NEVER rename.
+ * A spray bottle: plant feed/mist. The previous bottle read as a drink.
  */
-export const Feeders: React.FC<React.SVGAttributes<{}>> = paletteIcon(IconBottle) as unknown as React.FC<React.SVGAttributes<{}>>;
+export const Feeders: React.FC<React.SVGAttributes<{}>> = paletteIcon(IconSpray) as unknown as React.FC<React.SVGAttributes<{}>>;

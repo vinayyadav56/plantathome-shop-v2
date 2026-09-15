@@ -1,4 +1,5 @@
 import {
+  Grain,
   CalendarDays,
   ChevronDown,
   Dot,
@@ -24,8 +25,8 @@ import {
  */
 const GLYPHS: Record<string, LucideIcon> = {
   sprout: Sprout,
-  soil: Shovel,
-  tools: Wrench,
+  soil: Grain,
+  tools: Shovel,
   gardener: UserRound,
   calendar: CalendarDays,
   shieldCheck: ShieldCheck,

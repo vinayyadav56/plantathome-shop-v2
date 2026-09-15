@@ -94,6 +94,7 @@ import {
   IconDeviceFloppy,
   IconLayoutList,
   IconPlant2,
+  IconGrain,
   // misc UI
   IconPlus,
   IconMinus,
@@ -278,6 +279,7 @@ export const Save = g(IconDeviceFloppy);
 export const ListView = g(IconLayoutList);
 export const PlantPotted = g(IconPlant);
 export const PlantBare = g(IconPlant2);
+export const Grain = g(IconGrain);
 
 // misc UI
 export const Plus = g(IconPlus);

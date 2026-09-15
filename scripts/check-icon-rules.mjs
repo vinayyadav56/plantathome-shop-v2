@@ -67,7 +67,9 @@ fail('An icon size is off the scale 12/14/16/18/20/24/32/40/48.', sizeHits);
 
 // ---- Rule 5: DB-keyed palettes must go through paletteIcon() -------------
 const rawPalette = sh(
-  `grep -rLn "paletteIcon" src/components/icons/category src/components/icons/groups src/components/icons/social --include="*.tsx" || true`
+  // A palette file is fine if it wraps in paletteIcon() OR re-uses a glyph the
+  // barrel already wrapped (the hand-drawn Trowel/Fertilizer cases).
+  `grep -rLnE "paletteIcon|from '@/components/ui/icon'" src/components/icons/category src/components/icons/groups src/components/icons/social --include="*.tsx" || true`
 ).filter((f) => f && !f.endsWith('index.tsx'));
 fail('A DB-keyed palette glyph bypasses paletteIcon(), so it misses the house stroke.', rawPalette);
 

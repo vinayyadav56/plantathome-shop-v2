@@ -1,10 +1,9 @@
-import { IconTool } from '@tabler/icons-react';
+import { IconShovel } from '@tabler/icons-react';
 import { paletteIcon } from '@/components/ui/icon';
 
 /**
- * DB-keyed palette glyph. The filename and export name are pinned by records
- * in the database -- redraw in place, NEVER rename.
- * Was a traced Pickbazar asset on its own viewBox with a hardcoded palette;
- * now the shared 24 grid at the house weight, following currentColor.
+ * DB-keyed palette glyph. Filename and export name are pinned by database
+ * records -- redraw in place, NEVER rename.
+ * A shovel, not a WRENCH: this is a plant shop's garden-tools rail.
  */
-export const Tools: React.FC<React.SVGAttributes<{}>> = paletteIcon(IconTool) as unknown as React.FC<React.SVGAttributes<{}>>;
+export const Tools: React.FC<React.SVGAttributes<{}>> = paletteIcon(IconShovel) as unknown as React.FC<React.SVGAttributes<{}>>;
