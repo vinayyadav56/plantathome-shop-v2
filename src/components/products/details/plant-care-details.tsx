@@ -18,16 +18,18 @@ interface PlantAttribute {
   native_region?: string | null;
 }
 
+// One concept, one glyph. Five of these specs used to render the same flower
+// and two rendered sparkles, so the grid read as decoration rather than data.
 const SPEC_ICON: Record<string, keyof typeof Icon> = {
   Sunlight: 'sun',
   Water: 'droplet',
-  Temperature: 'spark',
-  Placement: 'leaf',
-  Height: 'leaf',
-  'Life span': 'shield',
-  'Growth rate': 'spark',
-  Flowering: 'leaf',
-  'Native region': 'leaf',
+  Temperature: 'thermometer',
+  Placement: 'home',
+  Height: 'ruler',
+  'Life span': 'calendar',
+  'Growth rate': 'growth',
+  Flowering: 'flower',
+  'Native region': 'earth',
 };
 
 export default function PlantCareDetails({
@@ -79,12 +81,12 @@ export default function PlantCareDetails({
         <div className="mb-6 flex flex-wrap gap-2">
           {a.air_purifying && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-mint px-3.5 py-1.5 text-xs font-semibold text-forest">
-              <Icon.leaf className="h-3.5 w-3.5" /> Air-purifying
+              <Icon.wind className="h-3.5 w-3.5" /> Air-purifying
             </span>
           )}
           {a.pet_friendly && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-mint px-3.5 py-1.5 text-xs font-semibold text-forest">
-              <Icon.shield className="h-3.5 w-3.5" /> Pet-friendly
+              <Icon.paw className="h-3.5 w-3.5" /> Pet-friendly
             </span>
           )}
         </div>
@@ -94,15 +96,18 @@ export default function PlantCareDetails({
       {specs.length > 0 && (
         <div className="pah-rail [--rail-w:46%] sm:[--rail-w:42%] lg:[--rail-w:calc((100%_-_36px)/4)] grid grid-cols-2 gap-3">
           {specs.map((s) => {
-            const I = Icon[SPEC_ICON[s.label] ?? 'leaf'];
+            const key = SPEC_ICON[s.label];
+            const I = key ? Icon[key] : null;
             return (
               <div
                 key={s.label}
                 className="rounded-2xl border border-border-200 bg-light p-4"
               >
-                <span className="grid h-9 w-9 place-items-center rounded-xl bg-mint text-forest">
-                  <I className="h-4 w-4" />
-                </span>
+                {I && (
+                  <span className="grid h-9 w-9 place-items-center rounded-xl bg-mint text-forest">
+                    <I className="h-4 w-4" />
+                  </span>
+                )}
                 <div className="mt-3 text-[11px] font-bold uppercase tracking-wider text-muted">
                   {s.label}
                 </div>

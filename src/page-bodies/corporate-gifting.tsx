@@ -21,8 +21,8 @@ import {
   Gift,
   Lock,
   Plus,
+  Recycle,
   ShieldCheck,
-  Flower2,
   Truck,
   UserRound,
   WandSparkles,
@@ -40,7 +40,7 @@ const AUDIENCE = [
   { icon: <BadgeCheck size={24} className="text-forest-700" aria-hidden />, title: 'Client & VIP gifting', text: 'Premium curated hampers with custom branding that leave a lasting impression.' },
 ];
 const WHY = [
-  { icon: <Flower2 size={20} className="text-forest-700" aria-hidden />, title: 'Memorable & sustainable', text: 'A living gift that keeps growing — far better recall than chocolates or generic kits.' },
+  { icon: <Recycle size={20} className="text-forest-700" aria-hidden />, title: 'Memorable & sustainable', text: 'A living gift that keeps growing — far better recall than chocolates or generic kits.' },
   { icon: <WandSparkles size={20} className="text-forest-700" aria-hidden />, title: 'Custom branding', text: 'Branded pots, tags and packaging tailored to your company and occasion.' },
   { icon: <Truck size={20} className="text-forest-700" aria-hidden />, title: 'Bulk, pan-India delivery', text: 'Any quantity, coordinated delivery to one office or hundreds of addresses.' },
   { icon: <ShieldCheck size={20} className="text-forest-700" aria-hidden />, title: 'Healthy-plant guarantee', text: 'Hardy, easy-care plants picked to thrive in office and home environments.' },

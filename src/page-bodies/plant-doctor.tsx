@@ -20,7 +20,22 @@ import {
   Severity,
 } from '@/framework/plant-doctor';
 import {
-  ArrowRight, Camera, Check, ChevronDown, CircleAlert, Clock, FileText, Flower2, Lock, RefreshCw, RotateCcw, ShieldCheck, Sparkles, Trash2, type LucideIcon,
+  ArrowRight,
+  Camera,
+  Check,
+  ChevronDown,
+  CircleAlert,
+  Clock,
+  Dot,
+  FileText,
+  Flower2,
+  Lock,
+  RefreshCw,
+  RotateCcw,
+  ShieldCheck,
+  Sparkles,
+  Trash2,
+  type LucideIcon,
 } from '@/components/ui/icon';
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -73,7 +88,9 @@ function Icon({
   name: keyof typeof ICONS;
   className?: string;
 }) {
-  const Glyph = ICONS[name] ?? Flower2;
+  // Neutral on purpose. A botanical fallback made an unmapped name look
+  // deliberate, which is how a wrong icon ships unnoticed.
+  const Glyph = ICONS[name] ?? Dot;
   return <Glyph className={className} aria-hidden />;
 }
 

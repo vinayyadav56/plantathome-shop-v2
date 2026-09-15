@@ -242,12 +242,12 @@ export function PlantCareSection({
                 >
                   {airPurifying && (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-xs font-semibold text-[#24693E]">
-                      <LineIcon name="leaf" className="h-3.5 w-3.5" /> Air purifying
+                      <LineIcon name="wind" className="h-3.5 w-3.5" /> Air purifying
                     </span>
                   )}
                   {petFriendly && (
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-xs font-semibold text-[#24693E]">
-                      <LineIcon name="shield" className="h-3.5 w-3.5" /> Pet friendly
+                      <LineIcon name="paw" className="h-3.5 w-3.5" /> Pet friendly
                     </span>
                   )}
                 </div>

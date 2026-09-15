@@ -9,7 +9,7 @@ export function TrustStrip() {
         <div className="flex items-center gap-10 pr-10 text-sm font-medium uppercase tracking-[0.2em] text-sage">
           {TRUST_ITEMS.map((t, i) => (
             <span key={i} className="flex items-center gap-10">
-              <Icon.leaf className="h-4 w-4 text-gold" />
+              <Icon.dot className="h-4 w-4 text-gold" />
               {t}
             </span>
           ))}

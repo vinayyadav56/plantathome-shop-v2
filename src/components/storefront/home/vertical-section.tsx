@@ -52,7 +52,7 @@ function CategoryCard({ c }: { c: CardData }) {
           />
         ) : (
           <span className="grid h-full w-full place-items-center text-sage-400">
-            <LineIcon name="leaf" className="h-[26px] w-[26px]" />
+            <LineIcon name="plant" className="h-[26px] w-[26px]" />
           </span>
         )}
       </span>
@@ -157,7 +157,7 @@ export function VerticalSection({
                       room to share one row on a phone. */}
                   {/* admin-configurable per section (homeSections[].icon);
                       LineIcon falls back to Sprout on unknown/blank names */}
-                  <LineIcon name={section.icon || 'leaf'} className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
+                  <LineIcon name={section.icon || 'grid'} className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
                 </h2>
               </div>
               <Link

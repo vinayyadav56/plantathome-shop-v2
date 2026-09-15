@@ -37,7 +37,7 @@ export function Benefits() {
         <div className="mx-auto max-w-2xl text-center">
           <FadeUp>
             <span className="inline-flex items-center gap-2 rounded-full bg-sage-100 px-4 py-1.5 font-display text-[11px] font-medium uppercase tracking-[0.28em] text-forest-700">
-              <Icon.leaf className="h-3.5 w-3.5" /> Science-backed benefits
+              <Icon.flask className="h-3.5 w-3.5" /> Science-backed benefits
             </span>
           </FadeUp>
           <h2 className="mt-5 font-serif text-4xl font-medium leading-[1.05] text-forest-900 sm:text-5xl">

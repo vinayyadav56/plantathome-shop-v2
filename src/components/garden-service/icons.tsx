@@ -1,14 +1,16 @@
 import {
   CalendarDays,
   ChevronDown,
+  Dot,
   Layers,
   Lock,
   MapPin,
   Phone,
   Ruler,
   ShieldCheck,
+  Shovel,
   Sparkles,
-  Flower2,
+  Sprout,
   Star,
   UserRound,
   Wrench,
@@ -21,8 +23,8 @@ import {
  * code should import from '@/components/ui/icon' directly.
  */
 const GLYPHS: Record<string, LucideIcon> = {
-  sprout: Flower2,
-  soil: Layers,
+  sprout: Sprout,
+  soil: Shovel,
   tools: Wrench,
   gardener: UserRound,
   calendar: CalendarDays,
@@ -46,7 +48,9 @@ export function GsIcon({
   if (!Glyph && process.env.NODE_ENV !== 'production') {
     console.warn('[icons] GsIcon unmapped name:', name);
   }
-  const Resolved = Glyph ?? Flower2;
+  // Neutral on purpose. A botanical fallback made an unmapped name look
+  // deliberate, which is how a wrong icon ships unnoticed.
+  const Resolved = Glyph ?? Dot;
   return <Resolved className={className} aria-hidden />;
 }
 

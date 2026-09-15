@@ -6,7 +6,17 @@ import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
 import { useHomeConfig } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
-import { ArrowRight, Droplet, Earth, Heart, Sprout, TrendingUp, VolumeX, Wind } from '@/components/ui/icon';
+import {
+  ArrowRight,
+  Droplet,
+  Earth,
+  Heart,
+  Quote,
+  Sprout,
+  TrendingUp,
+  VolumeX,
+  Wind,
+} from '@/components/ui/icon';
 
 /** Icon presets selectable from the admin Why-Plants editor (iconKey).
  *  Lucide glyphs via the shared icon funnel (same picks as pah/why-plants).
@@ -195,7 +205,7 @@ export function WhyPlants() {
 
             <div className="flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.07] text-sage-200 md:h-[46px] md:w-[46px] lg:h-[56px] lg:w-[56px]">
               {/* responsive sizing → classes, no size prop */}
-              <Sprout className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]" aria-hidden />
+              <Quote className="h-[24px] w-[24px] md:h-[20px] md:w-[20px] lg:h-[24px] lg:w-[24px]" aria-hidden />
             </div>
 
             {/* vertical divider */}

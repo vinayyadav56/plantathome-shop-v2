@@ -1,5 +1,21 @@
 import {
   ArrowRight,
+  Dot,
+  Flask,
+  LayoutGrid,
+  CalendarDays,
+  Earth,
+  Leaf,
+  PawPrint,
+  PottedPlant,
+  Ruler,
+  Scissors,
+  Shovel,
+  Sprout,
+  Thermometer,
+  TrendingUp,
+  Droplets,
+  Flower,
   ChevronRight,
   Droplet,
   Flower2,
@@ -31,8 +47,10 @@ import {
 type P = LucideProps;
 
 export const Icon = {
-  // Key frozen for call-site compat; renders Flower2 (leaf/sprout glyphs retired).
-  leaf: (p: P) => <Flower2 {...p} />,
+  // Keys are frozen for call-site compat, but each now resolves to a DISTINCT
+  // glyph. They used to all render Flower2, which is why five different plant
+  // specs looked identical on the product page.
+  leaf: (p: P) => <Leaf {...p} />,
   truck: (p: P) => <Truck {...p} />,
   shield: (p: P) => <ShieldCheck {...p} />,
   star: (p: P) => <Star fill="currentColor" strokeWidth={0} {...p} />,
@@ -56,5 +74,22 @@ export const Icon = {
   moon: (p: P) => <Moon {...p} />,
   home: (p: P) => <Home {...p} />,
   zap: (p: P) => <Zap {...p} />,
-  sprout: (p: P) => <Flower2 {...p} />,
+  sprout: (p: P) => <Sprout {...p} />,
+  flower: (p: P) => <Flower {...p} />,
+  plant: (p: P) => <PottedPlant {...p} />,
+  // plant-domain concepts that previously borrowed a generic glyph
+  thermometer: (p: P) => <Thermometer {...p} />,
+  calendar: (p: P) => <CalendarDays {...p} />,
+  growth: (p: P) => <TrendingUp {...p} />,
+  ruler: (p: P) => <Ruler {...p} />,
+  earth: (p: P) => <Earth {...p} />,
+  paw: (p: P) => <PawPrint {...p} />,
+  soil: (p: P) => <Shovel {...p} />,
+  prune: (p: P) => <Scissors {...p} />,
+  humidity: (p: P) => <Droplets {...p} />,
+  // neutral marks -- deliberately NOT botanical, so a leaf never stands in
+  // as pure ornament (owner rule: a leaf means a plant, nothing else).
+  dot: (p: P) => <Dot {...p} />,
+  flask: (p: P) => <Flask {...p} />,
+  grid: (p: P) => <LayoutGrid {...p} />,
 };

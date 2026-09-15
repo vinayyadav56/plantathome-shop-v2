@@ -93,7 +93,7 @@ function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?:
           : 'border-[#B58E39]/30 bg-[#B58E39]/[0.07] text-[#B58E39]'
       }`}
     >
-      <LineIcon name="leaf" className="h-3.5 w-3.5" />
+      <LineIcon name="soil" className="h-3.5 w-3.5" />
       {children}
     </span>
   );
@@ -635,7 +635,7 @@ export default function GardenServicePage() {
 
         <motion.div {...reveal()} className="relative mx-auto max-w-3xl px-5">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-[#8FD56F]/25 bg-[#8FD56F]/10 text-[#8FD56F]">
-            <LineIcon name="leaf" className="h-7 w-7" />
+            <LineIcon name="soil" className="h-7 w-7" />
           </span>
           <h2 className="mt-6 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-white sm:text-[36px]">
             Ready for a garden you’ll actually keep alive?

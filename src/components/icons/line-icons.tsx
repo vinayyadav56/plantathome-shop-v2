@@ -6,8 +6,11 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleAlert,
+  Dot,
   Droplet,
+  Droplets,
   ExternalLink,
+  Flower,
   Flower2,
   Gift,
   Globe,
@@ -16,16 +19,23 @@ import {
   Leaf,
   Menu,
   Package,
+  PawPrint,
   Play,
   Plus,
+  PottedPlant,
+  Scissors,
   ShieldCheck,
   ShoppingBag,
+  Shovel,
   Sparkles,
+  Sprout,
   Star,
   Sun,
+  Thermometer,
   Truck,
-  type LucideIcon,
+  Wind,
   Wrench,
+  type LucideIcon,
 } from '@/components/ui/icon';
 
 /**
@@ -34,8 +44,8 @@ import {
  * should import from '@/components/ui/icon' directly.
  */
 const GLYPHS: Record<string, LucideIcon> = {
-  leaf: Flower2,
-  lotus: Flower2,
+  leaf: Leaf,
+  lotus: Flower,
   menu: Menu,
   cart: ShoppingBag,
   arrowRight: ArrowRight,
@@ -54,8 +64,8 @@ const GLYPHS: Record<string, LucideIcon> = {
   chevronRight: ChevronRight,
   // admin-pickable section-heading glyphs (homeSections[].icon); unknown or
   // blank names fall back to Flower2 below, so any string is safe to store.
-  flower: Flower2,
-  sprout: Flower2,
+  flower: Flower,
+  sprout: Sprout,
   realLeaf: Leaf,
   sun: Sun,
   heart: Heart,
@@ -65,6 +75,14 @@ const GLYPHS: Record<string, LucideIcon> = {
   package: Package,
   sparkles: Sparkles,
   tools: Wrench,
+  // plant-domain concepts (also admin-pickable)
+  wind: Wind,
+  paw: PawPrint,
+  soil: Shovel,
+  prune: Scissors,
+  plant: PottedPlant,
+  thermometer: Thermometer,
+  humidity: Droplets,
 };
 
 export function LineIcon({
@@ -78,7 +96,9 @@ export function LineIcon({
   if (!Glyph && process.env.NODE_ENV !== 'production') {
     console.warn('[icons] LineIcon unmapped name:', name);
   }
-  const Resolved = Glyph ?? Flower2;
+  // Neutral on purpose. A botanical fallback made an unmapped name look
+  // deliberate, which is how a wrong icon ships unnoticed.
+  const Resolved = Glyph ?? Dot;
   return <Resolved className={className} aria-hidden />;
 }
 

@@ -6,7 +6,16 @@ import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
-import { BadgeCheck, Building2, Gift, Globe, Heart, ShieldCheck, Sprout, Truck } from '@/components/ui/icon';
+import {
+  BadgeCheck,
+  Building2,
+  Dot,
+  Gift,
+  Globe,
+  Heart,
+  ShieldCheck,
+  Truck,
+} from '@/components/ui/icon';
 
 const REASONS: { a: string; b: string; icon: React.ReactNode }[] = [
   { a: 'Better for People', b: '& Workspaces', icon: <Heart size={24} aria-hidden /> },
@@ -53,7 +62,7 @@ export function GiftingBand() {
           className="flex flex-col justify-center px-5 py-12 sm:px-8 lg:flex-[1_1_56%] lg:py-[34px] lg:pe-[30px] lg:ps-16"
         >
           <span className="font-jost inline-flex w-fit items-center gap-2.5 rounded-full border-[1.5px] border-sage-400 bg-white/45 px-[18px] py-[9px] text-[11px] font-medium uppercase tracking-[0.22em] text-forest-700">
-            <Sprout size={14} className="text-forest-600" aria-hidden />
+            <Gift size={14} className="text-forest-600" aria-hidden />
             {t('home-gift-eyebrow')}
           </span>
           <h2 className="font-cormorant mt-4 text-[2.4rem] font-medium leading-[1.0] tracking-[-0.02em] text-forest-900 sm:text-[56px]">
@@ -61,7 +70,7 @@ export function GiftingBand() {
           </h2>
           <div className="mt-4 flex max-w-[472px] items-center gap-[13px]">
             <div className="h-px w-[120px] shrink-0 bg-kraft-300 sm:w-[186px]" />
-            <Sprout size={14} className="text-forest-500" aria-hidden />
+            <Dot size={14} className="text-forest-500" aria-hidden />
             <div className="h-px flex-1 bg-kraft-300" />
           </div>
           {/* single line at every width: font scales with the viewport below lg,

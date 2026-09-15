@@ -77,6 +77,19 @@ import {
   IconTool,
   IconStack2,
   IconWorld,
+  // botanical — plant-domain vocabulary
+  IconPaw,
+  IconShovel,
+  IconPlant,
+  IconScissors,
+  IconSpray,
+  IconBucketDroplet,
+  IconSunHigh,
+  IconSunLow,
+  IconDroplets,
+  IconPointFilled,
+  IconFlask,
+  IconRecycle,
   // misc UI
   IconPlus,
   IconMinus,
@@ -232,6 +245,22 @@ export const Ruler = g(IconRuler);
 export const Wrench = g(IconTool);
 export const Layers = g(IconStack2);
 export const Earth = g(IconWorld);
+
+// botanical — plant-domain vocabulary
+export const PawPrint = g(IconPaw);
+export const Shovel = g(IconShovel);
+export const PottedPlant = g(IconPlant);
+export const Seedling = g(IconSeedling);
+export const Scissors = g(IconScissors);
+export const Spray = g(IconSpray);
+export const BucketDroplet = g(IconBucketDroplet);
+export const SunHigh = g(IconSunHigh);
+export const SunLow = g(IconSunLow);
+export const Droplets = g(IconDroplets);
+export const Flower = g(IconFlower);
+export const Dot = g(IconPointFilled);
+export const Flask = g(IconFlask);
+export const Recycle = g(IconRecycle);
 
 // misc UI
 export const Plus = g(IconPlus);

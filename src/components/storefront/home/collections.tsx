@@ -45,7 +45,7 @@ function CollectionCard({ c }: { c: CardData }) {
           />
         ) : (
           <span className="grid h-full w-full place-items-center text-sage-400">
-            <LineIcon name="leaf" className="h-[26px] w-[26px]" />
+            <LineIcon name="plant" className="h-[26px] w-[26px]" />
           </span>
         )}
       </span>
@@ -104,7 +104,7 @@ export function Collections() {
           </div>
           <h2 className="m-0 flex items-center gap-[9px] whitespace-nowrap font-pahserif text-[clamp(15px,4.9vw,24px)] font-medium leading-[1.1] tracking-[-0.005em] text-forest-900 sm:text-[28px] lg:text-[34px]">
             {homeCollections?.heading || t('home-collections-title')}
-            <LineIcon name="leaf" className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
+            <LineIcon name="grid" className="hidden h-[21px] w-[21px] text-forest-500 sm:inline-block" />
           </h2>
         </div>
         <Link

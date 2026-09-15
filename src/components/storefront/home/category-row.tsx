@@ -4,19 +4,20 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCategories } from '@/framework/category';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
-import { ArrowRight, ChevronRight, Droplet, Flower2, ShoppingBag, Wrench } from '@/components/ui/icon';
+import {
+  ArrowRight,
+  ChevronRight,
+  LayoutGrid,
+} from '@/components/ui/icon';
 
 // Same query as collections.tsx (shared react-query cache). limit=1000 makes the
 // categories API truncate its JSON mid-stream — see collections.tsx.
 const HOME_CATEGORIES_LIMIT = 100;
 
-const FALLBACK_ICONS: JSX.Element[] = [
-  <Flower2 key="0" size={24} aria-hidden />,
-  <ShoppingBag key="1" size={24} aria-hidden />,
-  <Flower2 key="2" size={24} aria-hidden />,
-  <Droplet key="3" size={24} aria-hidden />,
-  <Wrench key="4" size={24} aria-hidden />,
-];
+// One neutral placeholder, not a rotating set. The old array was indexed by
+// position, so a plant glyph could land on a Pots or Tools card and assert
+// something false about that category.
+const CATEGORY_FALLBACK = <LayoutGrid size={24} aria-hidden />;
 
 function Thumb({ src, fallback }: { src: string; fallback: JSX.Element }) {
   const [err, setErr] = React.useState(false);
@@ -87,7 +88,7 @@ export function CategoryRow() {
                     >
                       {/* product photo — left, 40×40 on a soft radial tile */}
                       <div className="h-10 w-10 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
-                        <Thumb src={img} fallback={FALLBACK_ICONS[i % FALLBACK_ICONS.length]} />
+                        <Thumb src={img} fallback={CATEGORY_FALLBACK} />
                       </div>
                       {/* 56px fits one text row: name + arrow, no "Shop Now" line */}
                       <h4 className="min-w-0 flex-1 truncate pl-2.5 pr-1 text-[13px] font-normal leading-none text-[#1b2b1e]">
