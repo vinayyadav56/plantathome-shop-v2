@@ -1,12 +1,13 @@
 import React from 'react';
-import { Package, Heart, Headset } from '@/components/ui/icon';
-
-const Hand = ({ className = '' }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></svg>
-);
+import {
+  Hand,
+  Headset,
+  Heart,
+  Package,
+} from '@/components/ui/icon';
 
 const ITEMS = [
-  { icon: <Hand className="h-[18px] w-[18px]" />, title: 'Hand Picked', sub: 'by Plant Experts' },
+  { icon: <Hand size={18} aria-hidden />, title: 'Hand Picked', sub: 'by Plant Experts' },
   { icon: <Package size={18} aria-hidden />, title: 'Secure Packaging', sub: 'Safe Delivery' },
   { icon: <Heart size={18} aria-hidden />, title: 'Loved by 50,000+', sub: 'Plant Parents' },
   { icon: <Headset size={18} aria-hidden />, title: 'Dedicated Support', sub: 'We&apos;re Here to Help' },

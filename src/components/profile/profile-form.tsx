@@ -10,6 +10,9 @@ import { Form } from '@/components/ui/forms/form';
 import { useUpdateUser } from '@/framework/user';
 import type { UpdateUserInput, User } from '@/types';
 import * as yup from 'yup';
+import {
+  Save,
+} from '@/components/ui/icon';
 
 const BIO_MAX = 180;
 
@@ -149,7 +152,7 @@ const ProfileForm = ({ user }: { user: User }) => {
               loading={isLoading}
               disabled={isLoading}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 ltr:mr-2 rtl:ml-2" aria-hidden><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" /><path d="M17 21v-8H7v8M7 3v5h8" /></svg>
+              <Save size={16} aria-hidden />
               {t('save-changes')}
             </Button>
           </div>

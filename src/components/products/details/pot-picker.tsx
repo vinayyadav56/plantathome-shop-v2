@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { useQuery } from 'react-query';
 import { HttpClient } from '@/framework/client/http-client';
-import { Check } from '@/components/ui/icon';
+import {
+  Check,
+  PlantBare,
+  PlantPotted,
+} from '@/components/ui/icon';
 
 /**
  * "Choose your pot" — pots are REAL products (pots-planters vertical), not a
@@ -125,7 +129,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
         >
           <span className={classNames('grid h-7 w-7 shrink-0 place-items-center rounded-full', !withPot ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700')}>
             {/* bare roots */}
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 13V7" /><path d="M12 7c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 9c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M12 13c0 2-1 4-2.5 5.5M12 13c0 2 1 4 2.5 5.5M12 13v7" /></svg>
+            <PlantBare size={16} aria-hidden />
           </span>
           <span className="min-w-0 flex-1 leading-tight">
             <span className="block text-[13px] font-semibold text-forest-900">Without Pot</span>
@@ -149,7 +153,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
         >
           <span className={classNames('grid h-7 w-7 shrink-0 place-items-center rounded-full', withPot ? 'bg-forest-700 text-white' : 'bg-sage-100 text-forest-700')}>
             {/* plant in pot */}
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 11V6" /><path d="M12 6c0-2 1.5-3.5 4-4-.3 2.5-1.8 4-4 4Z" /><path d="M12 8c0-1.6-1.2-2.8-3.2-3.2.2 2 1.4 3.2 3.2 3.2Z" /><path d="M5 11h14l-1 4a4 4 0 0 1-4 3h-4a4 4 0 0 1-4-3l-1-4Z" /></svg>
+            <PlantPotted size={16} aria-hidden />
           </span>
           <span className="min-w-0 flex-1 leading-tight">
             <span className="block text-[13px] font-semibold text-forest-900">With Pot</span>

@@ -2,7 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { PlantMark } from '@/components/storefront/logo-mark';
 import Image from 'next/image';
 import { useModalState, useModalAction } from '@/components/ui/modal/modal.context';
-import {  } from '@/components/ui/icon';
+import {
+  Send,
+  X,
+} from '@/components/ui/icon';
 import { useAskAi, useAskAiEnabled } from '@/framework/ask-ai';
 import type { Product } from '@/types';
 
@@ -74,7 +77,7 @@ export default function AskAiChat() {
           aria-label="Close"
           className="grid h-8 w-8 place-items-center rounded-full text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+          <X size={18} aria-hidden />
         </button>
       </div>
 
@@ -167,7 +170,7 @@ export default function AskAiChat() {
             aria-label="Send"
             className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ds-btn text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+            <Send size={18} aria-hidden />
           </button>
         </form>
       </div>

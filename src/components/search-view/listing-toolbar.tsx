@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Sorting from '@/components/search-view/sorting';
-import { LayoutGrid } from '@/components/ui/icon';
+import {
+  LayoutGrid,
+  ListView,
+} from '@/components/ui/icon';
 
 export type ListingView = 'grid' | 'list';
 
@@ -46,11 +49,7 @@ const GridGlyph = () => <LayoutGrid size={14} fill="currentColor" aria-hidden />
 
 /* No rows/list glyph in the approved icon set — keep the hand-rolled bars. */
 const ListGlyph = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className="h-[15px] w-[15px]">
-    <rect x="3" y="4" width="18" height="4" rx="1.5" />
-    <rect x="3" y="10" width="18" height="4" rx="1.5" />
-    <rect x="3" y="16" width="18" height="4" rx="1.5" />
-  </svg>
+  <ListView size={16} aria-hidden />
 );
 
 type Props = {

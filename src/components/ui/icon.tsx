@@ -90,6 +90,10 @@ import {
   IconPointFilled,
   IconFlask,
   IconRecycle,
+  IconShoppingCartOff,
+  IconDeviceFloppy,
+  IconLayoutList,
+  IconPlant2,
   // misc UI
   IconPlus,
   IconMinus,
@@ -261,6 +265,11 @@ export const Flower = g(IconFlower);
 export const Dot = g(IconPointFilled);
 export const Flask = g(IconFlask);
 export const Recycle = g(IconRecycle);
+export const CartOff = g(IconShoppingCartOff);
+export const Save = g(IconDeviceFloppy);
+export const ListView = g(IconLayoutList);
+export const PlantPotted = g(IconPlant);
+export const PlantBare = g(IconPlant2);
 
 // misc UI
 export const Plus = g(IconPlus);

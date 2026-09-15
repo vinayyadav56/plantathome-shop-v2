@@ -9,6 +9,9 @@ import { useTranslation } from 'next-i18next';
 import classNames from 'classnames';
 import { useCitySupply } from '@/lib/use-city-supply';
 import dynamic from 'next/dynamic';
+import {
+  CartOff,
+} from '@/components/ui/icon';
 const AddToCartBtn = dynamic(
   () => import('@/components/products/add-to-cart/add-to-cart-btn'),
   {
@@ -143,12 +146,7 @@ export const AddToCart = ({
           title="Out of Stock"
           className="grid h-9 w-9 shrink-0 cursor-not-allowed place-items-center rounded-[10px] bg-gray-100 text-stone-400"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
-            <circle cx="9" cy="21" r="1.6" />
-            <circle cx="19" cy="21" r="1.6" />
-            <path d="M1 1h3l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
-            <path d="M3 3l18 18" />
-          </svg>
+          <CartOff className="h-4 w-4" aria-hidden />
         </span>
       );
     }
