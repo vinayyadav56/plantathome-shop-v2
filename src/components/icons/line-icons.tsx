@@ -70,18 +70,16 @@ const GLYPHS: Record<string, LucideIcon> = {
 export function LineIcon({
   name,
   className = 'h-4 w-4',
-  strokeWidth = 2,
 }: {
   name: keyof typeof GLYPHS | string;
   className?: string;
-  strokeWidth?: number;
 }) {
   const Glyph = GLYPHS[name];
   if (!Glyph && process.env.NODE_ENV !== 'production') {
     console.warn('[icons] LineIcon unmapped name:', name);
   }
   const Resolved = Glyph ?? Flower2;
-  return <Resolved className={className} strokeWidth={strokeWidth} aria-hidden />;
+  return <Resolved className={className} aria-hidden />;
 }
 
 export default LineIcon;

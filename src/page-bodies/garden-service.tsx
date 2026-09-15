@@ -365,7 +365,7 @@ export default function GardenServicePage() {
               {['Plant-health guarantee', 'Trained gardeners', 'Eco-friendly setup'].map((t) => (
                 <span key={t} className="inline-flex items-center gap-2">
                   <span className="grid h-5 w-5 place-items-center rounded-full bg-white/10 ring-1 ring-white/25">
-                    <LineIcon name="check" className="h-3 w-3" strokeWidth={2.4} />
+                    <LineIcon name="check" className="h-3 w-3" />
                   </span>
                   {t}
                 </span>
@@ -542,7 +542,7 @@ export default function GardenServicePage() {
                       {(t.items ?? []).slice(0, 6).map((it, j) => (
                         <li key={j} className="flex items-start gap-3 text-[14px] leading-[1.5] text-[#5B5B5B]">
                           <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#F3F8EC] text-[#24693E]">
-                            <LineIcon name="check" className="h-3 w-3" strokeWidth={2.4} />
+                            <LineIcon name="check" className="h-3 w-3" />
                           </span>
                           <span>
                             {it.name}

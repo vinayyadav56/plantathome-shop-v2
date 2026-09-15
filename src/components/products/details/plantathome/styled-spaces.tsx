@@ -79,7 +79,7 @@ export default function StyledSpaces() {
             onClick={() => scroll(-1)}
             className="absolute -left-3 top-[40%] hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[#ECECEC] bg-white text-[#184A31] shadow-sm transition hover:bg-[#F3F8EC] lg:grid"
           >
-            <LineIcon name="chevronLeft" className="h-[18px] w-[18px]" strokeWidth={2} />
+            <LineIcon name="chevronLeft" className="h-[18px] w-[18px]" />
           </button>
           <button
             type="button"
@@ -87,7 +87,7 @@ export default function StyledSpaces() {
             onClick={() => scroll(1)}
             className="absolute -right-3 top-[40%] hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[#ECECEC] bg-white text-[#184A31] shadow-sm transition hover:bg-[#F3F8EC] lg:grid"
           >
-            <LineIcon name="chevronRight" className="h-[18px] w-[18px]" strokeWidth={2} />
+            <LineIcon name="chevronRight" className="h-[18px] w-[18px]" />
           </button>
         </div>
       </div>

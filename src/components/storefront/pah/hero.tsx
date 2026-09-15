@@ -41,7 +41,7 @@ export function Hero() {
         {/* top bar */}
         <div className="mb-6 flex items-center justify-between">
           <button type="button" aria-label="Menu" onClick={() => setDrawer({ display: true, view: 'MAIN_MENU_VIEW' })} className="flex p-1 text-white">
-            <LineIcon name="menu" className="h-[21px] w-[21px] text-white" strokeWidth={2.2} />
+            <LineIcon name="menu" className="h-[21px] w-[21px] text-white" />
           </button>
           <div className="flex items-end gap-[9px]">
             <span className="font-jost text-[18px] font-normal uppercase tracking-[0.3em] text-white">PLANT</span>
@@ -52,7 +52,7 @@ export function Hero() {
             <span className="font-jost text-[18px] font-normal uppercase tracking-[0.3em] text-white">HOME</span>
           </div>
           <button type="button" aria-label="Cart" onClick={() => setDrawer({ display: true, view: 'cart' })} className="relative flex p-1 text-white transition active:scale-90">
-            <LineIcon name="cart" className="h-[21px] w-[21px] text-white" strokeWidth={2.2} />
+            <LineIcon name="cart" className="h-[21px] w-[21px] text-white" />
             {totalUniqueItems > 0 ? (
               <span className="absolute -right-1.5 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full border-[1.5px] border-[rgba(15,30,18,0.5)] bg-clay-500 px-1 text-[11px] font-bold text-white">{totalUniqueItems}</span>
             ) : null}
@@ -78,7 +78,7 @@ export function Hero() {
                 <React.Fragment key={c.label}>
                   {i > 0 ? <span className="my-[3px] w-px bg-kraft-200" /> : null}
                   <span className="inline-flex items-center gap-[3px] whitespace-nowrap px-[5px] py-0.5 text-[8.5px] font-bold text-forest-900">
-                    <LineIcon name={c.faClass} className="h-[10px] w-[10px] text-forest-600" strokeWidth={2.4} />
+                    <LineIcon name={c.faClass} className="h-[10px] w-[10px] text-forest-600" />
                     {c.label}
                   </span>
                 </React.Fragment>
@@ -92,7 +92,7 @@ export function Hero() {
                 <div className="my-0.5 mb-2 text-[8px] text-white/[0.78]">{t('m-hero-offer-subtext')}</div>
                 <button type="button" onClick={() => router.push('/plants/search')} className="inline-flex w-full items-center justify-center gap-1 rounded-[9px] bg-ds-btn px-1 py-1.5 font-hanken text-[10px] font-semibold text-white transition hover:bg-ds-btn-hover active:scale-95 active:bg-forest-800">
                   {t('m-hero-offer-cta')}
-                  <LineIcon name="arrowRight" className="h-[10px] w-[10px]" strokeWidth={2.4} />
+                  <LineIcon name="arrowRight" className="h-[10px] w-[10px]" />
                 </button>
               </div>
             ) : null}

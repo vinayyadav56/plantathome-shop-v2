@@ -676,7 +676,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-[13px] text-stone-600">
-                      <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" strokeWidth={2.4} />
+                      <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" />
                       {item}
                     </li>
                   ))}

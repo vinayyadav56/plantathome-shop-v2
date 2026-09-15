@@ -128,7 +128,7 @@ const CartSidebarView = () => {
             className="pa-cart-empty"
           >
             <div className="pa-cart-empty-icon">
-              <ShoppingBag size={40} strokeWidth={1.5} style={{ color: '#2C5F2E' }} aria-hidden />
+              <ShoppingBag size={40} style={{ color: '#2C5F2E' }} aria-hidden />
             </div>
             <h3 className="pa-cart-empty-title">Your cart is empty</h3>
             <p className="pa-cart-empty-sub">

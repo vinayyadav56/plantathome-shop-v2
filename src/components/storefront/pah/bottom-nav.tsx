@@ -67,7 +67,6 @@ export function BottomNav() {
                 return (
                   <Glyph
                     size={24}
-                    strokeWidth={2}
                     className="relative"
                     style={{ color: n.active ? ACCENT : MUTED }}
                     aria-hidden

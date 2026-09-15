@@ -16,7 +16,6 @@ const BackButton = () => {
           'rotate-180 transform':
             router.locale === 'ar' || router.locale === 'he',
         })}
-        strokeWidth={1.7}
       />
       {t('text-back')}
     </button>

@@ -281,7 +281,7 @@ const Header = ({ layout }: { layout?: string }) => {
               <span aria-hidden className="h-10 w-px bg-[linear-gradient(to_bottom,transparent,rgba(24,50,29,0.18),transparent)]" />
               {/* Wishlist */}
               <Link href="/wishlists" className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Wishlist">
-                <Heart size={23} strokeWidth={1.7} aria-hidden />
+                <Heart size={23} aria-hidden />
                 <span className="leading-none">Wishlist</span>
               </Link>
               {/* Cart */}

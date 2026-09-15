@@ -66,7 +66,7 @@ function VideoBlock({ url }: { url: string }) {
             />
             <span className="absolute inset-0 bg-black/20 transition group-hover:bg-black/30" />
             <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-[#14532D] shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition group-hover:scale-105">
-              <LineIcon name="play" className="ml-1 h-6 w-6" strokeWidth={2.2} />
+              <LineIcon name="play" className="ml-1 h-6 w-6" />
             </span>
           </button>
         )}

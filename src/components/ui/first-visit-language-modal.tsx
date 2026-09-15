@@ -91,7 +91,7 @@ export default function FirstVisitLanguageModal() {
               >
                 <span className="grid h-7 w-7 place-items-center text-lg">{o.icon}</span>
                 <span className="font-hanken text-[15px] font-semibold text-forest-900">{o.name}</span>
-                {active && <LineIcon name="check" className="ms-auto h-4 w-4 text-forest-600" strokeWidth={2.4} />}
+                {active && <LineIcon name="check" className="ms-auto h-4 w-4 text-forest-600" />}
               </button>
             );
           })}

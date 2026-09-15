@@ -140,7 +140,6 @@ const SidebarFilter: React.FC<{
               className={classNames('h-7', {
                 'rotate-180': isRTL,
               })}
-              strokeWidth={1.7}
             />
             <span className="sr-only">{t('text-close')}</span>
           </button>

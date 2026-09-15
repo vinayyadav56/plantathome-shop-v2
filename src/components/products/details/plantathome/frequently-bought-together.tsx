@@ -88,7 +88,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
                 </div>
                 {i < items.length - 1 && (
                   <span className="mt-7 shrink-0 text-[#24693E]">
-                    <LineIcon name="plus" className="h-4 w-4" strokeWidth={2.4} />
+                    <LineIcon name="plus" className="h-4 w-4" />
                   </span>
                 )}
               </React.Fragment>
@@ -105,7 +105,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
           >
             {added ? (
               <>
-                <LineIcon name="check" className="h-4 w-4" strokeWidth={2.4} />
+                <LineIcon name="check" className="h-4 w-4" />
                 Added to Cart
               </>
             ) : (
