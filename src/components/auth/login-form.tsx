@@ -11,7 +11,7 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import { MobileIcon } from '@/components/icons/mobile-icon';
 import { WhatsAppIcon } from '@/components/icons/whatsapp';
 import { Form } from '@/components/ui/forms/form';
-import { useLogin } from '@/framework/user';
+import { useGoogleLogin, useLogin } from '@/framework/user';
 import type { LoginUserInput } from '@/types';
 import { AnonymousIcon } from '@/components/icons/anonymous-icon';
 import { useRouter } from '@/compat/next-router';
@@ -44,6 +44,7 @@ export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFor
   const isCheckout = router.pathname.includes('checkout');
   const { mutate: login, isLoading, serverError, setServerError } = useLogin();
 
+  const { login: googleLogin, isLoading: googleBusy } = useGoogleLogin();
   const guestCheckout = settings?.guestCheckout;
 
   function onSubmit({ email, password }: LoginUserInput) {
@@ -108,10 +109,8 @@ export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFor
       <div className="grid grid-cols-1 gap-4 mt-2">
         <Button
           className="!bg-social-google !text-light hover:!bg-social-google-hover"
-          disabled={isLoading}
-          onClick={() => {
-            signIn('google');
-          }}
+          disabled={isLoading || googleBusy}
+          onClick={googleLogin}
         >
           <GoogleIcon className="w-4 h-4 ltr:mr-3 rtl:ml-3" />
           {t('text-login-google')}

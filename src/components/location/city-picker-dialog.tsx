@@ -5,7 +5,7 @@ import { useAllCities } from '@/framework/location';
 import { getBrowserCoords, reverseGeocode } from '@/lib/geocode';
 import { track } from '@/lib/analytics/track';
 import { getRecentCities, pushRecentCity } from '@/lib/recent-cities';
-import { MapPin } from '@/components/ui/icon';
+import { MapPin, X } from '@/components/ui/icon';
 
 interface Props {
   open: boolean;
@@ -141,8 +141,18 @@ export default function CityPickerDialog({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-2"
           >
-            <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
-              <Dialog.Title className="text-lg font-semibold text-forest-900">
+            <Dialog.Panel className="relative w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+              {!blocking && (
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close"
+                  className="absolute end-3 top-3 grid h-9 w-9 place-items-center rounded-full text-stone-500 transition hover:bg-stone-100 hover:text-forest-900"
+                >
+                  <X size={18} aria-hidden />
+                </button>
+              )}
+              <Dialog.Title className="pe-10 text-lg font-semibold text-forest-900">
                 {title ?? 'Choose your delivery city'}
               </Dialog.Title>
               <p className="mt-1 text-sm text-stone-500">

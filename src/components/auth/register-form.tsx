@@ -1,5 +1,4 @@
 import { useRouter } from '@/compat/next-router';
-import { signIn } from 'next-auth/react';
 import Logo from '@/components/ui/logo';
 import Input from '@/components/ui/forms/input';
 import PasswordInput from '@/components/ui/forms/password-input';
@@ -12,6 +11,7 @@ import { WhatsAppIcon } from '@/components/icons/whatsapp';
 import { Form } from '@/components/ui/forms/form';
 import * as yup from 'yup';
 import { useRegister } from '@/framework/user';
+import { useGoogleLogin } from '@/framework/user';
 
 const registerFormSchema = yup.object().shape({
   first_name: yup.string().required('error-name-required'),
@@ -43,6 +43,7 @@ export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps 
   const { openModal } = useModalAction();
   const { mutate, isLoading, formError } = useRegister();
 
+  const { login: googleLogin, isLoading: googleBusy } = useGoogleLogin();
   function onSubmit({ first_name, last_name, email, password }: RegisterFormValues) {
     const trimmedFirst = first_name.trim();
     const trimmedLast = (last_name ?? '').trim();
@@ -124,8 +125,8 @@ export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps 
       <div className="mb-8 grid grid-cols-1 gap-4">
         <Button
           className="!bg-social-google !text-light hover:!bg-social-google-hover"
-          disabled={isLoading}
-          onClick={() => signIn('google')}
+          disabled={isLoading || googleBusy}
+          onClick={googleLogin}
         >
           <GoogleIcon className="w-4 h-4 ltr:mr-3 rtl:ml-3" />
           {t('text-login-google')}

@@ -28,6 +28,19 @@ import CityPickerDialog from './city-picker-dialog';
  * silently. Once chosen, the city is stored locally (+ pushed to the signed-in
  * profile) and every listing/cart/checkout flow keys off it.
  */
+// The shopper can now dismiss the first-visit picker (backdrop click, Esc or
+// the close button). Remember that for the session so it does not re-open on
+// every navigation; the header city switcher and checkout still ask when a
+// city is actually required. Without this, an API blip that left the city list
+// empty trapped the shopper behind a modal they could not close.
+const DISMISSED_KEY = 'pah-city-gate-dismissed';
+const wasDismissed = () => {
+  try { return sessionStorage.getItem(DISMISSED_KEY) === '1'; } catch { return false; }
+};
+const rememberDismissed = () => {
+  try { sessionStorage.setItem(DISMISSED_KEY, '1'); } catch {}
+};
+
 export default function LocationGate() {
   const setDeliveryMode = useSetAtom(deliveryModeAtom);
   const setIsNonServiceable = useSetAtom(isNonServiceableAtom);
@@ -44,8 +57,8 @@ export default function LocationGate() {
     ranRef.current = true;
 
     const stored = getStoredCity();
-    if (!stored) {
-      // First visit — block until the shopper explicitly chooses.
+    if (!stored && !wasDismissed()) {
+      // First visit — ask for the city (dismissible; see DISMISSED_KEY above).
       setMustPick(true);
     }
 
@@ -64,7 +77,7 @@ export default function LocationGate() {
   // React to the stored city being cleared elsewhere (e.g. sign-out cleanup).
   useEffect(() => {
     const onChange = () => {
-      if (!getStoredCity()) setMustPick(true);
+      if (!getStoredCity()) setMustPick(!wasDismissed());
       else setMustPick(false);
     };
     window.addEventListener('pah-location-changed', onChange);
@@ -84,8 +97,13 @@ export default function LocationGate() {
     const ok = serviceableCities.some(
       (c) => normalizeCityClient(c.name) === normalizeCityClient(stored),
     );
-    if (!ok) setMustPick(true);
+    if (!ok && !wasDismissed()) setMustPick(true);
   }, [serviceableCities]);
+
+  function dismiss() {
+    rememberDismissed();
+    setMustPick(false);
+  }
 
   function pickCity(name: string) {
     track('city_changed', { label: name, meta: { source: 'first_visit_gate' } });
@@ -114,11 +132,10 @@ export default function LocationGate() {
   return (
     <CityPickerDialog
       open={mustPick && !exemptRoute}
-      blocking
       title="Select your shopping city"
       subtitle="Plants, pots and prices are specific to your city. You can change it anytime from the top of the page."
       suggestedCity={suggested}
-      onClose={() => {}}
+      onClose={dismiss}
       onPick={pickCity}
     />
   );
