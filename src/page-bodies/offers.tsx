@@ -10,16 +10,11 @@ import CouponLoader from '@/components/ui/loaders/coupon-loader';
 import { useCoupons } from '@/framework/coupon';
 import ErrorMessage from '@/components/ui/error-message';
 import CouponCard from '@/components/ui/cards/coupon';
-import dynamic from 'next/dynamic';
 import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
 import PageBanner from '@/components/banners/page-banner';
 import { isEmpty } from 'lodash';
 import { Tab } from '@headlessui/react';
 import CorporatePanel from '@/components/offers/corporate-panel';
-const CartCounterButton = dynamic(
-  () => import('@/components/cart/cart-counter-button'),
-  { ssr: false },
-);
 
 const OffersPage: NextPageWithLayout = () => {
   const limit = 20;
@@ -99,7 +94,6 @@ const OffersPage: NextPageWithLayout = () => {
         </Tab.Group>
       </div>
 
-      <CartCounterButton />
     </>
   );
 };

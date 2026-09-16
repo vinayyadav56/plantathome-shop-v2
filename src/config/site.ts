@@ -109,8 +109,9 @@ export const siteSettings = {
   },
   cta: {
     mockup_img_src: '/mockup-img.png',
-    play_store_link: '/',
-    app_store_link: '/',
+    // Empty string = not on that store yet; consumers render the badge inert.
+    play_store_link: 'https://play.google.com/store/apps/details?id=in.plantathome.app',
+    app_store_link: '',
   },
   headerLinks: [
     { href: Routes.trackOrder, icon: null, label: 'Track Order' },

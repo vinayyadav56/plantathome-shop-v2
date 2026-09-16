@@ -8,7 +8,10 @@ import { useLocationPages } from '@/framework/location';
 import { SOCIAL_URLS } from '@/lib/socials';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
-import { WordmarkStacked } from '@/components/storefront/logo-mark';
+import { Image } from '@/components/ui/image';
+import { siteSettings } from '@/config/site';
+import AppStoreImg from '@/assets/app-store-btn.png';
+import PlayStoreImg from '@/assets/play-store-btn.png';
 import InlineLanguageSelect from '@/components/ui/inline-language-select';
 import {
   ArrowRight,
@@ -85,6 +88,18 @@ const PayMark = ({ label, children }: { label: string; children: React.ReactNode
   </span>
 );
 
+const StoreBadge = ({ href, src, alt }: { href: string; src: any; alt: string }) =>
+  href ? (
+    <a href={href} target="_blank" rel="noreferrer noopener" aria-label={alt} className="block h-10 transition hover:opacity-90">
+      <Image src={src} alt={alt} width={135} height={40} className="h-10 w-auto" />
+    </a>
+  ) : (
+    <span aria-disabled="true" title="Coming soon" className="relative block h-10 opacity-50 grayscale">
+      <Image src={src} alt={`${alt} — coming soon`} width={135} height={40} className="h-10 w-auto" />
+      <span className="absolute -right-2 -top-2 rounded-full bg-[#4ADE80] px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-forest-900">Soon</span>
+    </span>
+  );
+
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
 function NewsletterForm() {
@@ -92,7 +107,7 @@ function NewsletterForm() {
   const [email, setEmail] = React.useState('');
   const { mutate: subscribe, isLoading, isSubscribed } = useSubscription();
   return (
-    <div className="w-full lg:w-[430px]">
+    <div className="w-full lg:w-[400px]">
       <form
         onSubmit={(e) => { e.preventDefault(); if (email.trim() && !isLoading) subscribe({ email: email.trim() }); }}
         className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.14] bg-white/[0.07] py-1.5 pe-1.5 ps-4"
@@ -125,10 +140,17 @@ const Footer = () => {
   const { settings }: any = useSettings();
   const contact = settings?.contactDetails ?? {};
   const email = contact?.emailAddress || settings?.contactEmail || 'hello@plantathome.in';
-  const phone = contact?.contact || settings?.contactPhone || '+91 98765 43210';
-  // Company address is admin-managed (Settings → Company Information); the locale
-  // string is only a fallback for a blank installation.
-  const address = contact?.location?.formattedAddress || t('footer-address');
+  // Phone as stored may be bare digits ("919996469046") or already spaced;
+  // render Indian numbers as +91 XXXXX XXXXX and dial the E.164 form.
+  const rawPhone: string = String(contact?.contact || settings?.contactPhone || '+91 98765 43210');
+  const digits = rawPhone.replace(/\D/g, '');
+  const national = digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits.length === 10 ? digits : null;
+  const phone = national ? `+91 ${national.slice(0, 5)} ${national.slice(5)}` : rawPhone;
+  const phoneHref = national ? `+91${national}` : rawPhone.replace(/\s/g, '');
+  // Company address is admin-managed (Settings → Company Information). Just the
+  // city (annotation) — the registered office's full C/O line belongs on /about.
+  const loc = contact?.location ?? {};
+  const address = [loc.city, loc.state].filter(Boolean).join(', ') || loc.formattedAddress || t('footer-address');
   const year = new Date().getFullYear();
 
   // Shop column from the live catalogue (works on staging's 6 verticals and
@@ -192,7 +214,10 @@ const Footer = () => {
             <h3 className="font-cormorant mt-4 text-[2.2rem] font-medium leading-[1.02] tracking-[0.01em] text-white sm:text-[2.8rem]">
               {t('footer-newsletter-heading')}
             </h3>
-            <p className="mt-3 max-w-[440px] font-hanken text-[14.5px] leading-relaxed text-white/[0.68]">
+            {/* One line from xl (annotation). Measured 666px against a 666px column
+                before the form was narrowed to 400 — zero slack is a coin toss
+                across font metrics (this renders in Inter, not Hanken). */}
+            <p className="mt-3 font-hanken text-[14.5px] leading-relaxed text-white/[0.68] xl:whitespace-nowrap">
               {t('footer-newsletter-subheading')}
             </p>
           </div>
@@ -205,7 +230,16 @@ const Footer = () => {
 
         {/* brand column */}
         <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:max-w-[300px]">
-          <WordmarkStacked light className="[&_*]:!text-white" />
+          {/* The navbar logo in white (annotation: "remove the leaf, use the
+              same navbar logo"). public/brand/logo-white.png is the admin-
+              uploaded header logo (cdn asset 2597) with its white background
+              keyed to alpha and the ink set to white — the source PNG is
+              opaque, so `brightness-0 invert` yields a white slab and blend
+              modes are isolated by this grid's z-[1] stacking context. If a
+              transparent light logo is ever uploaded in admin, swap this for
+              <BrandLogo light />. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/logo-white.png" alt={settings?.siteTitle || 'PlantAtHome'} width={200} height={131} className="h-auto w-[200px]" />
           <p className="mt-4 text-[13.5px] leading-relaxed text-white/[0.62]">{t('footer-brand-description')}</p>
 
           {/* contact */}
@@ -214,7 +248,7 @@ const Footer = () => {
               <MapPin size={14} className="shrink-0 text-[#86EFAC]" aria-hidden />
               {address}
             </span>
-            <a href={`tel:${phone}`} className="flex items-center gap-3 text-[13px] text-white/60 transition hover:text-white">
+            <a href={`tel:${phoneHref}`} className="flex items-center gap-3 text-[13px] text-white/60 transition hover:text-white">
               <Phone size={14} className="shrink-0 text-[#86EFAC]" aria-hidden />
               {phone}
             </a>
@@ -238,6 +272,18 @@ const Footer = () => {
                 {s.icon}
               </a>
             ))}
+          </div>
+
+          {/* Get the app (annotation). Play links to the listing — live once the
+              build is promoted out of internal testing. There is no iOS app, so
+              the App Store badge is shown but inert: a badge that 404s is the
+              dead-link problem this footer just got rid of. */}
+          <div className="mt-6">
+            <p className="mb-2.5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">Get the app</p>
+            <div className="flex items-center gap-2.5">
+              <StoreBadge href={siteSettings.cta.play_store_link} src={PlayStoreImg} alt="Get it on Google Play" />
+              <StoreBadge href={siteSettings.cta.app_store_link} src={AppStoreImg} alt="Download on the App Store" />
+            </div>
           </div>
         </div>
 

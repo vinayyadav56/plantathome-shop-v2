@@ -12,10 +12,8 @@ import { useRouter } from '@/compat/next-router';
 import { scroller } from 'react-scroll';
 import HomeLayout from '@/components/layouts/_home';
 import Seo from '@/components/seo/seo';
-import { useWindowSize } from '@/lib/use-window-size';
 import { useType } from '@/framework/type';
 
-const CartCounterButton = dynamic(() => import('@/components/cart/cart-counter-button'), { ssr: false });
 const Standard = dynamic(() => import('@/components/layouts/standard'));
 const Modern = dynamic(() => import('@/components/layouts/modern'));
 const Minimal = dynamic(() => import('@/components/layouts/minimal'));
@@ -36,7 +34,6 @@ const MAP_LAYOUT_TO_GROUP: Record<string, any> = {
 
 export default function HomeScreen({ variables, layout }: { variables: any; layout: string }) {
   const { query } = useRouter();
-  const { width } = useWindowSize();
   const { type } = useType(variables.types.type);
 
   useEffect(() => {
@@ -53,7 +50,6 @@ export default function HomeScreen({ variables, layout }: { variables: any; layo
     <HomeLayout layout={layout}>
       <Seo title={type?.name} url={type?.slug} images={type?.banners} />
       <Component variables={variables} />
-      {!['compact', 'minimal'].includes(layout) && width > 767 && <CartCounterButton />}
     </HomeLayout>
   );
 }

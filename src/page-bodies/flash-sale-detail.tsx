@@ -8,18 +8,12 @@ import Spinner from '@/components/ui/loaders/spinner/spinner';
 import {
   useFlashSale
 } from '@/framework/flash-sales';
-import { useWindowSize } from '@/lib/use-window-size';
 import type {
   FlashSale
 } from '@/types';
 import { isEmpty } from 'lodash';
 import { useTranslation } from 'next-i18next';
-import dynamic from 'next/dynamic';
 import { useRouter } from '@/compat/next-router';
-const CartCounterButton = dynamic(
-  () => import('@/components/cart/cart-counter-button'),
-  { ssr: false }
-);
 
 const FlashSalePage = () => {
   const { t } = useTranslation();
@@ -32,7 +26,6 @@ const FlashSalePage = () => {
     slug: slug as string,
     language: locale as string,
   });
-  const { width } = useWindowSize();
 
   // const {
   //   products,
@@ -66,7 +59,6 @@ const FlashSalePage = () => {
         flashSale={flashSale as unknown as FlashSale}
         products={flashSale?.products as FlashSale['products']}
       />
-      {width > 767 && <CartCounterButton />}
     </>
   );
 };

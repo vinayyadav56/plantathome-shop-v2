@@ -6,8 +6,7 @@
  *
  * Port note: always-rendered sections are STATIC imports (next/dynamic of
  * always-rendered components = infinite hydration-suspension loop under
- * React 19 — see P2). BookDetails (books-only, never this shop) stays lazy;
- * CartCounterButton stays {ssr:false}.
+ * React 19 — see P2). BookDetails (books-only, never this shop) stays lazy.
  *
  * Modern PDP order (2026-07 reorg): details (sticky gallery + info column)
  * → Frequently Bought Together (real data) → Plant care & details (merged
@@ -36,7 +35,6 @@ import SizeGuideContent from '@/components/products/details/size-guide-content';
 import { getVariations } from '@/lib/get-variations';
 
 const BookDetails = dynamic(() => import('@/components/products/details/book-details'));
-const CartCounterButton = dynamic(() => import('@/components/cart/cart-counter-button'), { ssr: false });
 
 /** One container class everywhere — the old page mixed three padding systems. */
 const CONTAINER = 'mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10';
@@ -146,7 +144,6 @@ const ProductPage = ({ product }: any) => {
             </>
           )}
         </div>
-        {width > 767 && <CartCounterButton />}
       </AttributesProvider>
     </>
   );

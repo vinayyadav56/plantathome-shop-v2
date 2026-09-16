@@ -32,9 +32,10 @@ export const cartAnimation = (event: any) => {
       (event?.target as HTMLElement) ||
       null;
 
-    const cart =
-      document.querySelector<HTMLElement>('[data-cart-target]') ||
-      (document.getElementsByClassName('product-cart')[0] as HTMLElement);
+    // The header's cart button (data-cart-target). The old floating
+    // .product-cart button is gone; no fallback needed — a missing target
+    // already degrades to pulse + open drawer below.
+    const cart = document.querySelector<HTMLElement>('[data-cart-target]');
 
     // Always pulse the cart, even if we can't build a flight (graceful fallback).
     const pulse = () =>

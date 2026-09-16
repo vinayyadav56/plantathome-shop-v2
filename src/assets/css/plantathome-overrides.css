@@ -300,17 +300,8 @@ button[data-variant="normal"]:hover:not(:disabled),
   box-shadow: 0 8px 28px rgba(27,94,32,0.4) !important;
 }
 .bg-accent { background: var(--pa-grad) !important; }
-.bg-accent:not(.product-cart):not(:disabled) {
+.bg-accent:not(:disabled) {
   box-shadow: 0 4px 16px rgba(27,94,32,0.3) !important;
-}
-
-/* Cart counter fixed button — restore position */
-.product-cart {
-  position: fixed !important;
-  overflow: visible !important;
-  background: var(--pa-grad) !important;
-  border-radius: 12px 0 0 12px !important;
-  box-shadow: var(--pa-shadow-md) !important;
 }
 
 /* ── pa-add-btn (product card add button) ───────────────────── */

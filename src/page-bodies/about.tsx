@@ -126,8 +126,8 @@ export default function AboutPage() {
           </h2>
           <p className="text-base leading-loose text-body-dark">
             For orders and plant care, write to{' '}
-            <a href="mailto:help@plantathome.in" className="text-forest-700 underline underline-offset-2">
-              help@plantathome.in
+            <a href="mailto:hello@plantathome.in" className="text-forest-700 underline underline-offset-2">
+              hello@plantathome.in
             </a>{' '}
             or use the{' '}
             <Link href="/contact" className="text-forest-700 underline underline-offset-2">

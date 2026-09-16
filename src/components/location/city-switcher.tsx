@@ -38,12 +38,13 @@ export default function CitySwitcher({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex items-center gap-1.5 ${tone === 'light' ? 'text-[13px] font-normal' : 'text-sm font-medium'} ${color} ${className}`}
+        className={`inline-flex min-w-0 max-w-full items-center gap-1.5 whitespace-nowrap ${tone === 'light' ? 'text-[13px] font-normal' : 'text-sm font-medium'} ${color} ${className}`}
         aria-label="Change shopping city"
       >
         <MapPin size={14} aria-hidden />
-        <span className={tone === 'light' ? 'font-medium' : 'font-semibold'}>{city ?? 'Select city'}</span>
-        <span className={tone === 'light' ? 'text-white/60' : 'text-stone-400'}>
+        {/* A long city name ellipsises here rather than pushing the top bar's cell. */}
+        <span className={`min-w-0 max-w-[14rem] truncate ${tone === 'light' ? 'font-medium' : 'font-semibold'}`}>{city ?? 'Select city'}</span>
+        <span className={`shrink-0 ${tone === 'light' ? 'text-white/60' : 'text-stone-400'}`}>
           · Change
         </span>
       </button>

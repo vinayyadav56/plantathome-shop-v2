@@ -42,7 +42,7 @@ const CallToAction = () => {
                 />
               </Link>
               <Link
-                href={siteSettings.cta.app_store_link}
+                href={siteSettings.cta.play_store_link}
                 className="w-32 md:w-48"
               >
                 <Image

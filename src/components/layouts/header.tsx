@@ -15,6 +15,7 @@ import { drawerAtom } from '@/store/drawer-atom';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { displayMobileHeaderSearchAtom } from '@/store/display-mobile-header-search-atom';
 import { useModalAction } from '@/components/ui/modal/modal.context';
+import { Routes } from '@/config/routes';
 import CitySwitcher from '@/components/location/city-switcher';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
@@ -112,7 +113,9 @@ const Header = ({ layout }: { layout?: string }) => {
     };
   }, []);
 
-  const openCart = () => setDrawer({ display: true, view: 'cart' });
+  // The cart icon lands on the /cart page (annotation: dedicated cart page).
+  // The drawer still opens as add-to-cart confirmation via `pah-open-cart`.
+  const openCart = () => router.push(Routes.cart);
 
   // Premium add-to-cart feedback: the fly-to-cart animation (lib/cart-animation)
   // dispatches `pah-cart-bump` when the product image lands (pulse the badge) and
@@ -166,12 +169,15 @@ const Header = ({ layout }: { layout?: string }) => {
           static (only the glass pill below is sticky, so this scrolls away
           naturally). City switcher stays left for the city-first delivery UX. */}
       <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-[13px] font-normal text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
-        {/* overflow-hidden + min-w-0 cells: nothing may spill out of the 48px
-            bar at any width — cells truncate/hide instead (annotation). */}
+        {/* Nothing may spill out of the 48px bar at any width (annotation,
+            twice). The side cells are block containers with `truncate`, so an
+            overflow ends in an ellipsis instead of a half-glyph — the previous
+            flex cells only had overflow-hidden, which cuts text mid-letter and
+            reads as "spilled". Children are inline so text-overflow applies. */}
         <div className="relative z-[1] mx-auto grid h-full max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center overflow-hidden px-5 sm:px-8 xl:px-12">
-          <span className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
-            <span className="hidden text-white/70 sm:inline">Delivering to</span>
-            <CitySwitcher tone="light" />
+          <span className="min-w-0 truncate">
+            <span className="hidden text-white/70 sm:inline">Delivering to </span>
+            <CitySwitcher tone="light" className="align-middle" />
           </span>
           {/* center — true grid centering; xl+ only so it never crowds the
               links; the second promo needs the full 1440 to fit alongside */}
@@ -183,12 +189,12 @@ const Header = ({ layout }: { layout?: string }) => {
             <span aria-hidden className="hidden h-[18px] w-px bg-[linear-gradient(to_bottom,transparent,rgba(255,255,255,0.35),transparent)] min-[1440px]:block" />
             <span className="hidden min-[1440px]:inline">Extra 5% OFF on prepaid orders</span>
           </span>
-          <span className="col-start-3 flex min-w-0 items-center justify-end gap-3 overflow-hidden whitespace-nowrap sm:gap-[22px]">
-            <Link href="/track-order" className="inline-flex items-center gap-1.5 transition-colors hover:text-white">
+          <span className="col-start-3 min-w-0 truncate text-end">
+            <Link href="/track-order" className="inline-flex items-center gap-1.5 align-middle transition-colors hover:text-white">
               <Truck size={16} aria-hidden />
               Track Order
             </Link>
-            <Link href="/help" className="hidden items-center gap-1.5 transition-colors hover:text-white sm:inline-flex">
+            <Link href="/help" className="ms-3 hidden items-center gap-1.5 align-middle transition-colors hover:text-white sm:ms-[22px] sm:inline-flex">
               <CircleHelp size={16} aria-hidden />
               Help &amp; Support
             </Link>
@@ -385,7 +391,7 @@ const Header = ({ layout }: { layout?: string }) => {
             {[
               ...NAV,
               { label: 'Search', href: '#search' },
-              { label: 'Cart', href: '#cart' },
+              { label: 'Cart', href: Routes.cart },
               { label: isAuthorize ? 'My account' : 'Login', href: '#account' },
             ].map((l, i) => (
               <motion.button
@@ -397,7 +403,6 @@ const Header = ({ layout }: { layout?: string }) => {
                 onClick={() => {
                   setMenuOpen(false);
                   if (l.href === '#search') setSearchOpen(true);
-                  else if (l.href === '#cart') openCart();
                   else if (l.href === '#account') onProfile();
                   else router.push(l.href);
                 }}

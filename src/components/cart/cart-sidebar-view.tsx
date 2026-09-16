@@ -2,7 +2,9 @@ import { useRouter } from '@/compat/next-router';
 import { motion } from 'framer-motion';
 import CartItem from '@/components/cart/cart-item';
 import { fadeInOut } from '@/lib/motion/fade-in-out';
+import Link from '@/components/ui/link';
 import { Routes } from '@/config/routes';
+import { checkoutRouteFor } from '@/lib/checkout-route';
 import usePrice from '@/lib/use-price';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { formatString } from '@/lib/format-string';
@@ -20,12 +22,7 @@ const CartSidebarView = () => {
   const router = useRouter();
 
   function handleCheckout() {
-    const isRegularCheckout = items.find((item) => !Boolean(item.is_digital));
-    router.push(
-      isRegularCheckout ? Routes.checkout : Routes.checkoutDigital,
-      undefined,
-      { locale: language },
-    );
+    router.push(checkoutRouteFor(items), undefined, { locale: language });
     closeSidebar({ display: false, view: '' });
   }
 
@@ -150,6 +147,14 @@ const CartSidebarView = () => {
             <span>Proceed to Checkout</span>
             <span className="pa-cart-checkout-price">{totalPrice}</span>
           </button>
+          {/* The drawer is add-to-cart confirmation; /cart is the full page. */}
+          <Link
+            href={Routes.cart}
+            onClick={() => closeSidebar({ display: false, view: '' })}
+            className="mt-2 block text-center text-[13px] font-medium text-forest-700 underline underline-offset-2 hover:text-forest-900"
+          >
+            View full cart
+          </Link>
           <p className="pa-cart-secure">
             <Lock size={12} aria-hidden />
             Secure checkout · 7-day easy returns
