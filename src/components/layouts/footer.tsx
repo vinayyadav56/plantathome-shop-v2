@@ -41,11 +41,16 @@ const COLS: { title: string; links: { name: string; href: string }[] }[] = [
   {
     title: 'Company',
     links: [
-      { name: 'Our Story', href: '/contact' },
-      { name: 'Sustainability', href: '/garden-service' },
-      { name: 'Stores', href: '/contact' },
-      { name: 'Careers', href: '/contact' },
+      // Every one of these must lead somewhere real. This column used to read
+      // Our Story / Sustainability / Stores / Careers with four of the five
+      // pointing at /contact — links promising things the company does not
+      // have, which is exactly what a reviewer (AWS Activate rejected us on
+      // company identity) reads as a storefront with nothing behind it.
+      { name: 'About Us', href: '/about' },
       { name: 'Contact Us', href: '/contact' },
+      { name: 'Garden Service', href: '/garden-service' },
+      { name: 'Corporate Gifting', href: '/corporate-gifting' },
+      { name: 'Plant Doctor', href: '/plant-doctor' },
     ],
   },
   {
