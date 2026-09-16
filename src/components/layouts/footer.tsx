@@ -327,9 +327,19 @@ const Footer = () => {
       {/* ── bottom bar ── */}
       <div className="relative z-[1] border-t border-white/[0.07]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-5 py-3.5 text-[12.5px] sm:gap-4 sm:py-5 sm:flex-row sm:px-8 lg:px-16">
-          <span className="text-white/40">© {year} {t('footer-copyright')}</span>
+          {/* The legal entity, on every page. AWS Activate rejected the Activate
+              application because the site named only the brand and never the
+              company on the application; the LLPIN makes it verifiable on
+              mca.gov.in. PAN/TAN stay off the public site deliberately. */}
+          <span className="text-center text-white/40 sm:text-start">
+            © {year} {t('footer-copyright')}
+            <span className="mt-0.5 block text-[11.5px] leading-snug text-white/30">
+              PlantAtHome is a brand of Silvestrix Green LLP · LLPIN ACP-3683
+            </span>
+          </span>
           <InlineLanguageSelect tone="dark" className="order-first sm:order-none" />
           <div className="flex flex-wrap items-center gap-5">
+            <Link href="/about" className="text-white/45 transition hover:text-white">About</Link>
             <Link href="/privacy" className="text-white/45 transition hover:text-white">{t('footer-privacy')}</Link>
             <Link href="/terms" className="text-white/45 transition hover:text-white">{t('footer-terms')}</Link>
             <Link href="/data-deletion" className="text-white/45 transition hover:text-white">Data Deletion</Link>

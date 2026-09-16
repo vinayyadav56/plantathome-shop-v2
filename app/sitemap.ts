@@ -22,6 +22,7 @@ const STATIC_ROUTES = [
   '/plant-doctor',
   '/garden-service',
   '/corporate-gifting',
+  '/about',
   '/contact',
   '/help',
   '/track-order',
