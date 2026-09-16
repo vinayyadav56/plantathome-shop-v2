@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadGeneralData } from '@/framework/ssr/prefetch';
+import { loadGeneralData, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/search';
 
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,9 @@ export async function generateMetadata({
   params: Promise<{ searchType: string }>;
 }): Promise<Metadata> {
   const { searchType } = await params;
+  // /nope/search must be a real 404, like /nope (fail-soft when the types API is down).
+  const slugs = await loadTypeSlugs();
+  if (slugs.length && !slugs.includes(searchType)) notFound();
   const name = searchType.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   return {
     title: `Search ${name}`,
@@ -23,7 +27,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page() {
+export default async function Page({ params }: { params: Promise<{ searchType: string }> }) {
+  const { searchType } = await params;
+  const slugs = await loadTypeSlugs();
+  if (slugs.length && !slugs.includes(searchType)) notFound();
   const { dehydratedState } = await loadGeneralData();
   return (
     <Hydrate state={dehydratedState}>

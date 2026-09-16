@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 // Account/utility page — declared noindex in the page body for years,
 // but the next-seo shim renders null so it never reached the HTML.
 export const metadata: Metadata = {
+  title: 'Verify your email',
   robots: { index: false, follow: false },
 };
 

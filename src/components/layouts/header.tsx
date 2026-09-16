@@ -356,7 +356,7 @@ const Header = ({ layout }: { layout?: string }) => {
             >
               <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
                 <div className="flex-1">
-                  <Search label={t('text-search') ?? 'Search'} variant="minimal" />
+                  <Search label={t('text-search') ?? 'Search'} variant="minimal" onSubmitted={() => setSearchOpen(false)} />
                 </div>
                 <button
                   type="button"

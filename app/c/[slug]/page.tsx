@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadGeneralData } from '@/framework/ssr/prefetch';
@@ -30,13 +31,17 @@ const prettify = (slug: string) => {
  * category image reach the metadata. Fail-soft to the slug-prettified
  * template — a down API must not 500 the page.
  */
-async function fetchCategory(slug: string): Promise<any | null> {
+/** The category, `null` when the API could not be asked (fail-soft to the
+ *  prettified slug), or `false` when the API answered and the slug does not
+ *  exist — that one must 404, not render an empty category page. */
+async function fetchCategory(slug: string): Promise<any | null | false> {
   const api = (process.env.NEXT_PUBLIC_REST_API_ENDPOINT || '').replace(/\/$/, '');
   if (!api) return null;
   try {
     const res = await fetch(`${api}/categories/${encodeURIComponent(slug)}`, {
       next: { revalidate: 300 },
     });
+    if (res.status === 404) return false;
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -54,6 +59,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const category = await fetchCategory(slug);
+  if (category === false) notFound();
   const name = category?.name ?? prettify(slug);
   const title = category?.seo_title || `Buy ${name} Online in India`;
   const description =
@@ -78,6 +84,9 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  // A slug the API does not know is a real 404 (the root loading boundary that
+  // used to stream a 200 shell first is gone).
+  if ((await fetchCategory(slug)) === false) notFound();
   const { dehydratedState } = await loadGeneralData();
   const name = prettify(slug);
   // BreadcrumbList emitted server-side (the client-side BreadcrumbJsonLd from

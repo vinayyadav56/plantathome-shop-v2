@@ -236,8 +236,14 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const { addItemToCart, updateCartLanguage, language } = useCart();
   // Display-only city (no nursery supply): browse-only, add-to-cart gated.
   const { city: shoppingCity, displayOnly } = useCitySupply();
+  // Product-level city scope, from the API (fetchSingleProduct computes it with
+  // the same AvailabilityService scope the list and checkout use). In a city
+  // with live vendor inventory the list hides what that inventory lacks, but
+  // this page still opened it priced — and checkout's verify then refused the
+  // line as "unavailable". Undefined (no city sent / older API) = available.
+  const cityUnavailable = (product as any)?.available_in_city === false;
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (displayOnly) return;
+    if (displayOnly || cityUnavailable) return;
     if (!inStock || needsSelection) return;
     const item = generateCartItem(product as any, selectedVariation);
     // Price integrity: when this product has a vendor cost sheet the server
@@ -280,9 +286,11 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
   // ONE source of truth for both CTAs (inline + sticky bar) so copy/state
   // can never drift between them.
-  const ctaDisabled = !inStock || needsSelection || verticalBlocked || displayOnly;
+  const ctaDisabled = !inStock || needsSelection || verticalBlocked || displayOnly || cityUnavailable;
   const ctaLabel = displayOnly
     ? `Out of Stock in ${shoppingCity}`
+    : cityUnavailable
+    ? `Not available in ${shoppingCity ?? 'your city'} yet`
     : verticalBlocked
     ? 'Unavailable in your city'
     : !inStock

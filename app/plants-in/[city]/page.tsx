@@ -16,7 +16,7 @@ export const revalidate = 300;
 /**
  * SSG with on-demand fallback — REQUIRED for real 404/308 statuses, not just
  * for speed: without generateStaticParams the route renders dynamically and
- * Next streams the 200 shell (app/loading.tsx) before generateMetadata's
+ * Next used to stream a 200 shell (the since-removed root app/loading.tsx) before generateMetadata's
  * notFound()/permanentRedirect() can set a status. With it, unknown params
  * render blocking and the guards produce genuine 404s and 308s.
  * Fail-soft: an unreachable API at build time returns [] and every city
@@ -32,7 +32,7 @@ type Params = { params: Promise<{ city: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { city } = await params;
   const page = await loadLocationPage(city);
-  // 404/redirect HERE, not just in the page body: app/loading.tsx makes Next
+  // 404/redirect HERE, not just in the page body: a loading boundary above makes Next
   // flush a 200 + loader shell before the page component runs, so notFound()
   // thrown there only downgrades to a streamed soft-404 (and the 308 becomes
   // a soft client redirect). Metadata resolves before the shell flush — same
