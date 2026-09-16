@@ -210,6 +210,13 @@ const DATA_DELETION_HTML = `
 <p>PlantAtHome is operated by <strong>Silvestrix Green LLP</strong>.</p>
 <p>We respect your right to request the deletion of your personal information. This page explains how you can request the deletion of data associated with your use of PlantAtHome's website, products, services, and communication channels, including WhatsApp.</p>
 
+<h2>Deleting Your PlantAtHome Account</h2>
+<p>This applies to your PlantAtHome account across our website and our mobile apps, <strong>PlantAtHome</strong> and <strong>PlantAtHome Partner</strong> (Android package names <code>in.plantathome.app</code> and <code>in.plantathome.partner</code>).</p>
+<h3>In the app (fastest — deletes immediately)</h3>
+<p>Open the PlantAtHome app and go to <strong>Profile &rarr; Delete Account</strong>, then confirm. Your account is closed and your personal data is deleted straight away, other than the records listed under &ldquo;Information We Must Retain&rdquo; below. You do not need to contact us.</p>
+<h3>If you no longer have the app installed</h3>
+<p>Email <strong><a href="mailto:data@plantathome.in">data@plantathome.in</a></strong> from your registered email address, or use the request form below. You do not need to reinstall the app to have your account deleted.</p>
+
 <h2>How to Request Data Deletion</h2>
 <p>If you would like PlantAtHome to delete your personal information, you may submit a data deletion request using the following method:</p>
 <h3>Submit a Request by Email</h3>
@@ -219,14 +226,14 @@ const DATA_DELETION_HTML = `
 <ul><li>Your full name</li><li>Your registered mobile or WhatsApp number</li><li>Your email address, if applicable</li><li>Any other information that may help us identify your account or records</li></ul>
 <p>We may request additional information to verify your identity before processing your request.</p>
 
-<h2>What Data May Be Deleted</h2>
-<p>Upon receiving and verifying a valid request, we will take reasonable steps to delete or anonymize applicable personal information associated with you, which may include:</p>
-<ul><li>Name</li><li>Phone number</li><li>WhatsApp-related contact information</li><li>Email address</li><li>Account information</li><li>Customer support records</li><li>Other personal information that is no longer required to be retained</li></ul>
+<h2>What Is Deleted</h2>
+<p>When you delete your account in the app, or when we receive and verify a valid request, your PlantAtHome account is closed and the personal data held against it is deleted or irreversibly anonymised. This includes:</p>
+<ul><li>Your name, phone number and email address</li><li>Your login credentials and saved sessions</li><li>Your saved delivery addresses and location data</li><li>Your cart, wishlist and saved payment preferences</li><li>Photos you uploaded to Plant Doctor and any plant-care history</li><li>Your WhatsApp contact information and message history with us</li><li>Customer support records and reviews you posted</li></ul>
 
-<h2>Information We May Need to Retain</h2>
-<p>In certain circumstances, we may be required or permitted to retain some information for legitimate purposes, including:</p>
-<ul><li>Compliance with applicable laws and regulations</li><li>Tax and accounting requirements</li><li>Fraud prevention and security</li><li>Resolution of disputes</li><li>Enforcement of legal agreements</li></ul>
-<p>Where information must be retained, it will be kept only for as long as necessary for the relevant legal or legitimate purpose.</p>
+<h2>Information We Must Retain</h2>
+<p>Indian law requires us to keep certain records even after you delete your account. We keep only what the law requires, and it is no longer linked to a usable account:</p>
+<ul><li><strong>Invoices, orders and payment records &mdash; up to 8 years.</strong> Required by the Central Goods and Services Tax Act, 2017 (section 36) and the Limited Liability Partnership Act, 2008. A tax invoice must legally show the buyer&rsquo;s name and address, so those details remain on the invoice itself.</li><li><strong>Fraud, chargeback and security logs &mdash; up to 180 days.</strong> Kept to protect customers and our delivery partners.</li><li><strong>Records under an active dispute or legal claim</strong> &mdash; kept until the matter is finally resolved.</li></ul>
+<p>Nothing in this list is used to contact you or to build a profile of you after deletion. Everything else is deleted.</p>
 
 <h2>WhatsApp Data</h2>
 <p>If you have communicated with PlantAtHome through WhatsApp, you may request the deletion of personal information held by PlantAtHome in connection with those communications.</p>
@@ -235,7 +242,7 @@ const DATA_DELETION_HTML = `
 <h2>Request Processing</h2>
 <p>After receiving your request:</p>
 <ul><li>We may verify your identity.</li><li>We will review your request.</li><li>We will process the deletion of applicable information where required or appropriate.</li><li>We may notify you once your request has been processed.</li></ul>
-<p>We aim to process valid requests within a reasonable timeframe, subject to applicable legal requirements and operational requirements.</p>
+<p>Deletions made in the app take effect immediately. Requests sent by email are completed within <strong>30 days</strong> of us verifying your identity, and we email you once it is done.</p>
 
 <h2>Contact Us</h2>
 <p>For questions or requests related to the deletion of your personal information, please contact:</p>
@@ -249,5 +256,5 @@ const DATA_DELETION_HTML = `
 export const LEGAL_DEFAULTS: Record<'privacy' | 'terms' | 'dataDeletion', LegalDoc> = {
   privacy: { title: 'Privacy Policy', updatedAt: 'August 29, 2026', body: PRIVACY_HTML },
   terms: { title: 'Terms of Service', updatedAt: 'August 29, 2026', body: TERMS_HTML },
-  dataDeletion: { title: 'Data Deletion Instructions', updatedAt: 'August 29, 2026', body: DATA_DELETION_HTML },
+  dataDeletion: { title: 'Data Deletion Instructions', updatedAt: 'September 16, 2026', body: DATA_DELETION_HTML },
 };
