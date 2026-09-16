@@ -123,7 +123,7 @@ export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps 
       {/* Social + phone sign-up (NextAuth session is bridged to the API by the
           global <SocialLogin/> in _app.tsx; OTP_LOGIN handles phone sign-up). */}
       <div className="mb-8 grid grid-cols-1 gap-4">
-        <Button
+        <Button type="button"
           className="!bg-social-google !text-light hover:!bg-social-google-hover"
           disabled={isLoading || googleBusy}
           onClick={googleLogin}
@@ -131,7 +131,7 @@ export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps 
           <GoogleIcon className="w-4 h-4 ltr:mr-3 rtl:ml-3" />
           {t('text-login-google')}
         </Button>
-        <Button
+        <Button type="button"
           className="h-11 w-full !bg-[#25D366] !text-light hover:!bg-[#1da851] sm:h-12"
           disabled={isLoading}
           onClick={onWhatsapp ?? (() => openModal('OTP_LOGIN', { channel: 'whatsapp' }))}

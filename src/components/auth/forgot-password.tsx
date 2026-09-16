@@ -187,6 +187,7 @@ function PasswordForm({
 }
 
 function RenderFormSteps() {
+  const { t } = useTranslation('common');
   const {
     mutate: forgotPassword,
     isLoading,
@@ -236,7 +237,9 @@ function RenderFormSteps() {
       )}
       {state.step === 'Token' && (
         <>
-          <Alert className="mb-4" message={message} />
+          {/* The API answers with a translation KEY (PLANTATHOME_MESSAGE.…); it was
+              rendered raw. */}
+          <Alert className="mb-4" message={t(message)} />
           <TokenForm
             token={state.token}
             onSubmit={tokenFormHandle}

@@ -241,7 +241,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   // with live vendor inventory the list hides what that inventory lacks, but
   // this page still opened it priced — and checkout's verify then refused the
   // line as "unavailable". Undefined (no city sent / older API) = available.
-  const cityUnavailable = (product as any)?.available_in_city === false;
+  // `product` is the SSR payload, fetched with no city (so the API answers
+  // available_in_city: true); the city-aware answer lives on cityProduct.
+  const cityUnavailable = ((cityProduct ?? product) as any)?.available_in_city === false;
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (displayOnly || cityUnavailable) return;
     if (!inStock || needsSelection) return;

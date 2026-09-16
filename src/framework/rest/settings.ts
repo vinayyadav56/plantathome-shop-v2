@@ -97,6 +97,7 @@ export function useSubscription() {
     },
     onError: () => {
       setIsSubscribed(false);
+      toast.error('Could not subscribe right now. Please try again.');
     },
   });
 

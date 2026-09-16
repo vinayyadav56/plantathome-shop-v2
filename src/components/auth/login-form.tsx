@@ -107,7 +107,7 @@ export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFor
         </span>
       </div>
       <div className="grid grid-cols-1 gap-4 mt-2">
-        <Button
+        <Button type="button"
           className="!bg-social-google !text-light hover:!bg-social-google-hover"
           disabled={isLoading || googleBusy}
           onClick={googleLogin}
@@ -129,7 +129,7 @@ export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFor
           </Button>
         )}
 
-        <Button
+        <Button type="button"
           className="h-11 w-full !bg-[#25D366] !text-light hover:!bg-[#1da851] sm:h-12"
           disabled={isLoading}
           onClick={onWhatsapp ?? (() => openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
