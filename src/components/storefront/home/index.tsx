@@ -53,7 +53,7 @@ export function PlantCompanyHome({
         <HeroPlant />
         {/* z-20: must beat the hero's own z-10 content box, whose bottom padding
             overlaps this strip and would otherwise swallow the cards' clicks. */}
-        <div className="absolute -bottom-[39px] left-1/2 z-20 w-[calc(100%-32px)] max-w-[1530px] -translate-x-1/2 md:w-[calc(100%-96px)]">
+        <div className="absolute -bottom-[39px] left-1/2 z-20 w-[calc(100%-32px)] max-w-[1310px] -translate-x-1/2 md:w-[calc(100%-96px)]">
           <CategoryRow />
         </div>
       </div>

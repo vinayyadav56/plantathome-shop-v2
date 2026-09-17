@@ -215,9 +215,9 @@ const Header = ({ layout }: { layout?: string }) => {
             clipped child span instead. Swapped for the compact bar once
             scrolled (search/menu keep the full pill up). */}
         {(!collapsed || searchOpen || menuOpen) ? (
-        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1580px] items-center gap-6 rounded-[18px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:px-[42px]">
+        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-6 rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:px-[42px]">
           {/* glass shine — top-half highlight, clipped to the pill radius */}
-          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[18px]">
+          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
           {/* Logo — deliberately NOT position:relative/z-indexed: a stacking
@@ -319,7 +319,7 @@ const Header = ({ layout }: { layout?: string }) => {
         ) : (
           /* compact scrolled bar — light glass (explicitly "not in green"):
              hamburger, delivering city, Track Order. */
-          <div className="pointer-events-auto mx-auto flex h-11 max-w-[1580px] items-center gap-3 rounded-[14px] border border-white/[0.72] bg-white/[0.88] px-3.5 shadow-[0_10px_28px_rgba(5,24,10,0.12)] backdrop-blur-[18px] backdrop-saturate-[1.3] sm:px-5">
+          <div className="pointer-events-auto mx-auto flex h-11 max-w-[1360px] items-center gap-3 rounded-[10px] border border-white/[0.72] bg-white/[0.88] px-3.5 shadow-[0_10px_28px_rgba(5,24,10,0.12)] backdrop-blur-[18px] backdrop-saturate-[1.3] sm:px-5">
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
@@ -352,7 +352,7 @@ const Header = ({ layout }: { layout?: string }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: EXPO }}
-              className="pointer-events-auto mx-auto mt-2 max-w-[1580px] rounded-[18px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.94)_0%,rgba(248,247,241,0.88)_48%,rgba(255,255,255,0.92)_100%)] shadow-[0_18px_45px_rgba(5,24,10,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35]"
+              className="pointer-events-auto mx-auto mt-2 max-w-[1360px] rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.94)_0%,rgba(248,247,241,0.88)_48%,rgba(255,255,255,0.92)_100%)] shadow-[0_18px_45px_rgba(5,24,10,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35]"
             >
               <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
                 <div className="flex-1">

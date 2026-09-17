@@ -84,7 +84,7 @@ export function BestSellers({
         </Link>
       </div>
 
-      <div className="pah-rail [--rail-w:38%] lg:[--rail-w:calc((100%_-_56px)/5)] xl:[--rail-w:calc((100%_-_70px)/6)] grid grid-cols-2 gap-4 sm:grid-cols-3 lg:gap-3.5">
+      <div className="pah-rail [--rail-w:44%] lg:[--rail-w:calc((100%_-_56px)/5)] xl:[--rail-w:calc((100%_-_70px)/6)] grid grid-cols-2 gap-4 sm:grid-cols-3 lg:gap-3.5">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="w-full">

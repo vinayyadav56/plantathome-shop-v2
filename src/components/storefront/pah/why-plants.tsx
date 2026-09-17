@@ -68,13 +68,15 @@ export function WhyPlants() {
       {/* carousel */}
       <div className="pah-scroll -mx-5 flex gap-3 overflow-x-auto px-5 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {cards.map((b, i) => (
-          <div key={`${b.title}-${i}`} className="relative w-[152px] shrink-0 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)]">
-            <div className="relative h-[96px] bg-cream-100"><CardImg src={b.img} alt={b.title} /></div>
-            <div className="absolute left-1/2 top-[96px] grid h-[46px] w-[46px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-sage-200 bg-white text-forest-700 shadow-[0_5px_14px_rgba(20,40,24,0.14)]">{ICONS[b.iconKey] ?? ICONS.leaf}</div>
+          <div key={`${b.title}-${i}`} className="relative w-[168px] shrink-0 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)]">
+            <div className="relative h-[124px] bg-cream-100"><CardImg src={b.img} alt={b.title} /></div>
+            {/* the badge straddles the image seam — it is pinned to the image
+                height and has to move with it */}
+            <div className="absolute left-1/2 top-[124px] grid h-[46px] w-[46px] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-sage-200 bg-white text-forest-700 shadow-[0_5px_14px_rgba(20,40,24,0.14)]">{ICONS[b.iconKey] ?? ICONS.leaf}</div>
             <div className="px-[11px] pb-4 pt-[29px] text-center">
-              <h3 className="text-[13px] font-medium leading-[1.2] text-forest-900">{b.title}</h3>
+              <h3 className="line-clamp-2 min-h-[2.4em] text-[13px] font-medium leading-[1.2] text-forest-900">{b.title}</h3>
               <div className="mx-auto mb-[9px] mt-2 h-0.5 w-[22px] rounded-full bg-forest-500" />
-              <p className="text-[10.5px] leading-[1.5] text-stone-500">{b.body}</p>
+              <p className="line-clamp-3 min-h-[4.5em] text-[10.5px] leading-[1.5] text-stone-500">{b.body}</p>
             </div>
           </div>
         ))}
