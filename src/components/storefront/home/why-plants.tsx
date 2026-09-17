@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'next-i18next';
 import SafeImage from '@/components/ui/safe-image';
-import { useHomeConfig } from '@/lib/use-home-config';
+import { resolveWhyPlantsCards, useHomeConfig } from '@/lib/use-home-config';
 import { EXPO } from '@/components/storefront/motion';
 import {
   ArrowRight,
@@ -78,21 +78,12 @@ export function WhyPlants() {
   const { t } = useTranslation('common');
   const { whyPlants } = useHomeConfig();
 
-  // Admin-configured cards override the built-in six; fields fall back
-  // per-card so half-filled admin entries never render broken.
-  const cards = (whyPlants?.cards?.length ? whyPlants.cards : BENEFITS).map(
-    (c: any, i: number) => ({
-      title: c.title || BENEFITS[i % BENEFITS.length].title,
-      body: c.body || BENEFITS[i % BENEFITS.length].body,
-      img:
-        (typeof c.image === 'string' ? c.image : c.image?.original) ||
-        c.img ||
-        BENEFITS[i % BENEFITS.length].img,
-      icon:
-        WHY_ICONS[c.iconKey as string] ??
-        WHY_ICONS[BENEFITS[i % BENEFITS.length].iconKey],
-    }),
-  );
+  // Shared with the phone homepage (storefront/pah/why-plants) so the two can
+  // no longer disagree about what this section shows.
+  const cards = resolveWhyPlantsCards(whyPlants, BENEFITS).map((c) => ({
+    ...c,
+    icon: WHY_ICONS[c.iconKey] ?? WHY_ICONS.leaf,
+  }));
   const heading = whyPlants?.heading || t('home-why-title');
   const subtitle = whyPlants?.subtitle;
 

@@ -13,6 +13,41 @@ export type WhyPlantsConfig = {
   }>;
 };
 
+/** A Why-Plants card after admin content and built-in defaults are merged. */
+export type WhyPlantsCard = { title: string; body: string; img: string; iconKey: string };
+
+/**
+ * Merge the admin's Why-Plants cards over a caller's built-in defaults.
+ *
+ * Both homepages render this section — the desktop one and the phone-only one
+ * under `storefront/pah` — and the phone version used to carry its own
+ * hardcoded copy and stock photography, so every image the admin set reached
+ * desktop only. They now share this resolver; the defaults stay per-caller
+ * because the two layouts need different copy lengths.
+ *
+ * Admin cards win as a set (an admin list replaces the defaults rather than
+ * merging into them), but each FIELD falls back by index, so a half-filled
+ * entry never renders blank.
+ */
+export function resolveWhyPlantsCards(
+  whyPlants: WhyPlantsConfig | null | undefined,
+  fallback: WhyPlantsCard[],
+): WhyPlantsCard[] {
+  const source = whyPlants?.cards?.length ? whyPlants.cards : fallback;
+  return source.map((c: any, i: number) => {
+    const d = fallback[i % fallback.length];
+    return {
+      title: c.title || d.title,
+      body: c.body || d.body,
+      img:
+        (typeof c.image === 'string' ? c.image : c.image?.original) ||
+        c.img ||
+        d.img,
+      iconKey: c.iconKey || d.iconKey,
+    };
+  });
+}
+
 /** Admin-editable Collections section (settings.options.homeCollections). */
 export type HomeCollectionsConfig = {
   enabled?: boolean;
