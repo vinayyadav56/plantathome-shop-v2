@@ -117,7 +117,10 @@ const StoreBadge = ({
   ) : (
     <span aria-disabled="true" title="Coming soon" className={`relative block shrink-0 ${heightClass} opacity-50 grayscale`}>
       <Image src={src} alt={`${alt} — coming soon`} width={width} height={100} className={`${heightClass} w-auto`} />
-      <span className="absolute -right-2 -top-2 rounded-full bg-[#4ADE80] px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-forest-900">Soon</span>
+      {/* Beside the badge, not on top of it: at -top-2 the pill reached back
+          across the 8px stack gap and sat on the badge above. There is ~70px
+          of free width next to a 107px badge in either layout. */}
+      <span className="absolute left-full top-1/2 ml-1.5 -translate-y-1/2 whitespace-nowrap rounded-full bg-[#4ADE80] px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-forest-900">Soon</span>
     </span>
   );
 
