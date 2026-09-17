@@ -99,6 +99,7 @@ export default function GuestCheckoutPage() {
               />
               {t('Billing address same as shipping address')}
             </label>
+            {/* The billing card is step 4 only when shown; the steps after it renumber. */}
             {!sameAsShipping && (
               <GuestAddressGrid
                 className="pa-checkout-step"
@@ -114,9 +115,9 @@ export default function GuestCheckoutPage() {
             <ScheduleGrid
               className="pa-checkout-step"
               label={t('text-delivery-schedule')}
-              count={5}
+              count={sameAsShipping ? 4 : 5}
             />
-            <OrderNote count={6} label={t('Order Note')} />
+            <OrderNote count={sameAsShipping ? 5 : 6} label={t('Order Note')} />
           </div>
           <div className="mt-10 mb-10 w-full sm:mb-12 lg:mb-0 lg:w-96">
             <RightSideView />
