@@ -88,17 +88,76 @@ const PayMark = ({ label, children }: { label: string; children: React.ReactNode
   </span>
 );
 
-const StoreBadge = ({ href, src, alt }: { href: string; src: any; alt: string }) =>
+/**
+ * A store badge at `heightClass` tall, width derived from the PNG's own aspect.
+ *
+ * `shrink-0` is load-bearing: these sit in flex rows, and with the default
+ * `flex-shrink: 1` the lg brand column squeezed them to 94px at 40px tall,
+ * which broke the artwork. The intrinsic sizes are the real pixel dimensions
+ * (Play 334×100, App Store 338×100) — passing one approximate size for both,
+ * as this did, makes next/image serve a subtly wrong aspect.
+ */
+const StoreBadge = ({
+  href,
+  src,
+  alt,
+  width,
+  heightClass = 'h-10',
+}: {
+  href: string;
+  src: any;
+  alt: string;
+  width: number;
+  heightClass?: string;
+}) =>
   href ? (
-    <a href={href} target="_blank" rel="noreferrer noopener" aria-label={alt} className="block h-10 transition hover:opacity-90">
-      <Image src={src} alt={alt} width={135} height={40} className="h-10 w-auto" />
+    <a href={href} target="_blank" rel="noreferrer noopener" aria-label={alt} className={`block shrink-0 ${heightClass} transition hover:opacity-90`}>
+      <Image src={src} alt={alt} width={width} height={100} className={`${heightClass} w-auto`} />
     </a>
   ) : (
-    <span aria-disabled="true" title="Coming soon" className="relative block h-10 opacity-50 grayscale">
-      <Image src={src} alt={`${alt} — coming soon`} width={135} height={40} className="h-10 w-auto" />
+    <span aria-disabled="true" title="Coming soon" className={`relative block shrink-0 ${heightClass} opacity-50 grayscale`}>
+      <Image src={src} alt={`${alt} — coming soon`} width={width} height={100} className={`${heightClass} w-auto`} />
       <span className="absolute -right-2 -top-2 rounded-full bg-[#4ADE80] px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-forest-900">Soon</span>
     </span>
   );
+
+/**
+ * "Get the app" — mounted twice, because the two layouts cost different amounts
+ * of footer height.
+ *
+ * The footer grid's row height is set by its tallest column, which is the brand
+ * column (375px against 223px for the link columns). Anything added to the brand
+ * column therefore adds to the footer 1:1 — this block was making it 91px taller.
+ * At lg+ the badges instead go at the foot of the last LINK column, into that
+ * 152px of already-empty space, so they cost exactly nothing. Below lg the brand
+ * column is full-width and the link columns form their own row, where the same
+ * move would ADD height — so there it stays where it was.
+ */
+const AppBadges = ({ className = '', stacked = false }: { className?: string; stacked?: boolean }) => (
+  <div className={className}>
+    <p className="mb-2.5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">Get the app</p>
+    <div className={stacked ? 'flex flex-col items-start gap-2' : 'flex items-center gap-2.5'}>
+      {/* Play links to the listing — live once the build is promoted out of
+          internal testing. There is no iOS app, so the App Store badge is shown
+          but inert: a badge that 404s is the dead-link problem this footer just
+          got rid of. */}
+      <StoreBadge
+        href={siteSettings.cta.play_store_link}
+        src={PlayStoreImg}
+        alt="Get it on Google Play"
+        width={334}
+        heightClass={stacked ? 'h-8' : 'h-10'}
+      />
+      <StoreBadge
+        href={siteSettings.cta.app_store_link}
+        src={AppStoreImg}
+        alt="Download on the App Store"
+        width={338}
+        heightClass={stacked ? 'h-8' : 'h-10'}
+      />
+    </div>
+  </div>
+);
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
@@ -274,21 +333,13 @@ const Footer = () => {
             ))}
           </div>
 
-          {/* Get the app (annotation). Play links to the listing — live once the
-              build is promoted out of internal testing. There is no iOS app, so
-              the App Store badge is shown but inert: a badge that 404s is the
-              dead-link problem this footer just got rid of. */}
-          <div className="mt-6">
-            <p className="mb-2.5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">Get the app</p>
-            <div className="flex items-center gap-2.5">
-              <StoreBadge href={siteSettings.cta.play_store_link} src={PlayStoreImg} alt="Get it on Google Play" />
-              <StoreBadge href={siteSettings.cta.app_store_link} src={AppStoreImg} alt="Download on the App Store" />
-            </div>
-          </div>
+          {/* Below lg only — at lg+ this moves into the last link column, where
+              it costs no height. See AppBadges. */}
+          <AppBadges className="mt-6 lg:hidden" />
         </div>
 
         {/* link columns */}
-        {cols.map((col) => (
+        {cols.map((col, colIndex) => (
           <div key={col.title}>
             <h4 className="mb-5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">
               {col.title}
@@ -306,6 +357,10 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
+            {/* The last column carries the app badges at lg+: the link columns
+                run ~152px shorter than the brand column, so this lands in space
+                the footer was already reserving. */}
+            {colIndex === cols.length - 1 ? <AppBadges className="mt-6 hidden lg:block" stacked /> : null}
           </div>
         ))}
       </div>
