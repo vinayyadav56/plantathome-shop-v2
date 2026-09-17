@@ -7,7 +7,7 @@ import { useTranslation } from 'next-i18next';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { GoogleIcon } from '@/components/icons/google';
 import { MobileIcon } from '@/components/icons/mobile-icon';
-import { WhatsAppIcon } from '@/components/icons/whatsapp';
+import { Smartphone } from '@/components/ui/icon';
 import { Form } from '@/components/ui/forms/form';
 import * as yup from 'yup';
 import { useRegister } from '@/framework/user';
@@ -33,12 +33,12 @@ type RegisterFormValues = {
 type RegisterFormProps = {
   /** When provided (page context), switches to the login view in place. */
   onSwitchToLogin?: () => void;
-  /** Renders the WhatsApp step in the page column instead of a dialog. Absent
+  /** Renders the phone-OTP step in the page column instead of a dialog. Absent
    *  (header, checkout) it falls back to the modal, unchanged. */
-  onWhatsapp?: () => void;
+  onPhoneOtp?: () => void;
 };
 
-export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps = {}) {
+export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps = {}) {
   const { t } = useTranslation('common');
   const { openModal } = useModalAction();
   const { mutate, isLoading, formError } = useRegister();
@@ -132,12 +132,12 @@ export function RegisterForm({ onSwitchToLogin, onWhatsapp }: RegisterFormProps 
           {t('text-login-google')}
         </Button>
         <Button type="button"
-          className="h-11 w-full !bg-[#25D366] !text-light hover:!bg-[#1da851] sm:h-12"
+          className="h-11 w-full !bg-forest-700 !text-light hover:!bg-forest-800 sm:h-12"
           disabled={isLoading}
-          onClick={onWhatsapp ?? (() => openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
+          onClick={onPhoneOtp ?? (() => openModal('OTP_LOGIN', { channel: 'sms' }))}
         >
-          <WhatsAppIcon className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" />
-          Continue with WhatsApp
+          <Smartphone className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" aria-hidden />
+          Continue with Phone (OTP)
         </Button>
       </div>
 

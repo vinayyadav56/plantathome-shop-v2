@@ -29,7 +29,7 @@ import { Routes } from '@/config/routes';
 import Seo from '@/components/seo/seo';
 
 /** The four things the right-hand column can show. */
-type AuthView = 'login' | 'register' | 'whatsapp' | 'forgot';
+type AuthView = 'login' | 'register' | 'phone' | 'forgot';
 
 const SWAP_EASE: [number, number, number, number] = [0.04, 0.62, 0.23, 0.98];
 
@@ -47,7 +47,7 @@ function SignInPage() {
     router.query.mode === 'register' ? 'register' : 'login',
   );
   const reduceMotion = useReducedMotion();
-  // login/register are the two tabbed forms; whatsapp/forgot are full replacements
+  // login/register are the two tabbed forms; phone/forgot are full replacements
   // for the column, reached from inside those forms.
   const isTabbed = mode === 'login' || mode === 'register';
 
@@ -123,8 +123,8 @@ function SignInPage() {
                 ? t('signin-welcome')
                 : mode === 'register'
                   ? t('signin-create-account')
-                  : mode === 'whatsapp'
-                    ? 'Continue with WhatsApp'
+                  : mode === 'phone'
+                    ? 'Login with Phone'
                     : 'Reset your password'}
             </h1>
             {/* min-h reserves the taller of the two states. The register copy wraps to two
@@ -133,7 +133,7 @@ function SignInPage() {
                 were reading. */}
             <p className="mb-7 mt-1 min-h-[2.5rem] text-[14px] text-stone-500 sm:min-h-[1.25rem]">
               {mode === 'login' && t('login-helper')}
-              {mode === 'whatsapp' && 'We will send a 6-digit code to your WhatsApp number.'}
+              {mode === 'phone' && 'We will send a 6-digit code to your phone by SMS.'}
               {mode === 'forgot' && t('forgot-password-helper')}
               {/* `registration-helper` is a fragment ("…you agree to our"); the two
                   words that finish it are separate keys meant to be inlined as links. */}
@@ -205,15 +205,15 @@ function SignInPage() {
                       <LoginForm
                         onSwitchToRegister={() => setMode('register')}
                         onForgot={() => setMode('forgot')}
-                        onWhatsapp={() => setMode('whatsapp')}
+                        onPhoneOtp={() => setMode('phone')}
                       />
                     ) : mode === 'register' ? (
                       <RegisterForm
                         onSwitchToLogin={() => setMode('login')}
-                        onWhatsapp={() => setMode('whatsapp')}
+                        onPhoneOtp={() => setMode('phone')}
                       />
-                    ) : mode === 'whatsapp' ? (
-                      <OtpLoginView inline channel="whatsapp" onBack={() => setMode('login')} />
+                    ) : mode === 'phone' ? (
+                      <OtpLoginView inline channel="sms" onBack={() => setMode('login')} />
                     ) : (
                       <ForgotUserPassword inline onBack={() => setMode('login')} />
                     )}

@@ -31,6 +31,9 @@ export default function OtpForm({
   function onSendCodeSubmission({ phone_number }: { phone_number: string }) {
     sendOtpCode({
       phone_number: `+${phone_number}`,
+      // Explicit SMS: phone verification must ride MSG91, not whatever the
+      // server's default gateway happens to be.
+      channel: 'sms',
     });
   }
 

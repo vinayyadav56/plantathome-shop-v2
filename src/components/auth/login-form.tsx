@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import { GoogleIcon } from '@/components/icons/google';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { MobileIcon } from '@/components/icons/mobile-icon';
-import { WhatsAppIcon } from '@/components/icons/whatsapp';
+import { Smartphone } from '@/components/ui/icon';
 import { Form } from '@/components/ui/forms/form';
 import { useGoogleLogin, useLogin } from '@/framework/user';
 import type { LoginUserInput } from '@/types';
@@ -30,13 +30,13 @@ type LoginFormProps = {
    *  instead of opening the register modal. */
   onSwitchToRegister?: () => void;
   onForgot?: () => void;
-  /** Same idea for the WhatsApp step: on /signin it renders in the column
+  /** Same idea for the phone-OTP step: on /signin it renders in the column
    *  rather than popping a dialog over the page it is already on. Absent
    *  (header, checkout) it falls back to the modal, unchanged. */
-  onWhatsapp?: () => void;
+  onPhoneOtp?: () => void;
 };
 
-export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFormProps = {}) {
+export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFormProps = {}) {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { openModal } = useModalAction();
@@ -130,12 +130,12 @@ export function LoginForm({ onSwitchToRegister, onForgot, onWhatsapp }: LoginFor
         )}
 
         <Button type="button"
-          className="h-11 w-full !bg-[#25D366] !text-light hover:!bg-[#1da851] sm:h-12"
+          className="h-11 w-full !bg-forest-700 !text-light hover:!bg-forest-800 sm:h-12"
           disabled={isLoading}
-          onClick={onWhatsapp ?? (() => openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
+          onClick={onPhoneOtp ?? (() => openModal('OTP_LOGIN', { channel: 'sms' }))}
         >
-          <WhatsAppIcon className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" />
-          Continue with WhatsApp
+          <Smartphone className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" aria-hidden />
+          Continue with Phone (OTP)
         </Button>
 
         {isCheckout && guestCheckout && (
