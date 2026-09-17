@@ -85,7 +85,16 @@ const NAV_UNDERLINE =
  * scrolls away) over a sticky floating warm-glass pill with centred nav,
  * inline search, profile + cart. Wired to the real cart drawer, login + search.
  */
-const Header = ({ layout }: { layout?: string }) => {
+const Header = ({
+  layout,
+  pillFromMd = false,
+}: {
+  layout?: string;
+  /** Home experience only: the phone home (<md) carries its own in-hero app
+   *  bar, so the glass pill is suppressed there — but the announcement strip
+   *  still shows, matching every other page. */
+  pillFromMd?: boolean;
+}) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { totalUniqueItems } = useCart();
@@ -208,7 +217,7 @@ const Header = ({ layout }: { layout?: string }) => {
           under the announcement bar. */}
       <header
         id="site-header"
-        className="pointer-events-none sticky top-2 z-50 -mt-1.5 w-full px-5"
+        className={`pointer-events-none sticky top-2 z-50 -mt-1.5 w-full px-5 ${pillFromMd ? 'max-md:hidden' : ''}`}
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
@@ -220,9 +229,6 @@ const Header = ({ layout }: { layout?: string }) => {
           <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
-          {/* Logo — deliberately NOT position:relative/z-indexed: a stacking
-              context here would isolate the img's mix-blend-multiply (which
-              melts the asset's white background) from the glass behind it. */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
             <BrandLogo />
           </Link>
@@ -230,16 +236,22 @@ const Header = ({ layout }: { layout?: string }) => {
           {/* ── nav — centered between logo and actions, flat on the dark bar.
               In-flow (not absolutely centered) so it can never overlap the
               actions block at narrower desktop widths. ── */}
-          {/* xl+ only: with 8 verticals the pill row measures ~730px and collides
-              with logo/actions through the whole lg range (1024–1210), so
-              768–1279 uses the hamburger's full-screen menu instead.
-              1280–1439 runs SMALLER text + tighter gaps: at 15px/gap-5 the row
-              measured 684px against a 679px nav at exactly 1280 and spilled. */}
-          <nav className="relative z-[2] hidden min-w-0 flex-1 justify-center xl:flex">
+          {/* Shown from md (annotation: menu should be there on tablet too).
+              The full row genuinely does not fit below xl — with 8 verticals it
+              measures ~730px, while at 768 the pill's inner width is ~680px and
+              the logo (160) plus the icon actions (~225) already claim most of
+              it. So the row DEGRADES instead of vanishing into a hamburger:
+              2 items + "More" below lg, 4 + "More" at lg, the whole row at xl.
+              Action labels also drop to icons below xl, which buys ~90px.
+              1280–1439 keeps the smaller text + tighter gaps: at 15px/gap-5 the
+              row measured 684px against a 679px nav at exactly 1280 and spilled. */}
+          <nav className="relative z-[2] hidden min-w-0 flex-1 justify-center md:flex">
             <div className="flex items-center gap-3.5 min-[1440px]:gap-[34px]">
-              {NAV.map((n) =>
-                n.menu ? (
-                  <div key={n.label} className="group relative">
+              {NAV.map((n, i) => {
+                // Fixed split — deterministic, no measurement loop.
+                const reveal = i < 2 ? '' : i < 4 ? 'hidden lg:block' : 'hidden xl:block';
+                return n.menu ? (
+                  <div key={n.label} className={`group relative ${reveal}`}>
                     <Link
                       href={n.href}
                       className={`relative inline-flex items-center gap-[7px] whitespace-nowrap py-2 text-[13.5px] font-medium transition-colors duration-200 hover:text-[#397b2a] min-[1440px]:text-[15px] ${NAV_UNDERLINE} text-[#1d2b20]`}
@@ -266,18 +278,49 @@ const Header = ({ layout }: { layout?: string }) => {
                   <Link
                     key={n.label}
                     href={n.href}
-                    className={`relative whitespace-nowrap py-2 text-[13.5px] font-medium transition-colors duration-200 hover:text-[#397b2a] min-[1440px]:text-[15px] ${NAV_UNDERLINE} ${
+                    className={`relative whitespace-nowrap py-2 text-[13.5px] font-medium transition-colors duration-200 hover:text-[#397b2a] min-[1440px]:text-[15px] ${NAV_UNDERLINE} ${reveal} ${
                       n.href === '/offers' ? 'text-[#397b2a]' : 'text-[#1d2b20]'
                     }`}
                   >
                     {n.label}
                   </Link>
-                ),
-              )}
+                );
+              })}
+
+              {/* Overflow menu — carries whatever the row is hiding at this
+                  width. Entries 2–3 are themselves hidden at lg+, where the row
+                  shows them; the whole control disappears at xl. */}
+              {NAV.length > 2 ? (
+                <div className="group relative xl:hidden">
+                  <button
+                    type="button"
+                    className={`relative inline-flex items-center gap-[7px] whitespace-nowrap py-2 text-[13.5px] font-medium text-[#1d2b20] transition-colors duration-200 hover:text-[#397b2a] ${NAV_UNDERLINE}`}
+                    aria-haspopup="true"
+                  >
+                    More
+                    <ChevronDown size={12} className="opacity-60 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
+                  </button>
+                  <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                    <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+                      {NAV.slice(2).map((n, i) => (
+                        <Link
+                          key={n.label}
+                          href={n.href}
+                          className={`rounded-[10px] px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'lg:hidden' : ''}`}
+                        >
+                          {n.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </nav>
 
-          {/* ── actions — right, stacked icon-over-label (per reference) ── */}
+          {/* ── actions — right, stacked icon-over-label (per reference).
+              Below xl the labels drop away (icons only): they cost ~90px, and
+              at 768–1279 that width is what lets the nav row exist at all. ── */}
           <div className="relative z-[2] ml-auto flex items-center gap-3">
             <div className="hidden items-center gap-4 md:flex">
               {/* Search */}
@@ -288,7 +331,7 @@ const Header = ({ layout }: { layout?: string }) => {
               {/* Wishlist */}
               <Link href="/wishlists" className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Wishlist">
                 <Heart size={24} aria-hidden />
-                <span className="leading-none">Wishlist</span>
+                <span className="hidden leading-none xl:block">Wishlist</span>
               </Link>
               {/* Cart */}
               <button ref={cartBtnRef} data-cart-target type="button" onClick={openCart} className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Cart">
@@ -298,12 +341,12 @@ const Header = ({ layout }: { layout?: string }) => {
                     {totalUniqueItems}
                   </span>
                 </span>
-                <span className="leading-none">Cart</span>
+                <span className="hidden leading-none xl:block">Cart</span>
               </button>
               {/* Login */}
               <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={isAuthorize ? 'My account' : 'Login'}>
                 <Icon.user className="h-[23px] w-[23px]" />
-                <span className="leading-none">{isAuthorize ? 'Account' : 'Login'}</span>
+                <span className="hidden leading-none xl:block">{isAuthorize ? 'Account' : 'Login'}</span>
               </button>
             </div>
 
@@ -311,7 +354,7 @@ const Header = ({ layout }: { layout?: string }) => {
             <button type="button" onClick={() => setSearchOpen(true)} className={`${iconBtn} md:hidden`} aria-label={t('text-search') ?? 'Search'}>
               <SearchIcon className="h-[18px] w-[18px]" />
             </button>
-            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-9 w-9 place-items-center rounded-full bg-black/[0.06] text-[#1a2e1f] xl:hidden" aria-label="Menu">
+            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-9 w-9 place-items-center rounded-full bg-black/[0.06] text-[#1a2e1f] md:hidden" aria-label="Menu">
               <Icon.menu className="h-5 w-5" />
             </button>
           </div>

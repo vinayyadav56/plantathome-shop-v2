@@ -125,21 +125,22 @@ const StoreBadge = ({
   );
 
 /**
- * "Get the app" — mounted twice, because the two layouts cost different amounts
- * of footer height.
+ * "Get the app" — ONE mount, in the brand column, badges side by side.
  *
- * The footer grid's row height is set by its tallest column, which is the brand
- * column (375px against 223px for the link columns). Anything added to the brand
- * column therefore adds to the footer 1:1 — this block was making it 91px taller.
- * At lg+ the badges instead go at the foot of the last LINK column, into that
- * 152px of already-empty space, so they cost exactly nothing. Below lg the brand
- * column is full-width and the link columns form their own row, where the same
- * move would ADD height — so there it stays where it was.
+ * History, because this has now swung both ways. The footer grid's row height is
+ * set by its tallest column (the brand column), so anything added there adds to
+ * the footer 1:1 — an earlier annotation ("download app buttons are increasing
+ * the height of footer") had this block moved to the foot of the last LINK
+ * column at lg+, stacked, where it landed in ~152px of already-empty space and
+ * cost no height at all. A later annotation asked for it back in the brand
+ * column, side by side. That is the owner's call and it re-adds roughly 40px of
+ * desktop footer height; h-9 rather than h-10 keeps the row (2 x ~121px + gap,
+ * plus the "Soon" pill) inside the column's 300px cap.
  */
-const AppBadges = ({ className = '', stacked = false }: { className?: string; stacked?: boolean }) => (
+const AppBadges = ({ className = '' }: { className?: string }) => (
   <div className={className}>
     <p className="mb-2.5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">Get the app</p>
-    <div className={stacked ? 'flex flex-col items-start gap-2' : 'flex items-center gap-2.5'}>
+    <div className="flex items-center gap-2.5">
       {/* Play links to the listing — live once the build is promoted out of
           internal testing. There is no iOS app, so the App Store badge is shown
           but inert: a badge that 404s is the dead-link problem this footer just
@@ -149,14 +150,14 @@ const AppBadges = ({ className = '', stacked = false }: { className?: string; st
         src={PlayStoreImg}
         alt="Get it on Google Play"
         width={334}
-        heightClass={stacked ? 'h-8' : 'h-10'}
+        heightClass="h-9"
       />
       <StoreBadge
         href={siteSettings.cta.app_store_link}
         src={AppStoreImg}
         alt="Download on the App Store"
         width={338}
-        heightClass={stacked ? 'h-8' : 'h-10'}
+        heightClass="h-9"
       />
     </div>
   </div>
@@ -336,13 +337,11 @@ const Footer = () => {
             ))}
           </div>
 
-          {/* Below lg only — at lg+ this moves into the last link column, where
-              it costs no height. See AppBadges. */}
-          <AppBadges className="mt-6 lg:hidden" />
+          <AppBadges className="mt-6" />
         </div>
 
         {/* link columns */}
-        {cols.map((col, colIndex) => (
+        {cols.map((col) => (
           <div key={col.title}>
             <h4 className="mb-5 text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#86EFAC]">
               {col.title}
@@ -360,10 +359,6 @@ const Footer = () => {
                 </li>
               ))}
             </ul>
-            {/* The last column carries the app badges at lg+: the link columns
-                run ~152px shorter than the brand column, so this lands in space
-                the footer was already reserving. */}
-            {colIndex === cols.length - 1 ? <AppBadges className="mt-6 hidden lg:block" stacked /> : null}
           </div>
         ))}
       </div>

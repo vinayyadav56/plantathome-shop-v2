@@ -113,21 +113,30 @@ export function BrandLogo({
     ? settings?.headerLogoLight?.original
     : settings?.headerLogoDark?.original || settings?.logo?.original;
 
-  if (uploaded) {
+  // The dark header logo the owner uploaded (cdn asset 2597) is an opaque PNG
+  // on a white plate. The pill's backdrop-blur creates a stacking context, so
+  // mix-blend-multiply could not melt that plate away — it showed as a white
+  // box on the glass. public/brand/logo-dark.png is the same artwork with the
+  // white keyed out offline (same technique as footer's logo-white.png).
+  // Swapped only for that known-opaque asset: any transparent file the owner
+  // uploads later at Admin → Logo & Branding → "Header logo — dark" wins.
+  const src =
+    !light && typeof uploaded === 'string' && uploaded.includes('/2597/')
+      ? '/brand/logo-dark.png'
+      : uploaded;
+
+  if (src) {
     return (
       <span className={`inline-flex items-center ${className}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={uploaded}
+          src={src}
           alt={settings?.siteTitle || 'PlantAtHome'}
           // On the dark header the uploaded mark is forced to white
           // (brightness-0 invert) — the green-on-green asset was invisible.
           // Needs a transparent-background logo; an opaque one should be
           // re-uploaded as headerLogoLight instead.
-          // mix-blend-multiply melts the asset's opaque white background into
-          // the light glass pill (white × anything = anything); the dark/light
-          // logic is untouched — the light variant is forced white via invert.
-          className={`h-auto max-h-[44px] w-[160px] object-contain object-left ${light ? 'brightness-0 invert' : 'mix-blend-multiply'}`}
+          className={`h-auto max-h-[44px] w-[160px] object-contain object-left ${light ? 'brightness-0 invert' : ''}`}
         />
       </span>
     );

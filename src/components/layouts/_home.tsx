@@ -28,17 +28,19 @@ export default function HomeLayout({
   const headerEl = ['minimal', 'compact'].includes(layout) ? (
     <HeaderMinimal layout={layout} />
   ) : (
-    <Header layout={layout} />
+    <Header layout={layout} pillFromMd={pahMobile} />
   );
 
   return (
     <div className="flex min-h-screen flex-col transition-colors duration-150" style={{ background: 'var(--pa-bg)' }}>
-      {/* Brand header is sticky/solid (see header.tsx). On the home it shows from md+
-          (tablet/desktop use the production home); the phone home (<md) carries its
-          own app bar, so the prod header is suppressed there. md:contents dissolves
-          the wrapper box so the navbar's position:sticky works against the
-          page-height flex column instead of a header-height cage. */}
-      {pahMobile ? <div className="max-md:hidden md:contents">{headerEl}</div> : headerEl}
+      {/* Brand header is sticky/solid (see header.tsx). On the phone home (<md)
+          PahHome carries its own in-hero app bar, so the glass PILL is
+          suppressed — but only the pill: Header's `pillFromMd` hides the
+          sticky <header> and lets the announcement strip through, so the
+          phone homepage gets the same 48px delivering-to / Track Order strip
+          as every other page. This used to be a `max-md:hidden md:contents`
+          wrapper around the whole header, which took the strip with it. */}
+      {headerEl}
 
       <main id="main-content" className="min-h-screen flex-1">{children}</main>
 

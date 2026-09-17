@@ -59,7 +59,12 @@ const DEFAULT_GALLERY = [
   { image: '/images/gifting/box.jpg', caption: 'Custom branded packaging' },
 ];
 
-function EnquiryForm() {
+/**
+ * `onDark` is the version that sits ON the hero artwork: an opaque black panel.
+ * It is not just a background swap — every label, field, helper and error has to
+ * flip too, or half the form disappears against it.
+ */
+function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CorporateInput>();
   const { mutate, isLoading } = useSubmitCorporateLead();
   const [done, setDone] = useState(false);
@@ -72,38 +77,40 @@ function EnquiryForm() {
 
   if (done) {
     return (
-      <div className="rounded-[18px] bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35] p-8 text-center">
+      <div className={`${onDark ? 'rounded-[18px] bg-black/85 shadow-[0_18px_45px_rgba(0,0,0,0.45)] ring-1 ring-white/15 backdrop-blur-[6px]' : 'rounded-[18px] bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35]'} p-8 text-center`}>
         <div className="mb-3 text-4xl">🎁</div>
-        <h3 className="font-cormorant text-2xl font-medium text-forest-900">Enquiry received!</h3>
-        <p className="mt-2 text-sm text-stone-600">Our corporate gifting team will reach out with a tailored proposal.</p>
+        <h3 className={`font-cormorant text-2xl font-medium ${onDark ? 'text-white' : 'text-forest-900'}`}>Enquiry received!</h3>
+        <p className={`mt-2 text-sm ${onDark ? 'text-white/70' : 'text-stone-600'}`}>Our corporate gifting team will reach out with a tailored proposal.</p>
       </div>
     );
   }
 
   // bg-white/70, not bg-cream-50: on a translucent sheet the cream read as a
   // smudge of whatever sat behind it. Everything else survives the frost.
-  const inputCls = 'w-full rounded-lg border border-kraft-300 bg-white/70 px-4 py-3 text-sm text-forest-900 placeholder:text-stone-500 focus:border-forest-500 focus:bg-white focus:outline-0 focus:ring-2 focus:ring-sage-200';
+  const inputCls = onDark
+    ? 'w-full rounded-lg border border-white/25 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/55 focus:border-ds-cta focus:bg-white/15 focus:outline-0 focus:ring-2 focus:ring-ds-cta/40'
+    : 'w-full rounded-lg border border-kraft-300 bg-white/70 px-4 py-3 text-sm text-forest-900 placeholder:text-stone-500 focus:border-forest-500 focus:bg-white focus:outline-0 focus:ring-2 focus:ring-sage-200';
 
   return (
     // Frosted, reusing the header pill's glass numbers rather than inventing a
     // second frost recipe. 80% white is the floor: below it the helper line
     // stops clearing AA over an admin image of unknown brightness.
-    <form onSubmit={handleSubmit(onSubmit)} className="rounded-[18px] bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35] p-6 sm:p-8">
-      <h3 className="font-cormorant text-2xl font-medium text-forest-900">Get a custom gifting quote</h3>
+    <form onSubmit={handleSubmit(onSubmit)} className={`${onDark ? 'rounded-[18px] bg-black/85 shadow-[0_18px_45px_rgba(0,0,0,0.45)] ring-1 ring-white/15 backdrop-blur-[6px]' : 'rounded-[18px] bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35]'} p-6 sm:p-8`}>
+      <h3 className={`font-cormorant text-2xl font-medium ${onDark ? 'text-white' : 'text-forest-900'}`}>Get a custom gifting quote</h3>
       <p className="mt-1 text-sm text-stone-500">Tell us your needs — we’ll tailor a proposal & pricing.</p>
       <div className="mt-5 space-y-3">
         <input {...register('company', { required: true })} placeholder="Company name *" className={inputCls} />
-        {errors.company && <span className="text-xs text-clay-600">Company is required</span>}
+        {errors.company && <span className={`text-xs ${onDark ? 'text-[#FFB4A8]' : 'text-clay-600'}`}>Company is required</span>}
         <input {...register('name', { required: true })} placeholder="Your name *" className={inputCls} />
         <div className="grid grid-cols-2 gap-3">
           <input {...register('phone', { required: true })} placeholder="Phone *" inputMode="tel" className={inputCls} />
           <input {...register('email')} placeholder="Work email" className={inputCls} />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <select {...register('occasion')} className={inputCls + ' text-stone-600'}>
+          <select {...register('occasion')} className={inputCls + (onDark ? '' : ' text-stone-600')}>
             <option value="">Occasion</option>{OCCASIONS.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
-          <select {...register('quantity')} className={inputCls + ' text-stone-600'}>
+          <select {...register('quantity')} className={inputCls + (onDark ? '' : ' text-stone-600')}>
             <option value="">Quantity</option>{QTY.map((q) => <option key={q} value={q}>{q}</option>)}
           </select>
         </div>
@@ -112,7 +119,7 @@ function EnquiryForm() {
       <button type="submit" disabled={isLoading} className="mt-5 w-full rounded-[13px] bg-ds-btn px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-ds-btn-hover active:scale-[0.97] disabled:opacity-60">
         {isLoading ? 'Sending…' : 'Request a quote →'}
       </button>
-      <p className="mt-3 flex items-center justify-center gap-1 text-center text-xs text-stone-500">
+      <p className={`mt-3 flex items-center justify-center gap-1 text-center text-xs ${onDark ? 'text-white/55' : 'text-stone-500'}`}>
         <Lock size={12} className="shrink-0" aria-hidden />
         B2B enquiries only · Trusted by teams across India
       </p>
@@ -184,25 +191,52 @@ export default function CorporateGiftingPage() {
           same thing; on a phone the artwork's own type is far too small to
           read, so the words show there. */}
       <section className="relative isolate">
-        <img
-          src={heroImg}
-          alt="Corporate plant gifting"
-          className="aspect-[1672/941] w-full object-cover"
-        />
-        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-10 lg:py-12">
-          <div>
-            <h1 className="font-cormorant text-[30px] font-medium leading-[1.05] tracking-[-0.015em] text-forest-900 sm:text-[38px] md:sr-only">
-              Gift something that <span className="italic text-forest-600">grows</span>
-            </h1>
-            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-stone-600 md:sr-only">
-              Memorable, sustainable plant gifts for clients and teams — custom branded, delivered in bulk across India. Buy a ready hamper or get a tailored quote.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3 md:mt-0">
-              <a href="#tiers" className="font-jost rounded-[13px] bg-ds-cta px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink transition-colors hover:bg-ds-cta-hover active:scale-[0.97]">Browse gift hampers</a>
-              <a href="#quote" className="font-jost rounded-[13px] border border-forest-900/25 px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-forest-900 transition-colors hover:border-forest-900 hover:bg-forest-900/5 active:scale-[0.97]">Get a bulk quote</a>
+        {/* The artwork IS the hero: it carries the headline, tagline, feature
+            icons and a painted CTA, so the page adds no words of its own on top
+            of it. Its own aspect keeps the composition from ever being cropped. */}
+        <div className="relative">
+          <img
+            src={heroImg}
+            alt="Corporate plant gifting"
+            className="aspect-[1672/941] w-full object-cover"
+          />
+
+          {/* The painted "Explore corporate gifts" button is pixels, not a
+              control — people click it and nothing happens. This invisible
+              anchor sits over it, positioned in PERCENTAGES so it tracks the
+              image at every width.
+              ⚠️ Measured against THIS artwork (button at ~4.9–29% across,
+              ~77–83% down). Replace the hero image and this must be re-measured
+              or removed, or it becomes a link over empty space. */}
+          <a
+            href="#tiers"
+            aria-label="Browse gift hampers"
+            className="absolute left-[4.5%] top-[76%] h-[7%] w-[25%] rounded-[10px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+          />
+
+          {/* Quote form, over the image on wide screens. Below lg the artwork is
+              far too small to host a 540px form, so it stacks underneath. */}
+          <div className="pointer-events-none absolute inset-0 hidden lg:block">
+            <div className="mx-auto flex h-full max-w-7xl items-center justify-end px-5 sm:px-8">
+              <div id="quote" className="pointer-events-auto w-[26rem]">
+                <EnquiryForm onDark />
+              </div>
             </div>
           </div>
-          <div id="quote" className="mt-8 lg:mt-0 lg:w-[26rem] lg:justify-self-end"><EnquiryForm /></div>
+        </div>
+
+        {/* Phone/tablet: the page's own words (the artwork's type is unreadable
+            at this size) and the form, on the cream ground. Both are hidden at
+            lg+, where the artwork and the overlaid form take over — but the h1
+            stays in the DOM there for SEO via sr-only. */}
+        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:hidden">
+          <h1 className="font-cormorant text-[30px] font-medium leading-[1.05] tracking-[-0.015em] text-forest-900 sm:text-[38px] md:sr-only">
+            Gift something that <span className="italic text-forest-600">grows</span>
+          </h1>
+          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-stone-600 md:sr-only">
+            Memorable, sustainable plant gifts for clients and teams — custom branded, delivered in bulk across India. Buy a ready hamper or get a tailored quote.
+          </p>
+          <div className="mt-6" id="quote-mobile"><EnquiryForm /></div>
         </div>
       </section>
 
