@@ -4,7 +4,7 @@ import Breadcrumb from '@/components/ui/breadcrumb';
 import { Routes } from '@/config/routes';
 import { useForm } from 'react-hook-form';
 import { goToSignin } from '@/lib/go-to-signin';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useAtom } from 'jotai';
 import { toast } from 'react-toastify';
 import { getLayout as getSiteLayout } from '@/components/layouts/layout';
@@ -64,6 +64,22 @@ const DEFAULT_GALLERY = [
  * It is not just a background swap — every label, field, helper and error has to
  * flip too, or half the form disappears against it.
  */
+/**
+ * There are TWO quote forms — one overlaid on the hero at lg+, one stacked
+ * under the hero below lg — and only one of them is ever displayed. An
+ * `href="#quote"` pointing at the hidden one does nothing at all: the browser
+ * finds the element and then has no box to scroll to. So every "get a quote"
+ * link renders twice and lets the same breakpoint decide which one is live.
+ */
+function QuoteLink({ className, children }: { className: string; children: ReactNode }) {
+  return (
+    <>
+      <a href="#quote" className={`hidden lg:inline-flex ${className}`}>{children}</a>
+      <a href="#quote-mobile" className={`inline-flex lg:hidden ${className}`}>{children}</a>
+    </>
+  );
+}
+
 function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CorporateInput>();
   const { mutate, isLoading } = useSubmitCorporateLead();
@@ -291,7 +307,7 @@ export default function CorporateGiftingPage() {
                     className={`mt-6 w-full rounded-[13px] px-5 py-3 text-sm font-semibold uppercase tracking-[0.06em] transition-colors active:scale-[0.97] disabled:opacity-60 ${highlight ? 'bg-ds-cta text-ds-cta-ink hover:bg-ds-cta-hover' : 'border border-white/45 text-white hover:border-white hover:bg-white/15'}`}>
                     {buying && buyingId === t.id ? 'Starting…' : isAuthorize ? 'Buy now' : 'Login to buy'}
                   </button>
-                  <a href="#quote" className="mt-2.5 text-center text-sm text-sage-300 underline underline-offset-2 hover:text-sage-200">or get a bulk quote</a>
+                  <QuoteLink className="mt-2.5 justify-center text-center text-sm text-sage-300 underline underline-offset-2 hover:text-sage-200">or get a bulk quote</QuoteLink>
                 </div>
               );
             })}
@@ -367,7 +383,7 @@ export default function CorporateGiftingPage() {
         <div className="mx-auto max-w-3xl px-5">
           <h2 className="font-cormorant text-4xl font-medium sm:text-5xl">Gifting at scale, made effortless</h2>
           <p className="mt-3 text-cream-50/85">Tell us your occasion and quantity — we’ll handle the rest.</p>
-          <a href="#quote" className="font-jost mt-6 inline-flex rounded-xl bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</a>
+          <QuoteLink className="font-jost mt-6 rounded-xl bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</QuoteLink>
         </div>
       </section>
     </div>
