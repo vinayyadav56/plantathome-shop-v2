@@ -241,15 +241,19 @@ const Header = ({
               measures ~730px, while at 768 the pill's inner width is ~680px and
               the logo (160) plus the icon actions (~225) already claim most of
               it. So the row DEGRADES instead of vanishing into a hamburger:
-              2 items + "More" below lg, 4 + "More" at lg, the whole row at xl.
+              2 items + "More" below 900px, 4 + "More" from 900, the full row at
+              xl (measured on staging's 8-vertical catalogue).
               Action labels also drop to icons below xl, which buys ~90px.
               1280–1439 keeps the smaller text + tighter gaps: at 15px/gap-5 the
               row measured 684px against a 679px nav at exactly 1280 and spilled. */}
           <nav className="relative z-[2] hidden min-w-0 flex-1 justify-center md:flex">
             <div className="flex items-center gap-3.5 min-[1440px]:gap-[34px]">
               {NAV.map((n, i) => {
-                // Fixed split — deterministic, no measurement loop.
-                const reveal = i < 2 ? '' : i < 4 ? 'hidden lg:block' : 'hidden xl:block';
+                // Fixed split — deterministic, no measurement loop. The 900px
+                // cut is measured, not guessed: at 768 the nav box is 265px and
+                // 2 items + More already fill 193px of it, while at 900 it is
+                // 397px and 4 + More fit with ~50px to spare.
+                const reveal = i < 2 ? '' : i < 4 ? 'hidden min-[900px]:block' : 'hidden xl:block';
                 return n.menu ? (
                   <div key={n.label} className={`group relative ${reveal}`}>
                     <Link
@@ -288,7 +292,7 @@ const Header = ({
               })}
 
               {/* Overflow menu — carries whatever the row is hiding at this
-                  width. Entries 2–3 are themselves hidden at lg+, where the row
+                  width. Entries 2–3 hide themselves from 900px up, where the row
                   shows them; the whole control disappears at xl. */}
               {NAV.length > 2 ? (
                 <div className="group relative xl:hidden">
@@ -306,7 +310,7 @@ const Header = ({
                         <Link
                           key={n.label}
                           href={n.href}
-                          className={`rounded-[10px] px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'lg:hidden' : ''}`}
+                          className={`rounded-[10px] px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'min-[900px]:hidden' : ''}`}
                         >
                           {n.label}
                         </Link>
