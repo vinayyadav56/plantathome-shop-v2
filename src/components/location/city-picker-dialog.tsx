@@ -10,7 +10,7 @@ import { MapPin, X } from '@/components/ui/icon';
 interface Props {
   open: boolean;
   onClose: () => void;
-  onPick: (cityName: string) => void;
+  onPick: (cityName: string, area?: string | null) => void;
   /**
    * Mandatory mode (first visit): the dialog cannot be dismissed — no overlay
    * close, no Esc — until a city is picked. GPS/IP stay HELPERS that only
@@ -73,11 +73,18 @@ export default function CityPickerDialog({
   // Single place every selection flows through, so recents stay accurate.
   function choose(name: string) {
     pushRecentCity(name);
-    onPick(name);
+    // The neighbourhood only travels with the city it was resolved IN. Pick a
+    // different city and it is dropped, so the header can never read
+    // "Rohini, Mumbai".
+    const area =
+      gpsCity && name.toLowerCase() === gpsCity.toLowerCase() ? gpsArea : null;
+    onPick(name, area);
     onClose();
   }
 
   const [gpsSuggestion, setGpsSuggestion] = useState<string | null>(null);
+  const [gpsCity, setGpsCity] = useState<string | null>(null);
+  const [gpsArea, setGpsArea] = useState<string | null>(null);
 
   async function detect() {
     setDetecting(true);
@@ -89,6 +96,8 @@ export default function CityPickerDialog({
           track('location_detected', { label: addr.city, meta: { source: 'gps' } });
           // GPS never DECIDES the city — it only suggests; the shopper confirms.
           setGpsSuggestion(addr.city);
+          setGpsCity(addr.city);
+          setGpsArea(addr.area ?? null);
           setQ(addr.city);
           return;
         }

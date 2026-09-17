@@ -36,6 +36,36 @@ export function setStoredLatLng(lat: number, lng: number): CustomerLatLng {
   return v;
 }
 
+const AREA_KEY = 'pah_customer_area';
+
+/**
+ * The shopper's neighbourhood ("Rohini"), captured alongside the city when we
+ * resolve a real position. DISPLAY ONLY — the catalogue is scoped by city, so
+ * nothing here ever narrows what is on sale.
+ */
+export function getStoredArea(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const a = window.localStorage.getItem(AREA_KEY);
+    return a && a.trim() ? a : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredArea(area: string | null): void {
+  try {
+    if (area && area.trim()) {
+      window.localStorage.setItem(AREA_KEY, area.trim());
+    } else {
+      window.localStorage.removeItem(AREA_KEY);
+    }
+    window.dispatchEvent(new Event('pah-location-changed'));
+  } catch {
+    // ignore
+  }
+}
+
 const CITY_KEY = 'pah_customer_city';
 
 /** The customer's selected city — drives city-first availability ("Available in your city"). */
@@ -53,10 +83,20 @@ export function getStoredCity(): string | null {
  * Silently set the customer's city. Used to auto-select the city on login (e.g. from
  * the user's saved address) without any prompt, and by a manual city selector.
  */
-export function setStoredCity(city: string): void {
+export function setStoredCity(city: string, area?: string | null): void {
   try {
-    if (city && city.trim()) {
-      window.localStorage.setItem(CITY_KEY, city.trim());
+    const next = (city ?? '').trim();
+    // A city change invalidates the stored neighbourhood unless the caller
+    // supplies a matching one — otherwise picking "Mumbai" by hand would leave
+    // the header reading "Rohini, Mumbai".
+    const prev = (window.localStorage.getItem(CITY_KEY) ?? '').trim();
+    if (area && area.trim()) {
+      window.localStorage.setItem(AREA_KEY, area.trim());
+    } else if (next.toLowerCase() !== prev.toLowerCase()) {
+      window.localStorage.removeItem(AREA_KEY);
+    }
+    if (next) {
+      window.localStorage.setItem(CITY_KEY, next);
     } else {
       window.localStorage.removeItem(CITY_KEY);
     }

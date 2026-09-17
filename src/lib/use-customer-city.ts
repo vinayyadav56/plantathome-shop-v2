@@ -1,5 +1,5 @@
 import { useSyncExternalStore, useCallback } from 'react';
-import { getStoredCity, setStoredCity } from '@/lib/customer-location';
+import { getStoredArea, getStoredCity, setStoredCity } from '@/lib/customer-location';
 
 const CITY_EVENT = 'pah-location-changed';
 
@@ -22,12 +22,21 @@ function subscribe(cb: () => void) {
 // render, no key churn. Mirrors the repo's own next-router.ts:87-91 pattern.
 const getClientSnapshot = () => getStoredCity();
 const getServerSnapshot = () => null;
+// Area rides the SAME store + event, so it can never render a beat behind the
+// city it belongs to.
+const getAreaClientSnapshot = () => getStoredArea();
 
 export function useCustomerCity(): {
   city: string | null;
-  setCity: (city: string) => void;
+  /** Neighbourhood, when a real position was resolved. Display only. */
+  area: string | null;
+  /** "Rohini, Delhi" when the area is known, otherwise just the city. */
+  label: string | null;
+  setCity: (city: string, area?: string | null) => void;
 } {
   const city = useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
-  const setCity = useCallback((c: string) => setStoredCity(c), []);
-  return { city, setCity };
+  const area = useSyncExternalStore(subscribe, getAreaClientSnapshot, getServerSnapshot);
+  const setCity = useCallback((c: string, a?: string | null) => setStoredCity(c, a), []);
+  const label = city ? (area ? `${area}, ${city}` : city) : null;
+  return { city, area, label, setCity };
 }

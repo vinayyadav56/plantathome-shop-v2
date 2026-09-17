@@ -42,17 +42,15 @@ export default function HomeLayout({
 
       <main id="main-content" className="min-h-screen flex-1">{children}</main>
 
-      {/* Footer: the shared footer is the DESKTOP "Grow with us" Web Home footer.
-          On the phone home (<md) PahHome renders its own Mobile-Home-matched footer,
-          so suppress this one there (mirrors the header treatment) to avoid a
-          duplicate footer. Desktop home + all other pages keep it. */}
-      {pahMobile ? (
-        <div className="hidden md:block">
-          <Footer />
-        </div>
-      ) : (
-        <Footer />
-      )}
+      {/* Footer: shown at EVERY width, including the phone home.
+          This used to be suppressed below md "because PahHome renders its own
+          footer" — but PahHome's footer was later deleted to kill a duplicate
+          (see the comment at the top of storefront/pah/home.tsx). The two fixes
+          each assumed the other side would render one, so the phone homepage
+          ended up with no footer at all: no newsletter, no links, no legal
+          entity. Every other page on mobile shows this footer, and it already
+          carries the bottom-nav clearance spacer. */}
+      <Footer />
 
 
       {/* PahHome renders its own bottom nav on the mobile home; suppress this one there. */}

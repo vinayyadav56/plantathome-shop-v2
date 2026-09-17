@@ -17,6 +17,9 @@ export interface GoogleAddressComponent {
 }
 
 export interface ExtractedAddress {
+  /** The neighbourhood the shopper is actually in (Rohini, Koramangala…).
+   *  Display only — the CITY is what scopes the catalogue. */
+  area?: string;
   city?: string;
   district?: string;
   state?: string;
@@ -55,6 +58,14 @@ export function extractAddress(
 ): ExtractedAddress {
   if (!Array.isArray(components)) return {};
   const state = find(components, 'administrative_area_level_1');
+  // The neighbourhood, on its own. It is still part of street_address below
+  // (that string is the postal line), but the shopper-facing "Rohini, Delhi"
+  // needs it separated from premise/route noise.
+  const area =
+    find(components, 'sublocality_level_1')?.long_name ||
+    find(components, 'sublocality')?.long_name ||
+    find(components, 'neighborhood')?.long_name ||
+    undefined;
   const street =
     [
       find(components, 'premise')?.long_name,
@@ -67,6 +78,7 @@ export function extractAddress(
       .join(', ') || undefined;
 
   return {
+    area,
     city: extractCorrectCity(components),
     district: find(components, 'administrative_area_level_2')?.long_name,
     state: state?.long_name,

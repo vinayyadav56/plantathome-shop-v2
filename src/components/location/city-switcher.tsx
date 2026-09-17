@@ -19,14 +19,14 @@ export default function CitySwitcher({
   className?: string;
   tone?: 'dark' | 'light';
 }) {
-  const { city, setCity } = useCustomerCity();
+  const { city, label, setCity } = useCustomerCity();
   const [open, setOpen] = useState(false);
   const [pendingCity, setPendingCity] = useState<string | null>(null);
   const color = tone === 'light' ? 'text-white/90' : 'text-forest-900';
 
-  function onPick(name: string) {
+  function onPick(name: string, area?: string | null) {
     if (!city) {
-      setCity(name); // nothing to migrate — first selection
+      setCity(name, area); // nothing to migrate — first selection
       return;
     }
     if (name.toLowerCase() === city.toLowerCase()) return; // same city — no-op
@@ -43,7 +43,7 @@ export default function CitySwitcher({
       >
         <MapPin size={14} aria-hidden />
         {/* A long city name ellipsises here rather than pushing the top bar's cell. */}
-        <span className={`min-w-0 max-w-[14rem] truncate ${tone === 'light' ? 'font-medium' : 'font-semibold'}`}>{city ?? 'Select city'}</span>
+        <span className={`min-w-0 max-w-[14rem] truncate ${tone === 'light' ? 'font-medium' : 'font-semibold'}`}>{label ?? 'Select city'}</span>
         <span className={`shrink-0 ${tone === 'light' ? 'text-white/60' : 'text-stone-400'}`}>
           · Change
         </span>
