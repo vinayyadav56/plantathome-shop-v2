@@ -154,7 +154,9 @@ jobs:
             --build-env "NEXT_PUBLIC_DEFAULT_LANGUAGE=en" \
             --build-env "NEXT_PUBLIC_ENABLE_MULTI_LANG=false" \
             --build-env "NEXT_PUBLIC_GOOGLE_MAP_API_KEY=$GOOGLE_MAP_API_KEY" \
-            --build-env "NEXT_PUBLIC_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID"
+            --build-env "NEXT_PUBLIC_GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" \
+            --env "CHATBOT_SERVICE_URL=$CHATBOT_SERVICE_URL" \
+            --env "CHATBOT_SERVICE_API_KEY=$CHATBOT_SERVICE_API_KEY"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -162,3 +164,9 @@ jobs:
           STAGING_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
           GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}
           GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+          # Server-only, for app/api/ask-ai/[action]/route.ts. --env, not
+          # --build-env: this is read at REQUEST time by the serverless route,
+          # and the shared key must never be inlined into the client bundle.
+          # Unset secrets expand to empty and the route answers 503.
+          CHATBOT_SERVICE_URL: ${{ secrets.CHATBOT_SERVICE_URL }}
+          CHATBOT_SERVICE_API_KEY: ${{ secrets.CHATBOT_SERVICE_API_KEY }}

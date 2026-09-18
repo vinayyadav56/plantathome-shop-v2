@@ -237,6 +237,12 @@ jobs:
             PYFIX
 
             echo "==> Writing runtime env..."
+            # CHATBOT_* are server-only, consumed by app/api/ask-ai/[action]/route.ts.
+            # NOT NEXT_PUBLIC_: the shared key must never reach the browser, which is
+            # the whole reason that proxy route exists instead of a rewrite.
+            # Unset secrets expand to empty, and the route then answers 503
+            # "not configured" -- the same fail-closed state as today, never a
+            # button that silently breaks.
             printf '%s\n' \
               'NEXT_PUBLIC_DEFAULT_LANGUAGE=en' \
               'NEXT_PUBLIC_ENABLE_MULTI_LANG=false' \
@@ -246,6 +252,8 @@ jobs:
               'NEXT_PUBLIC_SITE_URL=https://www.plantathome.in' \
               'NEXT_PUBLIC_ADMIN_URL=https://admin.plantathome.in' \
               'NODE_ENV=production' \
+              "CHATBOT_SERVICE_URL=${{ secrets.CHATBOT_SERVICE_URL }}" \
+              "CHATBOT_SERVICE_API_KEY=${{ secrets.CHATBOT_SERVICE_API_KEY }}" \
               > .env.production.local
 
             echo "==> Reloading PM2 (cluster, zero-downtime)..."

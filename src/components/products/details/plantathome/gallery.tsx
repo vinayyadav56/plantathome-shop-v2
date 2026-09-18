@@ -137,6 +137,17 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName, overlay }) 
           })}
         </div>
       )}
+
+      {/* Photography disclaimer. Sits under the thumbnail strip so it reads as
+          a caption on the whole gallery, and lives HERE rather than in
+          plantathome-details so it cannot drift away from the images it is
+          about — the quick-view modal renders this same component.
+          Kept deliberately generic: this gallery serves pots, tools and farm
+          boxes as well as plants, so it must not promise plant-specific
+          variation. */}
+      <p className="mt-3 text-[11px] leading-relaxed text-stone-500">
+        Actual product may vary slightly from the images shown.
+      </p>
     </div>
   );
 };
