@@ -105,7 +105,10 @@ jobs:
         run: npm run build
 
       - name: Package build artifact
-        run: tar -czf shop-build.tar.gz .next public
+        # --exclude .next/cache: that directory is the BOX's persisted state
+        # (image optimizer output + ISR fetch cache) and must not be overlaid by
+        # the runner's webpack build cache, which is large and useless there.
+        run: tar -czf shop-build.tar.gz --exclude='.next/cache' .next public
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -198,7 +201,20 @@ jobs:
             fi
             # Server output (BUILD_ID, server chunks, manifests) MUST be replaced wholesale —
             # only the client-side static tree is additive.
-            rm -rf .next/server .next/cache .next/BUILD_ID .next/*.json
+            # .next/cache is NOT in this list, deliberately.
+            #
+            # It holds the image optimizer's output and the ISR fetch cache.
+            # Deleting it every release meant sharp re-encoded every AVIF variant
+            # from scratch on a 2-core box — measured as `x-nextjs-cache: MISS` on
+            # a /_next/image URL that appears verbatim in the served HTML.
+            #
+            # It also raced: the running server writes into .next/cache while the
+            # deploy walks it, so `rm -rf` intermittently died with
+            # "cannot remove '.next/cache': Directory not empty" and failed the
+            # whole deploy. Both problems disappear by simply not deleting it.
+            # Entries are content-keyed and TTL'd, so carrying them across builds
+            # is safe — it is what Vercel and Netlify do between builds.
+            rm -rf .next/server .next/BUILD_ID .next/*.json
 
             echo "==> Deploying pre-built artifact from runner..."
             tar -xzf /tmp/shop-build.tar.gz
@@ -212,23 +228,7 @@ jobs:
             find "$ROLLOVER" -type f -mtime +3 -delete 2>/dev/null || true
             echo "    static files now served: $(find .next/static -type f | wc -l)"
 
-            echo "==> Re-linking the image optimizer's disk cache..."
-            # `rm -rf .next/cache` above takes .next/cache/images with it, so every
-            # release threw away every AVIF/WebP variant sharp had ever produced and
-            # re-encoded them on demand — on a 2-core box that also runs php-fpm, six
-            # queue workers and the admin app. Measured before this: `x-nextjs-cache:
-            # MISS` on a /_next/image URL present verbatim in the served HTML.
-            #
-            # Keep the cache OUTSIDE .next and symlink it back in, so it survives the
-            # wholesale replacement of the server output. Must run AFTER the tarball is
-            # extracted — the artifact carries the runner's own .next/cache and would
-            # clobber the link. minimumCacheTTL is 30 days, so a variant is now encoded
-            # once and reused across releases.
-            IMGCACHE=/var/www/plantathome/shop-image-cache
-            mkdir -p "$IMGCACHE" .next/cache
-            rm -rf .next/cache/images
-            ln -sfn "$IMGCACHE" .next/cache/images
-            echo "    image cache: $(find "$IMGCACHE" -type f 2>/dev/null | wc -l) variants retained"
+            echo "    image cache: $(find .next/cache/images -type f 2>/dev/null | wc -l) optimizer variants carried over"
 
             echo "==> Fixing build paths (runner path → EC2 path)..."
             # required-server-files.json is pretty-printed, so the key is
