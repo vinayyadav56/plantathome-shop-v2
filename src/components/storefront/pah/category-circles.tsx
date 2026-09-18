@@ -5,17 +5,26 @@ import { useCategories } from '@/framework/category';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
 import { PLACEHOLDER } from './_img';
+import SafeImage from '@/components/ui/safe-image';
 import { LayoutGrid } from '@/components/ui/icon';
 import type { Category } from '@/types';
 
 function Circle({ c }: { c: Category }) {
-  const [err, setErr] = React.useState(false);
   const img = c?.image?.original || c?.image?.thumbnail;
   return (
     <Link href={`/c/${c.slug}`} className="flex w-16 shrink-0 flex-col items-center gap-2">
       <span className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-white bg-sage-100 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)] active:scale-95">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={err || !img ? PLACEHOLDER : img} alt={c.name} loading="lazy" onError={() => setErr(true)} className="absolute inset-0 h-full w-full object-cover" />
+        <SafeImage
+          src={img}
+          alt={c.name}
+          fill
+          variant="category-circle"
+          className="object-cover"
+          fallback={
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={PLACEHOLDER} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          }
+        />
       </span>
       <span className="text-center font-hanken text-[10.5px] font-semibold leading-[1.2] text-stone-600">{c.name}</span>
     </Link>

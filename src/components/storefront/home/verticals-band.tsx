@@ -12,6 +12,7 @@ import {
   resolveImageUrl,
 } from '@/lib/use-home-config';
 import { ArrowRight } from '@/components/ui/icon';
+import SafeImage from '@/components/ui/safe-image';
 
 const EXPO = [0.22, 1, 0.36, 1] as const;
 
@@ -116,12 +117,12 @@ export function VerticalsBand() {
                   href={v.href}
                   className="group relative block h-[210px] overflow-hidden rounded-[18px] border border-kraft-200 bg-forest-900 shadow-[0_2px_10px_rgba(34,48,26,0.08)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_16px_36px_rgba(34,48,26,0.16)] md:h-[172px] lg:h-[230px]"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <SafeImage
                     src={v.img}
                     alt={v.name}
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
+                    fill
+                    variant="vertical-band"
+                    className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(5,16,8,0.88)_0%,rgba(5,16,8,0.35)_45%,rgba(5,16,8,0.08)_100%)]" />
 

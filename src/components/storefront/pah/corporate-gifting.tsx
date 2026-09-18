@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import { PLACEHOLDER } from './_img';
+import SafeImage from '@/components/ui/safe-image';
 import {
   Building2,
   Earth,
@@ -32,9 +33,21 @@ const ASSURE: { title: string; sub: string; icon: LucideIcon }[] = [
 ];
 
 function HeroImg() {
-  const [err, setErr] = React.useState(false);
+
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={err ? PLACEHOLDER : 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=900&q=82&auto=format&fit=crop'} alt="Corporate plant gifting" loading="lazy" onError={() => setErr(true)} className="absolute inset-0 h-full w-full object-cover" />;
+  return (
+    <SafeImage
+      src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=900&q=82&auto=format&fit=crop"
+      alt="Corporate plant gifting"
+      fill
+      variant="banner"
+      className="object-cover"
+      fallback={
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={PLACEHOLDER} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      }
+    />
+  );
 }
 
 export function CorporateGifting() {

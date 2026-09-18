@@ -39,7 +39,7 @@ const FlashSaleCard: React.FC<FlashSaleCardProps> = ({
           src={flashSale?.image?.original ?? '/flash-sale-fallback.png'}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           fill
-          quality={100}
+          quality={75}
           style={{
             objectFit: 'contain',
           }}

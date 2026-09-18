@@ -112,7 +112,7 @@ export function GiftingBand() {
             src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1400&q=85&auto=format&fit=crop"
             alt="Corporate plant gifting"
             fill
-            sizes="(max-width:1024px) 100vw, 44vw"
+            variant="banner"
             className="object-cover"
           />
           {/* left-edge fade to blend with copy panel on desktop */}

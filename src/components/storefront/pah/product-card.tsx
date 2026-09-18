@@ -6,6 +6,7 @@ import { useRouter } from '@/compat/next-router';
 import { useAtom } from 'jotai';
 import { cn } from '@/lib/cn';
 import { PLACEHOLDER } from './_img';
+import SafeImage from '@/components/ui/safe-image';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import { useToggleWishlist } from '@/framework/wishlist';
@@ -49,7 +50,6 @@ export function ProductCard({ product }: { product: Product }) {
   const { openModal } = useModalAction();
   const { toggleWishlist } = useToggleWishlist(product?.id);
   const [wished, setWished] = React.useState(Boolean((product as any)?.in_wishlist));
-  const [err, setErr] = React.useState(false);
   const [added, setAdded] = React.useState(false);
 
   const isVariable = `${(product as any)?.product_type}`.toLowerCase() === 'variable';
@@ -84,13 +84,16 @@ export function ProductCard({ product }: { product: Product }) {
       className="group block w-[165px] shrink-0 overflow-hidden rounded-[18px] border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)]"
     >
       <div className="relative h-[150px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={err ? PLACEHOLDER : imgOf(product)}
+        <SafeImage
+          src={imgOf(product)}
           alt={product?.name}
-          loading="lazy"
-          onError={() => setErr(true)}
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          variant="product-card"
+          className="object-cover"
+          fallback={
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={PLACEHOLDER} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          }
         />
         {badge ? (
           <span className="absolute left-2 top-2 rounded-full bg-forest-800 px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] text-white shadow-[0_2px_8px_rgba(0,0,0,0.18)]">

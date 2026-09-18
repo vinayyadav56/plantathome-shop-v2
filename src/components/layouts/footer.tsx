@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import SafeImage from '@/components/ui/safe-image';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
 import { useSettings, useSubscription } from '@/framework/settings';
@@ -301,8 +302,15 @@ const Footer = () => {
               modes are isolated by this grid's z-[1] stacking context. If a
               transparent light logo is ever uploaded in admin, swap this for
               <BrandLogo light />. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-white.png" alt={settings?.siteTitle || 'PlantAtHome'} width={200} height={131} className="h-auto w-[200px]" />
+          <SafeImage
+            src="/brand/logo-white.png"
+            alt={settings?.siteTitle || 'PlantAtHome'}
+            width={200}
+            height={131}
+            sizes="200px"
+            quality={75}
+            className="h-auto w-[200px]"
+          />
           <p className="mt-4 text-[13.5px] leading-relaxed text-white/[0.62]">{t('footer-brand-description')}</p>
 
           {/* contact */}

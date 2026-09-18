@@ -145,6 +145,7 @@ export function WhyPlants() {
                   src={b.img}
                   alt={b.title}
                   fill
+                  variant="why-card"
                   sizes="(max-width:640px) 74vw, (max-width:1024px) 33vw, 25vw"
                   className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]"
                 />
@@ -175,11 +176,16 @@ export function WhyPlants() {
           transition={{ duration: 0.7, ease: EXPO }}
           className="relative mt-10 overflow-hidden rounded-[24px]"
         >
-          {/* background photo */}
-          <img
+          {/* Background photo. Was a raw <img> with NO loading attribute, so it
+              was eager — 348 KB fetched on phones too, where this whole tree is
+              display:none and it renders at 0x0. next/image is lazy by default,
+              which is what finally lets the hidden tree skip it. */}
+          <SafeImage
             src="https://images.unsplash.com/photo-1470058869958-2a77ade41c02?w=1600&q=82&auto=format&fit=crop"
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            fill
+            variant="banner"
+            className="object-cover"
           />
           {/* Dark overlay. The band used to layer acid-green (#4ADE80/#86EFAC)
               accents, a green radial glow, a gold blur blob and a glowing CTA

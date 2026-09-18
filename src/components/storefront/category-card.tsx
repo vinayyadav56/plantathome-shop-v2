@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import SafeImage from '@/components/ui/safe-image';
 import { Icon } from './icons';
 import { productPlaceholder } from '@/lib/placeholders';
 import type { Category } from '@/types';
@@ -25,12 +26,15 @@ export function StorefrontCategoryCard({
         href={href}
         className="group relative block h-44 overflow-hidden rounded-2xl sm:h-52"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* Rendered in a 2-col grid on phones and a ~5-6 across rail at lg+
+            (sections/category-grid.tsx sets --rail-w). */}
+        <SafeImage
           src={image}
           alt={category?.name}
-          loading="lazy"
-          className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 38vw, 20vw"
+          quality={65}
+          className="object-cover transition duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-deep/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-3.5">

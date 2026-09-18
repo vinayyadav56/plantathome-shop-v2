@@ -59,21 +59,13 @@ export default async function HomePage() {
   const { variables, layout, dehydratedState } = data!;
   return (
     <Hydrate state={dehydratedState}>
-      {/* Preload the default hero's first frame — the desktop LCP element.
-          React 19 hoists <link> to <head>, so the browser starts the fetch
-          from the initial HTML instead of waiting for the client bundle to
-          mount <img>. media-gated to ≥768px: below md the PahHome hero is a
-          different (smaller) composition and this file would be wasted bytes.
-          If an admin configures custom Hero Slides the preload is superfluous
-          but harmless — it is the built-in default and heavily cached. */}
-      <link
-        rel="preload"
-        as="image"
-        href="/hero-emerald.jpg"
-        media="(min-width: 768px)"
-        // @ts-ignore — React 19 supports fetchPriority on link
-        fetchPriority="high"
-      />
+      {/* The hero preload used to live here, hardcoded to /hero-emerald.jpg and
+          media-gated to >=768px — so phones, whose LCP element this also is, got
+          no preload at all, and it pointed at the raw 242 KB original rather than
+          an optimized variant. Both heroes now use next/image with `priority`,
+          which emits a preload carrying the correct imagesrcset for the actual
+          device width, and follows admin-configured Hero Slides instead of
+          assuming the built-in default. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

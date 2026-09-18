@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import { cache } from 'react';
 import Script from 'next/script';
 
@@ -106,6 +107,24 @@ export const viewport = {
  * stylesheet links to <head>). Font Awesome 6.5.2 CDN backs the pah mobile
  * home's fa-* icons.
  */
+/**
+ * Inter, self-hosted and preloaded by next/font instead of a render-blocking
+ * <link> to fonts.googleapis.com. That stylesheet sat on the critical path of
+ * every page: a fresh DNS + TCP + TLS handshake to a third-party origin before
+ * the browser could even start the font, which on a 150 ms-RTT mobile link is
+ * most of a second of FCP.
+ *
+ * Variable axis, so it is ONE woff2 covering every weight the app uses (400,
+ * 500, 600, 700, with occasional 300/800/900) rather than seven static files.
+ * Exposed as --font-inter; src/lib/typography.ts leads its stacks with that
+ * variable and refuses to re-fetch Inter from Google — see BUNDLED_FONT there.
+ */
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings();
   return (
@@ -114,7 +133,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     // the second page load onward hydration would flag an attribute mismatch.
     // Standard theme-script pattern (same as next-themes): suppress on <html>
     // only — children still hydrate strictly.
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body>
         {/* Apply persisted Design System theme (font/color) before paint. */}
         <Script id="ds-prepaint" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: DS_PREPAINT_SCRIPT }} />
@@ -122,18 +141,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             so headings + content share one typeface with no flash. */}
         <Script id="typo-prepaint" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: TYPO_PREPAINT_SCRIPT }} />
 
-        {/* Inter is the global body font — load it as a REAL document stylesheet so the
-            first paint uses it (the prepaint script alone injected it late = FOUT). The id
-            matches the script's `pah-font-inter`, so it won't inject a duplicate; a custom
-            admin font still overrides via the prepaint. The old link here loaded Hanken
-            Grotesk + Jost, faces nothing resolves to anymore — dead weight on every page. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          id="pah-font-inter"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
+        {/* The Google Fonts <link> and its two preconnects used to live here.
+            Inter is now bundled (see the next/font instance above), so there is
+            no third-party origin on the critical path at all. The id below is
+            load-bearing: both TYPO_PREPAINT_SCRIPT and ensureFontLoaded dedupe
+            font injection by `pah-font-<family>`, and this marker keeps them
+            from re-adding the very request we just removed. They also check the
+            family name directly, so this is belt and braces. */}
+        <meta id="pah-font-inter" name="pah-bundled-font" content="Inter" />
         {/* Google Analytics (V1 _document.tsx) */}
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KTCXX5B35N" strategy="afterInteractive" />
         <Script id="ga-init" strategy="afterInteractive">

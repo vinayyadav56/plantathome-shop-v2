@@ -23,9 +23,17 @@ export function useSettings() {
     [API_ENDPOINTS.SETTINGS, formattedOptions],
     ({ queryKey, pageParam }) =>
       client.settings.all(Object.assign({}, queryKey[1], pageParam)),
-    // Always re-pull settings on mount so admin toggles (homepage banners / options) reflect
-    // promptly — the SSR-dehydrated value would otherwise stay cached for staleTime (~60s).
-    { refetchOnMount: 'always' }
+    // `refetchOnMount: 'always'` used to live here, and it fired a SECOND
+    // /settings request on every cold load — app/layout.tsx already fetches
+    // settings per request (revalidate: 30) and seeds this exact query key
+    // synchronously in the AppProviders useState initializer, so the data is
+    // at most 30s old before the client has done anything.
+    //
+    // staleTime matches that 30s ISR window: an admin toggle still reaches a
+    // visitor within one revalidation, and a client-side navigation inside the
+    // window no longer re-requests. Do NOT reintroduce 'always' without
+    // re-reading the SSR-seeding note — the ordering there is load-bearing.
+    { staleTime: 30_000 }
   );
   const { isUnderMaintenance = false, maintenance = {} } = data?.options! ?? {};
   // Cookie write moved out of the render body (V1 wrote it every render).

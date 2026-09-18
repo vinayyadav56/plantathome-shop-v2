@@ -1,4 +1,5 @@
 import { useSettings } from '@/framework/settings';
+import SafeImage from '@/components/ui/safe-image';
 
 /** Larger house + plant line mark for the product-card placeholder (matches the
  *  reference art): a rounded house outline with a sprout of leaves growing inside. */
@@ -128,10 +129,18 @@ export function BrandLogo({
   if (src) {
     return (
       <span className={`inline-flex items-center ${className}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* 800x522 source painted at 160x44 — it was shipping 154 KB of PNG for
+            a 7 KB job. Deliberately NOT `priority`: the header is above the
+            fold on most pages, but on the phone HOME the pill is display:none,
+            and a preload here would compete with the hero for bandwidth on the
+            device that can least afford it. In-viewport lazy images start
+            immediately anyway. */}
+        <SafeImage
           src={src}
           alt={settings?.siteTitle || 'PlantAtHome'}
+          width={160}
+          height={44}
+          variant="logo"
           // On the dark header the uploaded mark is forced to white
           // (brightness-0 invert) — the green-on-green asset was invisible.
           // Needs a transparent-background logo; an opaque one should be

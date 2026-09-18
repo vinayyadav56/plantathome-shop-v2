@@ -62,7 +62,13 @@ export default function LocationGate() {
       setMustPick(true);
     }
 
-    // IP lookup is a SUGGESTION source only (pre-highlights inside the picker).
+    // IP lookup is a SUGGESTION source only (pre-highlights inside the picker) —
+    // so it is pointless once the shopper has a stored city, which is the common
+    // case for everyone but a first-time visitor. It used to run unconditionally
+    // on every first mount, and on EC2 there are no edge geo headers, so /api/geo
+    // falls through to a server-side ipapi.co round-trip.
+    if (stored) return;
+
     getCityFromIP()
       .then((addr) => {
         if (!addr?.city) return;

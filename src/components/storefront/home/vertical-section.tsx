@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { useCategories } from '@/framework/category';
 import LineIcon from '@/components/icons/line-icons';
+import SafeImage from '@/components/ui/safe-image';
 import BestSellers from '@/components/storefront/home/best-sellers';
 import { ArrowRight } from '@/components/ui/icon';
 import {
@@ -42,13 +43,13 @@ function CategoryCard({ c }: { c: CardData }) {
     >
       <span className="relative block aspect-square w-full overflow-hidden rounded-full border-[3px] border-white bg-sage-100 shadow-[0_2px_10px_rgba(34,48,26,0.10)] ring-1 ring-kraft-200 transition duration-300 group-hover:shadow-[0_10px_26px_rgba(34,48,26,0.16)] group-hover:ring-forest-300">
         {c.image && !err ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <SafeImage
             src={c.image}
             alt={c.name}
-            loading="lazy"
+            fill
+            variant="category-circle"
+            className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
             onError={() => setErr(true)}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.07]"
           />
         ) : (
           <span className="grid h-full w-full place-items-center text-sage-400">

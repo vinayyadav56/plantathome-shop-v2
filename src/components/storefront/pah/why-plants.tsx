@@ -3,6 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
 import { PLACEHOLDER } from './_img';
+import SafeImage from '@/components/ui/safe-image';
 import { resolveWhyPlantsCards, useHomeConfig, type WhyPlantsCard } from '@/lib/use-home-config';
 import { ArrowRight, Droplet, Earth, Flower2, Heart, Sprout, TrendingUp, VolumeX, Wind } from '@/components/ui/icon';
 
@@ -37,9 +38,19 @@ const ICONS: Record<string, React.ReactNode> = {
 };
 
 function CardImg({ src, alt }: { src: string; alt: string }) {
-  const [err, setErr] = React.useState(false);
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={err ? PLACEHOLDER : src} alt={alt} loading="lazy" onError={() => setErr(true)} className="absolute inset-0 h-full w-full object-cover" />;
+  return (
+    <SafeImage
+      src={src}
+      alt={alt}
+      fill
+      variant="why-card"
+      className="object-cover"
+      fallback={
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={PLACEHOLDER} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      }
+    />
+  );
 }
 
 export function WhyPlants() {

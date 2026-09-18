@@ -21,6 +21,7 @@ import { BottomNav } from './bottom-nav';
 import { VerticalSection } from '@/components/storefront/home/vertical-section';
 import { useHomeSections } from '@/lib/use-home-config';
 import { useTypes } from '@/framework/type';
+import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import {
   ArrowRight,
   Check,
@@ -39,7 +40,15 @@ export default function PahHome(_props: { variables?: any }) {
   // separate and have drifted before; sharing the section is what keeps a
   // change landing on both.
   const sections = useHomeSections();
-  const { types } = useTypes({ limit: 100 });
+  // TYPES_PER_PAGE, not 100. loadHomeData prefetches [/types,{limit:15}]; asking
+  // for 100 here built a DIFFERENT query key, so the SSR cache missed, `types`
+  // was undefined during render, and labelFor() returned undefined for every
+  // configured section. Both fallbacks then fired — eyebrow "Curated For You"
+  // and heading "Our Most Loved Plants" — so the server shipped N identical
+  // blocks that only corrected themselves after hydration and a second
+  // /types?limit=100 round-trip. That late swap is what read as duplicated
+  // sections on the homepage. Also removes the redundant request.
+  const { types } = useTypes({ limit: TYPES_PER_PAGE });
   const labelFor = (slug: string) =>
     (types ?? []).find((t: any) => t?.slug === slug)?.name;
 

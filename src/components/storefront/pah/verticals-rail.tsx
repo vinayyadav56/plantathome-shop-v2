@@ -6,6 +6,7 @@ import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import { useHomeConfig, resolveImageUrl } from '@/lib/use-home-config';
+import SafeImage from '@/components/ui/safe-image';
 
 /**
  * Mobile counterpart of the desktop "all our worlds" verticals band — a compact
@@ -60,11 +61,12 @@ export function VerticalsRail() {
                 className="relative block h-[96px] w-[150px] shrink-0 overflow-hidden rounded-xl border border-kraft-200 bg-forest-900 shadow-[0_2px_8px_rgba(34,48,26,0.07)] active:scale-[0.97]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <SafeImage
                   src={v.img}
                   alt={v.name}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  fill
+                  variant="vertical-tile"
+                  className="object-cover"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(5,16,8,0.85)_0%,rgba(5,16,8,0.25)_55%,rgba(5,16,8,0.05)_100%)]" />
                 {v.comingSoon && (

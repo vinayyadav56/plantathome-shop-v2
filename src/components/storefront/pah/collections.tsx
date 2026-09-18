@@ -7,17 +7,26 @@ import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
 import { ArrowRight, LayoutGrid } from '@/components/ui/icon';
 import { PLACEHOLDER } from './_img';
+import SafeImage from '@/components/ui/safe-image';
 import type { Category } from '@/types';
 
 function Card({ c }: { c: Category }) {
   const { t } = useTranslation('common');
-  const [err, setErr] = React.useState(false);
   const img = c?.image?.original || c?.image?.thumbnail;
   const n = c?.products_count ?? 0;
   return (
     <Link href={`/c/${c.slug}`} className="relative block h-[180px] w-[140px] shrink-0 overflow-hidden rounded-[18px] shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)] active:scale-[0.98]">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={err || !img ? PLACEHOLDER : img} alt={c.name} loading="lazy" onError={() => setErr(true)} className="absolute inset-0 h-full w-full object-cover" />
+      <SafeImage
+        src={img}
+        alt={c.name}
+        fill
+        variant="collection-tile"
+        className="object-cover"
+        fallback={
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={PLACEHOLDER} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        }
+      />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,30,18,0)_38%,rgba(15,30,18,0.78)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 p-3 text-white">
         <div className="font-hanken text-[16px] font-extrabold leading-[1.1]">{c.name}</div>

@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import SafeImage from '@/components/ui/safe-image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCategories } from '@/framework/category';
@@ -35,13 +36,17 @@ function Thumb({ src, fallback }: { src: string; fallback: JSX.Element }) {
     // letterboxed a 4:3 catalogue shot into ~30x22 of a 40px tile, which on a
     // near-white radial background inside translucent white glass read as
     // washed out. The phone twin (category-circles.tsx) has always used cover.
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    // 44px tile (h-11 w-11 on the parent), so `sizes` is explicit rather than a
+    // variant — this is the smallest image box on the site and the shared
+    // category-circle preset would over-fetch it.
+    <SafeImage
       src={src}
       alt=""
-      loading="lazy"
+      fill
+      sizes="44px"
+      quality={65}
       onError={() => setErr(true)}
-      className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
+      className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08]"
     />
   );
 }
@@ -101,7 +106,7 @@ export function CategoryRow() {
                       {/* product photo — left, 44x44 on a soft radial tile. object-cover, not
                           contain: at 40px with 5px padding a 4:3 shot rendered ~30x22 and
                           read as washed out against the near-white tile. */}
-                      <div className="h-11 w-11 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
+                      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={CATEGORY_FALLBACK} />
                       </div>
                       {/* 56px fits one text row: name + arrow, no "Shop Now" line */}

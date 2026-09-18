@@ -160,8 +160,21 @@ const nextConfig: NextConfig = {
     deviceSizes: [360, 480, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [120, 160, 200, 256, 320, 384],
     minimumCacheTTL: 2592000,
+    // Next 16 gates the `q` parameter on this allowlist, which DEFAULTS TO [75].
+    // It was never declared, so every `quality={100}` call site had been serving
+    // a hard 400 ("q parameter of 100 is not allowed") in production. These are
+    // the three values the app actually asks for -- see the OptimizedImage
+    // variant table in src/components/ui/safe-image.tsx. Adding a new quality
+    // anywhere means adding it here too, or that image silently 400s.
+    qualities: [65, 70, 75],
   },
-  compress: true,
+  // FALSE on purpose. Measured on production: the origin's content-encoding
+  // follows the client's Accept-Encoding (br when br is offered, gzip when only
+  // gzip is). Next only ever does gzip, so the br is Cloudflare's -- and stock
+  // nginx on the box already gzips text/html. Leaving this on made Node do a
+  // third, redundant compression of ~360 KB of HTML per request, on the event
+  // loop of the SINGLE PM2 worker this 2-core box can afford.
+  compress: false,
   productionBrowserSourceMaps: false,
   experimental: {
     optimizePackageImports: ['framer-motion', 'lodash', '@headlessui/react'],
@@ -173,6 +186,29 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/:dir(images|brand|fonts|icons)/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        // The single highest-leverage caching fix in the storefront.
+        //
+        // The rule above only covers FOUR directories, and every hero still
+        // lives at the public/ ROOT -- so /hero-emerald.jpg, the mobile LCP
+        // element, was served `cache-control: public, max-age=0` and measured
+        // `cf-cache-status: REVALIDATED`. It was revalidated against the origin
+        // on every single page view and never served from browser cache, which
+        // is why the three sibling hero scenes were observed being fetched
+        // 2-5x EACH within one page load (~1.38 MB of needless transfer).
+        // /brand/logo-dark.png, one directory over, was a Cloudflare HIT.
+        //
+        // Matched by extension rather than by moving ~20 files, so it also
+        // covers any future root-level asset. Deliberately excludes .js so the
+        // /sw.js kill switch keeps its no-store rule below.
+        //
+        // The usual immutable caveat applies, exactly as it already does for
+        // /brand and /images: replacing one of these files in place will not
+        // reach browsers that hold it. Change the filename, or purge that one
+        // URL -- see the deploy notes about no longer purging the whole zone.
+        source: '/:file(.+\\.(?:jpg|jpeg|png|webp|avif|gif|svg|ico|mp4|webm))',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {

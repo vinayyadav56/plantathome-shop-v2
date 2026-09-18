@@ -87,7 +87,7 @@ const PromoPopup = () => {
                 alt={popupData?.title}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 fill
-                quality={100}
+                quality={75}
                 style={{
                   objectFit: 'contain',
                 }}

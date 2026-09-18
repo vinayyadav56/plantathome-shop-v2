@@ -13,6 +13,17 @@
 
 export const TYPO_STORAGE_KEY = 'pah-font-family';
 export const DEFAULT_FONT = 'Inter';
+
+/** The one family that ships WITH the app rather than from Google.
+ *  app/layout.tsx loads it through next/font, which self-hosts the file under
+ *  /_next/static/media (immutable, same-origin, preloaded) and exposes it as
+ *  the CSS variable below. Everything here must therefore avoid requesting it
+ *  from fonts.googleapis.com — that cross-origin stylesheet was render-blocking
+ *  on the critical path of every single page. */
+export const BUNDLED_FONT = 'Inter';
+export const BUNDLED_FONT_VAR = 'var(--font-inter)';
+const isBundled = (family: string | null | undefined) =>
+  (family ?? '').trim().toLowerCase() === BUNDLED_FONT.toLowerCase();
 export const DEFAULT_HEADING_FONT = 'Cormorant Garamond';
 
 /** Weights requested from Google Fonts for whichever family is selected. */
@@ -84,6 +95,8 @@ export function headingFontStack(family: string | null | undefined): string | nu
  *  family does not ship. */
 export function fontCssUrl(family: string): string | null {
   if (isSystem(family)) return null;
+  // Bundled — never fetched from Google.
+  if (isBundled(family)) return null;
   const fam = family.trim();
   const weights = fam === 'Inter' ? `${FONT_WEIGHTS};900` : FONT_WEIGHTS;
   return `https://fonts.googleapis.com/css2?family=${fam.replace(/\s+/g, '+')}:${weights}&display=swap`;
@@ -94,6 +107,11 @@ export function fontStack(family: string): string {
   if (isSystem(family)) return FALLBACK;
   const f = family.trim();
   const quoted = /\s/.test(f) ? `'${f}'` : f;
+  // next/font mints a scoped family name, so a bare "Inter" would NOT resolve
+  // to the bundled face once the Google stylesheet is gone. Lead with the
+  // variable and keep the bare name behind it, so an externally loaded Inter
+  // still works if one is ever present.
+  if (isBundled(f)) return `${BUNDLED_FONT_VAR}, ${quoted}, ${FALLBACK}`;
   return `${quoted}, ${FALLBACK}`;
 }
 
@@ -105,6 +123,7 @@ const linkId = (family: string) => 'pah-font-' + (family || 'system').trim().toL
  *  families whose URL is not built by fontCssUrl (heading serifs). */
 export function ensureFontLoaded(family: string, hrefOverride?: string | null): void {
   if (typeof document === 'undefined') return;
+  if (isBundled(family) && !hrefOverride) return;
   const href = hrefOverride ?? fontCssUrl(family);
   if (!href) return;
   const id = linkId(family);
@@ -199,7 +218,7 @@ export function applyTypography(
 export const TYPO_PREPAINT_SCRIPT = `(function(){try{
 var s=localStorage.getItem('${TYPO_STORAGE_KEY}');if(!s)return;var d=JSON.parse(s);if(!d)return;
 var r=document.documentElement;
-var add=function(fam,url){if(!url)return;var id='pah-font-'+(fam||'system').toLowerCase().replace(/\\s+/g,'-');if(!document.getElementById(id)){var l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=url;document.head.appendChild(l);}};
+var add=function(fam,url){if(!url)return;if((fam||'').trim().toLowerCase()==='inter')return;var id='pah-font-'+(fam||'system').toLowerCase().replace(/\\s+/g,'-');if(!document.getElementById(id)){var l=document.createElement('link');l.id=id;l.rel='stylesheet';l.href=url;document.head.appendChild(l);}};
 if(d.stack){r.style.setProperty('--font-body',d.stack);r.style.setProperty('--font-eyebrow',d.stack);r.style.setProperty('--font-sans',d.stack);add(d.family,d.url);}
 if(d.v===3&&d.heading){if(d.heading.collapse){r.style.setProperty('--font-heading','var(--font-body)');}else if(d.heading.stack){r.style.setProperty('--font-heading',d.heading.stack);add(d.heading.family,d.heading.url);}}
 }catch(e){}})();`;

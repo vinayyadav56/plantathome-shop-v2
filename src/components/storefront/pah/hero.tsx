@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
 import { useAtom } from 'jotai';
@@ -32,9 +33,23 @@ export function Hero() {
 
   return (
     <div className="relative">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {/* Decorative backdrop but ALSO the mobile LCP element — hint the fetch. */}
-      <img src={heroImg} alt="" fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+      {/* Decorative backdrop but ALSO the mobile LCP element.
+          This was a raw <img> of a 1672x941 JPEG — 242 KB, shipped at full size
+          to a 390px phone and never touched by the optimizer, which measured as
+          a 20.9s LCP on Slow-4G. Through next/image the same frame is ~27 KB of
+          AVIF. `priority` emits its own preload with a correct imagesrcset, so
+          the hand-rolled <link rel=preload> in app/(home)/page.tsx (which was
+          media-gated to >=768px and therefore skipped the phone entirely) is
+          gone. */}
+      <Image
+        src={heroImg}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        quality={70}
+        className="object-cover"
+      />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,30,18,0.72)_0%,rgba(15,30,18,0.34)_38%,rgba(15,30,18,0.26)_64%,rgba(15,30,18,0.40)_100%)]" />
 
       <div className="relative z-[2] px-5 pb-11 pt-3.5 text-white">

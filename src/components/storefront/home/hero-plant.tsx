@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBannerEnabled } from '@/lib/use-home-config';
@@ -143,18 +144,29 @@ function SlideMedia({
       </motion.video>
     );
   }
+  // The motion goes on a WRAPPER, not on the image itself: next/image owns the
+  // element's style (fill sets position/inset/width/height), so animating it
+  // directly fights the component. Scaling and translating the wrapper is
+  // visually identical — MOVES and SCENE_SECONDS above are untouched.
+  //
+  // Only the ACTIVE slide is mounted (AnimatePresence in TourBurns), so
+  // `priority` on slide 0 loads the LCP frame immediately while slides 1-3 stay
+  // lazy until they become active. Previously all four were `loading="eager"`
+  // raw <img>s totalling ~1.38 MB, and because public/ root files were served
+  // `max-age=0` they were re-fetched 2-5x EACH within a single page load.
   return (
-    <motion.img
-      key={index}
-      src={slide.src}
-      alt=""
-      aria-hidden
-      loading="eager"
-      decoding="async"
-      // @ts-ignore — valid HTML attr; React 19 forwards it
-      fetchpriority={index === 0 ? 'high' : 'auto'}
-      {...common}
-    />
+    <motion.div key={index} {...common} className="absolute inset-0 h-full w-full">
+      <Image
+        src={slide.src}
+        alt=""
+        aria-hidden
+        fill
+        sizes="100vw"
+        quality={70}
+        priority={index === 0}
+        className="object-cover"
+      />
+    </motion.div>
   );
 }
 
@@ -189,12 +201,15 @@ function TourBurns({
         </div>
       );
     }
+    // prefers-reduced-motion. Was a CSS background-image, which the optimizer
+    // cannot see — so this path served the full-size original too.
     const bg = first?.type === 'video' ? first.poster : first?.src;
     return (
-      <div
-        className="absolute inset-0"
-        style={{ backgroundImage: `url(${bg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-      />
+      <div className="absolute inset-0">
+        {bg ? (
+          <Image src={bg} alt="" aria-hidden fill priority sizes="100vw" quality={70} className="object-cover" />
+        ) : null}
+      </div>
     );
   }
 

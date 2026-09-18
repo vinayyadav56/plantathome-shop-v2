@@ -212,6 +212,24 @@ jobs:
             find "$ROLLOVER" -type f -mtime +3 -delete 2>/dev/null || true
             echo "    static files now served: $(find .next/static -type f | wc -l)"
 
+            echo "==> Re-linking the image optimizer's disk cache..."
+            # `rm -rf .next/cache` above takes .next/cache/images with it, so every
+            # release threw away every AVIF/WebP variant sharp had ever produced and
+            # re-encoded them on demand — on a 2-core box that also runs php-fpm, six
+            # queue workers and the admin app. Measured before this: `x-nextjs-cache:
+            # MISS` on a /_next/image URL present verbatim in the served HTML.
+            #
+            # Keep the cache OUTSIDE .next and symlink it back in, so it survives the
+            # wholesale replacement of the server output. Must run AFTER the tarball is
+            # extracted — the artifact carries the runner's own .next/cache and would
+            # clobber the link. minimumCacheTTL is 30 days, so a variant is now encoded
+            # once and reused across releases.
+            IMGCACHE=/var/www/plantathome/shop-image-cache
+            mkdir -p "$IMGCACHE" .next/cache
+            rm -rf .next/cache/images
+            ln -sfn "$IMGCACHE" .next/cache/images
+            echo "    image cache: $(find "$IMGCACHE" -type f 2>/dev/null | wc -l) variants retained"
+
             echo "==> Fixing build paths (runner path → EC2 path)..."
             # required-server-files.json is pretty-printed, so the key is
             # `"appDir": "..."` WITH a space after the colon. The original
@@ -343,16 +361,31 @@ jobs:
           echo "FAIL — shop health check failed"
           exit 1
 
-      - name: Purge Cloudflare cache
+      - name: Purge Cloudflare cache (unhashed assets only)
         if: success()
         run: |
+          # NOT purge_everything any more. That discarded the content-hashed
+          # /_next/static assets too — which cannot go stale, by construction —
+          # so every release guaranteed a cold-cache stampede back onto the
+          # single PM2 worker for every chunk on the site.
+          #
+          # Only unhashed URLs can actually be stale, and only when their bytes
+          # change. Everything under /_next/static is fingerprinted; the HTML is
+          # not edge-cached at all today (cf-cache-status: DYNAMIC); /brand and
+          # the public root are served `immutable`, so they need an explicit
+          # purge when replaced in place — list them here rather than nuking the
+          # zone. Add a URL to this list when you overwrite that asset.
           RESP=$(curl -s -X POST \
             "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
             -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
             -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}')
+            --data '{"files":[
+              "https://www.plantathome.in/",
+              "https://www.plantathome.in/brand/logo-dark.png",
+              "https://www.plantathome.in/brand/logo-white.png"
+            ]}')
           echo "$RESP" | grep -q '"success":true' \
-            && echo "Cloudflare cache purged" \
+            && echo "Cloudflare: purged the unhashed asset list" \
             || echo "WARNING: cache purge failed: $RESP"
 
       - name: Close port 22 for this runner
