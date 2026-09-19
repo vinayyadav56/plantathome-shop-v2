@@ -37,7 +37,7 @@ const SWAP_EASE: [number, number, number, number] = [0.04, 0.62, 0.23, 0.98];
 /**
  * The supplied artwork IS this page.
  *
- * `/signin-hero.png` already carries the logo, the headline, the sub-line, the
+ * `/signin-hero-wide.png` already carries the logo, the headline, the sub-line, the
  * four benefits, the script signature and the category row. None of that is
  * re-drawn in HTML on top of it, and NOTHING tints it — no scrim, no gradient,
  * no overlay of any kind. The only thing above the picture is the login card.
@@ -139,9 +139,14 @@ function SignInPage() {
             bottom — the two things that make this the supplied design rather
             than a stock plant photo. Below lg the composition is unreadable at
             that scale anyway, so it becomes a plain backdrop and covers. */}
+        {/* The filename is versioned on purpose. public/ root media is served
+            `immutable, max-age=31536000` (see next.config headers), so replacing
+            the bytes behind an existing name leaves browsers and the CDN happily
+            serving last year's artwork — which is exactly what happened when the
+            3:2 version was swapped for this 16:9 one in place. New art, new name. */}
         <div className="fixed inset-0" aria-hidden>
           <Image
-            src="/signin-hero.png"
+            src="/signin-hero-wide.png"
             alt=""
             fill
             priority
@@ -162,14 +167,14 @@ function SignInPage() {
               against the PICTURE — the same spot the mock puts it — instead of
               against the viewport, which would drift away from the artwork as
               the letterbox bands grow. */}
-          <div className="w-full max-w-[460px] lg:relative lg:aspect-[1536/1024] lg:max-w-[min(100vw,calc(100svh*1.5))]">
+          <div className="w-full max-w-[460px] lg:relative lg:aspect-[1672/941] lg:max-w-[min(100vw,calc(100svh*1.7768))]">
             {/* Top-anchored, never centred: Sign Up is taller than Login, and a
                 vertically-centred card absorbs that difference from both edges,
                 sliding the tabs up under the pointer that just clicked them.
                 Measured at 38px before this was pinned. */}
             <div
               className="rounded-[20px] bg-white px-6 py-7 shadow-[0_18px_50px_rgba(31,48,32,0.28)] sm:px-8
-                         lg:absolute lg:top-[4%] lg:right-[3.2%] lg:max-h-[92%] lg:w-[39%] lg:overflow-y-auto
+                         lg:absolute lg:top-[5%] lg:right-[3%] lg:max-h-[90%] lg:w-[34%] lg:overflow-y-auto
                          lg:px-7 lg:py-7 lg:shadow-[0_18px_50px_rgba(31,48,32,0.18)] xl:px-9"
             >
               {/* tabs — underline, per the design. A framer `layoutId` slider was
