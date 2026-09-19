@@ -90,6 +90,29 @@ function SignInPage() {
     return () => ro.disconnect();
   }, []);
 
+  // Sign Up is taller than Login, so on a short viewport switching tabs crosses
+  // the scroll threshold: a vertical scrollbar appears, the viewport narrows by
+  // its width, and the `fixed inset-0` backdrop narrows with it — the photo
+  // visibly jumps mid-transition (annotated: "image size became change").
+  // Reserving the gutter for as long as this page is mounted keeps the viewport
+  // one constant width, so nothing behind the card ever moves.
+  useEffect(() => {
+    const root = document.documentElement;
+    const prevGutter = root.style.scrollbarGutter;
+    const prevOverflow = root.style.overflowY;
+    // Both, deliberately. `scrollbar-gutter` covers browsers with overlay
+    // scrollbars and is the tidier of the two, but Chrome only honours it on
+    // the root once the root is actually a scroll container — which it is not
+    // while the Login form fits the viewport exactly. Pinning overflow-y to
+    // scroll guarantees the gutter exists in every state.
+    root.style.scrollbarGutter = 'stable';
+    root.style.overflowY = 'scroll';
+    return () => {
+      root.style.scrollbarGutter = prevGutter;
+      root.style.overflowY = prevOverflow;
+    };
+  }, []);
+
   // Any auth method (password / Google / WhatsApp) flips the atom → leave the page.
   useEffect(() => {
     if (isAuthorized) router.replace(redirect);

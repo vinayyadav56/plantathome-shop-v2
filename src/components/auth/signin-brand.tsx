@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Caveat } from 'next/font/google';
 import { useTranslation } from 'next-i18next';
-import { WordmarkStacked } from '@/components/storefront/logo-mark';
+import { BrandLogo } from '@/components/storefront/logo-mark';
 import { Leaf, Truck, Home, Recycle } from '@/components/ui/icon';
 
 /**
@@ -46,8 +46,13 @@ export function SigninBrand({ className = '' }: { className?: string }) {
   const { t } = useTranslation('common');
   return (
     <div className={`text-white ${className}`}>
+      {/* BrandLogo, not WordmarkStacked: the wordmark is the FALLBACK for when
+          no logo has been uploaded, and rendering it unconditionally meant the
+          brand's actual mark never appeared here (annotated: "logo should be
+          original here"). BrandLogo prefers the admin-uploaded light logo and
+          falls back to the same wordmark on its own. */}
       <Link href="/" className="inline-flex" aria-label="PlantAtHome home">
-        <WordmarkStacked light tagline={false} />
+        <BrandLogo light />
       </Link>
 
       <h2 className="mt-7 font-pahserif text-[30px] font-medium leading-[1.08] tracking-[-0.02em] sm:text-[38px] lg:mt-10 lg:text-[46px] xl:text-[52px]">
