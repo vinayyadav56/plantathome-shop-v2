@@ -137,7 +137,7 @@ function SignInPage() {
           className="relative z-10 mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-y-9 px-4 py-8
                      md:px-8 md:py-12
                      lg:min-h-[100svh] lg:grid-cols-[1fr_minmax(420px,470px)] lg:grid-rows-[auto_auto]
-                     lg:content-center lg:gap-x-14 lg:gap-y-12 lg:px-12 lg:py-10
+                     lg:content-start lg:gap-x-14 lg:gap-y-12 lg:px-12 lg:pt-[7vh] lg:pb-10
                      xl:gap-x-20 xl:px-16"
         >
           <SigninBrand className="lg:col-start-1 lg:row-start-1" />
@@ -146,11 +146,26 @@ function SignInPage() {
               blur here is where 13px helper text and field labels stop being
               readable over a photograph, and a blur on a panel this large is a
               real compositing cost on mid-range Android. The shadow is what
-              makes it float. */}
+              makes it float.
+
+              `self-start`, NOT `self-center`. Sign Up is taller than Login, and
+              a vertically-centred card absorbs that difference from BOTH edges,
+              so the tabs and heading slide up ~38px on every tab switch — under
+              the pointer that just clicked them. Anchoring the top edge means
+              only the bottom grows. This was annotated on the old page, fixed
+              there by top-anchoring, and re-broken when this redesign centred
+              it; measure the tab's bounding box across a swap before changing
+              it back.
+
+              The grid is `content-start` for the same reason: with
+              `content-center`, a taller Sign Up card grows the row, the row
+              grows the grid, and the centred block slides up — so the drift
+              came back at 1440 even with the card top-anchored. Nothing here
+              may re-centre on content height. */}
           <div
             className="w-full rounded-[20px] bg-white p-6 shadow-[0_24px_70px_rgba(6,20,10,0.40)]
                        md:mx-auto md:max-w-[480px] md:rounded-[22px] md:p-8
-                       lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mx-0 lg:max-w-none lg:self-center lg:p-9
+                       lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:mx-0 lg:max-w-none lg:self-start lg:p-9
                        xl:p-10"
           >
             {/* tabs — underline, per the design. A framer `layoutId` slider was
