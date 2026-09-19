@@ -1,9 +1,8 @@
 'use client';
 
-import { useRouter } from '@/compat/next-router';
-import { BackArrowRound } from '@/components/icons/back-arrow-round';
+import { useEffect } from 'react';
 import { useUser } from '@/framework/user';
-import LoginView from '@/components/auth/login-form';
+import { goToSignin } from '@/lib/go-to-signin';
 import { useToken } from '@/lib/hooks/use-token';
 import VerifyEmail from '@/page-bodies/verify-email';
 
@@ -22,11 +21,22 @@ const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
   const { getEmailVerified, setEmailVerified } = useToken();
-  const router = useRouter();
   const { me, isAuthorized, error } = useUser();
   const { settings } = useSettings();
   const hasMounted = useHasMounted();
   const isUser = !!me;
+  const mustSignIn = !isUser && !isAuthorized && hasMounted;
+
+  // This branch used to render <LoginView/> inline, which meant every gated
+  // page (checkout, order detail, the whole account shell) carried a SECOND
+  // login UI that looked nothing like /signin. Everything needed to send people
+  // to the real one already existed — goToSignin preserves where they came
+  // from, http-client bounces expired 401s the same way, and /signin already
+  // honours ?redirect on success. This was simply the last caller that never
+  // got the memo.
+  useEffect(() => {
+    if (mustSignIn) goToSignin({ replace: true });
+  }, [mustSignIn]);
 
   if (axios.isAxiosError(error)) {
     if (error?.response?.status === 417) {
@@ -42,20 +52,10 @@ const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
   }
 
   const { emailVerified } = getEmailVerified();
-  if (!isUser && !isAuthorized && hasMounted) {
-    return (
-      <div className="relative flex min-h-screen w-full justify-center py-5 md:py-8">
-        <button
-          className="absolute top-5 flex h-8 w-8 items-center justify-center text-gray-200 transition-colors hover:text-gray-400 ltr:left-5 rtl:right-5 md:top-1/2 md:-mt-8 md:h-16 md:w-16 md:text-gray-300 ltr:md:left-10 rtl:md:right-10"
-          onClick={router.back}
-        >
-          <BackArrowRound />
-        </button>
-        <div className="my-auto flex flex-col">
-          <LoginView />
-        </div>
-      </div>
-    );
+  // The effect above is already navigating; hold a spinner rather than flashing
+  // page content on the way out.
+  if (mustSignIn) {
+    return <Loader showText={false} />;
   }
 
   if (isAuthorized && emailVerified === false) {

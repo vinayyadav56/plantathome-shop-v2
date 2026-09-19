@@ -13,7 +13,7 @@ import OtpRegisterForm from '@/components/otp/otp-register-form';
 import { WhatsAppIcon } from '@/components/icons/whatsapp';
 import type { OtpChannel } from '@/types';
 
-function OtpLogin({ channel }: { channel: OtpChannel }) {
+function OtpLogin({ channel, prefillPhone }: { channel: OtpChannel; prefillPhone?: string }) {
   const { t } = useTranslation('common');
   const [otpState, setOtpState] = useAtom(optAtom);
   const reduceMotion = useReducedMotion();
@@ -32,10 +32,19 @@ function OtpLogin({ channel }: { channel: OtpChannel }) {
   } = useOtpLogin();
 
   // A fresh open must never inherit a half-finished attempt from last time.
+  // `prefillPhone` is the one thing that MAY survive the reset: when someone
+  // typed a mobile number into the login form's identifier field we route them
+  // here, and making them retype the number they just typed reads as the app
+  // losing their input. Digits only, no '+' — that is the shape PhoneInput and
+  // onSendCodeSubmission expect.
   useEffect(() => {
-    setOtpState({ ...initialOtpState, channel });
+    setOtpState({
+      ...initialOtpState,
+      channel,
+      ...(prefillPhone ? { phoneNumber: prefillPhone } : {}),
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channel]);
+  }, [channel, prefillPhone]);
 
   function onSendCodeSubmission({ phone_number }: { phone_number: string }) {
     sendOtpCode({
@@ -90,6 +99,11 @@ function OtpLogin({ channel }: { channel: OtpChannel }) {
               onSubmit={onSendCodeSubmission}
               isLoading={isLoading}
               view="login"
+              // prefillPhone, not the atom: react-hook-form reads defaultValues
+              // on its FIRST render, and the effect above seeds the atom only
+              // after mount — so going through the atom always arrived one
+              // render too late and the field came up empty.
+              phoneNumber={prefillPhone || otpState.phoneNumber || undefined}
             />
           </div>
         </>
@@ -135,9 +149,11 @@ type OtpLoginViewProps = {
    * forgot to open.
    */
   inline?: boolean;
+  /** Digits only (e.g. "919876543210"), pre-filled into the number field. */
+  prefillPhone?: string;
 };
 
-export default function OtpLoginView({ channel: channelProp, onBack, inline = false }: OtpLoginViewProps = {}) {
+export default function OtpLoginView({ channel: channelProp, onBack, inline = false, prefillPhone }: OtpLoginViewProps = {}) {
   const { t } = useTranslation('common');
   const { openModal } = useModalAction();
   const { data } = useModalState() as { data?: { channel?: OtpChannel } };
@@ -175,7 +191,7 @@ export default function OtpLoginView({ channel: channelProp, onBack, inline = fa
           {t('otp-login-helper')}
         </p>
       )}
-      <OtpLogin channel={channel} />
+      <OtpLogin channel={channel} prefillPhone={prefillPhone} />
       <div className="relative mt-9 mb-7 flex flex-col items-center justify-center text-sm text-heading sm:mt-11 sm:mb-8">
         <hr className="w-full" />
         <span className="absolute -top-2.5 bg-light px-2 ltr:left-2/4 ltr:-ml-4 rtl:right-2/4 rtl:-mr-4">

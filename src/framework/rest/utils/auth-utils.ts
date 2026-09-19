@@ -17,8 +17,14 @@ export const adminOnly = [SUPER_ADMIN];
 export const ownerOnly = [STORE_OWNER];
 export const ownerAndStaffOnly = [STORE_OWNER, STAFF];
 
-export function setAuthCredentials(token: string, permissions: any) {
-  Cookie.set(AUTH_CRED, JSON.stringify({ token, permissions }), AUTH_COOKIE_OPTIONS);
+export function setAuthCredentials(token: string, permissions: any, remember = false) {
+  // Was written with no `expires` at all, i.e. a session cookie, while the auth
+  // token beside it lasted a day — so a staff member stayed logged in across a
+  // browser restart but silently lost their maintenance/city bypass. Match it.
+  Cookie.set(AUTH_CRED, JSON.stringify({ token, permissions }), {
+    ...AUTH_COOKIE_OPTIONS,
+    expires: remember ? 30 : 1,
+  });
 }
 export function setEmailVerified(emailVerified: boolean) {
   Cookie.set(EMAIL_VERIFIED, JSON.stringify({ emailVerified }), AUTH_COOKIE_OPTIONS);

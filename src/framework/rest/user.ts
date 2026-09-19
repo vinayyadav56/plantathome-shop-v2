@@ -19,6 +19,7 @@ import { authorizationAtom } from '@/store/authorization-atom';
 import { clearCheckoutAtom } from '@/store/checkout';
 import type {
   ChangePasswordUserInput,
+  LoginUserInput,
   OtpLoginInputType,
   RegisterUserInput,
 } from '@/types';
@@ -219,24 +220,31 @@ export function useLogin() {
   const queryClient = useQueryClient();
   let [serverError, setServerError] = useState<string | null>(null);
 
-  const { mutate, isLoading } = useMutation(client.users.login, {
-    onSuccess: (data) => {
-      if (!data.token) {
-        setServerError('error-credential-wrong');
-        return;
-      }
-      setToken(data.token);
-      setAuthCredentials(data.token, data.permissions);
-      setAuthorized(true);
-      closeModal();
+  const { mutate, isLoading } = useMutation(
+    // `remember` is a client-side cookie-lifetime choice, not a credential —
+    // strip it here so it never reaches the POST body, while staying available
+    // as `variables` in onSuccess below.
+    ({ remember, ...input }: LoginUserInput & { remember?: boolean }) =>
+      client.users.login(input),
+    {
+      onSuccess: (data, variables) => {
+        if (!data.token) {
+          setServerError('error-credential-wrong');
+          return;
+        }
+        setToken(data.token, variables?.remember);
+        setAuthCredentials(data.token, data.permissions, variables?.remember);
+        setAuthorized(true);
+        closeModal();
+      },
+      onError: (error: Error) => {
+        console.error(error.message);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(API_ENDPOINTS.NOTIFY_LOGS);
+      },
     },
-    onError: (error: Error) => {
-      console.error(error.message);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(API_ENDPOINTS.NOTIFY_LOGS);
-    },
-  });
+  );
 
   return { mutate, isLoading, serverError, setServerError };
 }

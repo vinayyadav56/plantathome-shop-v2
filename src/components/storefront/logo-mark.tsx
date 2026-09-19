@@ -69,9 +69,13 @@ export function LogoMark({
 export function WordmarkStacked({
   light = false,
   className = '',
+  tagline = true,
 }: {
   light?: boolean;
   className?: string;
+  /** Off where the surrounding page already says "Bring Nature Home" itself
+   *  (the /signin brand panel prints it as a script signature). */
+  tagline?: boolean;
 }) {
   const fg = light ? 'text-white' : 'text-forest-900';
   // The light variant's accent used to be #8FD56F — the same lime the home hero
@@ -81,7 +85,7 @@ export function WordmarkStacked({
   // staying legible on any dark surface. The dark variant is unchanged: forest
   // green on light backgrounds already has the contrast.
   const accent = light ? 'text-white/80' : 'text-forest-600';
-  const tagline = light ? 'text-white/70' : 'text-stone-500';
+  const taglineTone = light ? 'text-white/70' : 'text-stone-500';
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={`h-7 w-7 shrink-0 ${accent}`} aria-hidden>
@@ -92,9 +96,11 @@ export function WordmarkStacked({
         <span className={`font-pahserif text-[20px] font-bold leading-none ${fg}`}>
           Plant <span className={accent}>atHome</span>
         </span>
-        <span className={`mt-0.5 text-[9px] font-medium uppercase tracking-[0.22em] ${tagline}`}>
-          Bring Nature Home
-        </span>
+        {tagline && (
+          <span className={`mt-0.5 text-[9px] font-medium uppercase tracking-[0.22em] ${taglineTone}`}>
+            Bring Nature Home
+          </span>
+        )}
       </span>
     </span>
   );

@@ -33,6 +33,7 @@ const LEAF_ALLOWED = [
   'src/components/storefront/home/hero-plant.tsx',    // eyebrow reads "plant store"
   'src/page-bodies/plant-doctor.tsx',                 // a leaf IS the subject here
   'src/components/garden-service/icons.tsx',          // name->glyph map
+  'src/components/auth/signin-brand.tsx',              // "Plants for every space" benefit
 ];
 const leafHits = sh(
   `grep -rln "<Leaf\\b\\|<Sprout\\b\\|<Flower2\\b\\|Icon\\.leaf\\|name=\\"leaf\\"\\|name=\\"sprout\\"" src --include="*.tsx" || true`
