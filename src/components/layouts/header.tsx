@@ -177,28 +177,18 @@ const Header = ({
       {/* announcement bar — dark-green gradient strip with a faint lime glow,
           static (only the glass pill below is sticky, so this scrolls away
           naturally). City switcher stays left for the city-first delivery UX. */}
-      <div className="relative h-12 border-b border-[rgba(159,211,111,0.12)] bg-[linear-gradient(90deg,#071b0f_0%,#0a2916_45%,#071b0f_100%)] text-[13px] font-normal text-white/[0.92] before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_50%_-100%,rgba(113,190,70,0.18),transparent_55%)]">
+      <div className="relative h-12 bg-[#0a2916] text-[13px] font-normal text-white/[0.92]">
         {/* Nothing may spill out of the 48px bar at any width (annotation,
             twice). The side cells are block containers with `truncate`, so an
             overflow ends in an ellipsis instead of a half-glyph — the previous
             flex cells only had overflow-hidden, which cuts text mid-letter and
             reads as "spilled". Children are inline so text-overflow applies. */}
-        <div className="relative z-[1] mx-auto grid h-full max-w-[1500px] grid-cols-[1fr_auto_1fr] items-center overflow-hidden px-5 sm:px-8 xl:px-12">
+        <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center justify-between gap-4 overflow-hidden px-5 sm:px-8 xl:px-12">
           <span className="min-w-0 truncate">
             <span className="hidden text-white/70 sm:inline">Delivering to </span>
             <CitySwitcher tone="light" className="align-middle" />
           </span>
-          {/* center — true grid centering; xl+ only so it never crowds the
-              links; the second promo needs the full 1440 to fit alongside */}
-          <span className="hidden min-w-0 items-center gap-[22px] whitespace-nowrap tracking-[0.1px] xl:flex">
-            <span className="inline-flex items-center gap-2.5">
-              <Truck size={16} className="shrink-0 text-sage-300" aria-hidden />
-              FREE SHIPPING on orders above ₹499
-            </span>
-            <span aria-hidden className="hidden h-[18px] w-px bg-[linear-gradient(to_bottom,transparent,rgba(255,255,255,0.35),transparent)] min-[1440px]:block" />
-            <span className="hidden min-[1440px]:inline">Extra 5% OFF on prepaid orders</span>
-          </span>
-          <span className="col-start-3 min-w-0 truncate text-end">
+          <span className="min-w-0 shrink-0 truncate text-end">
             <Link href="/track-order" className="inline-flex items-center gap-1.5 align-middle transition-colors hover:text-white">
               <Truck size={16} aria-hidden />
               Track Order
@@ -217,7 +207,7 @@ const Header = ({
           under the announcement bar. */}
       <header
         id="site-header"
-        className={`pointer-events-none sticky top-2 z-50 -mt-1.5 w-full px-5 ${pillFromMd ? 'max-md:hidden' : ''}`}
+        className={`pointer-events-none sticky top-2 z-50 -mt-px w-full px-5 ${pillFromMd ? 'max-md:hidden' : ''}`}
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
