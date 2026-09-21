@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Coupon from '@/components/checkout/coupon';
 import usePrice from '@/lib/use-price';
 import EmptyCartIcon from '@/components/icons/empty-cart';
@@ -21,7 +22,7 @@ import { PlaceOrderAction } from '@/components/checkout/place-order-action';
 import Wallet from '@/components/checkout/wallet/wallet';
 import { useSettings } from '@/framework/settings';
 import { authorizationAtom } from '@/store/authorization-atom';
-import { ShoppingBag } from '@/components/ui/icon';
+import { ShoppingBag, ChevronDown, ChevronUp } from '@/components/ui/icon';
 import cn from 'classnames';
 
 interface Props {
@@ -78,6 +79,12 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   const igstAmt = Number(vr.igst_amount ?? 0);
   const isInterState = Boolean(vr.is_inter_state);
   const taxInclusive = totals.tax === 0 && gstTotal > 0;
+  // Every figure below comes from /checkout/verify. The storefront does no tax
+  // arithmetic of its own — the server is the only thing allowed to decide what
+  // GST is due, and a second opinion here is how the two drift apart.
+  const taxableAmt = Number(vr.taxable_amount ?? 0);
+  const deliveryTaxAmt = Number(vr.delivery_tax_amount ?? 0);
+  const [showTaxDetail, setShowTaxDetail] = useState(false);
 
   const { price: tax } = usePrice(
     verifiedResponse && { amount: totals.tax }
@@ -86,6 +93,8 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   const { price: cgstPrice } = usePrice({ amount: cgstAmt });
   const { price: sgstPrice } = usePrice({ amount: sgstAmt });
   const { price: igstPrice } = usePrice({ amount: igstAmt });
+  const { price: taxablePrice } = usePrice({ amount: taxableAmt });
+  const { price: deliveryTaxPrice } = usePrice({ amount: deliveryTaxAmt });
   const { price: shipping } = usePrice(
     verifiedResponse && { amount: verifiedResponse.shipping_charge ?? 0 }
   );
@@ -153,10 +162,61 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
           <span className="font-semibold text-[#2E6B4A]">{sub_total}</span>
         </div>
         {taxInclusive ? (
-          <div className="pa-order-row text-xs text-gray-500">
-            <span>{isInterState ? 'Incl. IGST' : 'Incl. GST (CGST + SGST)'}</span>
-            <span>{gstInclPrice}</span>
-          </div>
+          <>
+            <button
+              type="button"
+              onClick={() => setShowTaxDetail((open) => !open)}
+              aria-expanded={showTaxDetail}
+              className="pa-order-row w-full text-xs text-gray-500 hover:text-[#2E6B4A]"
+            >
+              <span className="flex items-center gap-1">
+                {isInterState ? 'Incl. IGST' : 'Incl. GST (CGST + SGST)'}
+                {showTaxDetail ? (
+                  <ChevronUp size={14} aria-hidden />
+                ) : (
+                  <ChevronDown size={14} aria-hidden />
+                )}
+              </span>
+              <span>{gstInclPrice}</span>
+            </button>
+            {showTaxDetail && (
+              <div className="mb-1 rounded-md bg-[#2E6B4A]/[0.04] px-3 py-2">
+                <div className="pa-order-row text-xs text-gray-500">
+                  <span>Taxable value</span>
+                  <span>{taxablePrice}</span>
+                </div>
+                {isInterState ? (
+                  <div className="pa-order-row text-xs text-gray-500">
+                    <span>IGST</span>
+                    <span>{igstPrice}</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="pa-order-row text-xs text-gray-500">
+                      <span>CGST</span>
+                      <span>{cgstPrice}</span>
+                    </div>
+                    <div className="pa-order-row text-xs text-gray-500">
+                      <span>SGST</span>
+                      <span>{sgstPrice}</span>
+                    </div>
+                  </>
+                )}
+                {deliveryTaxAmt > 0 && (
+                  <div className="pa-order-row text-xs text-gray-400">
+                    <span>of which on delivery</span>
+                    <span>{deliveryTaxPrice}</span>
+                  </div>
+                )}
+                {vr.place_of_supply && (
+                  <p className="mt-1 text-[11px] text-gray-400">
+                    Place of supply: {vr.place_of_supply}
+                    {vr.place_of_supply_code ? ` (${vr.place_of_supply_code})` : ''}
+                  </p>
+                )}
+              </div>
+            )}
+          </>
         ) : totals.tax > 0 && (cgstAmt > 0 || sgstAmt > 0 || igstAmt > 0) ? (
           isInterState ? (
             <div className="pa-order-row">
