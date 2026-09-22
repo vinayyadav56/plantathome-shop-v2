@@ -62,10 +62,10 @@ export default function CartPage() {
   return (
     <>
       <Seo noindex={true} nofollow={true} />
-      <div className="w-full g-light-a">
+      <div className="pa-cart-page w-full g-light-a">
         <div className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 lg:py-12">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-forest-600">Your cart</p>
-          <h1 className="mt-1 font-cormorant text-3xl font-medium text-forest-900 md:text-4xl">
+          <h1 className="mt-1 font-cormorant text-2xl font-medium text-forest-900 sm:text-3xl md:text-4xl">
             {isEmpty ? 'Nothing here yet' : formatString(totalUniqueItems, t('text-item'))}
           </h1>
 
@@ -109,7 +109,7 @@ export default function CartPage() {
                 </div>
                 )}
 
-                <div className="mt-4 rounded-xl border border-forest-900/10 bg-white px-4">
+                <div className="mt-4 overflow-hidden rounded-xl border border-forest-900/10 bg-white">
                   {items.map((item) => (
                     <CartItem item={item} key={item.id} />
                   ))}

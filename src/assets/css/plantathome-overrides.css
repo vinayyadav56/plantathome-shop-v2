@@ -1480,6 +1480,95 @@ select:focus {
   gap: 4px;
 }
 
+/* ── /cart page — un-nest the drawer's chrome ─────────────────────
+   .pa-cart-delivery-bar / .pa-cart-item / .pa-cart-summary belong to the
+   slide-out DRAWER: each carries its own white card AND a `margin: 0 16px`
+   gutter sized for the drawer body. The page wraps the item list and the
+   summary in its own card, so unscoped they render a card inside a card and
+   stack three sets of padding -- at 390px that was 20 (container px-5)
+   + 16 (page card px-4) + 16 (item margin) = 52px of inset per side, which
+   is what forced the item name into an ellipsis.
+
+   Every rule below is scoped to .pa-cart-page, which exists ONLY on
+   page-bodies/cart.tsx, so the drawer keeps its current rendering. Do not
+   lift these out of that scope. */
+.pa-cart-page .pa-cart-delivery-bar { margin: 0; }
+
+.pa-cart-page .pa-cart-item {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 16px;
+  gap: 14px;
+}
+.pa-cart-page .pa-cart-item + .pa-cart-item { border-top: 1px solid rgba(46,107,74,0.10); }
+.pa-cart-page .pa-cart-item:hover { box-shadow: none; }
+.pa-cart-page .pa-cart-item-img { width: 84px; height: 84px; }
+
+/* The page has the width the drawer lacks, so let the name wrap to two
+   lines instead of inheriting the drawer's single-line ellipsis. */
+.pa-cart-page .pa-cart-item-name {
+  font-size: 15px;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding-right: 30px;
+}
+.pa-cart-page .pa-cart-item-unit { font-size: 12px; margin-bottom: 4px; }
+
+/* "₹X each" is a unit price. cart-item.tsx renders it AFTER the stepper row,
+   which reads fine in a narrow drawer but orphans it on the page. Reordered
+   with flex `order` because that markup is shared with the drawer. */
+.pa-cart-page .pa-cart-item-body { display: flex; flex-direction: column; }
+.pa-cart-page .pa-cart-item-price {
+  order: 2;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6B8C6B;
+}
+.pa-cart-page .pa-cart-item-bottom { order: 3; }
+.pa-cart-page .pa-cart-item-total { font-size: 16px; }
+.pa-cart-page .pa-cart-remove-btn { top: 14px; right: 14px; width: 26px; height: 26px; }
+
+.pa-cart-page .pa-cart-summary {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+.pa-cart-page .pa-cart-summary-row { font-size: 14px; padding: 6px 0; }
+.pa-cart-page .pa-cart-summary-row.total { font-size: 17px; margin-top: 10px; padding-top: 12px; }
+
+.pa-cart-page .pa-cart-checkout-btn {
+  height: 48px;
+  font-size: 15px;
+  padding: 4px 4px 4px 18px;
+  box-shadow: 0 3px 14px rgba(44,95,46,0.26);
+}
+.pa-cart-page .pa-cart-checkout-price {
+  height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.14);
+}
+
+/* The label wrapped to "Proceed to / Checkout" in the lg:w-96 sidebar (this
+   predates the de-nesting above -- it is visible in the old layout too).
+   space-between let the label shrink and wrap while the price pill held its
+   width; pinning both stops that. */
+.pa-cart-page .pa-cart-checkout-btn > span:first-child { white-space: nowrap; }
+.pa-cart-page .pa-cart-checkout-price { white-space: nowrap; flex-shrink: 0; }
+@media (min-width: 1024px) {
+  .pa-cart-page .pa-cart-checkout-btn { font-size: 14.5px; padding-left: 16px; }
+  .pa-cart-page .pa-cart-checkout-price { padding: 0 12px; }
+}
+
 
 /* ================================================================
    PlantAtHome — Checkout Page Premium Redesign
