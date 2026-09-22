@@ -13,6 +13,7 @@ import { checkoutRouteFor } from '@/lib/checkout-route';
 import { formatString } from '@/lib/format-string';
 import usePrice from '@/lib/use-price';
 import { useCart } from '@/store/quick-cart/cart.context';
+import { useCartDeliveryPreview } from '@/framework/order';
 
 /**
  * /cart — the dedicated cart page (annotation: "remove [the floating cart
@@ -23,6 +24,11 @@ import { useCart } from '@/store/quick-cart/cart.context';
  * and the same checkout rule (checkoutRouteFor) as the drawer, so the two can
  * never disagree. One deliberate difference: the free-delivery threshold is
  * read from the admin setting here (the drawer still hard-codes 999).
+ *
+ * Delivery is quoted by /orders/checkout/verify rather than summed here -- see
+ * useCartDeliveryPreview. Since delivery went per-size (Small 100 / Medium 150 /
+ * Large 200, per unit) a two-plant cart can carry a three-figure delivery charge,
+ * and "Calculated at checkout" meant the shopper first saw it on the pay screen.
  */
 export default function CartPage() {
   const { t } = useTranslation('common');
@@ -30,13 +36,26 @@ export default function CartPage() {
   const { settings }: any = useSettings();
   const { items, totalUniqueItems, total, language } = useCart();
 
-  const threshold = Number(settings?.freeShippingAmount) > 0 ? Number(settings.freeShippingAmount) : 999;
-  const isFreeDelivery = total >= threshold;
-  const remaining = Math.max(0, threshold - total);
-  const progress = Math.min(100, (total / threshold) * 100);
+  // Only promise free delivery when the store actually offers it. This used to
+  // fall back to a hard-coded 999 threshold whenever the setting was unset, so
+  // with free shipping switched OFF -- which is how production runs -- the bar
+  // still told the shopper they had "unlocked FREE delivery" and checkout then
+  // charged them for it. Every other surface already gates on settings.freeShipping.
+  const freeDeliveryOffered = Boolean(settings?.freeShipping) && Number(settings?.freeShippingAmount) > 0;
+  const threshold = Number(settings?.freeShippingAmount);
+  const isFreeDelivery = freeDeliveryOffered && total >= threshold;
+  const remaining = freeDeliveryOffered ? Math.max(0, threshold - total) : 0;
+  const progress = freeDeliveryOffered ? Math.min(100, (total / threshold) * 100) : 0;
+
+  // Server-quoted, so it already accounts for the threshold above, the delivery
+  // optimizer's flat fee, and the per-size sum -- in that order of precedence.
+  const { deliveryFee, pricesIncludeTax, isLoading: deliveryLoading } = useCartDeliveryPreview();
+  const hasQuote = deliveryFee !== null;
 
   const { price: totalPrice } = usePrice({ amount: total });
   const { price: remainingPrice } = usePrice({ amount: remaining });
+  const { price: deliveryPrice } = usePrice({ amount: deliveryFee ?? 0 });
+  const { price: grandTotalPrice } = usePrice({ amount: total + (deliveryFee ?? 0) });
 
   const isEmpty = items.length === 0;
 
@@ -69,6 +88,7 @@ export default function CartPage() {
             <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-8">
               {/* items */}
               <div className="w-full lg:max-w-2xl">
+                {freeDeliveryOffered && (
                 <div className="pa-cart-delivery-bar rounded-xl border border-forest-900/10 bg-white">
                   <p className={`pa-cart-delivery-label${isFreeDelivery ? ' is-free' : ''}`}>
                     {isFreeDelivery ? (
@@ -87,6 +107,7 @@ export default function CartPage() {
                     <div className="pa-delivery-fill" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
+                )}
 
                 <div className="mt-4 rounded-xl border border-forest-900/10 bg-white px-4">
                   {items.map((item) => (
@@ -104,15 +125,33 @@ export default function CartPage() {
                       <span>{totalPrice}</span>
                     </div>
                     <div className="pa-cart-summary-row">
-                      <span>Delivery</span>
-                      <span className={isFreeDelivery ? 'pa-cart-summary-free' : ''}>
-                        {isFreeDelivery ? 'FREE' : 'Calculated at checkout'}
+                      <span>
+                        Delivery
+                        {hasQuote && deliveryFee > 0 && (
+                          <span className="block text-[11px] font-normal text-forest-900/50">
+                            Charged per plant by size
+                          </span>
+                        )}
+                      </span>
+                      <span className={hasQuote && deliveryFee === 0 ? 'pa-cart-summary-free' : ''}>
+                        {hasQuote
+                          ? deliveryFee === 0
+                            ? 'FREE'
+                            : deliveryPrice
+                          : deliveryLoading
+                            ? 'Calculating…'
+                            : 'Calculated at checkout'}
                       </span>
                     </div>
                     <div className="pa-cart-summary-row total">
                       <span>Total</span>
-                      <span>{totalPrice}</span>
+                      <span>{hasQuote ? grandTotalPrice : totalPrice}</span>
                     </div>
+                    {hasQuote && pricesIncludeTax && (
+                      <p className="mt-1 text-[11px] text-forest-900/50">
+                        Taxes are included in the prices shown.
+                      </p>
+                    )}
                   </div>
 
                   <button

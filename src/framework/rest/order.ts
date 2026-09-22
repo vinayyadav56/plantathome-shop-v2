@@ -25,6 +25,7 @@ import client from "./client";
 import { useAtom } from "jotai";
 import { clearCheckoutAtom, verifiedResponseAtom } from "@/store/checkout";
 import { useCart } from "@/store/quick-cart/cart.context";
+import { formatOrderedProduct } from "@/lib/format-ordered-product";
 import { useRouter } from "@/compat/next-router";
 import { Routes } from "@/config/routes";
 import { mapPaginatorData } from "@/framework/utils/data-mappers";
@@ -448,6 +449,64 @@ export function useGenerateDownloadableUrl() {
 
   return {
     generateDownloadableUrl,
+  };
+}
+
+/**
+ * Read-only delivery preview for the CART page.
+ *
+ * Delivery is charged per size, per unit (Small 100 / Medium 150 / Large 200),
+ * so the figure depends entirely on what is in the cart. The cart page used to
+ * say "Calculated at checkout", which meant a two-plant cart first met its
+ * three-figure delivery charge on the last screen before paying.
+ *
+ * This posts the SAME /orders/checkout/verify the checkout does, rather than
+ * summing per-size charges in the browser, because the server applies four
+ * rules in order: a free-shipping coupon, then the free-delivery threshold,
+ * then the delivery optimizer's flat fee, and only then the per-size sum.
+ * Staging proves why that matters -- with the optimizer on, a cart of one Small
+ * and one Large verifies at 49, while the per-size sum is 300. A client-side
+ * reimplementation would quote the wrong one.
+ *
+ * Deliberately NOT routed through useVerifyOrder: that hook stores its result
+ * as the checkout's verified response, and this call carries no address, so it
+ * would hand Place Order an addressless verification to submit.
+ */
+export function useCartDeliveryPreview() {
+  const { items, total, isEmpty } = useCart();
+
+  const products = (items ?? []).map((item: any) => formatOrderedProduct(item));
+  // Keyed on WHAT is in the cart, not on a render: changing a quantity refetches,
+  // re-rendering does not.
+  const fingerprint = cartFingerprint(products);
+
+  const query: any = useQuery<any, Error>(
+    [API_ENDPOINTS.ORDERS_CHECKOUT_VERIFY, 'cart-preview', fingerprint],
+    () => client.orders.verify({ amount: total, products } as any),
+    {
+      enabled: !isEmpty && products.length > 0,
+      staleTime: 5 * 60 * 1000,
+      retry: false,
+      // Hold the last figure while a quantity edit re-verifies, so the summary
+      // does not flash back to "Calculated at checkout" between keystrokes.
+      keepPreviousData: true,
+    },
+  );
+
+  const data = query.data;
+  const hasFigure = data != null && data.shipping_charge != null;
+
+  return {
+    // null means "we could not price it" -- the caller keeps the old wording.
+    // A verify can legitimately refuse (city gate, an item gone out of stock),
+    // and the cart is not the screen to argue about that on.
+    deliveryFee: hasFigure ? Number(data.shipping_charge) : null,
+    verifiedSubtotal: data?.total_amount != null ? Number(data.total_amount) : null,
+    // Read, never assumed: the store has run tax-inclusive since launch, but a
+    // cart that PRINTS "taxes included" while the setting says otherwise is a
+    // pricing claim the checkout would then contradict.
+    pricesIncludeTax: data?.prices_include_tax === true,
+    isLoading: Boolean(query.isLoading) && !hasFigure,
   };
 }
 
