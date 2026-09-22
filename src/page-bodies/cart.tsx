@@ -57,6 +57,11 @@ export default function CartPage() {
   const { price: deliveryPrice } = usePrice({ amount: deliveryFee ?? 0 });
   const { price: grandTotalPrice } = usePrice({ amount: total + (deliveryFee ?? 0) });
 
+  // The summary Total and the checkout button must never disagree: before this
+  // they were two separate expressions and the button kept rendering the
+  // subtotal, so a quoted cart showed Total Rs527.80 over a Rs478.80 button.
+  const payableNow = hasQuote ? grandTotalPrice : totalPrice;
+
   const isEmpty = items.length === 0;
 
   return (
@@ -145,7 +150,7 @@ export default function CartPage() {
                     </div>
                     <div className="pa-cart-summary-row total">
                       <span>Total</span>
-                      <span>{hasQuote ? grandTotalPrice : totalPrice}</span>
+                      <span>{payableNow}</span>
                     </div>
                     {hasQuote && pricesIncludeTax && (
                       <p className="mt-1 text-[11px] text-forest-900/50">
@@ -160,7 +165,7 @@ export default function CartPage() {
                     onClick={() => router.push(checkoutRouteFor(items), undefined, { locale: language })}
                   >
                     <span>Proceed to Checkout</span>
-                    <span className="pa-cart-checkout-price">{totalPrice}</span>
+                    <span className="pa-cart-checkout-price">{payableNow}</span>
                   </button>
                   <p className="pa-cart-secure">
                     <Lock size={12} aria-hidden />

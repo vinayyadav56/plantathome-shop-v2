@@ -6,21 +6,28 @@ import usePrice from '@/lib/use-price';
 import { ItemInfoRow } from './item-info-row';
 import { CheckAvailabilityAction } from '@/components/checkout/check-availability-action';
 import { ShoppingBag, Lock, ShieldCheck, RotateCcw } from '@/components/ui/icon';
-
-const FREE_DELIVERY_THRESHOLD = 999;
+import { useSettings } from '@/framework/settings';
 
 const UnverifiedItemList = ({ hideTitle = false }: { hideTitle?: boolean }) => {
   const { t } = useTranslation('common');
   const { items, total, isEmpty } = useCart();
+  const { settings }: any = useSettings();
+  // Same gate as page-bodies/cart.tsx and the cart drawer: production runs with
+  // free shipping OFF, and a hard-coded 999 here promised "You've unlocked FREE
+  // delivery!" on the checkout screen itself. verified-item-list.tsx already
+  // reads these settings; this list was the odd one out.
+  const freeDeliveryOffered =
+    Boolean(settings?.freeShipping) && Number(settings?.freeShippingAmount) > 0;
+  const FREE_DELIVERY_THRESHOLD = Number(settings?.freeShippingAmount) || 0;
   const { price: subtotal } = usePrice(
     items && {
       amount: total,
     }
   );
-  const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - total);
+  const remaining = freeDeliveryOffered ? Math.max(0, FREE_DELIVERY_THRESHOLD - total) : 0;
   const { price: remainingPrice } = usePrice({ amount: remaining });
-  const shipProgress = Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100);
-  const isFreeDelivery = total >= FREE_DELIVERY_THRESHOLD;
+  const shipProgress = freeDeliveryOffered ? Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100) : 0;
+  const isFreeDelivery = freeDeliveryOffered && total >= FREE_DELIVERY_THRESHOLD;
   return (
     <div className="pa-order-summary">
       {!hideTitle && (
@@ -30,7 +37,7 @@ const UnverifiedItemList = ({ hideTitle = false }: { hideTitle?: boolean }) => {
         </h3>
       )}
 
-      {!isEmpty && (
+      {!isEmpty && freeDeliveryOffered && (
         <div className={`pa-od-ship${isFreeDelivery ? ' is-free' : ''}`}>
           <p className="pa-od-ship-label">
             {isFreeDelivery

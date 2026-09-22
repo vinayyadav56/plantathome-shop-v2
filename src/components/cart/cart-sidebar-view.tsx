@@ -7,17 +7,18 @@ import { Routes } from '@/config/routes';
 import { checkoutRouteFor } from '@/lib/checkout-route';
 import usePrice from '@/lib/use-price';
 import { useCart } from '@/store/quick-cart/cart.context';
+import { useSettings } from '@/framework/settings';
 import { formatString } from '@/lib/format-string';
 import { useTranslation } from 'next-i18next';
 import { useAtom } from 'jotai';
 import { drawerAtom } from '@/store/drawer-atom';
 import { Check, Clock, Lock, ShoppingBag, Truck, X } from '@/components/ui/icon';
 
-const FREE_DELIVERY_THRESHOLD = 999;
 
 const CartSidebarView = () => {
   const { t } = useTranslation('common');
   const { items, totalUniqueItems, total, language } = useCart();
+  const { settings }: any = useSettings();
   const [_, closeSidebar] = useAtom(drawerAtom);
   const router = useRouter();
 
@@ -31,13 +32,22 @@ const CartSidebarView = () => {
     router.push('/');
   }
 
+  // Free delivery is an admin setting and production runs with it OFF. The
+  // threshold used to be a hard-coded 999 here, so the drawer promised
+  // "You've unlocked FREE delivery!" and showed Delivery: FREE on a store that
+  // then charged for it at checkout. page-bodies/cart.tsx was fixed in 1d3b775;
+  // this caller was missed. Same gate, same source of truth.
+  const freeDeliveryOffered =
+    Boolean(settings?.freeShipping) && Number(settings?.freeShippingAmount) > 0;
+  const FREE_DELIVERY_THRESHOLD = Number(settings?.freeShippingAmount) || 0;
+
   const { price: totalPrice } = usePrice({ amount: total });
   const { price: deliveryThresholdPrice } = usePrice({ amount: FREE_DELIVERY_THRESHOLD });
 
-  const remaining = Math.max(0, FREE_DELIVERY_THRESHOLD - total);
+  const remaining = freeDeliveryOffered ? Math.max(0, FREE_DELIVERY_THRESHOLD - total) : 0;
   const { price: remainingPrice } = usePrice({ amount: remaining });
-  const progress = Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100);
-  const isFreeDelivery = total >= FREE_DELIVERY_THRESHOLD;
+  const progress = freeDeliveryOffered ? Math.min(100, (total / FREE_DELIVERY_THRESHOLD) * 100) : 0;
+  const isFreeDelivery = freeDeliveryOffered && total >= FREE_DELIVERY_THRESHOLD;
 
   // Subtotal == total (delivery calculated at checkout)
   const { price: subtotalPrice } = usePrice({ amount: total });
@@ -72,7 +82,8 @@ const CartSidebarView = () => {
       <div className="pa-cart-body">
         {items.length > 0 ? (
           <>
-            {/* Free delivery progress bar */}
+            {/* Free delivery progress bar — only when the store offers it */}
+            {freeDeliveryOffered && (
             <div className="pa-cart-delivery-bar">
               <p className={`pa-cart-delivery-label${isFreeDelivery ? ' is-free' : ''}`}>
                 {isFreeDelivery ? (
@@ -91,6 +102,7 @@ const CartSidebarView = () => {
                 <div className="pa-delivery-fill" style={{ width: `${progress}%` }} />
               </div>
             </div>
+            )}
 
             {/* Cart items */}
             {items.map((item) => (
