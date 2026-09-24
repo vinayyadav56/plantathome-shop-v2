@@ -110,6 +110,18 @@ export const PlaceOrderAction: React.FC<{
   const { result: pincodeResult } = usePincodeServiceability(shippingZip);
   const pincodeBlocked = pincodeResult?.serviceable === false && !courierMode;
 
+  // Delivery coverage, per LINE. verify() has always returned this and the page
+  // only displayed it, so a cart with an uncoverable item reached /orders and
+  // came back a 422 the shopper could not act on. The server enforces it now;
+  // this says so before they press the button, and names the items.
+  const coverage = (verified_response as any)?.coverage ?? null;
+  const coverageBlockedIds: Array<number | string> = coverage?.blocked_products ?? [];
+  const coverageBlockedItems = items?.filter(
+    (item: any) =>
+      coverageBlockedIds.includes(item.productId ?? item.id) ||
+      coverageBlockedIds.includes(item.id),
+  );
+
   useEffect(() => {
     setErrorMessage(null);
   }, [payment_gateway]);
@@ -259,6 +271,19 @@ export const PlaceOrderAction: React.FC<{
     if (pincodeBlocked) {
       setErrorMessage(
         `We don't deliver to ${pincodeResult?.pincode ?? shippingZip} yet. Please use a serviceable delivery address.`,
+      );
+      return;
+    }
+    if (coverageBlockedItems?.length) {
+      const names = coverageBlockedItems
+        .map((item: any) => item.name)
+        .filter(Boolean)
+        .slice(0, 3)
+        .join(', ');
+      setErrorMessage(
+        `${names || 'Some items'} can't be delivered to ${
+          coverage?.pincode ?? shippingZip
+        } yet. Remove them or choose another address.`,
       );
       return;
     }
