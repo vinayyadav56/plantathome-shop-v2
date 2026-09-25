@@ -238,6 +238,52 @@ export function useHomeSections(): HomeSection[] | null {
     .sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 }
 
+/**
+ * The verticals allowed to put categories in the homepage category strip.
+ *
+ * The strip — CategoryRow on desktop, CategoryCircles on the phone home — asks
+ * for every flagged top-level category in ONE request and has no vertical
+ * filter, so it was showing categories from verticals whose homepage section is
+ * switched off: on production, 9 of the 17 tiles were `tools` and
+ * `pots-planters` while both sections were disabled. Splitting it into
+ * per-vertical requests is not an option here — the repository leaks `whereHas`
+ * between two calls in one php process (HomepageCategoriesTest documents it) —
+ * so the config is applied on the way out instead.
+ *
+ * A vertical qualifies only if its section is enabled AND that section shows
+ * category cards; turning either off is a reasonable way to say "not these".
+ *
+ * null = never configured, and the strip then shows everything, exactly as
+ * useHomeSections() keeps the pre-config layout.
+ */
+export function useHomeCategoryVerticals(): Set<string> | null {
+  const { homeSections } = useHomeConfig();
+  if (!homeSections) return null;
+
+  return new Set(
+    homeSections
+      .filter(
+        (s) => s?.typeSlug && s.enabled !== false && s.showCategories !== false,
+      )
+      .map((s) => s.typeSlug),
+  );
+}
+
+/**
+ * Keep only categories belonging to one of `verticals`; null means no filtering.
+ *
+ * Unlike applyCuration this does NOT fall back to the full list when it empties
+ * the input — an empty result here means the admin switched those sections off,
+ * which is an instruction, not data drift.
+ */
+export function filterByVerticals<T extends { type?: { slug?: any } | null }>(
+  categories: T[],
+  verticals: Set<string> | null,
+): T[] {
+  if (!verticals) return categories;
+  return categories.filter((c) => c?.type?.slug && verticals.has(c.type.slug));
+}
+
 /** A single banner's on/off (default ON). */
 export function useBannerEnabled(key: string): boolean {
   const { banners } = useHomeConfig();

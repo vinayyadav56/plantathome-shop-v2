@@ -4,7 +4,12 @@ import SafeImage from '@/components/ui/safe-image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCategories } from '@/framework/category';
-import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
+import {
+  useHomeConfig,
+  useHomeCategoryVerticals,
+  applyCuration,
+  filterByVerticals,
+} from '@/lib/use-home-config';
 import {
   ArrowRight,
   ChevronRight,
@@ -65,10 +70,23 @@ export function CategoryRow() {
     home: 1,
   } as any);
   const { homeCategories } = useHomeConfig();
+  // `home: 1` says WHICH categories may appear; this says which verticals may,
+  // and it is the admin's Homepage Sections switches. Filter before curating so
+  // curation picks from the allowed set — and so its "stale slugs fall back to
+  // everything" rule can never smuggle a switched-off vertical back in.
+  const verticals = useHomeCategoryVerticals();
   // Twelve slots feeding a scrollable rail (six visible, the rest behind the
   // arrow). Which twelve — and their order — is admin curation's call.
-  const categories = applyCuration(raw ?? [], homeCategories).slice(0, 12);
+  const categories = applyCuration(
+    filterByVerticals(raw ?? [], verticals),
+    homeCategories,
+  ).slice(0, 12);
   const railRef = React.useRef<HTMLDivElement>(null);
+
+  // Nothing to show — render no strip at all rather than an empty glass panel
+  // with a scroll button. Below every hook, so the order stays stable.
+  if (verticals?.size === 0) return null;
+  if (!isLoading && categories.length === 0) return null;
 
   return (
     <section className="relative">

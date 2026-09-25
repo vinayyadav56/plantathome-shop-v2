@@ -3,7 +3,12 @@ import React from 'react';
 import Link from 'next/link';
 import { useCategories } from '@/framework/category';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
-import { useHomeConfig, applyCuration } from '@/lib/use-home-config';
+import {
+  useHomeConfig,
+  useHomeCategoryVerticals,
+  applyCuration,
+  filterByVerticals,
+} from '@/lib/use-home-config';
 import { PLACEHOLDER } from './_img';
 import SafeImage from '@/components/ui/safe-image';
 import { LayoutGrid } from '@/components/ui/icon';
@@ -40,7 +45,18 @@ export function CategoryCircles() {
     home: 1,
   } as any);
   const { homeCategories } = useHomeConfig();
-  const list = applyCuration((categories ?? []).filter((c) => c?.slug), homeCategories).slice(0, 12);
+  // Same rule as the desktop strip (category-row.tsx): only verticals whose
+  // homepage section is on AND shows category cards.
+  const verticals = useHomeCategoryVerticals();
+  const list = applyCuration(
+    filterByVerticals((categories ?? []).filter((c) => c?.slug), verticals),
+    homeCategories,
+  ).slice(0, 12);
+
+  // Hide the whole rail, View All included — this IS the phone's category
+  // strip, so "don't show categories" means don't show it.
+  if (verticals?.size === 0) return null;
+  if (!isLoading && list.length === 0) return null;
 
   return (
     <div className="pah-scroll mb-6 flex gap-[18px] overflow-x-auto px-5 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
