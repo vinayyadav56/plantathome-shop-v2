@@ -37,11 +37,14 @@ function HeroImg() {
   // eslint-disable-next-line @next/next/no-img-element
   return (
     <SafeImage
-      src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=900&q=82&auto=format&fit=crop"
-      alt="Corporate plant gifting"
+      // Same cut-out as the desktop band; `contain` for the same reason. The
+      // frame it sits in has no background of its own, so the card's sage-100
+      // shows through the transparency.
+      src="/images/gift-peace-lily.webp"
+      alt="Peace lily in a mint ceramic pot"
       fill
       variant="banner"
-      className="object-cover"
+      className="object-contain"
       fallback={
         // eslint-disable-next-line @next/next/no-img-element
         <img src={PLACEHOLDER} alt="" className="absolute inset-0 h-full w-full object-cover" />

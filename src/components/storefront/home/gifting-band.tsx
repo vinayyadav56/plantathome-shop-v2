@@ -108,12 +108,16 @@ export function GiftingBand() {
           transition={{ duration: 0.8, ease: EXPO }}
           className="relative h-64 min-h-[260px] w-full overflow-hidden sm:h-80 lg:h-auto lg:flex-[1_1_44%]"
         >
+          {/* A cut-out on a transparent background, not a photo — so `contain`,
+              not `cover`: cover would crop the pot and the outer leaves off a
+              1230x1278 subject in a 44%-wide column. What shows around it is
+              the section's own #F8F7F2, which is why no backdrop is needed. */}
           <SafeImage
-            src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=1400&q=85&auto=format&fit=crop"
-            alt="Corporate plant gifting"
+            src="/images/gift-peace-lily.webp"
+            alt="Peace lily in a mint ceramic pot"
             fill
             variant="banner"
-            className="object-cover"
+            className="object-contain"
           />
           {/* left-edge fade to blend with copy panel on desktop */}
           <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#F8F7F2] to-transparent lg:block hidden" />
