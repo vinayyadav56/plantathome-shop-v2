@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { HttpClient } from '@/framework/client/http-client';
 import { useCustomerCity } from '@/lib/use-customer-city';
+import { useCityPicker } from '@/components/location/city-switcher';
 import { Sun } from '@/components/ui/icon';
 import {
   adminOnly,
@@ -19,7 +20,12 @@ import {
  *    contact), which the `service-availability/check` endpoint attaches to
  *    its response when the blocked reason is `city_maintenance`.
  *  - PAUSED / DISABLED render a plain "not serviceable here" screen with a
- *    change-city CTA (the existing pah:open-location event).
+ *    change-city CTA that opens the real picker.
+ *
+ * That CTA matters more than it looks: this component REPLACES the whole
+ * storefront, headers included, so it is the only city control on screen. It
+ * used to dispatch a `pah:open-location` event that nothing listened to, which
+ * left a shopper whose city was paused with no way out at all.
  *
  * This screen is the FACE, not the enforcement: checkout and order creation
  * are blocked server-side regardless (City::acceptsOrders). Fail-open by
@@ -28,6 +34,9 @@ import {
  */
 export default function CityOpsGate({ children }: { children: React.ReactNode }) {
   const { city } = useCustomerCity();
+  // Routed through the shared hook so a switch from here still re-validates the
+  // cart against the new city, exactly as the header chip does.
+  const { open: openCityPicker, dialogs: cityDialogs } = useCityPicker();
   const { permissions } = getAuthCredentials();
   const isAdmin = hasAccess(adminOnly, permissions);
 
@@ -104,7 +113,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new CustomEvent('pah:open-location'))}
+          onClick={openCityPicker}
           className="rounded-[14px] bg-[#14532D] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0D4324]"
         >
           {m.buttonTitle || 'Change delivery city'}
@@ -122,6 +131,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
           </a>
         ) : null}
       </div>
+      {cityDialogs}
     </div>
   );
 }

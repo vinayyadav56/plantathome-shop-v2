@@ -59,6 +59,13 @@ const HeaderMinimal = ({ layout }: { layout: string }) => {
   );
   const [isAuthorize] = useAtom(authorizationAtom);
   const router = useRouter();
+
+  // displayMobileHeaderSearch is a GLOBAL atom, not route-scoped and never
+  // reset — so a search opened on one page left this overlay mounted over the
+  // next page's header, covering the city chip. Clear it on navigation.
+  React.useEffect(() => {
+    setDisplayMobileHeaderSearch(false);
+  }, [router.asPath]); // eslint-disable-line react-hooks/exhaustive-deps
   const {
     query: { slug },
   } = router;
@@ -158,11 +165,9 @@ const HeaderMinimal = ({ layout }: { layout: string }) => {
             />
 
             {/* Shopping-City chip — always visible, minimal header included.
-                It was `hidden sm:inline-flex`, i.e. hidden on exactly the
-                phones this comment claims to cover: below 640px the only city
-                control left was the small chip in the announcement strip,
-                which reads as part of a promo bar. */}
-            <CitySwitcher className="ml-4 inline-flex shrink-0" />
+                This header is `fixed`, so unlike the main header's old
+                scroll-collapsed bar it never goes away. */}
+            <CitySwitcher className="ms-3 max-w-[38vw] shrink-0 sm:max-w-[14rem]" />
 
             {/* {isMultiLangEnable ? (
             <div className="ltr:ml-auto rtl:mr-auto lg:hidden">
@@ -188,10 +193,14 @@ const HeaderMinimal = ({ layout }: { layout: string }) => {
                 inputClassName="lg:border-accent-400"
                 seeMore={true}
               />
+              {/* Was `hidden … lg:inline-flex`: on a phone this overlay covers
+                  the whole header row — city chip included — and had no way to
+                  be closed from inside itself. Visible at every width now. */}
               <Button
                 variant="custom"
-                onClick={() => setDisplayMobileHeaderSearch((prev) => !prev)}
-                className="hidden border border-accent-400 bg-gray-100 !px-4 text-accent lg:inline-flex"
+                onClick={() => setDisplayMobileHeaderSearch(false)}
+                aria-label="Close search"
+                className="inline-flex border border-accent-400 bg-gray-100 !px-4 text-accent"
               >
                 <CloseIcon className="h-5 w-5" />
               </Button>

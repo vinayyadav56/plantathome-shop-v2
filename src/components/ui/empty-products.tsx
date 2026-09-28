@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { getStoredCity } from '@/lib/customer-location';
+import { useCityPicker } from '@/components/location/city-switcher';
 import { ArrowRight } from '@/components/ui/icon';
 import PottedPlantIllustration from '@/components/ui/illustration/potted-plant';
 
@@ -25,6 +26,10 @@ export function EmptyProducts({
   React.useEffect(() => {
     setCity(getStoredCity());
   }, []);
+  // This was a `pah:open-location` CustomEvent that nothing anywhere listened
+  // to — the button had never once opened anything. The shared hook also means
+  // a switch from here re-validates the cart, like every other entry point.
+  const { open: changeCity, dialogs: cityDialogs } = useCityPicker();
 
   const what = categoryName ? categoryName.toLowerCase() : 'plants';
   const heading =
@@ -35,13 +40,6 @@ export function EmptyProducts({
     (city
       ? `We're still growing our collection in ${city}. Explore everything available, or switch to another delivery city.`
       : `We couldn't find anything to show here. Explore our full collection of plants and essentials.`);
-
-  const changeCity = () => {
-    if (typeof window !== 'undefined') {
-      // The header / location gate listens for this to open the city selector.
-      window.dispatchEvent(new CustomEvent('pah:open-location'));
-    }
-  };
 
   return (
     <div className={`flex w-full flex-col items-center px-5 py-14 text-center sm:py-20 ${className}`}>
@@ -69,6 +67,7 @@ export function EmptyProducts({
           </button>
         )}
       </div>
+      {cityDialogs}
     </div>
   );
 }

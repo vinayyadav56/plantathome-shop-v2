@@ -28,18 +28,18 @@ export default function HomeLayout({
   const headerEl = ['minimal', 'compact'].includes(layout) ? (
     <HeaderMinimal layout={layout} />
   ) : (
-    <Header layout={layout} pillFromMd={pahMobile} />
+    <Header layout={layout} />
   );
 
   return (
     <div className="flex min-h-screen flex-col transition-colors duration-150" style={{ background: 'var(--pa-bg)' }}>
-      {/* Brand header is sticky/solid (see header.tsx). On the phone home (<md)
-          PahHome carries its own in-hero app bar, so the glass PILL is
-          suppressed — but only the pill: Header's `pillFromMd` hides the
-          sticky <header> and lets the announcement strip through, so the
-          phone homepage gets the same 48px delivering-to / Track Order strip
-          as every other page. This used to be a `max-md:hidden md:contents`
-          wrapper around the whole header, which took the strip with it. */}
+      {/* Brand header is sticky/solid (see header.tsx) and now renders on the
+          phone home too. It used to be suppressed there (`pillFromMd`) because
+          PahHome carried its own in-hero app bar — but that bar is `relative`,
+          so it scrolled away with the hero and the homepage was left with no
+          way to change the shopping city. The in-hero bar is gone (its
+          hamburger and cart were already duplicated by the bottom nav), and
+          this sticky header carries the city chip on every page alike. */}
       {headerEl}
 
       <main id="main-content" className="min-h-screen flex-1">{children}</main>

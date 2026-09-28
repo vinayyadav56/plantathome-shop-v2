@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
-import { BrandLogo } from '@/components/storefront/logo-mark';
+import { BrandLogo, LogoMark } from '@/components/storefront/logo-mark';
 import { Icon } from '@/components/storefront/icons';
 import { EXPO } from '@/components/storefront/motion';
 import { SearchIcon } from '@/components/icons/search-icon';
@@ -85,16 +85,7 @@ const NAV_UNDERLINE =
  * scrolls away) over a sticky floating warm-glass pill with centred nav,
  * inline search, profile + cart. Wired to the real cart drawer, login + search.
  */
-const Header = ({
-  layout,
-  pillFromMd = false,
-}: {
-  layout?: string;
-  /** Home experience only: the phone home (<md) carries its own in-hero app
-   *  bar, so the glass pill is suppressed there — but the announcement strip
-   *  still shows, matching every other page. */
-  pillFromMd?: boolean;
-}) => {
+const Header = ({ layout }: { layout?: string }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { totalUniqueItems } = useCart();
@@ -105,22 +96,14 @@ const Header = ({
   const [searchOpen, setSearchOpen] = useAtom(displayMobileHeaderSearchAtom);
   const [menuOpen, setMenuOpen] = React.useState(false);
 
-  // Collapse-on-scroll v2 (annotation follow-up): past the top band the full
-  // pill "should not show" — a slim light bar (hamburger + delivering city +
-  // Track Order) takes its place. The full pill returns near the top.
-  const [collapsed, setCollapsed] = React.useState(false);
-  React.useEffect(() => {
-    // Mobile-only (annotation follow-up): on md+ the full pill stays put —
-    // the compact scrolled bar is a phone affordance.
-    const update = () => setCollapsed(window.scrollY > 150 && window.innerWidth < 768);
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
-    return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
-    };
-  }, []);
+  // The collapse-on-scroll slim bar is GONE, and with it the only mechanism
+  // that could hide the shopping-city chip. It swapped the pill for a slim bar
+  // at `scrollY > 150 && innerWidth < 768`, which meant: nothing carried the
+  // city between ~45px (where the static announcement strip scrolls away) and
+  // 150px, and at >=768px — desktop, and a large phone in LANDSCAPE — the bar
+  // could never appear at all, so the city vanished for the rest of the
+  // session. The header is pure CSS now: one sticky pill at every width. It
+  // cannot flicker at a threshold and cannot differ between server and client.
 
   // The cart icon lands on the /cart page (annotation: dedicated cart page).
   // The drawer still opens as add-to-cart confirmation via `pah-open-cart`.
@@ -183,11 +166,11 @@ const Header = ({
             overflow ends in an ellipsis instead of a half-glyph — the previous
             flex cells only had overflow-hidden, which cuts text mid-letter and
             reads as "spilled". Children are inline so text-overflow applies. */}
-        <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center justify-between gap-4 overflow-hidden px-5 sm:px-8 xl:px-12">
-          <span className="min-w-0 truncate">
-            <span className="hidden text-white/70 sm:inline">Delivering to </span>
-            <CitySwitcher tone="light" className="align-middle" />
-          </span>
+        <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center justify-end gap-4 overflow-hidden px-5 sm:px-8 xl:px-12">
+          {/* The city chip used to live here. It does not any more: this strip
+              is static and scrolls away after 48px, so it could never be the
+              home of a control that has to work at any scroll position. The
+              chip is in the sticky pill below. */}
           <span className="min-w-0 shrink-0 truncate text-end">
             <Link href="/track-order" className="inline-flex items-center gap-1.5 align-middle transition-colors hover:text-white">
               <Truck size={16} aria-hidden />
@@ -211,24 +194,26 @@ const Header = ({
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
-            clipped child span instead. Swapped for the compact bar once
-            scrolled (search/menu keep the full pill up). */}
-        {/* pillFromMd hides only the FULL PILL on a phone, not the whole sticky
-            header. It used to sit on <header>, which took the compact scrolled
-            bar down with it — and that bar is the only thing carrying the
-            shopping city once the static announcement strip has scrolled away.
-            So on the phone homepage, scrolling left no way to see or change
-            the city at all. The pill is what PahHome's in-hero app bar
-            duplicates; the compact bar duplicates nothing. */}
-        {(!collapsed || searchOpen || menuOpen) ? (
-        <div className={`pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-6 rounded-[12px] border border-white/[0.72] ${pillFromMd ? 'max-md:hidden' : ''} bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:px-[42px]`}>
+            clipped child span instead. Rendered at EVERY width and every scroll
+            offset: it is the only home of the shopping-city chip, so anything
+            that could hide it would take the city with it. */}
+        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-4 rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:gap-6 lg:px-[42px]">
           {/* glass shine — top-half highlight, clipped to the pill radius */}
           <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
+          {/* BrandLogo is a fixed 160px image — on a 360px phone that is most of
+              the pill, which is why an earlier attempt to fit the city chip in
+              here had to be reverted. The leaf mark says the same thing in 34px
+              and leaves room for the control. */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
-            <BrandLogo />
+            <LogoMark className="h-[34px] w-[34px] text-forest-800 md:hidden" />
+            <span className="hidden md:inline">
+              <BrandLogo />
+            </span>
           </Link>
+          {/* THE city control — one instance, no visibility condition. */}
+          <CitySwitcher className="max-w-[7rem] shrink-0 lg:max-w-[10rem] xl:max-w-[14rem]" />
 
           {/* ── nav — centered between logo and actions, flat on the dark bar.
               In-flow (not absolutely centered) so it can never overlap the
@@ -360,32 +345,6 @@ const Header = ({
             </button>
           </div>
         </div>
-        ) : (
-          /* compact scrolled bar — light glass (explicitly "not in green"):
-             hamburger, delivering city, Track Order. */
-          <div className="pointer-events-auto mx-auto flex h-11 max-w-[1360px] items-center gap-3 rounded-[10px] border border-white/[0.72] bg-white/[0.88] px-3.5 shadow-[0_10px_28px_rgba(5,24,10,0.12)] backdrop-blur-[18px] backdrop-saturate-[1.3] sm:px-5">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-black/[0.06] text-[#1a2e1f]"
-              aria-label="Menu"
-            >
-              <Icon.menu className="h-[18px] w-[18px]" />
-            </button>
-            <span className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap text-[13px]">
-              <span className="hidden text-neutral-500 sm:inline">Delivering to</span>
-              <CitySwitcher tone="dark" />
-            </span>
-            <span className="flex-1" />
-            <Link
-              href="/track-order"
-              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-[#1a2e1f] transition-colors hover:text-forest-700"
-            >
-              <Truck size={16} aria-hidden />
-              Track Order
-            </Link>
-          </div>
-        )}
 
         {/* search overlay — its own floating glass panel below the pill (the
             fixed-height pill can't grow to contain it) */}

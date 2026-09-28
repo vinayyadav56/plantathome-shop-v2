@@ -3,9 +3,6 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
-import { useAtom } from 'jotai';
-import { drawerAtom } from '@/store/drawer-atom';
-import { useCart } from '@/store/quick-cart/cart.context';
 import { useBannerEnabled } from '@/lib/use-home-config';
 import LineIcon from '@/components/icons/line-icons';
 import { useHeroSlides } from '@/components/storefront/home/hero-plant';
@@ -22,8 +19,6 @@ const CHIPS = [
 export function Hero() {
   const router = useRouter();
   const { t } = useTranslation('common');
-  const [, setDrawer] = useAtom(drawerAtom);
-  const { totalUniqueItems } = useCart();
   const showOffer = useBannerEnabled('heroOffer');
   const { slides } = useHeroSlides();
   const firstSlide = slides[0];
@@ -52,24 +47,15 @@ export function Hero() {
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,30,18,0.72)_0%,rgba(15,30,18,0.34)_38%,rgba(15,30,18,0.26)_64%,rgba(15,30,18,0.40)_100%)]" />
 
-      <div className="relative z-[2] px-5 pb-11 pt-3.5 text-white">
-        {/* top bar */}
-        <div className="mb-6 flex items-center justify-between">
-          <button type="button" aria-label="Menu" onClick={() => setDrawer({ display: true, view: 'MAIN_MENU_VIEW' })} className="flex p-1 text-white">
-            <LineIcon name="menu" className="h-[21px] w-[21px] text-white" />
-          </button>
-          <div className="flex items-end gap-[9px]">
-            <span className="font-jost text-[18px] font-normal uppercase tracking-[0.3em] text-white">PLANT</span>
-            <span className="font-jost text-[18px] font-normal uppercase tracking-[0.2em] text-white">AT</span>
-            <span className="font-jost text-[18px] font-normal uppercase tracking-[0.3em] text-white">HOME</span>
-          </div>
-          <button type="button" aria-label="Cart" onClick={() => setDrawer({ display: true, view: 'cart' })} className="relative flex p-1 text-white transition active:scale-90">
-            <LineIcon name="cart" className="h-[21px] w-[21px] text-white" />
-            {totalUniqueItems > 0 ? (
-              <span className="absolute -right-1.5 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full border-[1.5px] border-[rgba(15,30,18,0.5)] bg-clay-500 px-1 text-[11px] font-bold text-white">{totalUniqueItems}</span>
-            ) : null}
-          </button>
-        </div>
+      <div className="relative z-[2] px-5 pb-11 pt-6 text-white">
+        {/* The in-hero app bar (hamburger / wordmark / cart) used to sit here.
+            It was `relative`, so it scrolled away with the hero — and because
+            the sticky site header was suppressed on the phone home to avoid
+            doubling up with it, the homepage ended up with NO way to change the
+            shopping city once you scrolled. Its hamburger opened the same
+            MAIN_MENU_VIEW drawer the bottom nav's Categories tab opens, and its
+            cart is the bottom nav's Cart tab, badge included — so removing it
+            costs only the wordmark and gains a header that is always there. */}
 
         {/* hero body */}
         <div>
