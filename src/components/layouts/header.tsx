@@ -213,7 +213,7 @@ const Header = ({ layout }: { layout?: string }) => {
             </span>
           </Link>
           {/* THE city control — one instance, no visibility condition. */}
-          <CitySwitcher className="max-w-[7rem] shrink-0 lg:max-w-[10rem] xl:max-w-[14rem]" />
+          <CitySwitcher className="min-w-0 max-w-[10rem] shrink lg:max-w-[12rem] xl:max-w-[14rem]" />
 
           {/* ── nav — centered between logo and actions, flat on the dark bar.
               In-flow (not absolutely centered) so it can never overlap the
