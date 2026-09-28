@@ -15,7 +15,20 @@ export interface ReverseGeo {
   pincode: string | null;
   normalized_city: string | null;
   city_id: number | null;
+  /** City-status only (City::acceptsOrders) — NOT a delivery verdict. It ignores the pincode
+   *  allow-list, delivery coverage, per-vertical gates, COD and ETA, and it is cached for an
+   *  hour. Ask `delivery-pincodes/check` before telling a shopper we deliver. */
   is_serviceable: boolean;
+
+  /** Google's full street-level address for the pin. The server has always returned it; the
+   *  interface omitted it, so it was discarded at the TypeScript boundary. */
+  formatted_address: string | null;
+  country: string | null;
+  country_code: string | null;
+  /** Locality / neighbourhood, e.g. "Indiranagar". */
+  area: string | null;
+  /** 'google' = a real geocode; 'nearest_city' = a ≤50km guess that cannot know a pincode. */
+  source: 'google' | 'nearest_city';
 }
 
 export async function reverseGeocodePin(
@@ -24,6 +37,46 @@ export async function reverseGeocodePin(
 ): Promise<ReverseGeo | null> {
   try {
     return await HttpClient.get<ReverseGeo>('geo/reverse', { lat, lng });
+  } catch {
+    return null;
+  }
+}
+
+/** The real delivery verdict for a pincode — see `checkPincode`. */
+export interface PincodeVerdict {
+  serviceable: boolean;
+  pincode: string;
+  city?: string | null;
+  state?: string | null;
+  area?: string | null;
+  cod_enabled?: boolean;
+  eta_days?: number | null;
+  available_vendors?: number;
+  /** true = nothing is configured for this pincode, so the answer is fail-open, not a promise. */
+  unconfigured?: boolean;
+  source?: string | null;
+}
+
+/**
+ * "Do we actually deliver to this pincode?" — the only answer that consults delivery coverage
+ * AND the legacy allow-list, then applies the city-activation gate, the per-vertical operations
+ * gate, COD and ETA.
+ *
+ * Deliberately NOT ReverseGeo.is_serviceable, which is City::acceptsOrders() — city status only,
+ * blind to coverage, and cached for an hour. The map chip used that and could therefore tell a
+ * shopper "Serviceable" for a pincode no vendor covers.
+ *
+ * Fails soft to null, like everything else in this module: a serviceability outage must never
+ * stop someone saving an address.
+ */
+export async function checkPincode(
+  pincode: string,
+): Promise<PincodeVerdict | null> {
+  if (!/^[1-9][0-9]{5}$/.test(pincode)) return null;
+  try {
+    return await HttpClient.get<PincodeVerdict>('delivery-pincodes/check', {
+      pincode,
+    });
   } catch {
     return null;
   }

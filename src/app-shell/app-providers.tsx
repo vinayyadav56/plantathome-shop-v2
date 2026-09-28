@@ -55,6 +55,20 @@ export default function AppProviders({
           staleTime: 60 * 1000,
           refetchOnWindowFocus: false,
           refetchOnReconnect: false,
+
+          // TanStack v5 defaults to THREE retries with exponential backoff. Neither was declared
+          // here, so every query that does not override it answered a dead endpoint with 4
+          // requests and several seconds of spinner — and this traffic is served from Singapore
+          // against a Mumbai origin, so each of those round trips costs ~2.5x. 15 files already
+          // set `retry` by hand, which is the symptom of a missing default rather than 15
+          // independent decisions.
+          retry: 1,
+
+          // v5's gcTime default is 5 minutes, but several hooks set staleTime to 10-30 minutes.
+          // Reference data (types, cities, states, location pages) was therefore evicted while
+          // still considered fresh, forcing a refetch on the next mount. gcTime must outlive the
+          // longest staleTime or the staleTime is decorative.
+          gcTime: 30 * 60 * 1000,
         },
       },
     });

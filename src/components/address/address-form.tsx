@@ -17,6 +17,7 @@ import { isAddressComplete } from '@/lib/address-complete';
 import GooglePlacesAutocomplete from '@/components/form/google-places-autocomplete';
 import StateCitySelect from '@/components/location/state-city-select';
 import AddressMapPicker, { type PinResult } from '@/components/address/address-map-picker';
+import MapErrorBoundary from '@/components/maps/map-error-boundary';
 import { useSettings } from '@/framework/settings';
 
 type FormValues = {
@@ -28,8 +29,13 @@ type FormValues = {
     country: string;
     city: string;
     /** Administrative slice of the city (South Delhi within Delhi). Auto-filled from the
-     *  geocoder, never asked for — it exists so `city` can stay the canonical one. */
+     *  geocoder so `city` can stay the canonical one. Now also SHOWN, because a shopper who
+     *  cannot see it cannot correct a wrong one — and it is the field most often confused
+     *  with city in Indian addresses. Still never required. */
     district?: string;
+    /** Locality / neighbourhood ("Indiranagar"). Server-derived from the pin; the API has
+     *  always accepted it, nothing ever sent it. */
+    area?: string;
     state: string;
     zip: string;
     house_no: string;
@@ -93,7 +99,7 @@ export const AddressForm: React.FC<any> = ({
       }}
       resetValues={defaultValues}
     >
-      {({ register, control, getValues, setValue, watch, trigger, formState: { errors } }) => {
+      {({ register, control, getValues, setValue, watch, trigger, formState: { errors, dirtyFields } }) => {
         return (
           <>
             {incomplete ? (
@@ -193,20 +199,54 @@ export const AddressForm: React.FC<any> = ({
                 into city/district/state/pincode (typed values are never trusted). */}
             {process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY ? (
               <div className="col-span-2">
+                {/* A Maps outage must cost the map, not the checkout. */}
+                <MapErrorBoundary
+                  fallback={
+                    <p className="rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      The map could not load. Enter your address below — everything still works.
+                    </p>
+                  }
+                >
                 <AddressMapPicker
                   lat={(watch('location') as any)?.lat}
                   lng={(watch('location') as any)?.lng}
                   onPin={(r: PinResult) => {
+                    const geo: any = r.geo ?? {};
                     const prev: any = getValues('location') ?? {};
                     setValue('location', { ...prev, lat: r.lat, lng: r.lng } as any);
-                    if (r.geo?.city) setValue('address.city', r.geo.city, { shouldValidate: true });
-                    // The pin's reverse-geocode already returns city and district split apart.
-                    if ((r.geo as any)?.district)
-                      setValue('address.district', (r.geo as any).district, { shouldValidate: true });
-                    if (r.geo?.state) setValue('address.state', r.geo.state, { shouldValidate: true });
-                    if (r.geo?.pincode) setValue('address.zip', r.geo.pincode, { shouldValidate: true });
+
+                    // Every pin settle used to overwrite city/district/state/zip unconditionally,
+                    // so nudging the pin silently threw away anything the shopper had corrected
+                    // by hand. RHF marks a field dirty only when the user changes it — setValue()
+                    // without shouldDirty does not — so dirtyFields cleanly separates "the
+                    // geocoder filled this" from "the shopper typed this".
+                    const isDirty = (path: string) =>
+                      path.split('.').reduce<any>((o, k) => (o == null ? o : o[k]), dirtyFields);
+
+                    // ...but a pin moved to a DIFFERENT city is a real relocation, not a nudge.
+                    // Keeping a hand-typed city there would ship an address whose pincode and
+                    // city disagree, which fails delivery. So a relocation refreshes everything.
+                    const movedCity =
+                      Boolean(geo.city) &&
+                      String(geo.city).toLowerCase() !==
+                        String(getValues('address.city') ?? '').toLowerCase();
+
+                    const fill = (path: any, value?: string | null) => {
+                      if (value == null || value === '') return;
+                      if (!movedCity && isDirty(path)) return;
+                      setValue(path, value, { shouldValidate: true });
+                    };
+
+                    // The pin's reverse-geocode returns city and district already split apart.
+                    fill('address.city', geo.city);
+                    fill('address.district', geo.district);
+                    fill('address.state', geo.state);
+                    fill('address.zip', geo.pincode);
+                    fill('address.area', geo.area);
+                    fill('address.country', geo.country);
                   }}
                 />
+                </MapErrorBoundary>
               </div>
             ) : null}
 
@@ -236,6 +276,21 @@ export const AddressForm: React.FC<any> = ({
                 {t(errors.address?.state?.message! || errors.address?.city?.message!)}
               </p>
             ) : null}
+
+            {/* Area and District are filled by the pin. Both were auto-filled but never
+                rendered, so a wrong one was invisible and uncorrectable — and district is the
+                field most often confused with city in Indian addresses. Neither is required. */}
+            <Input
+              label="Area / locality"
+              placeholder="e.g. Indiranagar"
+              {...register('address.area')}
+              variant="outline"
+            />
+            <Input
+              label="District (optional)"
+              {...register('address.district')}
+              variant="outline"
+            />
 
             <Input
               label={t('text-zip')}
