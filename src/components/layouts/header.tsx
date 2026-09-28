@@ -157,21 +157,31 @@ const Header = ({ layout }: { layout?: string }) => {
 
   return (
     <>
-      {/* announcement bar — dark-green gradient strip with a faint lime glow,
-          static (only the glass pill below is sticky, so this scrolls away
-          naturally). City switcher stays left for the city-first delivery UX. */}
-      <div className="relative h-12 bg-[#0a2916] text-[13px] font-normal text-white/[0.92]">
+      {/* announcement bar — dark-green strip carrying the shopping-city chip
+          (annotation: "give this on the green strip only").
+
+          STICKY, and that is load-bearing rather than decorative: this strip is
+          the only home of the city control, and a control that governs prices,
+          availability and delivery has to be reachable at any scroll offset. As
+          a static bar it scrolled away after 48px, which is exactly how the
+          city went missing before. If anyone ever makes this `relative` again,
+          the city must move somewhere sticky in the same commit. */}
+      <div className="sticky top-0 z-[51] h-12 bg-[#0a2916] text-[13px] font-normal text-white/[0.92]">
         {/* Nothing may spill out of the 48px bar at any width (annotation,
             twice). The side cells are block containers with `truncate`, so an
             overflow ends in an ellipsis instead of a half-glyph — the previous
             flex cells only had overflow-hidden, which cuts text mid-letter and
-            reads as "spilled". Children are inline so text-overflow applies. */}
-        <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center justify-end gap-4 overflow-hidden px-5 sm:px-8 xl:px-12">
-          {/* The city chip used to live here. It does not any more: this strip
-              is static and scrolls away after 48px, so it could never be the
-              home of a control that has to work at any scroll position. The
-              chip is in the sticky pill below. */}
-          <span className="min-w-0 shrink-0 truncate text-end">
+            reads as "spilled". Children are inline so text-overflow applies.
+
+            Three cells, the outer two `flex-1`: that balances the city chip
+            against an empty spacer so the links land on the TRUE centre of the
+            strip (annotation: "this text should be in middle of green strip"),
+            not merely centred in whatever space the chip left over. */}
+        <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center gap-3 overflow-hidden px-5 sm:px-8 xl:px-12">
+          <div className="flex min-w-0 flex-1 justify-start">
+            <CitySwitcher tone="dark" className="max-w-[9rem] lg:max-w-[12rem] xl:max-w-[16rem]" />
+          </div>
+          <span className="min-w-0 shrink truncate text-center">
             <Link href="/track-order" className="inline-flex items-center gap-1.5 align-middle transition-colors hover:text-white">
               <Truck size={16} aria-hidden />
               Track Order
@@ -181,39 +191,43 @@ const Header = ({ layout }: { layout?: string }) => {
               Help &amp; Support
             </Link>
           </span>
+          {/* Empty counterweight — same flex-1 as the chip cell, so the centre
+              cell is centred on the STRIP rather than on the leftover space. */}
+          <div className="flex-1" aria-hidden />
         </div>
       </div>
 
       {/* Plain <header>, deliberately NOT a motion element: framer SSRs the
           entrance's initial state (opacity:0, translateY) into the HTML, so
-          the navbar painted blank until hydration. -mt tucks the pill close
-          under the announcement bar. */}
+          the navbar painted blank until hydration.
+
+          top-[47px] parks it directly under the now-sticky 48px strip (less the
+          1px the -mt tuck overlaps). A smaller offset would slide the pill up
+          OVER the strip and cover the city chip — the control this whole layout
+          exists to keep visible. z-50 sits below the strip's z-[51] for the
+          same reason. */}
       <header
         id="site-header"
-        className="pointer-events-none sticky top-2 z-50 -mt-px w-full px-5"
+        className="pointer-events-none sticky top-[47px] z-50 -mt-px w-full px-5"
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
-            clipped child span instead. Rendered at EVERY width and every scroll
-            offset: it is the only home of the shopping-city chip, so anything
-            that could hide it would take the city with it. */}
+            clipped child span instead. The city chip moved OUT of here to the
+            green strip above; this still renders at every width and every
+            scroll offset, so nav, search and cart stay reachable too. */}
         <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-4 rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:gap-6 lg:px-[42px]">
           {/* glass shine — top-half highlight, clipped to the pill radius */}
           <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
           {/* BrandLogo is a fixed 160px image — on a 360px phone that is most of
-              the pill, which is why an earlier attempt to fit the city chip in
-              here had to be reverted. The leaf mark says the same thing in 34px
-              and leaves room for the control. */}
+              the pill's width, so phones get the 34px leaf mark instead. */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
             <LogoMark className="h-[34px] w-[34px] text-forest-800 md:hidden" />
             <span className="hidden md:inline">
               <BrandLogo />
             </span>
           </Link>
-          {/* THE city control — one instance, no visibility condition. */}
-          <CitySwitcher className="min-w-0 max-w-[10rem] shrink lg:max-w-[12rem] xl:max-w-[14rem]" />
 
           {/* ── nav — centered between logo and actions, flat on the dark bar.
               In-flow (not absolutely centered) so it can never overlap the

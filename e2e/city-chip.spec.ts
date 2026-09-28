@@ -14,10 +14,15 @@ import { test, expect, Page } from '@playwright/test';
  *     on a large phone in LANDSCAPE, the city was gone for the rest of the
  *     session after ~48px of scroll.
  *
- * The fix removed the scroll machinery entirely: one sticky pill at every
- * width, holding exactly one chip. These tests pin that invariant at the
- * offsets and widths where it used to fail, so a future "collapse on scroll"
- * cannot quietly take the control away again.
+ * The fix removed the scroll machinery entirely. The chip now lives in the
+ * green announcement strip (owner annotation, 29 Sep) — and that strip was made
+ * STICKY in the same change, because as a static bar it scrolls away after 48px
+ * and would have re-created the very bug above.
+ *
+ * So the invariant these tests pin is deliberately about BEHAVIOUR, not about
+ * which container holds the chip: exactly one chip, visible, at every path,
+ * offset and width. That is what lets the chip be re-homed on request without
+ * the guarantee quietly lapsing.
  *
  * READ ONLY: opens the picker but never switches city, so it is safe against
  * any environment.
