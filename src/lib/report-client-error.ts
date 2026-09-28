@@ -12,7 +12,15 @@
  * page (a render loop must not become a request loop), and keepalive so a navigation right after
  * the crash does not drop it.
  */
-const ENDPOINT = `${process.env.NEXT_PUBLIC_REST_API_ENDPOINT ?? ''}/client-errors`;
+// Same rule as the app's HttpClient: in the browser, go through the same-origin /rest-api proxy
+// that Next rewrites to the API. The absolute NEXT_PUBLIC_REST_API_ENDPOINT is for SSR only —
+// used from the browser it is a cross-origin host that the CSP `connect-src` does not list,
+// and the first synthetic probe on staging was silently blocked exactly that way. A reporter
+// the CSP refuses is a reporter that never reports.
+const ENDPOINT =
+  typeof window === 'undefined'
+    ? `${process.env.NEXT_PUBLIC_REST_API_ENDPOINT ?? ''}/client-errors`
+    : '/rest-api/client-errors';
 const MAX_PER_PAGE = 5;
 let sent = 0;
 
