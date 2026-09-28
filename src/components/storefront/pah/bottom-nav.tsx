@@ -7,7 +7,9 @@ import { useAtom } from 'jotai';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { drawerAtom } from '@/store/drawer-atom';
 import { useModalAction } from '@/components/ui/modal/modal.context';
-import { Flower2, Heart, Home, LayoutGrid, type LucideIcon, User } from '@/components/ui/icon';
+import { useCart } from '@/store/quick-cart/cart.context';
+import { Routes } from '@/config/routes';
+import { Flower2, Heart, Home, LayoutGrid, type LucideIcon, ShoppingBag, User } from '@/components/ui/icon';
 
 const ACCENT = '#2E5E2A';
 const MUTED = '#8A8A82';
@@ -21,6 +23,7 @@ const ICONS: Record<string, LucideIcon> = {
   Home: Home,
   Categories: LayoutGrid,
   Plants: Flower2,
+  Cart: ShoppingBag,
   Wishlist: Heart,
   Profile: User,
 };
@@ -30,12 +33,18 @@ export function BottomNav() {
   const [authorized] = useAtom(authorizationAtom);
   const [, setDrawer] = useAtom(drawerAtom);
   const { openModal } = useModalAction();
+  const { totalUniqueItems } = useCart();
   const path = (router.asPath || '/').split(/[?#]/)[0];
 
   const items = [
     { label: 'Home', active: path === '/', go: () => router.push('/') },
     { label: 'Categories', active: path.startsWith('/c/'), go: () => setDrawer({ display: true, view: 'MAIN_MENU_VIEW' }) },
     { label: 'Plants', active: path.startsWith('/plants') || path.startsWith('/products'), go: () => router.push('/plants') },
+    // The cart had NO persistent control on a phone: not here, and not in the
+    // mobile header (logo + Search + Menu only) — it was reachable only by
+    // opening the hamburger drawer. On a storefront the cart is the one
+    // control that must always be one tap away, and it carries its count.
+    { label: 'Cart', active: path.startsWith('/cart'), go: () => router.push(Routes.cart), badge: totalUniqueItems },
     { label: 'Wishlist', active: path.startsWith('/wishlist'), go: () => (authorized ? router.push('/wishlists') : goToSignin()) },
     { label: 'Profile', active: path.startsWith('/profile') || path.startsWith('/orders'), go: () => (authorized ? router.push('/profile') : goToSignin()) },
   ];
@@ -49,7 +58,7 @@ export function BottomNav() {
             type="button"
             whileTap={{ scale: 0.9 }}
             onClick={n.go}
-            aria-label={n.label}
+            aria-label={n.badge ? `${n.label}, ${n.badge} item${n.badge === 1 ? '' : 's'}` : n.label}
             aria-current={n.active ? 'page' : undefined}
             className="relative flex flex-1 select-none flex-col items-center justify-center gap-[3px] pb-0.5 pt-1"
           >
@@ -73,6 +82,17 @@ export function BottomNav() {
                   />
                 );
               })()}
+              {/* Count rides on the icon, not the label, so it stays put while
+                  the active pill slides underneath. Hidden at zero — an empty
+                  cart needs no number. */}
+              {!!n.badge && (
+                <span
+                  aria-hidden
+                  className="absolute -right-0.5 -top-0.5 flex h-[17px] min-w-[17px] items-center justify-center rounded-full border-2 border-white bg-[#2E5E2A] px-[4px] text-[10px] font-bold leading-none text-white"
+                >
+                  {n.badge > 99 ? '99+' : n.badge}
+                </span>
+              )}
             </span>
             <span
               className="text-[10.5px] leading-none"

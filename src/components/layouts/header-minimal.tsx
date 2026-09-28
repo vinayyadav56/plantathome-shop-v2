@@ -157,8 +157,12 @@ const HeaderMinimal = ({ layout }: { layout: string }) => {
               }`}
             />
 
-            {/* Shopping-City chip — always visible, minimal header included. */}
-            <CitySwitcher className="ml-4 hidden shrink-0 sm:inline-flex" />
+            {/* Shopping-City chip — always visible, minimal header included.
+                It was `hidden sm:inline-flex`, i.e. hidden on exactly the
+                phones this comment claims to cover: below 640px the only city
+                control left was the small chip in the announcement strip,
+                which reads as part of a promo bar. */}
+            <CitySwitcher className="ml-4 inline-flex shrink-0" />
 
             {/* {isMultiLangEnable ? (
             <div className="ltr:ml-auto rtl:mr-auto lg:hidden">
