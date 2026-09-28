@@ -207,14 +207,21 @@ const Header = ({
           under the announcement bar. */}
       <header
         id="site-header"
-        className={`pointer-events-none sticky top-2 z-50 -mt-px w-full px-5 ${pillFromMd ? 'max-md:hidden' : ''}`}
+        className="pointer-events-none sticky top-2 z-50 -mt-px w-full px-5"
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
             clipped child span instead. Swapped for the compact bar once
             scrolled (search/menu keep the full pill up). */}
+        {/* pillFromMd hides only the FULL PILL on a phone, not the whole sticky
+            header. It used to sit on <header>, which took the compact scrolled
+            bar down with it — and that bar is the only thing carrying the
+            shopping city once the static announcement strip has scrolled away.
+            So on the phone homepage, scrolling left no way to see or change
+            the city at all. The pill is what PahHome's in-hero app bar
+            duplicates; the compact bar duplicates nothing. */}
         {(!collapsed || searchOpen || menuOpen) ? (
-        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-6 rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:px-[42px]">
+        <div className={`pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-6 rounded-[12px] border border-white/[0.72] ${pillFromMd ? 'max-md:hidden' : ''} bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-6 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:px-[42px]`}>
           {/* glass shine — top-half highlight, clipped to the pill radius */}
           <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
