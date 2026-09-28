@@ -24,12 +24,6 @@ import dynamic from 'next/dynamic';
 import { Product } from '@/types';
 import useLayout from '@/lib/hooks/use-layout';
 
-const MobileNavigation = dynamic(
-  () => import('@/components/layouts/mobile-navigation'),
-  {
-    ssr: false,
-  },
-);
 const FeaturedPlants = dynamic(
   () => import('@/components/products/featured-plants'),
   { ssr: false },
@@ -174,11 +168,14 @@ const GetLayout = (page: React.ReactElement) => {
             <div className="min-w-0 flex-1">{page}</div>
           </div>
         </div>
-        <MobileNavigation>
-          {/* Floating filter button — the ONLY opener of the SEARCH_FILTER
-              drawer, and the desktop rail is hidden below md, so without this
-              sub-md users cannot filter at all. Fixed above the bottom nav;
-              hidden ≥md where the sidebar rail takes over. */}
+        {/* Floating filter button — the ONLY opener of the SEARCH_FILTER
+            drawer, and the desktop rail is hidden below md, so without this
+            sub-md users cannot filter at all. Fixed above the bottom nav;
+            hidden ≥md where the sidebar rail takes over.
+
+            NOT wrapped in <MobileNavigation> any more: GeneralLayout already
+            mounts one, so wrapping put a SECOND bottom bar on this page. The
+            button is `fixed`, so it needs no positioning parent. */}
           {/*
             Labelled, and hidden while the drawer it opens is already open.
 
@@ -203,7 +200,6 @@ const GetLayout = (page: React.ReactElement) => {
               <span>{t('text-filter')}</span>
             </motion.button>
           )}
-        </MobileNavigation>
       </>
     </GeneralLayout>
   );
