@@ -344,7 +344,18 @@ const Header = ({
               </button>
             </div>
 
-            {/* mobile: search + hamburger */}
+            {/* mobile: city + search + hamburger.
+                The city chip lives here, in the STICKY bar, not only in the
+                announcement strip above — that strip is static and "scrolls
+                away naturally", so on a phone the moment you scrolled past the
+                first 48px there was no way to see or change the shopping city
+                at all. Everything here is city-scoped (prices, availability,
+                delivery), so it has to stay reachable. Capped and truncating
+                so a long name cannot crowd out search and the menu. */}
+            <CitySwitcher
+              tone="dark"
+              className="mr-1 min-w-0 max-w-[40vw] text-[12px] md:hidden [&>span:last-child]:hidden"
+            />
             <button type="button" onClick={() => setSearchOpen(true)} className={`${iconBtn} md:hidden`} aria-label={t('text-search') ?? 'Search'}>
               <SearchIcon className="h-[18px] w-[18px]" />
             </button>
