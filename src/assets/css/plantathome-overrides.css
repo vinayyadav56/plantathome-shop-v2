@@ -1547,13 +1547,18 @@ select:focus {
 .pa-cart-page .pa-cart-checkout-btn {
   height: 48px;
   font-size: 15px;
-  padding: 4px 4px 4px 18px;
+  /* gap is the floor `space-between` cannot provide: from lg up the sidebar is
+     only ~253px and label + price came to EXACTLY that, so there was no free
+     space left to distribute and the two rendered touching -- the annotation
+     captured the label as "Proceed to Checkout₹431.8". */
+  gap: 12px;
+  padding: 4px 4px 4px 14px;
   box-shadow: 0 3px 14px rgba(44,95,46,0.26);
 }
 .pa-cart-page .pa-cart-checkout-price {
   height: 40px;
-  padding: 0 14px;
-  font-size: 14px;
+  padding: 0 10px;
+  font-size: 13px;
   font-weight: 700;
   background: rgba(255,255,255,0.14);
 }
@@ -1562,11 +1567,20 @@ select:focus {
    predates the de-nesting above -- it is visible in the old layout too).
    space-between let the label shrink and wrap while the price pill held its
    width; pinning both stops that. */
-.pa-cart-page .pa-cart-checkout-btn > span:first-child { white-space: nowrap; }
+/* nowrap stops the two-line "Proceed to / Checkout"; min-width:0 + ellipsis is
+   the escape hatch, because a flex item defaults to min-width:auto and would
+   otherwise refuse to shrink and collide with the price again if the total ever
+   grows (₹1,43,180.00 is 3 characters wider than anything tested here). */
+.pa-cart-page .pa-cart-checkout-btn > span:first-child {
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .pa-cart-page .pa-cart-checkout-price { white-space: nowrap; flex-shrink: 0; }
 @media (min-width: 1024px) {
-  .pa-cart-page .pa-cart-checkout-btn { font-size: 14.5px; padding-left: 16px; }
-  .pa-cart-page .pa-cart-checkout-price { padding: 0 12px; }
+  .pa-cart-page .pa-cart-checkout-btn { font-size: 14.5px; padding-left: 12px; }
+  .pa-cart-page .pa-cart-checkout-price { padding: 0 10px; }
 }
 
 
