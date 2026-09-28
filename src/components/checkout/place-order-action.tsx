@@ -15,7 +15,7 @@ import CityMismatchDialog from './city-mismatch-dialog';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { checkoutAtom, discountAtom, walletAtom } from '@/store/checkout';
 import { calculateTotal } from '@/store/quick-cart/cart.utils';
-import { computeCheckoutTotals } from '@/lib/checkout-totals';
+import { computeCheckoutTotals, asIdList } from '@/lib/checkout-totals';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from '@/compat/next-router';
 import { useLogout, useUser } from '@/framework/user';
@@ -115,7 +115,7 @@ export const PlaceOrderAction: React.FC<{
   // came back a 422 the shopper could not act on. The server enforces it now;
   // this says so before they press the button, and names the items.
   const coverage = (verified_response as any)?.coverage ?? null;
-  const coverageBlockedIds: Array<number | string> = coverage?.blocked_products ?? [];
+  const coverageBlockedIds: Array<number | string> = asIdList(coverage?.blocked_products);
   const coverageBlockedItems = items?.filter(
     (item: any) =>
       coverageBlockedIds.includes(item.productId ?? item.id) ||
@@ -130,14 +130,13 @@ export const PlaceOrderAction: React.FC<{
   // the composite "product.variation" STRING — match productId too, or an
   // unavailable variable product slips through. invalid_option_lines = ghost
   // lines (variable product, no variation picked) that would 422 the order.
-  const available_items = items?.filter(
+  const unavailableIds = asIdList(verified_response?.unavailable_products);
+  const ghostLineIds = asIdList((verified_response as any)?.invalid_option_lines);
+  const available_items = (items ?? []).filter(
     (item: any) =>
-      !verified_response?.unavailable_products?.includes(item.id) &&
-      !(item.productId && verified_response?.unavailable_products?.includes(item.productId)) &&
-      !(
-        !item.variationId &&
-        (verified_response as any)?.invalid_option_lines?.includes(item.productId ?? item.id)
-      ),
+      !unavailableIds.includes(item.id) &&
+      !(item.productId && unavailableIds.includes(item.productId)) &&
+      !(!item.variationId && ghostLineIds.includes(item.productId ?? item.id)),
   );
 
   // ONE totals computation, shared verbatim with the order summary — what the customer

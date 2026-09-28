@@ -14,6 +14,7 @@
 
 import { useEffect } from 'react';
 import { PlantLoader } from '@/components/ui/plant-loader';
+import { reportClientError } from '@/lib/report-client-error';
 
 /**
  * A failed lazy-chunk fetch is not a code error — it's a STALE TAB. After every deploy the
@@ -39,6 +40,14 @@ export default function RouteError({
     // Surface it once for whoever is watching the console / error reporter.
     // eslint-disable-next-line no-console
     console.error('[route-error]', error?.message, error?.digest ?? '');
+    // ...and to the API. The console line was the ONLY record of this boundary firing, which is
+    // why the checkout crash was patched three times without anyone ever seeing its stack.
+    reportClientError({
+      message: error?.message ?? 'unknown',
+      stack: error?.stack,
+      digest: error?.digest,
+      source: 'route-boundary',
+    });
 
     // Stale-deploy self-heal: hard-reload onto the fresh build. Guarded by a
     // 2-minute window (not once-per-session): on a multi-deploy day a long-

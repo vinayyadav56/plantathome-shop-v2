@@ -13,13 +13,17 @@ interface Props {
 const ItemCard = ({ item, notAvailable, onRemove }: Props) => {
   const { t } = useTranslation('common');
   const { price } = usePrice({
-    amount: item.itemTotal,
+    // A stale cart line (product removed from the catalogue after it was carted) may carry no
+    // itemTotal. Never let a formatting call on the order summary throw.
+    amount: Number.isFinite(Number(item?.itemTotal)) ? Number(item.itemTotal) : 0,
   });
   return (
     <div className="pa-order-item">
       <div className="pa-order-item-thumb">
         <Image
-          src={item?.image ?? siteSettings?.product?.placeholderImage}
+          // `||`, not `??`: an EMPTY string is a legal value in an old cart line, and next/image
+          // treats "" as a broken src rather than "no src".
+          src={item?.image || siteSettings?.product?.placeholderImage}
           alt={item.name}
           fill
           sizes="44px"

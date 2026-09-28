@@ -11,6 +11,21 @@ import { calculatePaidTotal } from '@/store/quick-cart/cart.utils';
  */
 
 /** Identity of what /orders/checkout/verify actually verified: the exact product rows. */
+/**
+ * A verify-response id list as a real array, whatever came over the wire.
+ *
+ * Laravel serialises a PHP array with non-sequential keys (array_filter / array_unique without
+ * array_values) as a JSON OBJECT, so a field the client calls `.includes` on is one refactor away
+ * from being `{ "0": 1, "2": 5 }` — and `.includes` on that is a hard render throw on the money
+ * path. Every `.includes` on unavailable_products / invalid_option_lines / blocked_products goes
+ * through here instead.
+ */
+export function asIdList(v: unknown): Array<number | string> {
+  if (Array.isArray(v)) return v as Array<number | string>;
+  if (v && typeof v === 'object') return Object.values(v as Record<string, number | string>);
+  return [];
+}
+
 export function cartFingerprint(products: any[]): string {
   const rows = (products ?? [])
     .map((p: any) => [

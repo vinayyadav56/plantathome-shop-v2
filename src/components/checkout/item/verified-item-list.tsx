@@ -6,7 +6,7 @@ import { CloseIcon } from '@/components/icons/close-icon';
 import { useTranslation } from 'next-i18next';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { calculateTotal } from '@/store/quick-cart/cart.utils';
-import { computeCheckoutTotals } from '@/lib/checkout-totals';
+import { computeCheckoutTotals, asIdList } from '@/lib/checkout-totals';
 import { useAtom } from 'jotai';
 import {
   couponAtom,
@@ -47,12 +47,15 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   // the composite "product.variation" STRING — match productId too. Ghost lines
   // (variable product, no variation picked — invalid_option_lines) are excluded
   // exactly like unavailable ones. MUST mirror PlaceOrderAction's filter.
+  // asIdList: these fields are PHP arrays that serialise as a JSON object the moment their keys
+  // stop being sequential, and `.includes` on an object is a render throw on the money path.
+  const unavailable = asIdList(verifiedResponse?.unavailable_products);
+  const ghostLines = asIdList((verifiedResponse as any)?.invalid_option_lines);
   const isExcluded = (item: any) =>
-    verifiedResponse?.unavailable_products?.includes(item.id) ||
-    (item.productId && verifiedResponse?.unavailable_products?.includes(item.productId)) ||
-    (!item.variationId &&
-      (verifiedResponse as any)?.invalid_option_lines?.includes(item.productId ?? item.id));
-  const available_items = items?.filter((item: any) => !isExcluded(item));
+    unavailable.includes(item.id) ||
+    (item.productId && unavailable.includes(item.productId)) ||
+    (!item.variationId && ghostLines.includes(item.productId ?? item.id));
+  const available_items = (items ?? []).filter((item: any) => !isExcluded(item));
 
   // ONE totals computation, shared verbatim with PlaceOrderAction — what this summary
   // shows is exactly what gets submitted (percentage coupons, free shipping and all).

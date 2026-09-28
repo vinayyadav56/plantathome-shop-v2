@@ -30,6 +30,7 @@ import GlobalFetchBar from '@/components/ui/global-fetch-bar';
 import LocationGate from '@/components/location/location-gate';
 import TrackingBridge from '@/lib/analytics/tracking-bridge';
 import DesignSystemApplier from '@/lib/design-system-applier';
+import { installClientErrorReporting } from '@/lib/report-client-error';
 // Static import (no next/dynamic — hydration-loop trap); the component itself
 // gates on mounted-state + staging/localhost hostname, so prod renders nothing.
 import AgentationToolbar from '@/components/dev/agentation-toolbar';
@@ -48,6 +49,10 @@ export default function AppProviders({
   settings?: any;
   children: React.ReactNode;
 }) {
+  // Uncaught window errors and unhandled rejections never reached an error boundary, so they
+  // never reached anyone. Report them the same way the boundaries now do.
+  React.useEffect(() => installClientErrorReporting(), []);
+
   const [queryClient] = React.useState(() => {
     const client = new QueryClient({
       defaultOptions: {

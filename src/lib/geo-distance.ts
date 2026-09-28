@@ -31,6 +31,9 @@ export function toLatLng(loc?: {
 
 /** Human-friendly distance label. */
 export function formatDistance(km: number): string {
+  // A persisted verification from an older shape can carry no distance; `undefined.toFixed`
+  // would take the whole checkout to the route error boundary for a cosmetic label.
+  if (!Number.isFinite(km)) return '';
   if (km < 1) return `${Math.round(km * 1000)} m`;
   return `${km.toFixed(km < 10 ? 1 : 0)} km`;
 }

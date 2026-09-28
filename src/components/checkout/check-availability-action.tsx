@@ -13,6 +13,7 @@ import { getStoredCity } from '@/lib/customer-location';
 import omit from 'lodash/omit';
 import { CircleCheck } from '@/components/ui/icon';
 import { toast } from 'react-toastify';
+import { isAddressComplete } from '@/lib/address-complete';
 
 export const CheckAvailabilityAction: React.FC<{
   className?: string;
@@ -30,19 +31,24 @@ export const CheckAvailabilityAction: React.FC<{
     // Stepped checkout: a verify fired before contact + address exist lands on
     // a disabled Place Order ("fill all the fields") — guide the shopper to the
     // incomplete step instead of dead-ending.
-    if (wizard) {
-      const hasAddress = Boolean(
-        billing_address?.address ?? shipping_address?.address,
+    // Two ways a verify used to go out with `billing_address: []` (seen verbatim in the
+    // production request log for the crashing session):
+    //  1. `if (wizard)` skipped the whole guard whenever the wizard bridge had not been set yet,
+    //     so a click on first paint verified with nothing.
+    //  2. `hasAddress` only checked truthiness, and a STALE shipping address survives in
+    //     localStorage after the billing selection is cleared — so the guard passed on an
+    //     address the shopper could not even see selected.
+    // Complete-or-nothing, bridge or no bridge.
+    const candidate = billing_address?.address ? billing_address : shipping_address;
+    const hasAddress = Boolean(candidate?.address) && isAddressComplete(candidate);
+    if (!contact || !hasAddress) {
+      toast.info(
+        !contact
+          ? 'Add your contact number first — then we can check availability.'
+          : 'Choose your delivery address first — then we can check availability.',
       );
-      if (!contact || !hasAddress) {
-        toast.info(
-          !contact
-            ? 'Add your contact number first — then we can check availability.'
-            : 'Choose your delivery address first — then we can check availability.',
-        );
-        wizard.setStep(!contact ? 0 : 1);
-        return;
-      }
+      wizard?.setStep(!contact ? 0 : 1);
+      return;
     }
     verifyCheckout(
       {

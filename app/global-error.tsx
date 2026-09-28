@@ -1,4 +1,6 @@
 'use client';
+import { useEffect } from 'react';
+import { reportClientError } from '@/lib/report-client-error';
 
 /**
  * Last-resort boundary: catches errors thrown by the root layout itself, which
@@ -20,6 +22,15 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // This page has always said "We've logged it" — and logged nothing. Now it does.
+  useEffect(() => {
+    reportClientError({
+      message: error?.message ?? 'unknown',
+      stack: error?.stack,
+      digest: error?.digest,
+      source: 'global-boundary',
+    });
+  }, [error]);
   return (
     <html lang="en">
       <body

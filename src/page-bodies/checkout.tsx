@@ -13,7 +13,7 @@ import {
   verifiedResponseAtom,
 } from "@/store/checkout";
 import { useCart } from "@/store/quick-cart/cart.context";
-import { cartFingerprint } from "@/lib/checkout-totals";
+import { cartFingerprint, asIdList } from "@/lib/checkout-totals";
 import { formatOrderedProduct } from "@/lib/format-ordered-product";
 import isEmpty from "lodash/isEmpty";
 import dynamic from "next/dynamic";
@@ -119,9 +119,14 @@ export default function CheckoutPage() {
   const [, setShippingAddress] = useAtom(shippingAddressAtom);
   const [sameAsBilling, setSameAsBilling] = useState(true);
   useEffect(() => {
-    if (sameAsBilling && billingAddress) {
-      setShippingAddress(billingAddress as any);
-    }
+    if (!sameAsBilling) return;
+    // Mirror in BOTH directions. This only ever copied when a billing address existed, so once
+    // the billing selection was cleared (city changed, address deleted) the shipping atom kept
+    // the old address in localStorage indefinitely — invisible, since the shipping grid is not
+    // mounted while this box is ticked. The "We deliver to 1100…" chip beside "No saved address"
+    // in the crash report was that ghost, and it was enough to get Check Availability past its
+    // guard with an address the shopper never chose.
+    setShippingAddress((billingAddress ?? null) as any);
   }, [sameAsBilling, billingAddress, setShippingAddress]);
 
   // A restored (or effect-set) step is only legitimate while its prerequisites hold.
@@ -165,10 +170,28 @@ export default function CheckoutPage() {
       cartFingerprint(
         (cartItems ?? []).map((item: any) => formatOrderedProduct(item)),
       );
+  // Only advance when there is something left to order. A cart whose every line came back in
+  // unavailable_products (the reporter's: one line for a product since deleted from the
+  // catalogue) was still driven onto Review / Place Order with amount 0 — the post-verify
+  // transition every instance of the "Something went wrong" crash has lived on. Stay on the
+  // current step instead and let the order summary's "remove unavailable items" notice do its job.
+  const orderableAfterVerify = (() => {
+    if (!verifiedFresh) return false;
+    const vr: any = verifiedResponse ?? {};
+    const gone = new Set(asIdList(vr.unavailable_products).map(String));
+    const ghost = new Set(asIdList(vr.invalid_option_lines).map(String));
+    return (cartItems ?? []).some((item: any) => {
+      const pid = String(item?.productId ?? item?.id ?? '');
+      const id = String(item?.id ?? '');
+      if (gone.has(id) || gone.has(pid)) return false;
+      if (!item?.variationId && ghost.has(pid)) return false;
+      return true;
+    });
+  })();
   useEffect(() => {
-    if (verifiedFresh) setStep(3);
+    if (orderableAfterVerify) setStep(3);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [verifiedFresh]);
+  }, [orderableAfterVerify]);
 
   // One panel per wizard step (reuses the existing grid components + flow).
   const panels: WizardPanel[] = [
