@@ -85,12 +85,20 @@ const NAV_UNDERLINE =
  * scrolls away) over a sticky floating warm-glass pill with centred nav,
  * inline search, profile + cart. Wired to the real cart drawer, login + search.
  */
+const noopSubscribe = () => () => {};
+
 const Header = ({ layout }: { layout?: string }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   const { totalUniqueItems } = useCart();
   const [, setDrawer] = useAtom(drawerAtom);
   const [isAuthorize] = useAtom(authorizationAtom);
+  // authorizationAtom reads the login cookie at module load: false on the server, true in a
+  // signed-in browser. Rendering it straight into the label made the server say "Login" and the
+  // first client render say "Account" — React #418 on every page load, and the whole header
+  // regenerated client-side. Show the signed-in label only once hydrated so both renders agree.
+  const hydrated = React.useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const signedIn = hydrated && isAuthorize;
   const { openModal } = useModalAction();
 
   const [searchOpen, setSearchOpen] = useAtom(displayMobileHeaderSearchAtom);
@@ -166,34 +174,25 @@ const Header = ({ layout }: { layout?: string }) => {
           a static bar it scrolled away after 48px, which is exactly how the
           city went missing before. If anyone ever makes this `relative` again,
           the city must move somewhere sticky in the same commit. */}
-      <div className="sticky top-0 z-[51] h-12 bg-[#0a2916] text-[13px] font-normal text-white/[0.92]">
-        {/* Nothing may spill out of the 48px bar at any width (annotation,
-            twice). The side cells are block containers with `truncate`, so an
-            overflow ends in an ellipsis instead of a half-glyph — the previous
-            flex cells only had overflow-hidden, which cuts text mid-letter and
-            reads as "spilled". Children are inline so text-overflow applies.
-
-            Three cells, the outer two `flex-1`: that balances the city chip
-            against an empty spacer so the links land on the TRUE centre of the
-            strip (annotation: "this text should be in middle of green strip"),
-            not merely centred in whatever space the chip left over. */}
+      <div className="sticky top-0 z-[51] h-7 bg-[#0a2916] text-[12px] font-normal text-white/[0.92]">
+        {/* 28px (annotation: "reduce the width of those line upto 50%" — the strip was 48px).
+            Nothing may spill out of it at any width: the side cells are block containers with
+            `truncate`, so an overflow ends in an ellipsis instead of a half-glyph.
+            City on the left, links in the right corner (annotations, twice). */}
         <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center gap-3 overflow-hidden px-5 sm:px-8 xl:px-12">
           <div className="flex min-w-0 flex-1 justify-start">
             <CitySwitcher tone="dark" className="max-w-[9rem] lg:max-w-[12rem] xl:max-w-[16rem]" />
           </div>
-          <span className="min-w-0 shrink truncate text-center">
+          <span className="min-w-0 shrink truncate text-end">
             <Link href="/track-order" className="inline-flex items-center gap-1.5 align-middle transition-colors hover:text-white">
-              <Truck size={16} aria-hidden />
+              <Truck size={14} aria-hidden />
               Track Order
             </Link>
             <Link href="/help" className="ms-3 hidden items-center gap-1.5 align-middle transition-colors hover:text-white sm:ms-[22px] sm:inline-flex">
-              <CircleHelp size={16} aria-hidden />
+              <CircleHelp size={14} aria-hidden />
               Help &amp; Support
             </Link>
           </span>
-          {/* Empty counterweight — same flex-1 as the chip cell, so the centre
-              cell is centred on the STRIP rather than on the leftover space. */}
-          <div className="flex-1" aria-hidden />
         </div>
       </div>
 
@@ -201,14 +200,14 @@ const Header = ({ layout }: { layout?: string }) => {
           entrance's initial state (opacity:0, translateY) into the HTML, so
           the navbar painted blank until hydration.
 
-          top-[47px] parks it directly under the now-sticky 48px strip (less the
+          top-[27px] parks it directly under the now-sticky 28px strip (less the
           1px the -mt tuck overlaps). A smaller offset would slide the pill up
           OVER the strip and cover the city chip — the control this whole layout
           exists to keep visible. z-50 sits below the strip's z-[51] for the
           same reason. */}
       <header
         id="site-header"
-        className="pointer-events-none sticky top-[47px] z-50 -mt-px w-full px-5"
+        className="pointer-events-none sticky top-[27px] z-50 -mt-px w-full px-5"
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
@@ -344,9 +343,9 @@ const Header = ({ layout }: { layout?: string }) => {
                 <span className="hidden leading-none xl:block">Cart</span>
               </button>
               {/* Login */}
-              <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={isAuthorize ? 'My account' : 'Login'}>
+              <button type="button" onClick={onProfile} className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={signedIn ? 'My account' : 'Login'}>
                 <Icon.user className="h-[23px] w-[23px]" />
-                <span className="hidden leading-none xl:block">{isAuthorize ? 'Account' : 'Login'}</span>
+                <span className="hidden leading-none xl:block">{signedIn ? 'Account' : 'Login'}</span>
               </button>
             </div>
 
@@ -409,7 +408,7 @@ const Header = ({ layout }: { layout?: string }) => {
               ...NAV,
               { label: 'Search', href: '#search' },
               { label: 'Cart', href: Routes.cart },
-              { label: isAuthorize ? 'My account' : 'Login', href: '#account' },
+              { label: signedIn ? 'My account' : 'Login', href: '#account' },
             ].map((l, i) => (
               <motion.button
                 key={l.label}

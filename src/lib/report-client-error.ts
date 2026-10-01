@@ -126,6 +126,47 @@ function safeStorage(key: string): string | null {
   }
 }
 
+/**
+ * Chrome's page Translate (and some extensions) replace text nodes with <font> wrappers behind
+ * React's back. React's next commit then calls insertBefore/removeChild against a node that is no
+ * longer a child, the DOM throws NotFoundError, and the whole route falls into the error boundary.
+ * That was the "Check Availability always crashes" report: reproduced byte-for-byte by wrapping
+ * text nodes before the click, and absent in a clean browser. It hits any shopper using Translate.
+ *
+ * Degrade instead of throwing: a detached removeChild is a no-op, a stale insertBefore appends.
+ * ponytail: also swallows a genuine React bug of the same shape — the one report per page is how
+ * that would surface. See facebook/react#11538.
+ */
+export function installDomMutationGuard(): void {
+  if (typeof Node !== 'function' || (Node.prototype as any).__pahDomGuard) return;
+  (Node.prototype as any).__pahDomGuard = true;
+  let reported = false;
+  const report = (op: string) => {
+    if (reported) return;
+    reported = true;
+    reportClientError({
+      message: `DOM changed outside React (${op}) — page translation or an extension`,
+      source: 'dom-mutation',
+    });
+  };
+  const removeChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(this: Node, child: T): T {
+    if (child.parentNode !== this) {
+      report('removeChild');
+      return child;
+    }
+    return removeChild.call(this, child) as T;
+  };
+  const insertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(this: Node, node: T, ref: Node | null): T {
+    if (ref && ref.parentNode !== this) {
+      report('insertBefore');
+      return insertBefore.call(this, node, null) as T;
+    }
+    return insertBefore.call(this, node, ref) as T;
+  };
+}
+
 /** Install once from a client provider: window errors + unhandled rejections. */
 export function installClientErrorReporting(): () => void {
   if (typeof window === 'undefined') return () => {};

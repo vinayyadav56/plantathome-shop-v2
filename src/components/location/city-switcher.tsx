@@ -86,7 +86,11 @@ export default function CitySwitcher({
         onClick={open}
         title={label ?? undefined}
         aria-label={label ? `Delivery city: ${label}. Change city` : 'Select your delivery city'}
-        className={`group inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
+        className={`group inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2.5 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
+          tone === 'dark'
+            ? 'py-0.5 text-[12px] ' // fits the 28px strip
+            : 'py-1.5 text-[13px] '
+        }${
           tone === 'dark'
             ? // On the dark-green strip. White-on-green at full opacity with a
               // visible border — the contrast is the affordance.

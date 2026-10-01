@@ -30,7 +30,7 @@ import GlobalFetchBar from '@/components/ui/global-fetch-bar';
 import LocationGate from '@/components/location/location-gate';
 import TrackingBridge from '@/lib/analytics/tracking-bridge';
 import DesignSystemApplier from '@/lib/design-system-applier';
-import { installClientErrorReporting } from '@/lib/report-client-error';
+import { installClientErrorReporting, installDomMutationGuard } from '@/lib/report-client-error';
 // Static import (no next/dynamic — hydration-loop trap); the component itself
 // gates on mounted-state + staging/localhost hostname, so prod renders nothing.
 import AgentationToolbar from '@/components/dev/agentation-toolbar';
@@ -40,6 +40,10 @@ import AgentationToolbar from '@/components/dev/agentation-toolbar';
 // the known React-19 hydration-suspension livelock pattern (resolveLazy pending
 // → sync re-render per microtask → starves the very stream it waits on).
 import { ToastContainer, Bounce } from 'react-toastify';
+
+// Module scope, not an effect: it must be in place before React's first commit, since a
+// translator can rewrite the server-rendered text before hydration finishes.
+if (typeof window !== 'undefined') installDomMutationGuard();
 
 export default function AppProviders({
   settings,
