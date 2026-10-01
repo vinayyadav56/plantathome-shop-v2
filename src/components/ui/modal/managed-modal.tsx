@@ -111,7 +111,17 @@ const ManagedModal = () => {
     return <ReviewPopupModal />;
   }
   return (
-    <Modal open={isOpen} onClose={closeModal}>
+    <Modal
+      open={isOpen}
+      onClose={closeModal}
+      // The redesigned auth shell renders its own always-visible close button inside
+      // the card; the Modal's floating mobile X would double it.
+      closeButtonClass={
+        ['LOGIN_VIEW', 'REGISTER', 'FORGOT_VIEW', 'OTP_LOGIN'].includes(view as string)
+          ? 'hidden'
+          : undefined
+      }
+    >
       {/*
         ONE boundary for all 28 dynamic views below. Each is its own chunk,
         downloaded on first open, and next/dynamic's default fallback is `null` —

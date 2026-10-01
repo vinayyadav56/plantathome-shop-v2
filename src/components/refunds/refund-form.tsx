@@ -137,7 +137,8 @@ const CreateRefund = () => {
             </div>
             <div className="mt-8">
               <Button
-                className="w-full h-11 sm:h-12"
+                variant="formPrimary"
+                className="w-full"
                 loading={isLoading}
                 disabled={isLoading}
               >

@@ -185,7 +185,7 @@ function NewsletterForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex shrink-0 items-center gap-2 rounded-[10px] bg-ds-cta px-6 py-3 font-hanken text-[13.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] disabled:opacity-60"
+          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-ds-cta px-6 py-3 font-hanken text-[13.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] disabled:opacity-60"
         >
           {isSubscribed ? t('footer-newsletter-subscribed') : t('footer-newsletter-subscribe')}
           <ArrowRight size={12} aria-hidden />

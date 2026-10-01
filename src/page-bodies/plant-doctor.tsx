@@ -46,7 +46,7 @@ const CARD =
   'rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
 
 const BTN_PRIMARY =
-  'inline-flex items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-[#14532D]';
+  'inline-flex items-center justify-center gap-2.5 rounded-[14px] bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-ds-btn';
 
 const SEVERITY_STYLE: Record<Severity, { label: string; cls: string; bar: string }> = {
   low:      { label: 'Low',      cls: 'bg-[#F3F8EC] text-[#24693E] border-[#DCE8D3]', bar: '#2E5E2A' },

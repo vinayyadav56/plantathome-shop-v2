@@ -61,8 +61,8 @@ const ProfileUpdateEmail = ({ user }: { user: User }) => {
               error={t(errors.email?.message!)}
             />
             <Button
-              variant="outline"
-              className="!border-forest-700 !text-forest-700 hover:!bg-forest-700 hover:!text-white hover:!border-forest-700"
+              variant="formSecondary"
+              className="!h-11"
               loading={isLoading}
               disabled={isLoading}
             >

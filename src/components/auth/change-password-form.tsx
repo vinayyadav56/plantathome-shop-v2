@@ -61,6 +61,7 @@ export default function ChangePasswordForm() {
             variant="outline"
           />
           <Button
+            variant="formPrimary"
             loading={loading}
             disabled={loading}
             className="ltr:ml-auto rtl:mr-auto"

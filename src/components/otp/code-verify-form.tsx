@@ -103,11 +103,12 @@ export default function OtpCodeForm({
             </div>
 
             <Button
+              variant="formPrimary"
               className="w-full"
               loading={isLoading}
               disabled={isLoading}
             >
-              {t('text-verify-code')}
+              {isLoading ? 'Verifying...' : t('text-verify-code')}
             </Button>
 
             <div className="flex items-center justify-between pt-1 text-sm">

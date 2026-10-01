@@ -363,6 +363,7 @@ export const AddressForm: React.FC<any> = ({
             )}
 
             <Button
+              variant="formPrimary"
               className="w-full col-span-2"
               loading={isLoading}
               disabled={isLoading}

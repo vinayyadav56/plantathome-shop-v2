@@ -6,6 +6,7 @@ import { initialOtpState, optAtom } from '@/components/otp/atom';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { Routes } from '@/config/routes';
 import client from '@/framework/client';
+import { HttpClient } from '@/framework/client/http-client';
 import { API_ENDPOINTS } from '@/framework/client/api-endpoints';
 import { setAuthCredentials } from '@/framework/utils/auth-utils';
 import { AUTH_CRED } from '@/framework/utils/constants';
@@ -343,7 +344,12 @@ export function useSendOtpCode({
         // Countdowns come from the server's policy, never hardcoded here.
         expiresIn: data?.expires_in ?? otpState.expiresIn,
         resendAfter: data?.resend_after ?? otpState.resendAfter,
-        step: data?.is_contact_exist! ? 'OtpForm' : 'RegisterForm',
+        // The API stopped returning is_contact_exist (api d5f355f) — the old
+        // truthiness check therefore sent EVERY login to the register step.
+        // Code-first instead: everyone verifies the 6 digits; /otp-login answers
+        // 422 for a genuinely new phone and useOtpLogin switches to the register
+        // step with the code preserved.
+        step: data?.is_contact_exist === false ? 'RegisterForm' : 'OtpForm',
         ...(verifyOnly && { step: 'OtpForm' }),
       });
     },
@@ -401,7 +407,8 @@ export function useOtpLogin() {
   const { mutate: otpLogin, isLoading } = useMutation(client.users.OtpLogin, {
     onSuccess: (data) => {
       if (!data.token) {
-        setServerError('text-otp-verify-failed');
+        // A wrong code answers 200 {success:false}; this is the user's only signal.
+        setServerError((data as any)?.message || 'text-otp-verify-failed');
         return;
       }
       setToken(data.token!);
@@ -411,8 +418,20 @@ export function useOtpLogin() {
       });
       closeModal();
     },
-    onError: (error: Error) => {
-      console.error(error.message);
+    onError: (error: any, variables: any) => {
+      const bag = error?.response?.data;
+      // 422 naming email/name = the phone is NEW and the server wants a profile.
+      // Switch to the register step with the verified code carried along —
+      // this replaces the dead is_contact_exist branch the API removed.
+      if (error?.response?.status === 422 && (bag?.email || bag?.name)) {
+        setOtpState((s: any) => ({
+          ...s,
+          step: 'RegisterForm',
+          prefillCode: variables?.code ?? null,
+        }));
+        return;
+      }
+      setServerError(getErrorMessage(error, 'text-otp-verify-failed'));
     },
     onSettled: () => {
       queryClient.invalidateQueries(API_ENDPOINTS.NOTIFY_LOGS);
@@ -444,9 +463,15 @@ export function useRegister() {
   );
 
   const { mutate, isLoading } = useMutation(client.users.register, {
-    onSuccess: (data) => {
+    onSuccess: (data, variables: any) => {
       if (data?.token && data?.permissions?.length) {
         setToken(data?.token);
+        // Signup collects a mobile number but /register ignores it (it stores only
+        // name/email/password). Save it through the existing PUT /me/contacts the
+        // moment the token cookie is set — fire-and-forget, no backend change.
+        if (variables?.contact) {
+          HttpClient.put(API_ENDPOINTS.CONTACTS, { contact: variables.contact }).catch(() => {});
+        }
         setAuthorized(true);
         closeModal();
         return;

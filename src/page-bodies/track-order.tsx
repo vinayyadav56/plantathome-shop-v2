@@ -46,7 +46,7 @@ export default function TrackOrderPage() {
           <button
             type="submit"
             disabled={!tracking.trim()}
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-forest-900 text-[14px] font-semibold text-white transition hover:bg-forest-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            className="flex h-[52px] w-full items-center justify-center gap-2 rounded-[14px] bg-ds-btn text-[15px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:bg-stone-300"
           >
             Track Order
             <ArrowRight size={16} aria-hidden />

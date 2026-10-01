@@ -76,14 +76,13 @@ const Coupon = ({ theme, subtotal }: { theme?: 'dark'; subtotal: number }) => {
         variant="outline"
         className="flex-1 mb-4 sm:mb-0 ltr:sm:mr-4 rtl:sm:ml-4"
         inputClassName="border-forest-900/15 focus:border-[#1B6B50]"
-        dimension="small"
         error={t(formError?.code!)}
       />
       <Button
+        variant="formPrimary"
         loading={loading}
         disabled={loading}
-        size="small"
-        className="w-full sm:w-40 lg:w-auto"
+        className="!h-12 w-full rounded-[12px] sm:w-40 lg:w-auto"
       >
         {t('text-apply')}
       </Button>

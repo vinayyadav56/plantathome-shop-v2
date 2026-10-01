@@ -51,17 +51,18 @@ const VerifyEmail = () => {
 
           <div className="space-y-3">
             <Button
+              variant="formPrimary"
               onClick={() => verifyEmail()}
               disabled={isVerifying || !!isLogoutLoader}
               loading={isVerifying}
-              className="!h-13 w-full"
+              className="w-full"
             >
               {t('resend-verification-button-text')}
             </Button>
             <Button
               type="button"
-              variant="outline"
-              className="!h-13 w-full"
+              variant="formSecondary"
+              className="w-full"
               onClick={() => handleLogout()}
               disabled={!!isVerifying || isLogoutLoader}
               loading={isLogoutLoader}

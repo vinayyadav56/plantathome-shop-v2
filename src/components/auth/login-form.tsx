@@ -1,6 +1,6 @@
 import { signIn } from 'next-auth/react';
 import { useSetAtom } from 'jotai';
-import Logo from '@/components/ui/logo';
+import AuthShell from '@/components/auth/auth-shell';
 import Alert from '@/components/ui/alert';
 import Input from '@/components/ui/forms/input';
 import PasswordInput from '@/components/ui/forms/password-input';
@@ -10,7 +10,7 @@ import { useTranslation } from 'next-i18next';
 import * as yup from 'yup';
 import { GoogleIcon } from '@/components/icons/google';
 import { useModalAction } from '@/components/ui/modal/modal.context';
-import { Smartphone, Mail, Lock } from '@/components/ui/icon';
+import { Smartphone, Mail, Lock, ArrowRight } from '@/components/ui/icon';
 import { Form } from '@/components/ui/forms/form';
 import { useGoogleLogin, useLogin } from '@/framework/user';
 import { initialOtpState, optAtom } from '@/components/otp/atom';
@@ -80,7 +80,8 @@ type LoginFormProps = {
  *  an icon slot to `Input`, which has dozens of other call sites. */
 function FieldIcon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="pointer-events-none absolute top-[41px] text-stone-400 ltr:left-4 rtl:right-4">
+    // top = label row (14px line + 12px margin) + half the 56px input − half the icon.
+    <span className="pointer-events-none absolute top-[45px] text-stone-400 ltr:left-4 rtl:right-4">
       {children}
     </span>
   );
@@ -145,6 +146,7 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
                 inputMode="email"
                 autoComplete="username"
                 variant="outline"
+                dimension="big"
                 inputClassName="ltr:pl-11 rtl:pr-11"
                 error={t(errors.email?.message!)}
               />
@@ -159,7 +161,7 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
                 autoComplete="current-password"
                 error={t(errors.password?.message!)}
                 variant="outline"
-                inputClassName="ltr:!pl-11 rtl:!pr-11"
+                inputClassName="h-14 ltr:!pl-11 rtl:!pr-11"
               />
             </div>
 
@@ -181,11 +183,13 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
             </div>
 
             <Button
-              className="h-11 w-full !bg-forest-700 !text-light hover:!bg-forest-800 sm:h-12"
+              variant="formPrimary"
+              className="mt-1 w-full"
               loading={isLoading}
               disabled={isLoading}
             >
-              {t('text-login')}
+              {isLoading ? 'Logging in...' : t('text-login')}
+              {!isLoading && <ArrowRight size={18} className="ltr:ml-2 rtl:mr-2" aria-hidden />}
             </Button>
           </>
         )}
@@ -203,18 +207,20 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
       <div className="grid grid-cols-1 gap-3">
         <Button
           type="button"
-          variant="outline"
-          className="h-11 w-full sm:h-12"
+          variant="formSecondary"
+          className="w-full"
+          loading={googleBusy}
           disabled={isLoading || googleBusy}
           onClick={googleLogin}
         >
-          <GoogleIcon className="w-4 h-4 ltr:mr-3 rtl:ml-3" />
-          {t('text-login-google')}
+          <GoogleIcon className="h-5 w-5 ltr:mr-3 rtl:ml-3" />
+          {googleBusy ? 'Connecting...' : t('text-login-google')}
         </Button>
 
         {process.env.NEXT_PUBLIC_ENABLE_LINKEDIN === 'true' && (
           <Button
-            className="h-11 w-full !bg-[#0A66C2] !text-light hover:!bg-[#004182] sm:h-12"
+            variant="formSecondary"
+            className="w-full"
             disabled={isLoading}
             onClick={() => signIn('linkedin')}
           >
@@ -227,22 +233,23 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
 
         <Button
           type="button"
-          variant="outline"
-          className="h-11 w-full sm:h-12"
+          variant="formSecondary"
+          className="w-full"
           disabled={isLoading}
           onClick={() => goToOtp()}
         >
-          <Smartphone size={18} className="ltr:mr-2 rtl:ml-2" aria-hidden />
+          <Smartphone size={18} className="ltr:mr-3 rtl:ml-3" aria-hidden />
           Continue with Phone (OTP)
         </Button>
 
         {isCheckout && guestCheckout && (
           <Button
-            className="h-11 w-full !bg-pink-700 !text-light hover:!bg-pink-800 sm:h-12"
+            variant="formSecondary"
+            className="w-full"
             disabled={isLoading}
             onClick={() => router.push(Routes.checkoutGuest)}
           >
-            <AnonymousIcon className="h-6 text-light ltr:mr-2 rtl:ml-2" />
+            <AnonymousIcon className="h-6 ltr:mr-2 rtl:ml-2" />
             {t('text-guest-checkout')}
           </Button>
         )}
@@ -261,16 +268,17 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
 }
 
 export default function LoginView() {
-  const { t } = useTranslation('common');
+  const { openModal, closeModal } = useModalAction();
   return (
-    <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-white py-6 px-5 sm:p-8 md:h-auto md:min-h-0 md:max-w-[480px] md:rounded-xl">
-      <div className="flex justify-center">
-        <Logo />
-      </div>
-      <p className="mt-4 mb-8 text-sm text-center text-body sm:mt-5 sm:mb-10 md:text-base">
-        {t('login-helper')}
-      </p>
+    <AuthShell
+      tab="login"
+      onLogin={() => {}}
+      onRegister={() => openModal('REGISTER')}
+      onClose={closeModal}
+      title="Welcome back"
+      subtitle="Login to your PlantAtHome account"
+    >
       <LoginForm />
-    </div>
+    </AuthShell>
   );
 }

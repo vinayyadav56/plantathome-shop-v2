@@ -159,16 +159,17 @@ const StripeBaseForm: React.FC<Props> = ({
               type="submit"
               loading={loading}
               disabled={loading}
-              className="StripePay px-11 text-sm shadow-none"
+              variant="formPrimary"
+              className="px-8"
             >
               {type === 'checkout' ? t('text-pay') : t('text-save')}
             </Button>
             {isAuthorized && type === 'checkout' && (
               <Button
                 type="submit"
-                variant="outline"
+                variant="formSecondary"
                 disabled={!!loading}
-                className="px-11 text-sm shadow-none"
+                className="px-8"
                 onClick={closeModal}
               >
                 {t('pay-latter')}
@@ -177,8 +178,8 @@ const StripeBaseForm: React.FC<Props> = ({
             {isAuthorized && cards?.length > 0 && type === 'checkout' && (
               <Button
                 disabled={!!loading}
-                variant="outline"
-                className="cursor-pointer"
+                variant="formSecondary"
+                className="px-8"
                 onClick={backModal}
               >
                 {t('text-back')}

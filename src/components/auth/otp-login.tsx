@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { useOtpLogin, useSendOtpCode } from '@/framework/user';
 import { initialOtpState, optAtom } from '@/components/otp/atom';
 import { useModalAction, useModalState } from '@/components/ui/modal/modal.context';
+import AuthShell from '@/components/auth/auth-shell';
+import { ArrowLeft } from '@/components/ui/icon';
 import Logo from '@/components/ui/logo';
 import PhoneNumberForm from '@/components/otp/phone-number-form';
 import OtpCodeForm from '@/components/otp/code-verify-form';
@@ -112,7 +114,7 @@ function OtpLogin({ channel, prefillPhone }: { channel: OtpChannel; prefillPhone
         <>
           <Alert
             variant="error"
-            message={serverError && t(serverError)}
+            message={(serverError && t(serverError)) || (optLoginError && t(optLoginError))}
             className="mb-4"
             closeable={true}
             onClose={() => setServerError(null)}
@@ -155,21 +157,15 @@ type OtpLoginViewProps = {
 
 export default function OtpLoginView({ channel: channelProp, onBack, inline = false, prefillPhone }: OtpLoginViewProps = {}) {
   const { t } = useTranslation('common');
-  const { openModal } = useModalAction();
+  const { openModal, closeModal } = useModalAction();
   const { data } = useModalState() as { data?: { channel?: OtpChannel } };
   const channel: OtpChannel =
     channelProp ?? (data?.channel === 'whatsapp' ? 'whatsapp' : 'sms');
 
-  return (
-    <div
-      className={
-        inline
-          ? 'flex flex-col'
-          : 'flex h-screen w-screen flex-col justify-center bg-light px-5 py-6 sm:p-8 md:h-auto md:max-w-md md:rounded-xl'
-      }
-    >
+  const body = (
+    <>
       {!inline && (
-        <div className="flex justify-center">
+        <div className="mb-4 flex justify-center">
           <Logo />
         </div>
       )}
@@ -186,27 +182,34 @@ export default function OtpLoginView({ channel: channelProp, onBack, inline = fa
             Enter your WhatsApp number and we&apos;ll send you a 6-digit code.
           </p>
         </div>
-      ) : (
-        <p className="mt-4 mb-7 text-center text-sm leading-relaxed text-body sm:mt-5 sm:mb-10 md:text-base">
-          {t('otp-login-helper')}
-        </p>
-      )}
+      ) : null}
       <OtpLogin channel={channel} prefillPhone={prefillPhone} />
       <div className="relative mt-9 mb-7 flex flex-col items-center justify-center text-sm text-heading sm:mt-11 sm:mb-8">
         <hr className="w-full" />
-        <span className="absolute -top-2.5 bg-light px-2 ltr:left-2/4 ltr:-ml-4 rtl:right-2/4 rtl:-mr-4">
+        <span className="absolute -top-2.5 bg-white px-2 ltr:left-2/4 ltr:-ml-4 rtl:right-2/4 rtl:-mr-4">
           {t('text-or')}
         </span>
       </div>
       <div className="text-center text-sm text-body sm:text-base">
-        {t('text-back-to')}{' '}
         <button
           onClick={onBack ?? (() => openModal('LOGIN_VIEW'))}
-          className="font-semibold text-accent underline transition-colors duration-200 hover:text-accent-hover hover:no-underline focus:text-accent-hover focus:no-underline focus:outline-0 ltr:ml-1 rtl:mr-1"
+          className="inline-flex items-center gap-2 rounded-sm font-semibold text-forest-700 transition-colors hover:text-forest-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-600 focus-visible:ring-offset-2"
         >
-          {t('text-login')}
+          <ArrowLeft size={16} aria-hidden />
+          Back to login
         </button>
       </div>
-    </div>
+    </>
+  );
+
+  if (inline) return <div className="flex flex-col">{body}</div>;
+  return (
+    <AuthShell
+      onClose={closeModal}
+      title="Welcome to PlantAtHome"
+      subtitle="Sign in or create your account using your mobile number."
+    >
+      {body}
+    </AuthShell>
   );
 }

@@ -44,7 +44,7 @@ export default function Modal({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 h-full w-full bg-gray-900 bg-opacity-50" />
+              <div className="fixed inset-0 h-full w-full bg-gray-900 bg-opacity-50 backdrop-blur-[2px]" />
             </Transition.Child>
           ) : (
             ''

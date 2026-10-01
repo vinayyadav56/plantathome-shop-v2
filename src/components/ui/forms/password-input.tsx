@@ -78,7 +78,10 @@ const PasswordInput = React.forwardRef<HTMLInputElement, Props>(
             type={show ? 'text' : 'password'}
             ref={ref}
             className={cn(
-              'w-full appearance-none rounded py-3 text-sm text-heading transition duration-300 ease-in-out focus:outline-0 focus:ring-0 ltr:pl-4 ltr:pr-11 rtl:pr-4 rtl:pl-11',
+              // h-12 (not py-3): matched to Input's medium height so a password field
+              // never sits 2px shorter than the field above it. Forms that use big
+              // inputs pass inputClassName="h-14".
+              'flex h-12 w-full appearance-none items-center rounded text-sm text-heading transition duration-300 ease-in-out focus:outline-0 focus:ring-0 ltr:pl-4 ltr:pr-11 rtl:pr-4 rtl:pl-11',
               shadow && 'focus:shadow',
               variantClasses[variant],
               inputClassName
@@ -91,17 +94,21 @@ const PasswordInput = React.forwardRef<HTMLInputElement, Props>(
             aria-describedby={error ? `${name}-error` : undefined}
             {...rest}
           />
-          <label
-            htmlFor={name}
-            className="absolute top-5 -mt-2 cursor-pointer text-body ltr:right-4 rtl:left-4"
+          {/* A real button, not a label: the label version was unreachable by keyboard
+              and announced nothing (auth spec §9/§16). */}
+          <button
+            type="button"
+            aria-label={show ? 'Hide password' : 'Show password'}
+            aria-pressed={show}
+            className="absolute inset-y-0 my-auto grid h-11 w-11 place-items-center text-body ltr:right-1 rtl:left-1"
             onClick={() => setShow((prev) => !prev)}
           >
             {show ? (
-              <EyeOff className="h-6 w-6" />
+              <EyeOff className="h-6 w-6" aria-hidden />
             ) : (
-              <Eye className="h-6 w-6" />
+              <Eye className="h-6 w-6" aria-hidden />
             )}
-          </label>
+          </button>
         </div>
         {error && (
           <p id={`${name}-error`} role="alert" className="my-2 text-xs text-red-500">

@@ -87,7 +87,7 @@ const SuperAdminContactForm: React.FC<SuperAdminContactFormProps> = ({
         disabled={isLoading}
       />
 
-      <Button loading={isLoading} disabled={isLoading}>
+      <Button variant="formPrimary" className="w-full sm:w-auto sm:px-8" loading={isLoading} disabled={isLoading}>
         {t('text-submit')}
       </Button>
     </form>

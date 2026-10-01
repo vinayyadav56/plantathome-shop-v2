@@ -1029,9 +1029,12 @@ footer a:hover { color: var(--pa-accent) !important; }
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 textarea,
 select {
-  border-radius: var(--pa-radius-sm) !important;
+  /* The single enforcement point for the form design system: 14px corners and a
+     NEUTRAL grey border (the old pale-green rgba(129,199,132,.3) made every idle
+     field look half-focused). Focus below keeps the botanical-green border+ring. */
+  border-radius: 14px !important;
   font-family: var(--font-body) !important;
-  border-color: rgba(129,199,132,0.3) !important;
+  border-color: #E4E5E1 !important;
   transition: var(--pa-t-fast) !important;
 }
 input:focus:not([type="checkbox"]):not([type="radio"]),
@@ -2351,7 +2354,7 @@ textarea:focus {
   align-items: stretch;
   width: 100%;
   border: 1px solid #E4E5E1;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   background: #fff;
   transition: border-color 0.2s ease;
@@ -2359,7 +2362,7 @@ textarea:focus {
 .pa-phone-row:focus-within { border-color: var(--ds-accent, #2E5E2A); }
 .pa-phone-row .react-tel-input { flex: 1 1 auto; min-width: 0; }
 .pa-phone-row .react-tel-input .form-control {
-  height: 50px !important;
+  height: 52px !important;
   width: 100% !important;
   border: none !important;
   border-radius: 0 !important;
@@ -2374,7 +2377,7 @@ textarea:focus {
   border-radius: 0 !important;
 }
 .pa-phone-row > button {
-  height: 50px !important;
+  height: 52px !important;
   border-radius: 0 !important;
   margin: 0 !important;
   flex-shrink: 0;
@@ -2406,7 +2409,7 @@ textarea:focus {
   background: var(--ds-accent, #2E5E2A) !important;
   color: #fff !important;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   height: 48px;
   padding: 0 28px;
   font-size: 14.5px;

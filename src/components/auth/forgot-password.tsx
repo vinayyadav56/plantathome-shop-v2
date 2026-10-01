@@ -68,12 +68,15 @@ function EmailForm({
           <Input
             label={t('text-email')}
             type="email"
+            variant="outline"
+            dimension="big"
             {...register('email')}
             error={t(errors.email?.message!)}
           />
           <Button
             type="submit"
-            className="!mt-5 w-full text-sm tracking-[0.2px] lg:!mt-6"
+            variant="formPrimary"
+            className="!mt-5 w-full lg:!mt-6"
             loading={isLoading}
             disabled={isLoading}
           >
@@ -113,20 +116,26 @@ function TokenForm({
         <>
           <Input
             label={t('token-label')}
+            variant="outline"
+            dimension="big"
             {...register('token')}
             error={t(errors.token?.message!)}
           />
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* type="button": this used to submit the form it sits in. */}
             <Button
+              type="button"
+              variant="formSecondary"
               onClick={handlePrevStep}
-              className="order-1 w-full !bg-cyan-500 text-sm tracking-[0.2px] hover:!bg-cyan-600"
+              className="order-1 w-full"
             >
               <ArrowPrevIcon className="w-5" />
               {t('text-previous-step')}
             </Button>
 
             <Button
-              className="w-full text-sm tracking-[0.2px] sm:order-2"
+              variant="formPrimary"
+              className="w-full sm:order-2"
               loading={isLoading}
               disabled={isLoading}
             >
@@ -161,19 +170,24 @@ function PasswordForm({
         <>
           <PasswordInput
             label={t('text-new-password')}
+            variant="outline"
+            inputClassName="h-14"
             {...register('password')}
             error={t(errors.password?.message!)}
           />
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Button
+              type="button"
+              variant="formSecondary"
               onClick={handlePrevStep}
-              className="order-1 w-full !bg-cyan-500 text-sm tracking-[0.2px] hover:!bg-cyan-600"
+              className="order-1 w-full"
             >
               <ArrowPrevIcon className="w-5" />
               {t('text-previous-step')}
             </Button>
             <Button
-              className="w-full text-sm tracking-[0.2px] sm:order-2"
+              variant="formPrimary"
+              className="w-full sm:order-2"
               loading={isLoading}
               disabled={isLoading}
             >
@@ -299,7 +313,7 @@ export default function ForgotUserPassword({ onBack, inline = false }: ForgotUse
         className={
           inline
             ? 'flex flex-col'
-            : 'flex h-full min-h-screen w-screen flex-col justify-center bg-light py-6 px-5 sm:p-8 md:h-auto md:min-h-0 md:max-w-[480px] md:rounded-xl'
+            : 'relative flex max-h-dvh min-h-dvh w-screen flex-col overflow-y-auto bg-white px-5 py-6 sm:px-9 sm:py-8 md:min-h-0 md:h-auto md:max-h-[92dvh] md:w-[540px] md:max-w-[92vw] md:rounded-3xl md:shadow-[0_24px_64px_rgba(14,32,17,0.28)]'
         }
       >
         {!inline && (

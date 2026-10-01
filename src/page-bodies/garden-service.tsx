@@ -159,7 +159,7 @@ function LeadForm() {
         </p>
         <a
           href={`tel:${PHONE}`}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#14532D] px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-[#0D4324]"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-[14px] bg-ds-btn px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-ds-btn-hover"
         >
           <GsIcon name="phone" className="h-4 w-4" />
           Or call us now

@@ -123,6 +123,8 @@ const ProfileContactDetails = () => {
           <div className="flex gap-2">
             <Button
               type="button"
+              variant="formPrimary"
+              className="!h-12 px-5"
               onClick={submitCode}
               loading={verifying}
               disabled={verifying || code.trim().length < 4}
@@ -131,7 +133,8 @@ const ProfileContactDetails = () => {
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="formSecondary"
+              className="!h-12 px-5"
               onClick={() => startVerify(email)}
               disabled={sending}
             >
@@ -159,8 +162,8 @@ const ProfileContactDetails = () => {
             {!item.verified && otpEmail !== item.email && (
               <Button
                 type="button"
-                size="small"
-                variant="outline"
+                variant="formSecondary"
+                className="!h-10 rounded-[12px] px-4 text-sm"
                 onClick={() => startVerify(item.email)}
                 disabled={sending}
               >
@@ -252,7 +255,8 @@ const ProfileContactDetails = () => {
                 {otpEmail !== newEmail || !otpEmail ? (
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="formSecondary"
+                    className="!h-11 px-4"
                     onClick={() => startVerify(newEmail)}
                     loading={sending}
                     disabled={sending || !newEmail.trim()}

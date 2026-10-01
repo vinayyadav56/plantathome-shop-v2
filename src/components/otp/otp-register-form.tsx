@@ -6,6 +6,8 @@ import Label from '@/components/ui/forms/label';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { Form } from '@/components/ui/forms/form';
 import { Controller } from 'react-hook-form';
+import { useAtomValue } from 'jotai';
+import { optAtom } from '@/components/otp/atom';
 import * as yup from 'yup';
 
 interface OtpRegisterFormProps {
@@ -27,7 +29,10 @@ const otpLoginFormSchemaForNewUser = yup.object().shape({
     .required('error-email-required'),
   first_name: yup.string().required('error-name-required'),
   last_name: yup.string(),
-  code: yup.string().required('error-code-required'),
+  code: yup
+    .string()
+    .required('Enter the 6-digit code')
+    .matches(/^[0-9]{6}$/, 'Enter the 6-digit code'),
 });
 
 export default function OtpRegisterForm({
@@ -36,9 +41,15 @@ export default function OtpRegisterForm({
 }: OtpRegisterFormProps) {
   const { t } = useTranslation('common');
   const { closeModal } = useModalAction();
+  // When /otp-login said "new phone — need a profile", the verified code rides
+  // along so the user doesn't retype it.
+  const { prefillCode } = useAtomValue(optAtom);
 
   return (
-    <div className="p-5 space-y-5 border border-gray-200 rounded">
+    <div className="space-y-5 rounded-2xl border border-gray-200 p-5">
+      <p className="text-center text-sm text-stone-500">
+        New here? Add your details to finish creating your account.
+      </p>
       <Form<OtpRegisterFormValues>
         onSubmit={({ email, first_name, last_name, code }) => {
           const trimmedFirst = first_name.trim();
@@ -61,6 +72,7 @@ export default function OtpRegisterForm({
               {...register('email')}
               type="email"
               variant="outline"
+              dimension="big"
               className="mb-5"
               error={t(errors.email?.message!)}
             />
@@ -70,6 +82,7 @@ export default function OtpRegisterForm({
                 {...register('first_name')}
                 autoComplete="given-name"
                 variant="outline"
+                dimension="big"
                 error={t(errors.first_name?.message!)}
               />
               <Input
@@ -77,6 +90,7 @@ export default function OtpRegisterForm({
                 {...register('last_name')}
                 autoComplete="family-name"
                 variant="outline"
+                dimension="big"
                 error={t(errors.last_name?.message!)}
               />
             </div>
@@ -98,21 +112,21 @@ export default function OtpRegisterForm({
                   />
                 )}
                 name="code"
-                defaultValue=""
+                defaultValue={prefillCode ?? ''}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-2 gap-4">
               <Button
-                variant="outline"
-                className="hover:border-red-500 hover:bg-red-500"
+                type="button"
+                variant="formSecondary"
                 onClick={closeModal}
               >
                 {t('text-cancel')}
               </Button>
 
-              <Button loading={loading} disabled={loading}>
-                {t('text-verify-code')}
+              <Button variant="formPrimary" loading={loading} disabled={loading}>
+                {loading ? 'Verifying...' : t('text-verify-code')}
               </Button>
             </div>
           </>

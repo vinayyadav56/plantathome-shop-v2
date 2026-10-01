@@ -148,6 +148,7 @@ const ProfileForm = ({ user }: { user: User }) => {
 
           <div className="mt-7 flex">
             <Button
+              variant="formPrimary"
               className="ltr:ml-auto rtl:mr-auto"
               loading={isLoading}
               disabled={isLoading}

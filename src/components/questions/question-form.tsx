@@ -45,7 +45,8 @@ export default function QuestionForm() {
                 {t('text-question-additional-info')}
               </span>
               <Button
-                className="h-11 w-auto sm:h-12"
+                variant="formPrimary"
+                className="w-auto px-6"
                 loading={isLoading}
                 disabled={isLoading}
               >

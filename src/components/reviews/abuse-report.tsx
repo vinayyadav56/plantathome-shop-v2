@@ -20,7 +20,7 @@ export default function AbuseReport({ data }: { data: any }) {
         {({ register }) => (
           <div className="space-y-4">
             <TextArea label={t('text-reason')} {...register('message')} />
-            <Button loading={isLoading} disabled={isLoading}>
+            <Button variant="formPrimary" className="w-full" loading={isLoading} disabled={isLoading}>
               {t('text-report')}
             </Button>
           </div>

@@ -17,6 +17,9 @@ interface OtpState {
   /** Server-provided countdowns (seconds) for the OTP screen. */
   expiresIn: number;
   resendAfter: number;
+  /** Code the user already typed when /otp-login said "new phone — need name
+   *  and email": the register step prefills it so they don't retype 6 digits. */
+  prefillCode?: string | null;
 }
 
 export const initialOtpState: OtpState = {
@@ -27,6 +30,7 @@ export const initialOtpState: OtpState = {
   channel: 'sms',
   expiresIn: 300,
   resendAfter: 45,
+  prefillCode: null,
 };
 
 export const optAtom = atom<OtpState>(initialOtpState);

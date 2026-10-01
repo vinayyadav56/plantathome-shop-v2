@@ -1,33 +1,53 @@
-import { useRouter } from '@/compat/next-router';
-import Logo from '@/components/ui/logo';
+import Link from '@/components/ui/link';
+import { Controller } from 'react-hook-form';
+import AuthShell from '@/components/auth/auth-shell';
+import PhoneInput from '@/components/ui/forms/phone-input';
+import { isMobileIdentifier } from '@/components/auth/login-form';
 import Input from '@/components/ui/forms/input';
 import PasswordInput from '@/components/ui/forms/password-input';
 import Button from '@/components/ui/button';
 import { useTranslation } from 'next-i18next';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { GoogleIcon } from '@/components/icons/google';
-import { MobileIcon } from '@/components/icons/mobile-icon';
-import { Smartphone } from '@/components/ui/icon';
+import { Smartphone, ArrowRight } from '@/components/ui/icon';
 import { Form } from '@/components/ui/forms/form';
 import * as yup from 'yup';
 import { useRegister } from '@/framework/user';
 import { useGoogleLogin } from '@/framework/user';
 
 const registerFormSchema = yup.object().shape({
-  first_name: yup.string().required('error-name-required'),
+  first_name: yup.string().trim().required('error-name-required'),
   last_name: yup.string(),
   email: yup
     .string()
     .email('error-email-format')
     .required('error-email-required'),
-  password: yup.string().required('error-password-required'),
+  // PhoneInput emits digits with the country code ('919876543210').
+  contact: yup
+    .string()
+    .required('Enter your mobile number')
+    // Last 10 digits: react-phone-input-2 can double the dial code when a
+    // "+91 …" number is pasted into a field that already carries +91.
+    .test('valid-mobile', 'Enter a valid 10-digit mobile number', (v) =>
+      isMobileIdentifier((v ?? '').replace(/\D/g, '').slice(-10)),
+    ),
+  // The API rejects shorter passwords with a 422; say so before the round trip.
+  password: yup
+    .string()
+    .required('error-password-required')
+    .min(8, 'Password must be at least 8 characters'),
+  terms: yup
+    .boolean()
+    .oneOf([true], 'Please accept the Terms of Service to continue'),
 });
 
 type RegisterFormValues = {
   first_name: string;
   last_name?: string;
   email: string;
+  contact: string;
   password: string;
+  terms?: boolean;
 };
 
 type RegisterFormProps = {
@@ -44,15 +64,18 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
   const { mutate, isLoading, formError } = useRegister();
 
   const { login: googleLogin, isLoading: googleBusy } = useGoogleLogin();
-  function onSubmit({ first_name, last_name, email, password }: RegisterFormValues) {
+  function onSubmit({ first_name, last_name, email, contact, password }: RegisterFormValues) {
     const trimmedFirst = first_name.trim();
     const trimmedLast = (last_name ?? '').trim();
-    // Keep sending the joined `name` too — old-API belt and braces.
+    // Keep sending the joined `name` too — old-API belt and braces. `/register`
+    // itself ignores `contact`; useRegister saves it with PUT /me/contacts once
+    // the token is set, so the backend contract stays untouched.
     mutate({
       name: [trimmedFirst, trimmedLast].filter(Boolean).join(' '),
       first_name: trimmedFirst,
       last_name: trimmedLast || undefined,
       email,
+      contact: '+91' + contact.replace(/\D/g, '').slice(-10),
       password,
     } as any);
   }
@@ -64,14 +87,15 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
         validationSchema={registerFormSchema}
         serverError={formError as any}
       >
-        {({ register, formState: { errors } }) => (
+        {({ register, control, formState: { errors } }) => (
           <>
-            <div className="mb-5 grid grid-cols-2 gap-4">
+            <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
                 label="First name"
                 {...register('first_name')}
                 autoComplete="given-name"
                 variant="outline"
+                dimension="big"
                 error={t(errors.first_name?.message!)}
               />
               <Input
@@ -79,6 +103,7 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
                 {...register('last_name')}
                 autoComplete="family-name"
                 variant="outline"
+                dimension="big"
                 error={t(errors.last_name?.message!)}
               />
             </div>
@@ -88,26 +113,78 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
               type="email"
               autoComplete="email"
               variant="outline"
+              dimension="big"
               className="mb-5"
               error={t(errors.email?.message!)}
             />
+            <div className="mb-5">
+              <label className="mb-3 block text-sm font-semibold leading-none text-body-dark">
+                Mobile number
+              </label>
+              <Controller
+                name="contact"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput
+                    country="in"
+                    onlyCountries={['in']}
+                    countryCodeEditable={false}
+                    value={field.value}
+                    onChange={field.onChange}
+                    inputProps={{ autoComplete: 'tel', inputMode: 'tel' }}
+                    inputClass="!h-14 !w-full !text-base"
+                  />
+                )}
+              />
+              {errors.contact?.message && (
+                <p role="alert" className="mt-2 text-xs text-red-500">
+                  {t(errors.contact.message)}
+                </p>
+              )}
+            </div>
             <PasswordInput
               label={t('text-password')}
               {...register('password')}
               autoComplete="new-password"
               error={t(errors.password?.message!)}
               variant="outline"
+              inputClassName="h-14"
               className="mb-5"
             />
-            <div className="mt-8">
-              <Button
-                className="h-12 w-full"
-                loading={isLoading}
-                disabled={isLoading}
-              >
-                {t('text-register')}
-              </Button>
+            {/* Terms acceptance gates registration (frontend only; the routes exist). */}
+            <div className="mb-6">
+              <label className="flex cursor-pointer items-start gap-3 text-sm text-body">
+                <input
+                  type="checkbox"
+                  {...register('terms')}
+                  className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-ds-btn focus:ring-ds-accent"
+                />
+                <span>
+                  I agree to the{' '}
+                  <Link href="/terms" target="_blank" className="font-semibold text-forest-700 underline hover:no-underline">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" target="_blank" className="font-semibold text-forest-700 underline hover:no-underline">
+                    Privacy Policy
+                  </Link>
+                </span>
+              </label>
+              {errors.terms?.message && (
+                <p role="alert" className="mt-2 text-xs text-red-500">
+                  {t(errors.terms.message)}
+                </p>
+              )}
             </div>
+            <Button
+              variant="formPrimary"
+              className="w-full"
+              loading={isLoading}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating account...' : t('text-register')}
+              {!isLoading && <ArrowRight size={18} className="ltr:ml-2 rtl:mr-2" aria-hidden />}
+            </Button>
           </>
         )}
       </Form>
@@ -123,20 +200,25 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
       {/* Social + phone sign-up (NextAuth session is bridged to the API by the
           global <SocialLogin/> in _app.tsx; OTP_LOGIN handles phone sign-up). */}
       <div className="mb-8 grid grid-cols-1 gap-4">
-        <Button type="button"
-          className="!bg-social-google !text-light hover:!bg-social-google-hover"
+        <Button
+          type="button"
+          variant="formSecondary"
+          className="w-full"
+          loading={googleBusy}
           disabled={isLoading || googleBusy}
           onClick={googleLogin}
         >
-          <GoogleIcon className="w-4 h-4 ltr:mr-3 rtl:ml-3" />
-          {t('text-login-google')}
+          <GoogleIcon className="h-5 w-5 ltr:mr-3 rtl:ml-3" />
+          {googleBusy ? 'Connecting...' : 'Continue with Google'}
         </Button>
-        <Button type="button"
-          className="h-11 w-full !bg-forest-700 !text-light hover:!bg-forest-800 sm:h-12"
+        <Button
+          type="button"
+          variant="formSecondary"
+          className="w-full"
           disabled={isLoading}
           onClick={onPhoneOtp ?? (() => openModal('OTP_LOGIN', { channel: 'sms' }))}
         >
-          <Smartphone className="h-5 w-5 text-light ltr:mr-2 rtl:ml-2" aria-hidden />
+          <Smartphone size={18} className="ltr:mr-3 rtl:ml-3" aria-hidden />
           Continue with Phone (OTP)
         </Button>
       </div>
@@ -154,36 +236,17 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
   );
 }
 export default function RegisterView() {
-  const { t } = useTranslation('common');
-  const router = useRouter();
-  const { closeModal } = useModalAction();
-  function handleNavigate(path: string) {
-    router.push(`/${path}`);
-    closeModal();
-  }
-
+  const { openModal, closeModal } = useModalAction();
   return (
-    <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-white py-6 px-5 sm:p-8 md:h-auto md:min-h-0 md:max-w-[480px] md:rounded-xl">
-      <div className="flex justify-center">
-        <Logo />
-      </div>
-      <p className="mt-4 mb-7 px-2 text-center text-sm leading-relaxed text-body sm:mt-5 sm:mb-10 sm:px-0 md:text-base">
-        {t('registration-helper')}
-        <span
-          onClick={() => handleNavigate('terms')}
-          className="mx-1 cursor-pointer text-[#175840] underline hover:no-underline"
-        >
-          {t('text-terms')}
-        </span>
-        &
-        <span
-          onClick={() => handleNavigate('privacy')}
-          className="cursor-pointer text-[#175840] underline hover:no-underline ltr:ml-1 rtl:mr-1"
-        >
-          {t('text-policy')}
-        </span>
-      </p>
+    <AuthShell
+      tab="register"
+      onLogin={() => openModal('LOGIN_VIEW')}
+      onRegister={() => {}}
+      onClose={closeModal}
+      title="Create your account"
+      subtitle="Join PlantAtHome — greener living, happier homes"
+    >
       <RegisterForm />
-    </div>
+    </AuthShell>
   );
 }

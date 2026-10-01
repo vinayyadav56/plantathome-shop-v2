@@ -132,7 +132,7 @@ function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
         </div>
         <textarea {...register('message')} placeholder="Anything specific? (branding, budget, timeline)" rows={2} className={inputCls} />
       </div>
-      <button type="submit" disabled={isLoading} className="mt-5 w-full rounded-[13px] bg-ds-btn px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-ds-btn-hover active:scale-[0.97] disabled:opacity-60">
+      <button type="submit" disabled={isLoading} className="mt-5 w-full rounded-[14px] bg-ds-btn px-6 inline-flex h-[52px] items-center justify-center text-sm font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-ds-btn-hover active:scale-[0.97] disabled:opacity-60">
         {isLoading ? 'Sending…' : 'Request a quote →'}
       </button>
       <p className={`mt-3 flex items-center justify-center gap-1 text-center text-xs ${onDark ? 'text-white/55' : 'text-stone-500'}`}>

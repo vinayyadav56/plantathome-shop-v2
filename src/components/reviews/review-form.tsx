@@ -116,7 +116,8 @@ export default function ReviewForm() {
 
               <div className="mt-8">
                 <Button
-                  className="h-11 w-full sm:h-12"
+                  variant="formPrimary"
+                  className="w-full"
                   loading={isLoading || creating}
                   disabled={isLoading || creating}
                 >

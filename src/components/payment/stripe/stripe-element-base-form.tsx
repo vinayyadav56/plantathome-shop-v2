@@ -148,16 +148,17 @@ export default function StripeElementBaseForm({
               id="submit"
               disabled={isLoading || !stripe || !elements}
               type="submit"
-              className="StripePay px-11 text-sm shadow-none"
+              variant="formPrimary"
+              className="px-8"
             >
               <span id="button-text">{t('text-pay')}</span>
             </Button>
 
             <Button
               type="submit"
-              variant="outline"
+              variant="formSecondary"
               disabled={!!isLoading}
-              className="px-11 text-sm shadow-none"
+              className="px-8"
               onClick={closeModal}
             >
               {t('pay-latter')}
@@ -165,8 +166,8 @@ export default function StripeElementBaseForm({
 
             <Button
               disabled={!!isLoading}
-              variant="outline"
-              className="cursor-pointer"
+              variant="formSecondary"
+              className="px-8"
               onClick={backModal}
             >
               {t('text-back')}

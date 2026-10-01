@@ -4,7 +4,7 @@ import React, { ButtonHTMLAttributes } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
-  variant?: 'normal' | 'outline' | 'custom';
+  variant?: 'normal' | 'outline' | 'custom' | 'formPrimary' | 'formSecondary';
   size?: 'big' | 'medium' | 'small';
   active?: boolean;
   loading?: boolean;
@@ -19,6 +19,15 @@ const classes = {
   custom: 'border border-transparent',
   outline:
     'border border-border-400 bg-transparent text-body hover:text-light hover:bg-ds-accent-ink hover:border-ds-accent-ink',
+  // The FORM design system (auth modal spec, applied to every form on the site):
+  // 52px, 14px radius, solid botanical green / white secondary. These variants emit
+  // data-variant="formPrimary|formSecondary", so the global pill override
+  // (button[data-variant="normal"] in plantathome-overrides.css) can never touch them —
+  // that override is exactly why per-form colours silently stopped applying.
+  formPrimary:
+    'h-[52px] rounded-[14px] bg-ds-btn text-white text-base font-semibold hover:bg-ds-btn-hover focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-body',
+  formSecondary:
+    'h-[52px] rounded-[14px] border border-border-base bg-white text-base font-semibold text-heading hover:border-ds-btn hover:text-ds-btn focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:text-muted',
   disabled:
     'border border-border-base bg-gray-300 hover:bg-gray-300 border-border-400 text-body cursor-not-allowed',
   disabledOutline: 'border border-border-base text-muted cursor-not-allowed',
@@ -46,9 +55,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         [classes.disabled]: disabled && variant === 'normal',
         [classes.outline]: !disabled && variant === 'outline',
         [classes.disabledOutline]: disabled && variant === 'outline',
-        [classes.small]: size === 'small',
-        [classes.medium]: size === 'medium',
-        [classes.big]: size === 'big',
+        [classes.formPrimary]: variant === 'formPrimary',
+        [classes.formSecondary]: variant === 'formSecondary',
+        [classes.small]: size === 'small' && !variant.startsWith('form'),
+        [classes.medium]: size === 'medium' && !variant.startsWith('form'),
+        [classes.big]: size === 'big' && !variant.startsWith('form'),
+        ['px-5']: variant.startsWith('form'),
       },
       className
     );
