@@ -6,13 +6,18 @@ import Cookies from 'js-cookie';
 import Router from '@/compat/next-router';
 
 const Axios = axios.create({
-  // SSR (no window): call Railway directly. Browser: call /rest-api on this domain,
-  // which Vercel proxies to Railway — so users whose network can't reach railway.app
-  // still work, and it's same-origin (no CORS).
+  // One transport, both sides: the absolute API host. The browser used to go through
+  // the same-origin /rest-api rewrite, which made EVERY dynamic request pay a second
+  // proxy leg (browser → Vercel → Cloudflare → origin): measured 400–1,500 ms per call
+  // on production vs ~350 ms direct — the "cart is slow / homepage sections are slow"
+  // report was mostly this hop. CORS is open on the API and the CSP's connect-src lists
+  // every API host, so direct calls are allowed from both prod and staging.
+  // '/rest-api' stays as the fallback when the env var is missing (and for the crash
+  // reporter, which deliberately keeps the same-origin path).
   baseURL:
     typeof window === 'undefined'
       ? process.env.NEXT_PUBLIC_REST_API_ENDPOINT
-      : '/rest-api',
+      : process.env.NEXT_PUBLIC_REST_API_ENDPOINT || '/rest-api',
   // 30s. This was 5,000,000 ms (~83 minutes) — a hung request pinned every loading state
   // (and the disabled Place Order button) for as long, with no error ever arriving.
   timeout: 30_000,
@@ -41,7 +46,11 @@ Axios.interceptors.request.use((config) => {
   //@ts-ignore
   config.headers = {
     ...config.headers,
-    Authorization: `Bearer ${token ? token : ''}`,
+    // Only when a token exists. The old unconditional `Bearer ` (empty) header made
+    // every guest GET a CORS "non-simple" request — one preflight round trip per call
+    // (the API's Access-Control-Max-Age was 0) — and marks the request uncacheable at
+    // the CDN. The API treats a missing header exactly like an empty one: anonymous.
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(locale ? { 'Accept-Language': locale } : {}),
   };
   return config;

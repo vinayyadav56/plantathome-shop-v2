@@ -51,7 +51,7 @@ const CSP = [
   "img-src 'self' data: blob: https:",
   // www.google.com: GA4 sends a second /g/collect hit there when Google Signals is on; without it
   // every page logged a CSP violation (seen in the owner's console, 2026-10-01).
-  "connect-src 'self' https://accounts.google.com https://places.googleapis.com https://api.plantathome.in https://staging-api.plantathome.in https://cdn.razorpay.com https://checkout-static-next.razorpay.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com https://*.cloudflareinsights.com https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com https://maps.gstatic.com" +
+  "connect-src 'self' https://accounts.google.com https://places.googleapis.com https://api.plantathome.in https://staging-api.plantathome.in https://cdn.razorpay.com https://checkout-static-next.razorpay.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com https://*.cloudflareinsights.com https://plantathome-production.up.railway.app http://localhost:8000 https://api.razorpay.com https://lumberjack.razorpay.com https://maps.googleapis.com https://maps.gstatic.com" +
     AGENTATION_CONNECT,
   "frame-src 'self' https://accounts.google.com https://api.razorpay.com https://checkout.razorpay.com https://cdn.razorpay.com",
   "frame-ancestors 'none'",

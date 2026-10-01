@@ -72,7 +72,11 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName, overlay }) 
               priority={i === 0}
               sizes="(max-width:1024px) 100vw, 55vw"
               onError={() => setErr((e) => ({ ...e, [i]: true }))}
-              className={`object-cover object-center transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-0'}`}
+              // Annotation: "image aspect ratio is not correct … visible all the content".
+              // contain, not cover: catalogue photos are mixed portrait/landscape and
+              // cover cropped plants' tops/pots. The stage behind is a soft gradient,
+              // so letterboxing reads as intentional framing.
+              className={`object-contain object-center transition-opacity duration-300 ${i === active ? 'opacity-100' : 'opacity-0'}`}
             />
           );
         })}

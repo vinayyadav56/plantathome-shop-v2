@@ -63,13 +63,25 @@ const PaymentGroupOption: React.FC<PaymentGroupOptionProps> = ({
       {({ checked }) => (
         <div
           className={cn(
-            'relative flex h-full w-full cursor-pointer items-center justify-center rounded border border-gray-200 bg-light p-3 text-center',
+            'relative flex h-full w-full cursor-pointer items-center justify-center rounded border border-gray-200 bg-light p-3 pl-9 text-center',
             checked && '!border-accent bg-light shadow-600',
             {
               '!border-accent bg-light shadow-600': theme === 'bw' && checked,
             }
           )}
         >
+          {/* Annotation: "provide option in radio buttons". The group was already a
+              semantic RadioGroup — what was missing is the visible radio control, so
+              the tiles read as buttons and the current choice was easy to miss. */}
+          <span
+            aria-hidden
+            className={cn(
+              'absolute left-3 top-1/2 grid h-4 w-4 -translate-y-1/2 place-items-center rounded-full border-2 transition-colors',
+              checked ? 'border-accent' : 'border-gray-300'
+            )}
+          >
+            {checked && <span className="h-2 w-2 rounded-full bg-accent" />}
+          </span>
           {icon ? (
             <>
               {icon}

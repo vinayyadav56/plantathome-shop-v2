@@ -27,6 +27,17 @@ export const CheckAvailabilityAction: React.FC<{
 
   const { mutate: verifyCheckout, isLoading: loading }: any = useVerifyOrder();
 
+  // Annotation: "this button should be disabled until all the required fields completed".
+  // Same completeness rule as the click guard below, computed reactively. Server render
+  // and the first client render both see the atom DEFAULTS (jotai reads storage in an
+  // effect), i.e. "not ready" — so SSR and hydration agree on `disabled` and the button
+  // simply enables once the persisted contact/address load a frame later.
+  const readyCandidate = billing_address?.address ? billing_address : shipping_address;
+  const ready =
+    Boolean(contact) &&
+    Boolean(readyCandidate?.address) &&
+    isAddressComplete(readyCandidate);
+
   function handleVerifyCheckout() {
     // Stepped checkout: a verify fired before contact + address exist lands on
     // a disabled Place Order ("fill all the fields") — guide the shopper to the
@@ -79,7 +90,14 @@ export const CheckAvailabilityAction: React.FC<{
     <button
       className="pa-place-order-btn"
       onClick={handleVerifyCheckout}
-      disabled={isEmpty || loading}
+      disabled={isEmpty || loading || !ready}
+      title={
+        ready
+          ? undefined
+          : !contact
+            ? 'Add your contact number first'
+            : 'Choose your delivery address first'
+      }
       style={{ marginTop: 20 }}
     >
       {loading ? (
