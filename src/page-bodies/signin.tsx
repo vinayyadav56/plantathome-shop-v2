@@ -209,7 +209,7 @@ function SignInPage() {
                   : mode === 'register'
                     ? t('signin-create-account')
                     : mode === 'phone'
-                      ? 'Login with Phone'
+                      ? 'Welcome to PlantAtHome'
                       : 'Reset your password'}
               </h1>
               {/* min-h reserves the taller of the two states. The register copy wraps to two
@@ -217,7 +217,7 @@ function SignInPage() {
                   down every time you switched tabs — under the very heading you were reading. */}
               <p className="mb-6 mt-1 min-h-[2.5rem] text-center text-[14px] text-stone-500 sm:min-h-[1.25rem]">
                 {mode === 'login' && t('signin-login-sub')}
-                {mode === 'phone' && 'We will send a 6-digit code to your phone by SMS.'}
+                {mode === 'phone' && 'Sign in or create your account using your mobile number.'}
                 {mode === 'forgot' && t('forgot-password-helper')}
                 {/* `registration-helper` is a fragment ("…you agree to our"); the two
                     words that finish it are separate keys meant to be inlined as links. */}

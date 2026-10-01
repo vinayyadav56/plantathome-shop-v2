@@ -96,7 +96,7 @@ function OtpLogin({ channel, prefillPhone }: { channel: OtpChannel; prefillPhone
             closeable={true}
             onClose={() => setServerError(null)}
           />
-          <div className="flex items-center">
+          <div>
             <PhoneNumberForm
               onSubmit={onSendCodeSubmission}
               isLoading={isLoading}
@@ -108,6 +108,17 @@ function OtpLogin({ channel, prefillPhone }: { channel: OtpChannel; prefillPhone
               phoneNumber={prefillPhone || otpState.phoneNumber || undefined}
             />
           </div>
+          <p className="mt-4 text-center text-[13px] leading-relaxed text-stone-500">
+            By continuing, you agree to our{' '}
+            <a href="/terms" target="_blank" className="font-medium text-forest-700 underline hover:no-underline">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a href="/privacy" target="_blank" className="font-medium text-forest-700 underline hover:no-underline">
+              Privacy Policy
+            </a>
+            .
+          </p>
         </>
       )}
       {otpState.step === 'OtpForm' && (
@@ -164,11 +175,6 @@ export default function OtpLoginView({ channel: channelProp, onBack, inline = fa
 
   const body = (
     <>
-      {!inline && (
-        <div className="mb-4 flex justify-center">
-          <Logo />
-        </div>
-      )}
       {/* Inline, the page's own heading already says which channel this is and
           what happens next — repeating it here printed the same sentence twice
           in a row. The modal has no heading of its own, so it keeps the banner. */}
@@ -184,13 +190,8 @@ export default function OtpLoginView({ channel: channelProp, onBack, inline = fa
         </div>
       ) : null}
       <OtpLogin channel={channel} prefillPhone={prefillPhone} />
-      <div className="relative mt-9 mb-7 flex flex-col items-center justify-center text-sm text-heading sm:mt-11 sm:mb-8">
-        <hr className="w-full" />
-        <span className="absolute -top-2.5 bg-white px-2 ltr:left-2/4 ltr:-ml-4 rtl:right-2/4 rtl:-mr-4">
-          {t('text-or')}
-        </span>
-      </div>
-      <div className="text-center text-sm text-body sm:text-base">
+      <div className="mt-9 flex items-center gap-4 sm:mt-10">
+        <hr className="min-w-0 flex-1 border-stone-200" />
         <button
           onClick={onBack ?? (() => openModal('LOGIN_VIEW'))}
           className="inline-flex items-center gap-2 rounded-sm font-semibold text-forest-700 transition-colors hover:text-forest-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-600 focus-visible:ring-offset-2"
@@ -198,17 +199,23 @@ export default function OtpLoginView({ channel: channelProp, onBack, inline = fa
           <ArrowLeft size={16} aria-hidden />
           Back to login
         </button>
+        <hr className="min-w-0 flex-1 border-stone-200" />
       </div>
     </>
   );
 
   if (inline) return <div className="flex flex-col">{body}</div>;
   return (
-    <AuthShell
-      onClose={closeModal}
-      title="Welcome to PlantAtHome"
-      subtitle="Sign in or create your account using your mobile number."
-    >
+    <AuthShell onClose={closeModal}>
+      <div className="mb-5 flex justify-center">
+        <Logo />
+      </div>
+      <h1 className="text-center font-heading text-[30px] font-bold leading-tight text-forest-900 sm:text-[34px]">
+        Welcome to PlantAtHome
+      </h1>
+      <p className="mt-2 mb-8 text-center text-[16px] text-stone-500">
+        Sign in or create your account using your mobile number.
+      </p>
       {body}
     </AuthShell>
   );

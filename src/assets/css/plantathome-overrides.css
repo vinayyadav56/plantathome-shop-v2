@@ -2386,6 +2386,39 @@ textarea:focus {
 }
 .pa-phone-row > button:hover { background: var(--ds-accent-ink, #1E4023) !important; }
 
+/* ── OTP login: stacked phone field (mock: [flag +91 ▾ │ number]) ── */
+.pa-phone-stack {
+  position: relative;
+  border: 1px solid #E4E5E1;
+  border-radius: 14px;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+.pa-phone-stack:focus-within { border-color: var(--ds-accent, #2E5E2A); }
+.pa-phone-stack .react-tel-input .form-control {
+  height: 56px !important;
+  width: 100% !important;
+  border: none !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding-left: 72px !important;
+  font-size: 16px !important;
+}
+.pa-phone-stack .react-tel-input .flag-dropdown,
+.pa-phone-stack .react-tel-input .flag-dropdown.open {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 14px 0 0 14px !important;
+  width: 58px;
+  border-right: 1px solid #E4E5E1 !important;
+}
+.pa-phone-stack .react-tel-input .selected-flag {
+  width: 100%;
+  padding-left: 16px;
+  background: transparent !important;
+}
+
 /* ── Checkout wizard navigation ──────────────────────────────── */
 .pa-wizard-nav {
   display: flex;

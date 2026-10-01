@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next';
 import { Form } from '@/components/ui/forms/form';
 import PhoneInput from '@/components/ui/forms/phone-input';
 import Button from '@/components/ui/button';
+import { ArrowRight } from '@/components/ui/icon';
 import * as yup from 'yup';
 
 type FormValues = {
@@ -40,7 +41,21 @@ export default function PhoneNumberForm({
     >
       {({ control, formState: { errors } }) => (
         <div className="flex flex-col">
-          <div className="pa-phone-row flex w-full items-stretch md:min-w-[360px]">
+          {/* Mock layout for the OTP LOGIN screen: labelled stacked field with the
+              flag segment divided from the number, and the primary button BELOW.
+              The contact modals keep the flush row with the button inside. */}
+          {view === 'login' && (
+            <label className="mb-3 block text-sm font-semibold leading-none text-body-dark">
+              Mobile number
+            </label>
+          )}
+          <div
+            className={
+              view === 'login'
+                ? 'pa-phone-stack w-full'
+                : 'pa-phone-row flex w-full items-stretch md:min-w-[360px]'
+            }
+          >
             <Controller
               name="phone_number"
               control={control}
@@ -58,25 +73,32 @@ export default function PhoneNumberForm({
                 />
               )}
             />
-            <Button
-              className="!text-sm ltr:!rounded-l-none rtl:!rounded-r-none"
-              loading={isLoading}
-              disabled={isLoading}
-            >
-              {view === 'login' ? (
-                t('text-send-otp')
-              ) : (
-                <>
-                  {Boolean(phoneNumber) ? t('text-update') : t('text-add')}{' '}
-                  {t('nav-menu-contact')}
-                </>
-              )}
-            </Button>
+            {view !== 'login' && (
+              <Button
+                className="!text-sm ltr:!rounded-l-none rtl:!rounded-r-none"
+                loading={isLoading}
+                disabled={isLoading}
+              >
+                {Boolean(phoneNumber) ? t('text-update') : t('text-add')}{' '}
+                {t('nav-menu-contact')}
+              </Button>
+            )}
           </div>
           {errors.phone_number?.message && (
             <p className="mt-2 text-xs text-red-500 ltr:text-left rtl:text-right">
               {t(errors.phone_number.message)}
             </p>
+          )}
+          {view === 'login' && (
+            <Button
+              variant="formPrimary"
+              className="mt-5 w-full"
+              loading={isLoading}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Sending OTP...' : 'Continue'}
+              {!isLoading && <ArrowRight size={18} className="ltr:ml-2 rtl:mr-2" aria-hidden />}
+            </Button>
           )}
         </div>
       )}

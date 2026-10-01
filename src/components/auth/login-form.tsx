@@ -4,7 +4,6 @@ import AuthShell from '@/components/auth/auth-shell';
 import Alert from '@/components/ui/alert';
 import Input from '@/components/ui/forms/input';
 import PasswordInput from '@/components/ui/forms/password-input';
-import Checkbox from '@/components/ui/forms/checkbox/checkbox';
 import Button from '@/components/ui/button';
 import { useTranslation } from 'next-i18next';
 import * as yup from 'yup';
@@ -169,10 +168,16 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
                 is deliberately NOT passed to PasswordInput — that renders the link up
                 in the label row, and its three other call sites still want it there. */}
             <div className="mt-4 mb-6 flex items-center justify-between gap-4">
-              <Checkbox
-                {...register('remember')}
-                label={t('signin-remember-me')}
-              />
+              {/* Native checkbox styled like the mock (green rounded square) instead of
+                  the legacy 18px pseudo-element checkbox. */}
+              <label className="flex cursor-pointer items-center gap-2.5 text-sm text-body">
+                <input
+                  type="checkbox"
+                  {...register('remember')}
+                  className="h-5 w-5 rounded border-gray-300 text-ds-btn focus:ring-ds-accent"
+                />
+                {t('signin-remember-me')}
+              </label>
               <button
                 type="button"
                 onClick={onForgot ?? (() => openModal('FORGOT_VIEW'))}
@@ -254,7 +259,7 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
           </Button>
         )}
       </div>
-      <div className="mt-7 border-t border-stone-200 pt-6 text-sm text-center text-body">
+      <div className="mt-7 text-center text-sm text-body">
         {t('text-no-account')}{' '}
         <button
           onClick={onSwitchToRegister ?? (() => openModal('REGISTER'))}
