@@ -38,7 +38,11 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName, overlay }) 
   // self-start on the root keeps that true with the thumb strip below.
   return (
     <div className="w-full self-start">
-      <div className="relative h-[300px] w-full sm:h-[380px] lg:h-[620px]">
+      {/* 4:3 to match the catalogue renditions (800x597): the fixed 620px stage
+          letterboxed every landscape photo top and bottom (annotation: "why is
+          there so much gap"). Height now follows width, so a 4:3 photo fills the
+          frame edge-to-edge and object-contain only matters for odd ratios. */}
+      <div className="relative aspect-[4/3] w-full">
       {/* Full rectangular image — no decorative curve/border, fills the right side.
           All gallery images are stacked + preloaded, so switching thumbnails is an
           instant opacity swap (no reload flash / fluctuation). */}

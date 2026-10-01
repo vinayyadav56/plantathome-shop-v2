@@ -60,7 +60,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
               key={i}
               href={item.href}
               className={classNames(
-                'shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-body-sm font-semibold transition',
+                'shrink-0 whitespace-nowrap rounded-full border px-4 py-2 font-poppins text-[13.5px] font-medium transition',
                 pathname === item.href
                   ? 'border-transparent bg-ds-accent text-white'
                   : 'border-forest-900/10 bg-white text-forest-900 hover:bg-[var(--ds-accent-soft)]',
@@ -110,7 +110,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
                   <Link
                     href={item.href}
                     className={classNames(
-                      'flex items-center gap-3 rounded-xl px-4 py-2.5 text-body-sm font-semibold transition',
+                      'flex items-center gap-3 rounded-xl px-4 py-2.5 font-poppins text-[14px] font-medium transition',
                       active ? 'bg-ds-accent text-white' : 'text-forest-900 hover:bg-[var(--ds-accent-soft)]',
                     )}
                   >
@@ -124,7 +124,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
           <div className="border-t border-forest-900/10 p-2.5">
             <button
               onClick={() => logout()}
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 font-poppins text-[14px] font-medium text-red-500 transition hover:bg-red-50"
             >
               <LogOut size={18} className="shrink-0" aria-hidden />
               {t('profile-sidebar-logout')}
@@ -140,7 +140,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=520&q=80&auto=format&fit=crop"
+            src="/plants-1.jpg"
             alt=""
             className="mt-4 h-[150px] w-full object-cover"
             loading="lazy"

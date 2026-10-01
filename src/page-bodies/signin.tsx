@@ -27,6 +27,7 @@ const ForgotUserPassword = dynamic(() => import('@/components/auth/forgot-passwo
 });
 import { authorizationAtom } from '@/store/authorization-atom';
 import { Routes } from '@/config/routes';
+import { ArrowLeft } from '@/components/ui/icon';
 import Seo from '@/components/seo/seo';
 
 /** The four things the card can show. */
@@ -144,17 +145,33 @@ function SignInPage() {
             the bytes behind an existing name leaves browsers and the CDN happily
             serving last year's artwork — which is exactly what happened when the
             3:2 version was swapped for this 16:9 one in place. New art, new name. */}
-        <div className="fixed inset-0" aria-hidden>
-          <Image
-            src="/signin-hero-wide.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            quality={75}
-            className="object-cover object-[70%_center] lg:object-contain lg:object-center"
-          />
+        <div className="fixed inset-0 flex items-center justify-center" aria-hidden>
+          {/* Cap the artwork at its NATIVE 1672x941: on large monitors the old
+              full-viewport contain kept scaling it up past the source pixels
+              (annotation: "image size got change when the screen is big"). The
+              sampled page ground fills whatever the picture doesn't. */}
+          <div className="relative h-full w-full lg:max-h-[941px] lg:max-w-[1672px]">
+            <Image
+              src="/signin-hero-wide.png"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              quality={75}
+              className="object-cover object-[70%_center] lg:object-contain lg:object-center"
+            />
+          </div>
         </div>
+
+        {/* The page replaced the auth modal, which had a close X — this is its
+            equivalent (annotation: "no way to go back to homepage"). */}
+        <Link
+          href="/"
+          className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-forest-800 shadow-md backdrop-blur transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-600"
+        >
+          <ArrowLeft size={16} aria-hidden />
+          Back to home
+        </Link>
 
         {/* ── the card ────────────────────────────────────────────────────────
             Rendered ONCE. A separate desktop and mobile copy would put two
@@ -167,7 +184,7 @@ function SignInPage() {
               against the PICTURE — the same spot the mock puts it — instead of
               against the viewport, which would drift away from the artwork as
               the letterbox bands grow. */}
-          <div className="w-full max-w-[460px] lg:relative lg:aspect-[1672/941] lg:max-w-[min(100vw,calc(100svh*1.7768))]">
+          <div className="w-full max-w-[460px] lg:relative lg:aspect-[1672/941] lg:max-w-[min(1672px,100vw,calc(100svh*1.7768))]">
             {/* Top-anchored, never centred: Sign Up is taller than Login, and a
                 vertically-centred card absorbs that difference from both edges,
                 sliding the tabs up under the pointer that just clicked them.

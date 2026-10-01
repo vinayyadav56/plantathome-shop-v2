@@ -62,7 +62,7 @@ const ProfileUpdateEmail = ({ user }: { user: User }) => {
             />
             <Button
               variant="formSecondary"
-              className="!h-11"
+              className="px-6"
               loading={isLoading}
               disabled={isLoading}
             >

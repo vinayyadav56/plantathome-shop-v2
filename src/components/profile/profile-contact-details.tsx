@@ -124,7 +124,7 @@ const ProfileContactDetails = () => {
             <Button
               type="button"
               variant="formPrimary"
-              className="!h-12 px-5"
+              className="px-6"
               onClick={submitCode}
               loading={verifying}
               disabled={verifying || code.trim().length < 4}
@@ -134,7 +134,7 @@ const ProfileContactDetails = () => {
             <Button
               type="button"
               variant="formSecondary"
-              className="!h-12 px-5"
+              className="px-6"
               onClick={() => startVerify(email)}
               disabled={sending}
             >
@@ -163,7 +163,7 @@ const ProfileContactDetails = () => {
               <Button
                 type="button"
                 variant="formSecondary"
-                className="!h-10 rounded-[12px] px-4 text-sm"
+                className="px-5"
                 onClick={() => startVerify(item.email)}
                 disabled={sending}
               >
@@ -219,7 +219,8 @@ const ProfileContactDetails = () => {
         <div className="mt-4 flex">
           <Button
             type="button"
-            className="ltr:ml-auto rtl:mr-auto"
+            variant="formPrimary"
+            className="px-7 ltr:ml-auto rtl:mr-auto"
             onClick={onSavePhones}
             loading={saving}
             disabled={saving || isLoading}
@@ -256,7 +257,7 @@ const ProfileContactDetails = () => {
                   <Button
                     type="button"
                     variant="formSecondary"
-                    className="!h-11 px-4"
+                    className="px-5"
                     onClick={() => startVerify(newEmail)}
                     loading={sending}
                     disabled={sending || !newEmail.trim()}
