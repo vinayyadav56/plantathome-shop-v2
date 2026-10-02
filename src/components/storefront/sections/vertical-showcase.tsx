@@ -39,7 +39,7 @@ export function VerticalShowcase() {
                   <motion.div
                     whileHover={{ y: -8 }}
                     transition={{ duration: 0.3 }}
-                    className="group relative h-80 overflow-hidden rounded-[1.6rem]"
+                    className="group relative h-80 overflow-hidden rounded-2xl"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

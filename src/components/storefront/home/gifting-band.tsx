@@ -94,7 +94,7 @@ export function GiftingBand() {
               </div>
             ))}
           </div>
-          <Link href="/corporate-gifting" className="font-jost mt-6 inline-flex w-fit items-center gap-3 rounded-[11px] bg-ds-btn px-[30px] py-[17px] text-[14px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-ds-btn-hover">
+          <Link href="/corporate-gifting" className="font-jost mt-6 inline-flex w-fit items-center gap-3 rounded-[14px] bg-ds-btn px-[30px] py-[17px] text-[14px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-ds-btn-hover">
             <Gift size={18} aria-hidden />
             {t('home-gift-cta')}
           </Link>
@@ -131,7 +131,7 @@ export function GiftingBand() {
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.65, ease: EXPO }}
-          className="relative overflow-hidden rounded-[20px] bg-[linear-gradient(135deg,#163320_0%,#0e2618_48%,#081508_100%)]"
+          className="relative overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#163320_0%,#0e2618_48%,#081508_100%)]"
         >
           {/* grain */}
           <div

@@ -82,7 +82,7 @@ export default function AboutPage() {
             {WHAT_WE_DO.map((it) => (
               <div
                 key={it.title}
-                className="rounded-xl border border-forest-900/10 bg-white p-5"
+                className="rounded-xl border border-kraft-200 bg-white p-5"
               >
                 <h3 className="mb-2 text-base font-semibold text-forest-900">{it.title}</h3>
                 <p className="text-sm leading-relaxed text-body-dark">{it.body}</p>
@@ -105,12 +105,12 @@ export default function AboutPage() {
             </a>{' '}
             using the LLPIN below.
           </p>
-          <dl className="mb-12 overflow-hidden rounded-xl border border-forest-900/10 bg-white">
+          <dl className="mb-12 overflow-hidden rounded-xl border border-kraft-200 bg-white">
             {COMPANY.map((row, i) => (
               <div
                 key={row.label}
                 className={`flex flex-col gap-1 px-5 py-4 sm:flex-row sm:gap-6 ${
-                  i > 0 ? 'border-t border-forest-900/10' : ''
+                  i > 0 ? 'border-t border-kraft-200' : ''
                 }`}
               >
                 <dt className="shrink-0 text-xs font-semibold uppercase tracking-wide text-body sm:w-56">

@@ -63,13 +63,33 @@ const AddressCard: React.FC<AddressProps> = ({
         </button>
       )}
       <div className="pa-address-actions">
+        {/* stopPropagation, exactly like Set-as-default above: these sit inside the
+            card's own selection button, and the bubbled click ran pick() — on an
+            other-city card that opened the city-mismatch dialog ON TOP of the edit
+            modal ("edit shows Choose Another Address", annotation 2026-10-03). */}
         {onEdit && (
-          <button className="pa-address-btn pa-address-btn--edit" onClick={onEdit} title={t('text-edit')}>
+          <button
+            type="button"
+            className="pa-address-btn pa-address-btn--edit"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            title={t('text-edit')}
+          >
             <PencilIcon className="h-3 w-3" />
           </button>
         )}
         {onDelete && (
-          <button className="pa-address-btn pa-address-btn--delete" onClick={onDelete} title={t('text-delete')}>
+          <button
+            type="button"
+            className="pa-address-btn pa-address-btn--delete"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            title={t('text-delete')}
+          >
             <CloseIcon className="h-3 w-3" />
           </button>
         )}

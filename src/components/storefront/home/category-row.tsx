@@ -93,7 +93,7 @@ export function CategoryRow() {
       {/* warm-glass panel the cards float on (design spec §8). Total height is
           pinned to the navbar pill: 56 card + 8 rail py + 12 panel p + 2
           border = 78px (annotation: strip = navbar height). */}
-      <div className="relative rounded-[22px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-1.5 shadow-[0_22px_60px_rgba(6,25,11,0.18),0_3px_10px_rgba(6,25,11,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[24px] backdrop-saturate-[1.3]">
+      <div className="relative rounded-2xl border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-1.5 shadow-[0_22px_60px_rgba(6,25,11,0.18),0_3px_10px_rgba(6,25,11,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[24px] backdrop-saturate-[1.3]">
         <div
           ref={railRef}
           // py-1 gives the 3px hover lift headroom INSIDE the scroll box —
@@ -143,7 +143,7 @@ export function CategoryRow() {
           type="button"
           aria-label="Scroll categories"
           onClick={() => railRef.current?.scrollBy({ left: 452, behavior: 'smooth' })}
-          className="absolute right-2 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[rgba(30,70,38,0.12)] bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(235,241,231,0.9))] text-[#23442b] shadow-[0_6px_18px_rgba(15,45,20,0.12)] transition-all duration-200 hover:scale-[1.06] hover:shadow-[0_10px_25px_rgba(15,45,20,0.18)] md:grid"
+          className="absolute right-2 top-1/2 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-[rgba(30,70,38,0.12)] bg-white text-[#23442b] shadow-[0_6px_18px_rgba(15,45,20,0.12)] transition-all duration-200 hover:scale-[1.06] hover:shadow-[0_10px_25px_rgba(15,45,20,0.18)] md:grid"
         >
           <ChevronRight size={20} aria-hidden />
         </button>

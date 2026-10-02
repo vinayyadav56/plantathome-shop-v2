@@ -50,26 +50,26 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
             rest of the step below the fold for no benefit; the text shrinks instead. */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {[
-            { value: 'me', title: 'Deliver to Me', sub: 'Use one of my addresses' },
+            { value: 'me', title: 'Deliver to Me', sub: 'My addresses' },
             {
               value: 'someone_else',
-              title: 'Deliver to Someone Else',
-              sub: 'Send as a gift — add their details',
+              title: 'Someone Else',
+              sub: 'Send as a gift',
             },
           ].map((opt) => (
             <RadioGroup.Option key={opt.value} value={opt.value}>
               {({ checked }) => (
                 <div
-                  className={`h-full cursor-pointer rounded-xl border p-3 transition-colors sm:p-4 ${
+                  className={`h-full cursor-pointer rounded-xl border p-2.5 transition-colors sm:p-4 ${
                     checked
                       ? 'border-forest-800 bg-forest-800/5 ring-1 ring-forest-800'
                       : 'border-border-200 hover:border-forest-800/40'
                   }`}
                 >
-                  <p className="text-[13px] font-semibold leading-snug text-heading sm:text-sm">
+                  <p className="whitespace-nowrap text-[12px] font-semibold leading-snug text-heading min-[400px]:text-[13px] sm:text-sm">
                     {opt.title}
                   </p>
-                  <p className="mt-0.5 text-[11px] leading-snug text-stone-500 sm:text-xs">
+                  <p className="mt-0.5 whitespace-nowrap text-[11px] leading-snug text-stone-500 sm:text-xs">
                     {opt.sub}
                   </p>
                 </div>

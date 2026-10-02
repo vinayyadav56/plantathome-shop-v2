@@ -136,7 +136,7 @@ export function WhyPlants() {
               whileInView={{ y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: EXPO }}
-              className="group flex flex-col overflow-hidden rounded-[18px] border border-kraft-200 bg-white p-2.5 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-forest-200 hover:shadow-[0_14px_32px_rgba(34,48,26,0.12)]"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white p-2.5 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-forest-200 hover:shadow-[0_14px_32px_rgba(34,48,26,0.12)]"
             >
               {/* image — inset with its own radius, so it reads as a framed
                   photograph instead of a bleed fighting the card's corners */}
@@ -174,7 +174,7 @@ export function WhyPlants() {
           whileInView={{ y: 0 }}
           viewport={{ once: true, margin: '-60px' }}
           transition={{ duration: 0.7, ease: EXPO }}
-          className="relative mt-10 overflow-hidden rounded-[24px]"
+          className="relative mt-10 overflow-hidden rounded-2xl"
         >
           {/* Background photo. Was a raw <img> with NO loading attribute, so it
               was eager — 348 KB fetched on phones too, where this whole tree is
@@ -219,7 +219,7 @@ export function WhyPlants() {
             {/* CTA — the design-system button, minus the green glow it used to carry */}
             <Link
               href="/plants/search"
-              className="shrink-0 inline-flex items-center gap-2 rounded-[13px] bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
+              className="shrink-0 inline-flex items-center gap-2 rounded-[14px] bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
             >
               {t('home-why-cta')}
               <ArrowRight size={16} aria-hidden />

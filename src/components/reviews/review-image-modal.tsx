@@ -24,7 +24,7 @@ const ReviewImageModal = () => {
   const [prevEl, prevRef] = useSwiperRef<HTMLDivElement>();
 
   return (
-    <div className="m-auto block w-full max-w-[680px] rounded bg-light p-3">
+    <div className="m-auto block w-full max-w-[680px] rounded-2xl bg-light p-3">
       <div className="relative">
         <Swiper
           id="review-gallery"

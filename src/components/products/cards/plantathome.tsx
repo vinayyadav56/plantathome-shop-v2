@@ -30,7 +30,7 @@ const AddToCart = dynamic(
 /* ─── Loading Skeleton (export kept for callers) — mirrors the real card's
        geometry exactly so swapping in data causes no layout shift ─────── */
 export const PlantAtHomeCardSkeleton: React.FC = () => (
-  <div className="flex h-full flex-col overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+  <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
     <div className="aspect-[25/24] w-full animate-pulse bg-[#F7F5EF]" />
     <div className="flex flex-1 flex-col p-6">
       <div className="flex items-start justify-between gap-4">
@@ -162,7 +162,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
       // (cqw units): full reference sizes at its native 390px, fluidly smaller
       // in dense grids (search page cells are ~230px) — nothing truncates or
       // wraps at any grid density.
-      className={`group flex h-full overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${
+      className={`group flex h-full overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${
         isList ? 'flex-row items-stretch' : 'flex-col'
       } ${className}`}
     >
@@ -357,7 +357,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             </div>
           )}
 
-          {/* price row — 34px (28px mobile) #14532D · struck 18px #A0A0A0 ·
+          {/* price row — 34px (28px mobile) var(--ds-btn, #2E5E2A) · struck 18px #A0A0A0 ·
               chip #FFEAEA / #D73C3C. Sits directly on top of the CTA. */}
           {/*
             Price and struck price group on the LEFT, discount chip pinned
@@ -375,7 +375,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <span className="flex min-w-0 items-center gap-x-[clamp(5px,2.2cqw,10px)]">
               {/* variable products show the size range min–max */}
               <span
-                className={`whitespace-nowrap leading-none text-[#14532D] ${
+                className={`whitespace-nowrap leading-none text-ds-btn ${
                   isVariable && hasRange
                     ? 'text-[clamp(12px,4.4cqw,16px)] font-semibold'
                     : 'text-[clamp(13.5px,5.4cqw,19px)] font-bold'
@@ -411,7 +411,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
                  as heavy slabs on wide cards. Kept in lockstep with the qty stepper
                  below and add-to-cart-btn/add-to-cart, which share this baseline —
                  changing one alone breaks the action row's alignment. */
-              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-[12px] bg-ds-btn px-2 text-[clamp(11px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-ds-btn px-2 text-[clamp(11px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
               {/* Cart glyph dropped: on a ~150px two-up card it ate the width the label
                   needed, crowding "Select Options". The wording alone is unambiguous —
@@ -426,7 +426,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
                     type="button"
                     aria-label="Decrease quantity"
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-[#14532D]"
+                    className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-ds-btn"
                   >
                     −
                   </button>
@@ -435,7 +435,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
                     type="button"
                     aria-label="Increase quantity"
                     onClick={() => setQty((q) => q + 1)}
-                    className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-[#14532D]"
+                    className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-ds-btn"
                   >
                     +
                   </button>

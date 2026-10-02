@@ -144,8 +144,9 @@ const MaintenanceMode = ({
                 )}
                 {data?.buttonTitleTwo ? (
                   <Button
+                    variant="formSecondary"
                     onClick={() => handleSidebar('MAINTENANCE_MORE_INFO')}
-                    className="info-button group h-auto rounded-full bg-white py-2.5 text-sm text-slate-700 hover:bg-slate-300 hover:text-slate-600 md:text-base"
+                    className="info-button group text-sm md:text-base"
                   >
                     {data?.buttonTitleTwo}
                     <span className="info-button-icon flex h-9 w-9 rounded-full bg-slate-300 text-black duration-500 group-hover:bg-slate-400 group-hover:text-white ltr:ml-3 rtl:mr-3 rtl:rotate-180 rtl:transform">

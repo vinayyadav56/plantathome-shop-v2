@@ -13,7 +13,7 @@ import {
 } from '@/store/deliver-to';
 import CityMismatchDialog from './city-mismatch-dialog';
 import { useCart } from '@/store/quick-cart/cart.context';
-import { checkoutAtom, discountAtom, walletAtom } from '@/store/checkout';
+import { checkoutAtom, checkoutStepAtom, discountAtom, walletAtom } from '@/store/checkout';
 import { calculateTotal } from '@/store/quick-cart/cart.utils';
 import { computeCheckoutTotals, asIdList } from '@/lib/checkout-totals';
 import { useTranslation } from 'next-i18next';
@@ -71,6 +71,8 @@ export const PlaceOrderAction: React.FC<{
       delivery_verification,
     },
   ] = useAtom(checkoutAtom);
+
+  const [wizard] = useAtom(checkoutStepAtom);
   const [discount] = useAtom(discountAtom);
   const [use_wallet_points] = useAtom(walletAtom);
 
@@ -380,10 +382,15 @@ export const PlaceOrderAction: React.FC<{
         addressCity={cityMismatch?.address_city ?? ''}
         onClose={() => setCityMismatch(null)}
         onChooseAnother={() => {
-          // Send the shopper back to the Address step's grid.
-          document
-            .querySelector('.pa-checkout-step')
-            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Send the shopper back to the ADDRESS step, then scroll. The old
+          // scroll-only version landed on whatever step was mounted (on Review
+          // that is the Order Note card) and never switched the wizard.
+          wizard?.setStep(1);
+          setTimeout(() => {
+            document
+              .querySelector('.pa-checkout-step')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 50);
         }}
       />
 

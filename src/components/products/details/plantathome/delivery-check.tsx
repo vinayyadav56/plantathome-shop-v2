@@ -60,7 +60,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
   }
 
   return (
-    <div className="mt-4 border-t border-[#ECECEC] pt-4">
+    <div className="mt-4 border-t border-kraft-200 pt-4">
       <label
         htmlFor="delivery-pincode"
         className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]"
@@ -86,7 +86,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
         <button
           type="submit"
           disabled={!valid || state === 'loading'}
-          className="h-11 shrink-0 rounded-[10px] bg-[#2E5E2A] px-5 text-[14px] font-semibold text-white transition-opacity disabled:opacity-40"
+          className="h-11 shrink-0 rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover px-5 text-[14px] font-semibold text-white transition-opacity disabled:opacity-40"
         >
           {state === 'loading' ? 'Checking…' : 'Check'}
         </button>
@@ -116,7 +116,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
             {result.options.map((o) => (
               <div
                 key={o.type}
-                className="flex items-start gap-2.5 rounded-[10px] border border-[#ECECEC] bg-[#FAFAF7] px-3 py-2.5"
+                className="flex items-start gap-2.5 rounded-[10px] border border-kraft-200 bg-[#FAFAF7] px-3 py-2.5"
               >
                 <LineIcon
                   name={o.type === 'instant' ? 'bike' : 'truck'}

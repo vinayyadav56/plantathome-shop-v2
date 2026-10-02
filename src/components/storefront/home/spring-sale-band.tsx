@@ -21,7 +21,7 @@ export function SpringSaleBand() {
       className="py-6 lg:py-8"
     >
       <div className="mx-auto max-w-none px-5 sm:px-8 lg:px-16">
-      <div className="relative overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#1c4d28_0%,#0f2d1a_48%,#081a0f_100%)]">
+      <div className="relative overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#1c4d28_0%,#0f2d1a_48%,#081a0f_100%)]">
 
         {/* grain texture */}
         <div
@@ -67,7 +67,7 @@ export function SpringSaleBand() {
 
           <Link
             href="/plants/search"
-            className="inline-flex shrink-0 items-center gap-2 self-start rounded-[10px] bg-ds-cta px-5 py-2.5 font-hanken text-[13px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] lg:self-auto lg:px-6 lg:py-3 lg:text-[14px]"
+            className="inline-flex shrink-0 items-center gap-2 self-start rounded-[14px] bg-ds-cta px-5 py-2.5 font-hanken text-[13px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] lg:self-auto lg:px-6 lg:py-3 lg:text-[14px]"
           >
             {t('home-sale-cta')}
             <ArrowRight size={14} aria-hidden />

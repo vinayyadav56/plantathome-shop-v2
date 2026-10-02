@@ -34,7 +34,7 @@ const DynamicFacetSection = ({ facet }: { facet: DynamicFacet }) => {
 };
 
 const FieldWrapper = ({ children, title, count, defaultOpen }: any) => (
-  <div className="border-b border-forest-900/10 pb-2 last:border-0">
+  <div className="border-b border-kraft-200 pb-2 last:border-0">
     <CustomDisclosure title={title} count={count} defaultOpen={defaultOpen}>
       {children}
     </CustomDisclosure>
@@ -118,7 +118,7 @@ const SidebarFilter: React.FC<{
   return (
     <div
       className={classNames(
-        'flex h-full w-full flex-col rounded-xl border-forest-900/10 bg-white',
+        'flex h-full w-full flex-col rounded-xl border-kraft-200 bg-white',
         // 13px facet scale, forced from the panel root. Checkbox and SearchBox
         // are app-wide primitives that hardcode `text-sm` on their own label /
         // input, and Tailwind emits arbitrary sizes BEFORE the named scale, so
@@ -130,7 +130,7 @@ const SidebarFilter: React.FC<{
         className
       )}
     >
-      <div className={classNames('sticky top-0 z-10 flex items-center justify-between rounded-tl-xl rounded-tr-xl border-b border-forest-900/10 bg-white px-5 py-4', inRail ? 'md:static' : 'lg:static')}>
+      <div className={classNames('sticky top-0 z-10 flex items-center justify-between rounded-tl-xl rounded-tr-xl border-b border-kraft-200 bg-white px-5 py-4', inRail ? 'md:static' : 'lg:static')}>
         <div className="flex items-center space-x-3 rtl:space-x-reverse lg:space-x-0">
           <button
             className={classNames('text-body focus:outline-0', inRail ? 'md:hidden' : 'lg:hidden')}
@@ -228,7 +228,7 @@ const SidebarFilter: React.FC<{
           </FieldWrapper>
         )}
       </div>
-      <div className={classNames('sticky bottom-0 z-10 mt-auto flex gap-3 border-t border-forest-900/10 bg-white p-5', inRail ? 'md:hidden' : 'lg:hidden')}>
+      <div className={classNames('sticky bottom-0 z-10 mt-auto flex gap-3 border-t border-kraft-200 bg-white p-5', inRail ? 'md:hidden' : 'lg:hidden')}>
         <div className="flex h-full items-center justify-center rounded border border-forest-900/15 px-4">
           <ClearFiltersButton />
         </div>

@@ -82,7 +82,7 @@ function OrderView({ order, settings, loadingStatus }: any) {
               ) : null}
 
               {shipments.length > 1 ? (
-                <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
+                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
                   <ParcelShipments tracking={order?.tracking_number} />
                 </div>
               ) : null}
@@ -94,7 +94,7 @@ function OrderView({ order, settings, loadingStatus }: any) {
               />
 
               {order?.children?.length > 1 ? (
-                <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
+                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
                   <h3 className="mb-2 text-base font-medium text-forest-900">Sub Orders</h3>
                   <p className="mb-4 text-[13px] leading-relaxed text-[#8C8A81]">
                     Items from different nurseries ship as their own sub-orders, each
@@ -108,7 +108,7 @@ function OrderView({ order, settings, loadingStatus }: any) {
               ) : null}
 
               {order?.note ? (
-                <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
+                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
                   <h3 className="mb-2 text-base font-medium text-forest-900">Purchase Note</h3>
                   <p className="text-[13px] leading-relaxed text-[#6F6D64]">{order.note}</p>
                 </div>

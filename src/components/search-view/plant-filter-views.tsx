@@ -120,7 +120,7 @@ export function PlacementFilterView() {
     <div
       role="group"
       aria-label="Placement"
-      className="grid grid-cols-2 gap-1 rounded-full border border-forest-900/10 bg-white p-1"
+      className="grid grid-cols-2 gap-1 rounded-full border border-kraft-200 bg-white p-1"
     >
       {(['Indoor', 'Outdoor'] as const).map((v) => {
         const on = current === v;
@@ -219,7 +219,7 @@ export function SizeFilterView() {
             className={
               on
                 ? 'rounded-full bg-[#EAF4EA] px-4 py-2 text-[13px] font-semibold text-[#2E5E2A] ring-1 ring-[#2E5E2A]/30 transition'
-                : 'rounded-full border border-forest-900/10 bg-white px-4 py-2 text-[13px] font-semibold text-body transition hover:border-forest-900/25'
+                : 'rounded-full border border-kraft-200 bg-white px-4 py-2 text-[13px] font-semibold text-body transition hover:border-forest-900/25'
             }
           >
             {v}

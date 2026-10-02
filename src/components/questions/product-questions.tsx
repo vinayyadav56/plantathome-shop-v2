@@ -73,7 +73,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
         className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-10"
       >
         <div
-          className={`flex items-center justify-center rounded-[22px] border border-[#ECECEC] bg-white py-20 ${CARD_SHADOW}`}
+          className={`flex items-center justify-center rounded-2xl border border-kraft-200 bg-white py-20 ${CARD_SHADOW}`}
         >
           <Spinner simple className="h-9 w-9" />
         </div>
@@ -91,10 +91,10 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
       className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-10"
     >
       <div
-        className={`overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white ${CARD_SHADOW}`}
+        className={`overflow-hidden rounded-2xl border border-kraft-200 bg-white ${CARD_SHADOW}`}
       >
         {/* header — title + local search + ask-question CTA */}
-        <div className="flex flex-col gap-6 border-b border-[#ECECEC] p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+        <div className="flex flex-col gap-6 border-b border-kraft-200 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           <div className="shrink-0">
             <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
               Plant Q&amp;A
@@ -117,13 +117,13 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder={t('text-question-search-placeholder')}
                 aria-label={t('text-search-label')}
-                className="h-12 w-full rounded-[14px] border border-[#ECECEC] bg-white pl-11 pr-4 text-[15px] text-[#333333] outline-none transition placeholder:text-[#A0A0A0] focus:border-[#14532D] focus:ring-2 focus:ring-[#14532D]/15"
+                className="h-12 w-full rounded-[14px] border border-kraft-200 bg-white pl-11 pr-4 text-[15px] text-[#333333] outline-none transition placeholder:text-[#A0A0A0] focus:border-ds-btn focus:ring-2 focus:ring-ds-accent/15"
               />
             </div>
             <button
               type="button"
               onClick={openQuestionModal}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-[14px] bg-[#14532D] px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
+              className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-[14px] bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
               <MessageCircle size={18} className="shrink-0" aria-hidden />
               {t('text-ask-question')}
@@ -143,7 +143,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
 
             {/* Pagination */}
             {paginatorInfo && (
-              <div className="flex items-center justify-between border-t border-[#ECECEC] py-4">
+              <div className="flex items-center justify-between border-t border-kraft-200 py-4">
                 <div className="text-[13px] text-[#8A8A8A]">
                   {t('text-page')}{' '}
                   {

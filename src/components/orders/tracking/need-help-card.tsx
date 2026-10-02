@@ -12,7 +12,7 @@ export default function NeedHelpCard({ settings }: { settings: any }) {
   return (
     <div
       id="need-help"
-      className="scroll-mt-24 rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6"
+      className="scroll-mt-24 rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6"
     >
       <h3 className="mb-2 text-base font-medium text-forest-900">Need Help?</h3>
       <p className="mb-4 text-[13px] leading-relaxed text-[#8C8A81]">

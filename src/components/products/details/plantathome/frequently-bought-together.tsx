@@ -57,7 +57,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
   };
 
   return (
-    <div className="rounded-[22px] border border-[#ECECEC] bg-white p-6 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+    <div className="rounded-2xl border border-kraft-200 bg-white p-6 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
       <h3 className="text-[13px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         Frequently Bought Together
       </h3>
@@ -70,7 +70,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
             return (
               <React.Fragment key={it?.id ?? i}>
                 <div className="flex w-[84px] shrink-0 flex-col items-center text-center">
-                  <div className="h-[72px] w-[72px] overflow-hidden rounded-[14px] border border-[#ECECEC] bg-[#F7F5EF]">
+                  <div className="h-[72px] w-[72px] overflow-hidden rounded-[14px] border border-kraft-200 bg-[#F7F5EF]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={img || productPlaceholder}
@@ -101,7 +101,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
           <button
             type="button"
             onClick={addAll}
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-[#14532D] px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-[#0D4324]"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-ds-btn px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
           >
             {added ? (
               <>

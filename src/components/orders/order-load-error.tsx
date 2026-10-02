@@ -30,7 +30,7 @@ export default function OrderLoadError({
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-full bg-forest-700 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-800"
+          className="rounded-[14px] bg-ds-btn px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-forest-800"
         >
           Try again
         </button>

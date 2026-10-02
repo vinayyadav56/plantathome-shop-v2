@@ -63,7 +63,7 @@ export default function OrderDetailsCard({ order }: { order: any }) {
   const gateways: any[] = (settings as any)?.paymentGateway ?? [];
 
   return (
-    <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
+    <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
       <h3 className="mb-3 text-base font-medium text-forest-900">Order Details</h3>
 
       <dl>
@@ -79,7 +79,7 @@ export default function OrderDetailsCard({ order }: { order: any }) {
         </Row>
       </dl>
 
-      <div className="my-3 border-t border-dashed border-[#E7E5DC]" />
+      <div className="my-3 border-t border-dashed border-kraft-200" />
 
       <dl>
         <Row label="Subtotal">{subtotal}</Row>
@@ -99,7 +99,7 @@ export default function OrderDetailsCard({ order }: { order: any }) {
         {order?.wallet_point?.amount ? <Row label="Paid from Wallet">{wallet}</Row> : null}
       </dl>
 
-      <div className="my-3 border-t border-[#E7E5DC]" />
+      <div className="my-3 border-t border-kraft-200" />
 
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold text-forest-900">Total Amount</span>
@@ -107,7 +107,7 @@ export default function OrderDetailsCard({ order }: { order: any }) {
       </div>
 
       {paymentDue && !isEmpty(gateways) ? (
-        <div className="mt-4 space-y-2 border-t border-dashed border-[#E7E5DC] pt-4">
+        <div className="mt-4 space-y-2 border-t border-dashed border-kraft-200 pt-4">
           <PayNowButton trackingNumber={order?.tracking_number} order={order} />
           {gateways.length > 1 ? <ChangeGateway order={order} /> : null}
         </div>

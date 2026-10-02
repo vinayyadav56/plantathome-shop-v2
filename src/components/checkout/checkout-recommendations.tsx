@@ -27,7 +27,7 @@ export function CheckoutRecommendations() {
   return (
     <section className="m-auto w-full max-w-5xl pt-12">
       {/* trust strip */}
-      <div className="grid gap-4 rounded-[1.4rem] bg-mintsoft p-5 sm:grid-cols-3 sm:p-6">
+      <div className="grid gap-4 rounded-2xl bg-mintsoft p-5 sm:grid-cols-3 sm:p-6">
         {TRUST.map((b) => (
           <div key={b.t} className="flex items-start gap-3">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-forest shadow-sm">

@@ -102,7 +102,7 @@ export function VerticalsBand() {
             v.skeleton ? (
               <div
                 key={v.slug}
-                className="h-[210px] w-[72%] shrink-0 animate-pulse rounded-[18px] bg-sage-100 sm:w-[44%] md:h-[172px] md:w-[36%] lg:h-[230px] lg:w-auto"
+                className="h-[210px] w-[72%] shrink-0 animate-pulse rounded-2xl bg-sage-100 sm:w-[44%] md:h-[172px] md:w-[36%] lg:h-[230px] lg:w-auto"
               />
             ) : (
               <motion.div
@@ -115,7 +115,7 @@ export function VerticalsBand() {
               >
                 <Link
                   href={v.href}
-                  className="group relative block h-[210px] overflow-hidden rounded-[18px] border border-kraft-200 bg-forest-900 shadow-[0_2px_10px_rgba(34,48,26,0.08)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_16px_36px_rgba(34,48,26,0.16)] md:h-[172px] lg:h-[230px]"
+                  className="group relative block h-[210px] overflow-hidden rounded-2xl border border-kraft-200 bg-forest-900 shadow-[0_2px_10px_rgba(34,48,26,0.08)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_16px_36px_rgba(34,48,26,0.16)] md:h-[172px] lg:h-[230px]"
                 >
                   <SafeImage
                     src={v.img}

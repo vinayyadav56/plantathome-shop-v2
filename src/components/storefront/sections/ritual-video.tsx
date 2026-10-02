@@ -28,7 +28,7 @@ export function RitualVideo() {
   return (
     <section
       ref={ref}
-      className="relative mx-auto my-6 max-w-[88rem] overflow-hidden rounded-[1.5rem] px-5 sm:mx-8 sm:my-10 sm:rounded-[2.5rem]"
+      className="relative mx-auto my-6 max-w-[88rem] overflow-hidden rounded-2xl px-5 sm:mx-8 sm:my-10 sm:rounded-2xl"
     >
       {/* video */}
       <motion.div style={{ y }} className="absolute inset-[-8%]">

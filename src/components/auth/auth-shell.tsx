@@ -61,7 +61,7 @@ export default function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex max-h-dvh min-h-dvh w-screen flex-col overflow-y-auto bg-white px-5 py-6 sm:px-9 sm:py-8 md:min-h-0 md:h-auto md:max-h-[92dvh] md:w-[540px] md:max-w-[92vw] md:rounded-3xl md:shadow-[0_24px_64px_rgba(14,32,17,0.28)]">
+    <div className="relative flex max-h-dvh min-h-dvh w-screen flex-col overflow-y-auto bg-white px-5 py-6 sm:px-9 sm:py-8 md:min-h-0 md:h-auto md:max-h-[92dvh] md:w-[540px] md:max-w-[92vw] md:rounded-2xl md:shadow-[0_24px_64px_rgba(14,32,17,0.28)]">
       {onClose && (
         <button
           type="button"

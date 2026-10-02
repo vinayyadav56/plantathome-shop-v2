@@ -71,7 +71,7 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 
 /* Luxury card language shared across the page (matches the product-card bar). */
 const CARD =
-  'rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+  'rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
 const CARD_HOVER =
   'transition-shadow duration-300 hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)]';
 
@@ -132,7 +132,7 @@ function SectionHead({
 /* ─── Refined inquiry form (same fields, hooks and submission as before) ─── */
 
 const FIELD =
-  'w-full rounded-[14px] border border-[#E6E3DA] bg-[#FAF9F6] px-4 py-3 text-[15px] text-[#1F2E1F] placeholder:text-[#A6A29A] transition focus:border-[#14532D] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#14532D]/10';
+  'w-full rounded-[14px] border border-[#E6E3DA] bg-[#FAF9F6] px-4 py-3 text-[15px] text-[#1F2E1F] placeholder:text-[#A6A29A] transition focus:border-ds-btn focus:bg-white focus:outline-none focus:ring-4 focus:ring-ds-accent/10';
 const LABEL = 'mb-1.5 block text-[13px] font-semibold text-[#184A31]';
 
 function LeadForm() {
@@ -226,7 +226,7 @@ function LeadForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-[14px] bg-[#14532D] px-6 py-3.5 text-[15.5px] font-semibold text-white transition hover:bg-[#0D4324] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-[14px] bg-ds-btn px-6 py-3.5 text-[15.5px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? 'Sending…' : 'Get my free garden plan'}
         {!isLoading && <LineIcon name="arrowRight" className="h-4 w-4" />}
@@ -347,7 +347,7 @@ export default function GardenServicePage() {
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
               <a
                 href="#quote"
-                className="inline-flex items-center gap-2 rounded-[14px] bg-[#14532D] px-7 py-3.5 text-[15.5px] font-semibold text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/15 transition hover:bg-[#0D4324]"
+                className="inline-flex items-center gap-2 rounded-[14px] bg-ds-btn px-7 py-3.5 text-[15.5px] font-semibold text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/15 transition hover:bg-ds-btn-hover"
               >
                 Get my free garden plan
                 <LineIcon name="arrowRight" className="h-4 w-4" />
@@ -381,7 +381,7 @@ export default function GardenServicePage() {
       </section>
 
       {/* ── STATS BAND ── */}
-      <section className="border-b border-[#ECECEC] bg-[#F4F1EA]">
+      <section className="border-b border-kraft-200 bg-[#F4F1EA]">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-5 py-9 text-center sm:px-8 md:grid-cols-4 md:divide-x md:divide-[#E0DBCE]">
           {stats.map(([a, b], i) => (
             <div key={i} className="px-4">
@@ -408,7 +408,7 @@ export default function GardenServicePage() {
                   alt={s.title}
                   className="h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]"
                 />
-                <span className="absolute left-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-[#14532D] text-[15px] font-bold text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-4 ring-white/90">
+                <span className="absolute left-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-ds-btn text-[15px] font-bold text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] ring-4 ring-white/90">
                   {i + 1}
                 </span>
               </div>
@@ -427,7 +427,7 @@ export default function GardenServicePage() {
       </section>
 
       {/* ── EVERYTHING'S INCLUDED — sage wash ── */}
-      <section className="border-y border-[#ECECEC] bg-[#F3F8EC]/60 py-16 lg:py-20">
+      <section className="border-y border-kraft-200 bg-[#F3F8EC]/60 py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <SectionHead
             eyebrow="All-inclusive"
@@ -462,7 +462,7 @@ export default function GardenServicePage() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           {[
             { img: beforeImg, label: 'Before', chip: 'bg-[#16301A]/85 text-white/90' },
-            { img: afterImg, label: 'After', chip: 'bg-[#14532D] text-white' },
+            { img: afterImg, label: 'After', chip: 'bg-ds-btn text-white' },
           ].map((f, i) => (
             <motion.figure key={f.label} {...reveal(i * 0.08)} className={`relative overflow-hidden ${CARD}`}>
               <img src={f.img} alt={`${f.label} the garden makeover`} className="h-72 w-full object-cover sm:h-80" />
@@ -474,7 +474,7 @@ export default function GardenServicePage() {
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 sm:gap-6">
           {strip.map((src, i) => (
-            <motion.div key={i} {...reveal(0.1 + i * 0.06)} className="overflow-hidden rounded-[18px] border border-[#ECECEC] shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+            <motion.div key={i} {...reveal(0.1 + i * 0.06)} className="overflow-hidden rounded-2xl border border-kraft-200 shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
               <img src={src} alt="A recent PlantAtHome garden project" className="h-32 w-full object-cover sm:h-44" />
             </motion.div>
           ))}
@@ -505,8 +505,8 @@ export default function GardenServicePage() {
                   <motion.div
                     key={t.id}
                     {...reveal(i * 0.08)}
-                    className={`relative flex flex-col rounded-[22px] bg-white p-7 shadow-[0_4px_10px_rgba(0,0,0,0.15),0_24px_50px_rgba(0,0,0,0.3)] sm:p-8 ${
-                      popular ? 'ring-2 ring-[#B58E39] lg:-translate-y-3' : 'border border-[#ECECEC]'
+                    className={`relative flex flex-col rounded-2xl bg-white p-7 shadow-[0_4px_10px_rgba(0,0,0,0.15),0_24px_50px_rgba(0,0,0,0.3)] sm:p-8 ${
+                      popular ? 'ring-2 ring-[#B58E39] lg:-translate-y-3' : 'border border-kraft-200'
                     }`}
                   >
                     {popular && (
@@ -520,7 +520,7 @@ export default function GardenServicePage() {
 
                     <div className="mt-5 flex items-baseline gap-2">
                       <span className="text-[13px] font-medium text-[#8A8A8A]">From</span>
-                      <span className="text-[32px] font-bold leading-none tracking-[-0.01em] text-[#14532D]">
+                      <span className="text-[32px] font-bold leading-none tracking-[-0.01em] text-ds-btn">
                         {fmt(t.suggested_price)}
                       </span>
                     </div>
@@ -556,8 +556,8 @@ export default function GardenServicePage() {
                       href="#quote"
                       className={`mt-7 flex w-full items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold transition ${
                         popular
-                          ? 'bg-[#14532D] text-white hover:bg-[#0D4324]'
-                          : 'border border-[#14532D]/25 bg-white text-[#14532D] hover:border-[#14532D] hover:bg-[#F3F8EC]'
+                          ? 'bg-ds-btn text-white hover:bg-ds-btn-hover'
+                          : 'border border-ds-btn/25 bg-white text-ds-btn hover:border-ds-btn hover:bg-[#F3F8EC]'
                       }`}
                     >
                       Get a custom quote
@@ -605,7 +605,7 @@ export default function GardenServicePage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="border-t border-[#ECECEC] bg-[#F4F1EA] py-16 lg:py-20">
+      <section className="border-t border-kraft-200 bg-[#F4F1EA] py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
           <SectionHead eyebrow="Good to know" title="Questions, answered" />
           <div className="mt-10 space-y-3.5">
@@ -646,7 +646,7 @@ export default function GardenServicePage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             <a
               href="#quote"
-              className="inline-flex items-center gap-2 rounded-[14px] bg-white px-7 py-3.5 text-[15.5px] font-semibold text-[#14532D] shadow-[0_12px_30px_rgba(0,0,0,0.3)] transition hover:bg-[#F3F8EC]"
+              className="inline-flex items-center gap-2 rounded-[14px] bg-white px-7 py-3.5 text-[15.5px] font-semibold text-ds-btn shadow-[0_12px_30px_rgba(0,0,0,0.3)] transition hover:bg-[#F3F8EC]"
             >
               Get my free garden plan
               <LineIcon name="arrowRight" className="h-4 w-4" />

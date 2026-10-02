@@ -134,7 +134,7 @@ export function Hero({
           className="mt-9 flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center"
         >
           <Link href={primaryTo} scroll={false} className="w-full sm:w-auto">
-            <Magnetic className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-goldlight px-7 py-4 text-[12px] font-bold uppercase tracking-[0.14em] text-forest-900 shadow-[0_18px_50px_rgba(181,142,57,0.35)] sm:w-auto">
+            <Magnetic className="inline-flex w-full items-center justify-center gap-2 rounded-[14px] bg-goldlight px-7 py-4 text-[12px] font-bold uppercase tracking-[0.14em] text-forest-900 shadow-[0_18px_50px_rgba(181,142,57,0.35)] sm:w-auto">
               {primary} <Icon.arrow className="h-4 w-4" />
             </Magnetic>
           </Link>

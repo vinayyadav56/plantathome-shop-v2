@@ -78,7 +78,7 @@ const AppliedFilters: React.FC = () => {
   }
 
   return (
-    <div className="border-b border-forest-900/10 px-5 py-4">
+    <div className="border-b border-kraft-200 px-5 py-4">
       <span className="sr-only">{t('filter-applied')}</span>
       <div className="flex flex-wrap gap-2">
         {chips.map((chip) => (

@@ -82,7 +82,7 @@ const Coupon = ({ theme, subtotal }: { theme?: 'dark'; subtotal: number }) => {
         variant="formPrimary"
         loading={loading}
         disabled={loading}
-        className="!h-12 w-full rounded-[12px] sm:w-40 lg:w-auto"
+        className="!h-12 w-full rounded-[14px] sm:w-40 lg:w-auto"
       >
         {t('text-apply')}
       </Button>

@@ -23,7 +23,7 @@ export default function QuestionForm() {
     });
   };
   return (
-    <div className="flex h-full min-h-screen w-screen flex-col bg-light p-7 md:h-auto md:min-h-0 md:max-w-[590px] md:justify-center md:rounded-xl">
+    <div className="flex h-full min-h-screen w-screen flex-col bg-light p-7 md:h-auto md:min-h-0 md:max-w-[590px] md:justify-center md:rounded-2xl">
       <h3 className="mb-6 text-center text-lg font-medium text-heading">
         {t('text-ask-question')}
       </h3>

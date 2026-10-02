@@ -60,7 +60,7 @@ export function BestSellers() {
       <div className="pah-scroll flex gap-3 overflow-x-auto px-5 pb-1 pt-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="w-[165px] shrink-0 overflow-hidden rounded-[18px] border border-kraft-200 bg-white">
+              <div key={i} className="w-[165px] shrink-0 overflow-hidden rounded-2xl border border-kraft-200 bg-white">
                 <div className="h-[150px] animate-pulse bg-sage-100" />
                 <div className="space-y-2 p-3"><div className="h-3 w-3/4 animate-pulse rounded bg-sage-100" /><div className="h-3 w-1/2 animate-pulse rounded bg-sage-100" /></div>
               </div>

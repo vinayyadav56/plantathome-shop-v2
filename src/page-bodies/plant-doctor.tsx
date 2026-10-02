@@ -43,7 +43,7 @@ import {
    ──────────────────────────────────────────────────────────────────────────── */
 
 const CARD =
-  'rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+  'rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
 
 const BTN_PRIMARY =
   'inline-flex items-center justify-center gap-2.5 rounded-[14px] bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-ds-btn';
@@ -358,7 +358,7 @@ function AnalyzingView({ preview }: { preview: string | null }) {
         <p aria-live="polite" className="mt-1.5 text-[13.5px] text-[#5B5B5B]">{ANALYZE_PHASES[phase]}</p>
         <div className="mx-auto mt-5 h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-[#EFECE3]">
           <span
-            className="block h-full rounded-full bg-[#14532D] transition-[width] duration-700 ease-out"
+            className="block h-full rounded-full bg-ds-btn transition-[width] duration-700 ease-out"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -431,7 +431,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
                       <Link
                         key={p}
                         href={`/plants/search?text=${encodeURIComponent(p)}`}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#24693E] transition hover:bg-[#14532D] hover:text-white"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12.5px] font-semibold text-[#24693E] transition hover:bg-ds-btn hover:text-white"
                       >
                         {p}
                         <Icon name="arrowRight" className="h-3 w-3" />
@@ -458,7 +458,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
 
       {/* immediate (dark forest band) + long term */}
       <div className="grid gap-5 sm:grid-cols-2">
-        <div className="relative overflow-hidden rounded-[22px] bg-[#16301A] p-6 text-white sm:p-7">
+        <div className="relative overflow-hidden rounded-2xl bg-[#16301A] p-6 text-white sm:p-7">
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.06] mix-blend-overlay"
             style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }}
@@ -481,7 +481,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
         </button>
         <Link
           href="/garden-service"
-          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#24693E] underline underline-offset-4 transition hover:text-[#14532D]"
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#24693E] underline underline-offset-4 transition hover:text-ds-btn"
         >
           Need a real gardener? Book a visit
           <Icon name="arrowRight" className="h-3.5 w-3.5" />
@@ -497,7 +497,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
 function RejectionView({ result, onReset }: { result: DiagnosisResponse; onReset: () => void }) {
   return (
     <div className={`${CARD} mx-auto max-w-xl p-8 text-center sm:p-10`}>
-      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
+      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F3F8EC] text-[#24693E]">
         <Icon name="image" className="h-7 w-7" />
       </span>
       <h2 className="mt-5 text-[1.5rem] font-medium leading-tight text-[#184A31]">
@@ -638,7 +638,7 @@ function HistorySection({
                     <div className="mt-3.5 flex items-center gap-3">
                       <button
                         onClick={() => onOpen(e)}
-                        className="inline-flex items-center gap-1.5 rounded-[12px] bg-[#14532D] px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-[#0D4324]"
+                        className="inline-flex items-center gap-1.5 rounded-[14px] bg-ds-btn px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
                       >
                         Open full report
                         <Icon name="arrowRight" className="h-3 w-3" />
@@ -673,7 +673,7 @@ function HistoryLoginTeaser() {
     <div className={`${CARD} relative overflow-hidden p-7 sm:p-8`}>
       <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-[radial-gradient(ellipse,rgba(231,238,226,0.9)_0%,transparent_70%)]" />
       <div className="relative flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F3F8EC] text-[#24693E]">
           <Icon name="lock" className="h-5 w-5" />
         </span>
         <div className="flex-1">
@@ -687,7 +687,7 @@ function HistoryLoginTeaser() {
         </div>
         <Link
           href={Routes.login}
-          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-[#14532D] px-6 py-3 text-[13.5px] font-semibold text-white transition hover:bg-[#0D4324]"
+          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-ds-btn px-6 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
         >
           Sign in
           <Icon name="arrowRight" className="h-3.5 w-3.5" />
@@ -898,7 +898,7 @@ export default function PlantDoctorPage() {
       />
 
       {/* ── HERO ── */}
-      <section className="relative overflow-hidden border-b border-[#ECECEC]">
+      <section className="relative overflow-hidden border-b border-kraft-200">
         <div className="absolute inset-0 bg-[linear-gradient(160deg,#F3F8EC_0%,#FAF9F6_55%,#F4F1EA_100%)]" />
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-overlay"
@@ -907,7 +907,7 @@ export default function PlantDoctorPage() {
         <div className="pointer-events-none absolute -right-24 -top-24 h-[380px] w-[380px] rounded-full bg-[radial-gradient(ellipse,rgba(36,105,62,0.10)_0%,transparent_65%)]" />
 
         <div className="relative mx-auto max-w-5xl px-5 pb-12 pt-12 text-center sm:px-8 sm:pb-14 sm:pt-16">
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-[#ECECEC] bg-white/80 px-4 py-1.5 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-kraft-200 bg-white/80 px-4 py-1.5 backdrop-blur-sm">
             <span className="relative flex h-[7px] w-[7px] shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#24693E] opacity-50" />
               <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-[#24693E]" />
@@ -935,7 +935,7 @@ export default function PlantDoctorPage() {
             ].map((c) => (
               <span
                 key={c.label}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#ECECEC] bg-white/85 px-3.5 py-1.5 text-[12px] font-medium text-[#24693E]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-kraft-200 bg-white/85 px-3.5 py-1.5 text-[12px] font-medium text-[#24693E]"
               >
                 <Icon name={c.icon} className="h-3.5 w-3.5" />
                 {c.label}
@@ -952,7 +952,7 @@ export default function PlantDoctorPage() {
       <section ref={mainRef} className="mx-auto max-w-5xl scroll-mt-24 px-5 py-10 sm:px-8 sm:py-14">
         {!enabled ? (
           <div className={`${CARD} p-10 text-center`}>
-            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#F3F8EC] text-[#24693E]">
+            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F3F8EC] text-[#24693E]">
               <Icon name="leaf" className="h-7 w-7" />
             </span>
             <p className="text-[1.4rem] font-bold text-[#184A31]">Plant Doctor is coming soon</p>
@@ -978,7 +978,7 @@ export default function PlantDoctorPage() {
                   onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
                   onDragLeave={() => setDrag(false)}
                   onDrop={onDrop}
-                  className={`group relative flex aspect-[4/3] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[18px] border-2 border-dashed text-center transition-all duration-200 ${
+                  className={`group relative flex aspect-[4/3] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed text-center transition-all duration-200 ${
                     drag
                       ? 'border-[#24693E] bg-[#F3F8EC] shadow-[0_0_0_4px_rgba(36,105,62,0.12)]'
                       : preview
@@ -989,7 +989,7 @@ export default function PlantDoctorPage() {
                   {preview ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={preview} alt="Your plant" className="h-full w-full rounded-[16px] object-cover" />
+                      <img src={preview} alt="Your plant" className="h-full w-full rounded-2xl object-cover" />
                       <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 bg-gradient-to-t from-black/55 to-transparent px-4 pb-3 pt-8 text-[12px] font-semibold text-white">
                         <Icon name="camera" className="h-3.5 w-3.5" />
                         Tap to change photo
@@ -997,7 +997,7 @@ export default function PlantDoctorPage() {
                     </>
                   ) : (
                     <span className="px-8">
-                      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-white text-[#24693E] shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-transform duration-200 group-hover:scale-105">
+                      <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#24693E] shadow-[0_4px_10px_rgba(0,0,0,0.05)] transition-transform duration-200 group-hover:scale-105">
                         <Icon name="camera" className="h-7 w-7" />
                       </span>
                       <span className="mt-4 block text-[17px] font-bold text-[#184A31]">
@@ -1074,7 +1074,7 @@ export default function PlantDoctorPage() {
                   value={plantName}
                   onChange={(e) => setPlantName(e.target.value)}
                   placeholder="e.g. Money Plant, Tulsi, Snake Plant"
-                  className="mt-1.5 rounded-[14px] border border-[#ECECEC] bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
+                  className="mt-1.5 rounded-[14px] border border-kraft-200 bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
                 />
 
                 <label htmlFor="pd-symptoms" className="mt-5 text-[13px] font-semibold text-[#184A31]">
@@ -1092,8 +1092,8 @@ export default function PlantDoctorPage() {
                         aria-pressed={active}
                         className={`rounded-full border px-3 py-1.5 text-[12px] font-medium transition ${
                           active
-                            ? 'border-[#14532D] bg-[#14532D] text-white'
-                            : 'border-[#ECECEC] bg-white text-[#5B5B5B] hover:border-[#24693E]/50 hover:text-[#24693E]'
+                            ? 'border-ds-btn bg-ds-btn text-white'
+                            : 'border-kraft-200 bg-white text-[#5B5B5B] hover:border-[#24693E]/50 hover:text-[#24693E]'
                         }`}
                       >
                         {chip}
@@ -1107,7 +1107,7 @@ export default function PlantDoctorPage() {
                   onChange={(e) => setSymptoms(e.target.value)}
                   rows={4}
                   placeholder="e.g. Leaves turning yellow with brown spots, drooping despite regular watering…"
-                  className="mt-2.5 resize-none rounded-[14px] border border-[#ECECEC] bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
+                  className="mt-2.5 resize-none rounded-[14px] border border-kraft-200 bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
                 />
 
                 {error && (

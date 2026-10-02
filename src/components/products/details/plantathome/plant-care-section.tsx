@@ -30,7 +30,7 @@ function VideoBlock({ url }: { url: string }) {
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="mt-8 inline-flex items-center gap-2.5 rounded-[14px] border border-[#ECECEC] bg-white px-5 py-3.5 text-sm font-semibold text-[#184A31] transition hover:border-[#14532D]/40"
+        className="mt-8 inline-flex items-center gap-2.5 rounded-[14px] border border-kraft-200 bg-white px-5 py-3.5 text-sm font-semibold text-[#184A31] transition hover:border-ds-btn/40"
       >
         <LineIcon name="play" className="h-4 w-4 text-[#24693E]" />
         Watch the plant video
@@ -40,7 +40,7 @@ function VideoBlock({ url }: { url: string }) {
   }
 
   return (
-    <div className="mt-8 overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+    <div className="mt-8 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
       <div className="relative aspect-video w-full bg-stone-100">
         {playing ? (
           <iframe
@@ -65,7 +65,7 @@ function VideoBlock({ url }: { url: string }) {
               className="h-full w-full object-cover"
             />
             <span className="absolute inset-0 bg-black/20 transition group-hover:bg-black/30" />
-            <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-[#14532D] shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition group-hover:scale-105">
+            <span className="absolute left-1/2 top-1/2 grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/95 text-ds-btn shadow-[0_8px_24px_rgba(0,0,0,0.3)] transition group-hover:scale-105">
               <LineIcon name="play" className="ml-1 h-6 w-6" />
             </span>
           </button>
@@ -218,13 +218,13 @@ export function PlantCareSection({
         {/* RIGHT — spec rows + badges */}
         {hasRight && (
           <div className="min-w-0">
-            <div className="rounded-[22px] border border-[#ECECEC] bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+            <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
               {specs.length > 0 && (
                 <dl>
                   {specs.map((s) => (
                     <div
                       key={s.label}
-                      className="flex items-baseline justify-between gap-4 border-b border-[#ECECEC] py-2.5 first:pt-0 last:border-0 last:pb-0"
+                      className="flex items-baseline justify-between gap-4 border-b border-kraft-200 py-2.5 first:pt-0 last:border-0 last:pb-0"
                     >
                       <dt className="shrink-0 text-[13.5px] text-[#8A8A8A]">
                         {s.label}

@@ -132,7 +132,7 @@ const RazorpayPaymentModal: React.FC<Props> = ({
 
   if (loadError) {
     return (
-      <div className="m-auto flex w-full max-w-sm flex-col items-center gap-4 rounded-lg bg-light p-6 text-center">
+      <div className="m-auto flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl bg-light p-6 text-center">
         <p className="text-base font-semibold text-heading">
           Payment window couldn&apos;t load
         </p>

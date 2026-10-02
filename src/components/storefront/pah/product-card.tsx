@@ -81,7 +81,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/products/${product?.slug}`}
-      className="group block w-[165px] shrink-0 overflow-hidden rounded-[18px] border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)]"
+      className="group block w-[165px] shrink-0 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)]"
     >
       <div className="relative h-[150px]">
         <SafeImage
@@ -119,7 +119,7 @@ export function ProductCard({ product }: { product: Product }) {
         {desc ? <div className="mt-[3px] line-clamp-1 text-[11px] text-[#6B7280]">{desc}</div> : <div className="mt-[3px] h-[11px]" />}
         <div className="mt-[9px] flex items-center justify-between">
           <div className="flex min-w-0 items-baseline gap-1">
-            <span className="font-hanken text-[15px] font-semibold tabular-nums text-[#14532D]">{rupee(price)}</span>
+            <span className="font-hanken text-[15px] font-semibold tabular-nums text-ds-btn">{rupee(price)}</span>
             {mrp ? <span className="text-[11px] font-medium text-[#9CA3AF] line-through">{rupee(mrp)}</span> : null}
             {offPct > 0 ? (
               <span className="rounded bg-[#FFEAEA] px-1 py-0.5 text-[9px] font-bold leading-none text-[#D73C3C]">{offPct}%</span>

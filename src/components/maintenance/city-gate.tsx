@@ -84,7 +84,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
         <img
           src={m.image}
           alt=""
-          className="mb-8 max-h-56 w-auto rounded-[22px] object-cover"
+          className="mb-8 max-h-56 w-auto rounded-2xl object-cover"
         />
       ) : (
         <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-sage-100">
@@ -114,7 +114,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
         <button
           type="button"
           onClick={openCityPicker}
-          className="rounded-[14px] bg-[#14532D] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0D4324]"
+          className="rounded-[14px] bg-ds-btn px-6 py-3 text-sm font-semibold text-white transition hover:bg-ds-btn-hover"
         >
           {m.buttonTitle || 'Change delivery city'}
         </button>

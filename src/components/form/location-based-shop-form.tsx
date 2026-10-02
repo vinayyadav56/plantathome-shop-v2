@@ -65,7 +65,7 @@ export default function LocationBasedShopForm({
   return (
     <div
       className={cn(
-        'w-full border border-border-200 bg-light p-5 shadow-[-8px_8px_16px_rgba(0,0,0,0.18)] md:min-h-0 md:w-[650px] md:rounded-xl xl:w-[1076px]',
+        'w-full border border-border-200 bg-light p-5 shadow-[-8px_8px_16px_rgba(0,0,0,0.18)] md:min-h-0 md:w-[650px] md:rounded-2xl xl:w-[1076px]',
         className
       )}
     >

@@ -12,7 +12,7 @@ export default function DeliveryAddressCard({ order }: { order: any }) {
   const line2WithZip = [line2, addr?.zip].filter(Boolean).join(' - ');
 
   return (
-    <div className="rounded-2xl border border-[#E7E5DC] bg-white px-5 py-5 shadow-sm sm:px-6">
+    <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
       <h3 className="mb-3 text-base font-medium text-forest-900">Delivery Address</h3>
 
       <div className="flex gap-2.5">

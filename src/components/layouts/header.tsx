@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
-import { BrandLogo, LogoMark } from '@/components/storefront/logo-mark';
+import { BrandLogo } from '@/components/storefront/logo-mark';
 import { Icon } from '@/components/storefront/icons';
 import { EXPO } from '@/components/storefront/motion';
 import { SearchIcon } from '@/components/icons/search-icon';
@@ -174,7 +174,9 @@ const Header = ({ layout }: { layout?: string }) => {
           a static bar it scrolled away after 48px, which is exactly how the
           city went missing before. If anyone ever makes this `relative` again,
           the city must move somewhere sticky in the same commit. */}
-      <div className="sticky top-0 z-[51] h-7 bg-[#0a2916] text-[12px] font-normal text-white/[0.92]">
+      {/* Mobile (annotation 2026-10-03): no green strip — the city chip moves into
+          the header bar itself, so the "always reachable" invariant holds there. */}
+      <div className="sticky top-0 z-[51] hidden h-7 bg-[#0a2916] text-[12px] font-normal text-white/[0.92] md:block">
         {/* 28px (annotation: "reduce the width of those line upto 50%" — the strip was 48px).
             Nothing may spill out of it at any width: the side cells are block containers with
             `truncate`, so an overflow ends in an ellipsis instead of a half-glyph.
@@ -207,22 +209,26 @@ const Header = ({ layout }: { layout?: string }) => {
           same reason. */}
       <header
         id="site-header"
-        className="pointer-events-none sticky top-[27px] z-50 -mt-px w-full px-5"
+        className="pointer-events-none sticky top-0 z-50 w-full px-0 md:top-[27px] md:-mt-px md:px-5"
       >
         {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
             clipped child span instead. The city chip moved OUT of here to the
             green strip above; this still renders at every width and every
             scroll offset, so nav, search and cart stay reachable too. */}
-        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-4 rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 lg:h-[78px] lg:gap-6 lg:px-[42px]">
+        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-3 border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 max-md:border-x-0 max-md:border-t-0 md:gap-4 md:rounded-[12px] lg:h-[78px] lg:gap-6 lg:px-[42px]">
           {/* glass shine — top-half highlight, clipped to the pill radius */}
-          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[12px]">
+          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden md:rounded-[12px]">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
           {/* BrandLogo is a fixed 160px image — on a 360px phone that is most of
               the pill's width, so phones get the 34px leaf mark instead. */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
-            <LogoMark className="h-[34px] w-[34px] text-forest-800 md:hidden" />
+            {/* Full wordmark at every width (annotation): capped on phones so it
+                shares the bar with the city chip + icons. */}
+            <span className="inline-block max-w-[118px] md:hidden [&_img]:h-8 [&_img]:w-auto [&_img]:object-contain">
+              <BrandLogo />
+            </span>
             <span className="hidden md:inline">
               <BrandLogo />
             </span>
@@ -349,7 +355,10 @@ const Header = ({ layout }: { layout?: string }) => {
               </button>
             </div>
 
-            {/* mobile: search + hamburger */}
+            {/* mobile: city + search + hamburger. The chip HERE is what keeps the
+                shopping city reachable below md now that the strip is desktop-only
+                (pinned by e2e/city-chip.spec.ts). */}
+            <CitySwitcher className="max-w-[7rem] md:hidden" />
             <button type="button" onClick={() => setSearchOpen(true)} className={`${iconBtn} md:hidden`} aria-label={t('text-search') ?? 'Search'}>
               <SearchIcon className="h-[18px] w-[18px]" />
             </button>

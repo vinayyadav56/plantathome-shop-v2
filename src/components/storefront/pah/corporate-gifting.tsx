@@ -57,9 +57,9 @@ export function CorporateGifting() {
   const { t } = useTranslation('common');
   if (!useBannerEnabled('gifting')) return null;
   return (
-    <div className="mx-5 mb-7 mt-[14px] rounded-[28px] bg-sage-100 pb-[24px] pl-[20px] pr-[20px] pt-[30px] shadow-[0_1px_3px_rgba(20,40,24,0.06)]">
+    <div className="mx-5 mb-7 mt-[14px] rounded-2xl bg-sage-100 pb-[24px] pl-[20px] pr-[20px] pt-[30px] shadow-[0_1px_3px_rgba(20,40,24,0.06)]">
       {/* hero photo */}
-      <div className="relative mb-[20px] h-[182px] overflow-hidden rounded-[16px] shadow-[0_2px_8px_rgba(34,48,26,0.07)]"><HeroImg /></div>
+      <div className="relative mb-[20px] h-[182px] overflow-hidden rounded-2xl shadow-[0_2px_8px_rgba(34,48,26,0.07)]"><HeroImg /></div>
       {/* copy */}
       <div className="text-center">
         <span className="font-jost inline-flex items-center gap-2 rounded-[999px] border-[1.5px] border-sage-400 bg-white px-[14px] py-[7px] text-[9.5px] font-medium uppercase tracking-[0.2em] text-forest-700">
@@ -85,12 +85,12 @@ export function CorporateGifting() {
         ))}
       </div>
       {/* CTA */}
-      <Link href="/corporate-gifting" className="font-jost mt-[20px] inline-flex w-full items-center justify-center gap-[10px] rounded-[12px] bg-ds-btn p-[15px] text-[12px] font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:bg-ds-btn-hover">
+      <Link href="/corporate-gifting" className="font-jost mt-[20px] inline-flex w-full items-center justify-center gap-[10px] rounded-[14px] bg-ds-btn p-[15px] text-[12px] font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:bg-ds-btn-hover">
         <Gift size={16} aria-hidden />
         {t('m-gift-cta')}
       </Link>
       {/* assurance band */}
-      <div className="mt-[18px] rounded-[16px] bg-forest-800 px-[18px] py-[4px]">
+      <div className="mt-[18px] rounded-2xl bg-forest-800 px-[18px] py-[4px]">
         {ASSURE.map((g, i) => (
           <div key={g.title} className={`relative flex items-center gap-[15px] py-[15px] ${i > 0 ? 'before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-white/[0.14] before:content-[\'\']' : ''}`}>
             <span className="shrink-0 text-gold-300">

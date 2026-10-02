@@ -159,7 +159,7 @@ test.describe('shopping-city chip is always reachable', () => {
   test('reads as a control and opens the picker', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/plants', { waitUntil: 'domcontentloaded' });
-    const chip = page.locator(CHIP).first();
+    const chip = page.locator(`${CHIP}:visible`).first();
     await expect(chip).toBeVisible();
 
     // It was reported as "disabled" while being perfectly clickable — it simply
@@ -195,11 +195,11 @@ test.describe('shopping-city chip is always reachable', () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForTimeout(150);
-    await expect(page.locator(CHIP).first()).toHaveText(/Delhi/);
-    expect(await page.locator(CHIP).first().innerText()).not.toContain('Rohini');
+    await expect(page.locator(`${CHIP}:visible`).first()).toHaveText(/Delhi/);
+    expect(await page.locator(`${CHIP}:visible`).first().innerText()).not.toContain('Rohini');
 
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(200);
-    expect(await page.locator(CHIP).first().innerText()).toContain('Rohini');
+    expect(await page.locator(`${CHIP}:visible`).first().innerText()).toContain('Rohini');
   });
 });

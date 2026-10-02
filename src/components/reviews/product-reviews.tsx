@@ -82,7 +82,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
         className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-10"
       >
         <div
-          className={`flex items-center justify-center rounded-[22px] border border-[#ECECEC] bg-white py-20 ${CARD_SHADOW}`}
+          className={`flex items-center justify-center rounded-2xl border border-kraft-200 bg-white py-20 ${CARD_SHADOW}`}
         >
           <Spinner simple className="h-9 w-9" />
         </div>
@@ -101,10 +101,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
       className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-10"
     >
       <div
-        className={`overflow-hidden rounded-[22px] border border-[#ECECEC] bg-white ${CARD_SHADOW}`}
+        className={`overflow-hidden rounded-2xl border border-kraft-200 bg-white ${CARD_SHADOW}`}
       >
         {/* header — title + write-review affordance, ratings summary beside */}
-        <div className="flex flex-col gap-8 border-b border-[#ECECEC] p-6 sm:p-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+        <div className="flex flex-col gap-8 border-b border-kraft-200 p-6 sm:p-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
           <div className="shrink-0">
             <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
               Customer voices
@@ -128,7 +128,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                 <button
                   type="button"
                   onClick={handleWriteReview}
-                  className="inline-flex h-12 items-center gap-2.5 rounded-[14px] bg-[#14532D] px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-[#0D4324] focus:outline-0"
+                  className="inline-flex h-12 items-center gap-2.5 rounded-[14px] bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
                 >
                   <Pencil size={18} className="shrink-0" aria-hidden />
                   Write a review
@@ -147,7 +147,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
         </div>
 
         {/* toolbar — existing sort + star-filter controls */}
-        <div className="flex flex-col gap-3 border-b border-[#ECECEC] px-6 py-4 sm:px-8 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 border-b border-kraft-200 px-6 py-4 sm:px-8 md:flex-row md:items-center md:justify-between">
           <Sorting />
           <StarFilter />
         </div>
@@ -161,7 +161,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
 
             {/* Pagination */}
             {paginatorInfo && (
-              <div className="flex items-center justify-between border-t border-[#ECECEC] py-4">
+              <div className="flex items-center justify-between border-t border-kraft-200 py-4">
                 <div className="text-[13px] text-[#8A8A8A]">
                   {t('text-page')}{' '}
                   {

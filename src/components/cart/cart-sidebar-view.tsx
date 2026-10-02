@@ -8,7 +8,6 @@ import { checkoutRouteFor } from '@/lib/checkout-route';
 import usePrice from '@/lib/use-price';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { useSettings } from '@/framework/settings';
-import { formatString } from '@/lib/format-string';
 import { useTranslation } from 'next-i18next';
 import { useAtom } from 'jotai';
 import { drawerAtom } from '@/store/drawer-atom';
@@ -65,7 +64,7 @@ const CartSidebarView = () => {
             <p className="pa-cart-header-count">
               {totalUniqueItems === 0
                 ? 'Empty'
-                : formatString(totalUniqueItems, t('text-item'))}
+                : `${totalUniqueItems} ${totalUniqueItems === 1 ? 'item' : 'items'}`}
             </p>
           </div>
         </div>
@@ -112,7 +111,7 @@ const CartSidebarView = () => {
             {/* Order summary */}
             <div className="pa-cart-summary">
               <div className="pa-cart-summary-row">
-                <span>Subtotal ({formatString(totalUniqueItems, t('text-item'))})</span>
+                <span>Subtotal ({totalUniqueItems} {totalUniqueItems === 1 ? 'item' : 'items'})</span>
                 <span>{subtotalPrice}</span>
               </div>
               <div className="pa-cart-summary-row">

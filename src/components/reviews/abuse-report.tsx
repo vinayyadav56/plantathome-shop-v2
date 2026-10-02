@@ -15,7 +15,7 @@ export default function AbuseReport({ data }: { data: any }) {
     });
   }
   return (
-    <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-light p-7 md:h-auto md:min-h-0 md:max-w-[590px] md:rounded-xl">
+    <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-light p-7 md:h-auto md:min-h-0 md:max-w-[590px] md:rounded-2xl">
       <Form<CreateAbuseReportInput> onSubmit={onSubmit}>
         {({ register }) => (
           <div className="space-y-4">

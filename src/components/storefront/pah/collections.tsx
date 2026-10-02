@@ -15,7 +15,7 @@ function Card({ c }: { c: Category }) {
   const img = c?.image?.original || c?.image?.thumbnail;
   const n = c?.products_count ?? 0;
   return (
-    <Link href={`/c/${c.slug}`} className="relative block h-[180px] w-[140px] shrink-0 overflow-hidden rounded-[18px] shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)] active:scale-[0.98]">
+    <Link href={`/c/${c.slug}`} className="relative block h-[180px] w-[140px] shrink-0 overflow-hidden rounded-2xl shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)] active:scale-[0.98]">
       <SafeImage
         src={img}
         alt={c.name}
@@ -57,7 +57,7 @@ export function Collections() {
       </div>
       <div className="pah-scroll flex gap-3 overflow-x-auto px-5 pb-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {isLoading && list.length === 0
-          ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[180px] w-[140px] shrink-0 animate-pulse rounded-[18px] bg-sage-100" />)
+          ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-[180px] w-[140px] shrink-0 animate-pulse rounded-2xl bg-sage-100" />)
           : list.map((c) => <Card key={c.id ?? c.slug} c={c} />)}
       </div>
     </div>

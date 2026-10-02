@@ -7,7 +7,7 @@ const NewsLetter = () => {
     data: { title, description },
   } = useModalState();
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-[10px] bg-light p-8 md:h-auto md:min-h-0 md:max-w-2xl md:p-16 lg:w-screen lg:max-w-[56.25rem]">
+    <div className="relative h-full w-full overflow-hidden rounded-2xl bg-light p-8 md:h-auto md:min-h-0 md:max-w-2xl md:p-16 lg:w-screen lg:max-w-[56.25rem]">
       <div className="mb-8">
         <Image
           src={'/news-letter-icon.png'}

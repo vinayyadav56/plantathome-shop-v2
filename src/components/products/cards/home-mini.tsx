@@ -67,7 +67,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
 
   return (
     <article
-      className={`group flex h-full flex-col overflow-hidden rounded-[16px] border border-kraft-200 bg-white transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(34,48,26,0.1)] ${className}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(34,48,26,0.1)] ${className}`}
     >
       {/* photo + badge + heart (heart is a sibling of the link — valid HTML) */}
       <div className="relative">
@@ -162,7 +162,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
             at this width, so it used to wrap mid-price.
           */}
           <span className="flex min-w-0 flex-col gap-[3px]">
-            <span className="truncate text-[13px] font-bold leading-none text-[#14532D]">
+            <span className="truncate text-[13px] font-bold leading-none text-ds-btn">
               {isVariable ? (hasRange ? `${compact(minPrice)}+` : compact(minPrice)) : compact(price)}
             </span>
             {!isVariable && basePrice && (
@@ -177,7 +177,7 @@ const HomeMiniCard: React.FC<{ product: Product; className?: string }> = ({
               href={Routes.product(product.slug)}
               aria-label="Select options"
               title="Select options"
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-ds-btn text-white transition duration-200 hover:bg-ds-btn-hover"
+              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ds-btn text-white transition duration-200 hover:bg-ds-btn-hover"
             >
               <ShoppingBag size={16} aria-hidden />
             </Link>

@@ -79,7 +79,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
             </span>
             <div className="relative h-2 min-w-[120px] flex-1 overflow-hidden rounded-full bg-[#F3F8EC]">
               <div
-                className="absolute inset-y-0 left-0 rounded-full bg-[#14532D]"
+                className="absolute inset-y-0 left-0 rounded-full bg-ds-btn"
                 style={{
                   width: `${
                     totalReviews > 0

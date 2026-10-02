@@ -25,7 +25,7 @@ export default function Modal({
       <Dialog
         as="div"
         className={twMerge(
-          classNames('fixed inset-0 z-50 overflow-y-auto', className),
+          classNames('fixed inset-0 z-[60] overflow-y-auto', className),
         )}
         initialFocus={cancelButtonRef}
         static

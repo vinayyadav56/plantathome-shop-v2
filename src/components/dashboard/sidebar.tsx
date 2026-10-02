@@ -63,7 +63,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
                 'shrink-0 whitespace-nowrap rounded-full border px-4 py-2 font-poppins text-[13.5px] font-medium transition',
                 pathname === item.href
                   ? 'border-transparent bg-ds-accent text-white'
-                  : 'border-forest-900/10 bg-white text-forest-900 hover:bg-[var(--ds-accent-soft)]',
+                  : 'border-kraft-200 bg-white text-forest-900 hover:bg-[var(--ds-accent-soft)]',
               )}
             >
               {t(item.label)}
@@ -71,7 +71,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
           ))}
           <button
             onClick={() => logout()}
-            className="shrink-0 whitespace-nowrap rounded-full border border-red-200 bg-white px-4 py-2 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
+            className="shrink-0 whitespace-nowrap rounded-[14px] border border-red-200 bg-white px-4 py-2 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
           >
             {t('profile-sidebar-logout')}
           </button>
@@ -81,7 +81,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
       {/* desktop: wallet card + nav card + promo card */}
       <div className="hidden flex-col gap-5 lg:flex">
         {/* wallet points */}
-        <div className="rounded-2xl border border-forest-900/10 bg-white p-5">
+        <div className="rounded-2xl border border-kraft-200 bg-white p-5">
           <div className="mb-4 flex items-center gap-2">
             <Wallet size={18} className="text-forest-600" aria-hidden />
             <span className="text-body-sm font-semibold text-forest-900">{t('wallet-points')}</span>
@@ -101,7 +101,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         </div>
 
         {/* nav */}
-        <div className="overflow-hidden rounded-2xl border border-forest-900/10 bg-white">
+        <div className="overflow-hidden rounded-2xl border border-kraft-200 bg-white">
           <ul className="p-2.5">
             {navItems.map((item: any, i: number) => {
               const active = pathname === item.href;
@@ -121,7 +121,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
               );
             })}
           </ul>
-          <div className="border-t border-forest-900/10 p-2.5">
+          <div className="border-t border-kraft-200 p-2.5">
             <button
               onClick={() => logout()}
               className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 font-poppins text-[14px] font-medium text-red-500 transition hover:bg-red-50"
@@ -133,7 +133,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         </div>
 
         {/* promo */}
-        <div className="overflow-hidden rounded-2xl border border-forest-900/10 bg-sage-100/70">
+        <div className="overflow-hidden rounded-2xl border border-kraft-200 bg-sage-100/70">
           <div className="px-5 pt-5">
             <h3 className="text-card-title font-semibold leading-tight text-forest-900">{t('promo-title')}</h3>
             <p className="mt-2 text-body-sm leading-snug text-stone-600">{t('promo-sub')}</p>

@@ -190,7 +190,7 @@ function SignInPage() {
                 sliding the tabs up under the pointer that just clicked them.
                 Measured at 38px before this was pinned. */}
             <div
-              className="rounded-[20px] bg-white px-6 py-7 shadow-[0_18px_50px_rgba(31,48,32,0.28)] sm:px-8
+              className="rounded-2xl bg-white px-6 py-7 shadow-[0_18px_50px_rgba(31,48,32,0.28)] sm:px-8
                          lg:absolute lg:top-[5%] lg:right-[3%] lg:max-h-[90%] lg:w-[34%] lg:overflow-y-auto
                          lg:px-7 lg:py-7 lg:shadow-[0_18px_50px_rgba(31,48,32,0.18)] xl:px-9"
             >

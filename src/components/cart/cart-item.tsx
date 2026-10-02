@@ -1,10 +1,14 @@
 import { Image } from '@/components/ui/image';
 import { motion } from 'framer-motion';
+import { toast } from 'react-toastify';
 import { siteSettings } from '@/config/site';
 import { fadeInOut } from '@/lib/motion/fade-in-out';
 import usePrice from '@/lib/use-price';
 import { useCart } from '@/store/quick-cart/cart.context';
-import { Minus, Plus, X } from '@/components/ui/icon';
+import { Minus, Plus } from '@/components/ui/icon';
+import { useToggleWishlist } from '@/framework/wishlist';
+import { useUser } from '@/framework/user';
+import { goToSignin } from '@/lib/go-to-signin';
 
 interface CartItemProps {
   item: any;
@@ -12,6 +16,11 @@ interface CartItemProps {
 
 const CartItem = ({ item }: CartItemProps) => {
   const { clearItemFromCart, addItemToCart, removeItemFromCart } = useCart();
+  const { isAuthorized } = useUser();
+  // Variation lines are `${productId}.${variationId}`; the wishlist wants the product.
+  const { toggleWishlist, isLoading: wishlistBusy } = useToggleWishlist(
+    item?.productId ?? item?.id,
+  );
 
   const { price } = usePrice({ amount: item.price });
   const { price: itemTotal } = usePrice({ amount: item.itemTotal });
@@ -74,16 +83,29 @@ const CartItem = ({ item }: CartItemProps) => {
           <span className="pa-cart-item-total">{itemTotal}</span>
         </div>
         <p className="pa-cart-item-price">{price} each</p>
+      {/* Flipkart-style text actions (annotation 2026-10-03) instead of the floating
+            x-circle: explicit words, bigger touch targets, same row in drawer and /cart. */}
+        <div className="pa-cart-actions">
+          <button
+            type="button"
+            disabled={wishlistBusy}
+            onClick={() => {
+              if (!isAuthorized) return goToSignin();
+              toggleWishlist({ product_id: item?.productId ?? item?.id });
+              clearItemFromCart(item.id);
+              toast.success('Moved to your wishlist');
+            }}
+          >
+            Move to Wishlist
+          </button>
+          <span aria-hidden className="pa-cart-actions-divider" />
+          <button type="button" onClick={() => clearItemFromCart(item.id)}>
+            Remove
+          </button>
+        </div>
       </div>
 
-      {/* Remove button */}
-      <button
-        className="pa-cart-remove-btn"
-        onClick={() => clearItemFromCart(item.id)}
-        aria-label="Remove item"
-      >
-        <X size={12} aria-hidden />
-      </button>
+
     </motion.div>
   );
 };

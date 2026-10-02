@@ -46,7 +46,7 @@ const Drawer: React.FC<DrawerProps> = ({
               animate="to"
               exit="from"
               variants={variant === 'right' ? fadeInRight() : fadeInLeft()}
-              className="fixed inset-0 z-50 h-full overflow-hidden"
+              className="fixed inset-0 z-[60] h-full overflow-hidden"
             >
               <div className="absolute inset-0 overflow-hidden">
                 <motion.div

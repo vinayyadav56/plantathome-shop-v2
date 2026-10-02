@@ -42,7 +42,7 @@ export function BundleContents({
   const more = items.length - rows.length;
 
   return (
-    <div className="rounded-[22px] border border-[#ECECEC] bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+    <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
       <h3 className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         <LineIcon name="box" className="h-4 w-4 text-[#24693E]" />
         What&apos;s inside this bundle ({items.length} item{items.length === 1 ? '' : 's'})
@@ -56,14 +56,14 @@ export function BundleContents({
             <Link
               key={p.id}
               href={`/products/${p.slug}`}
-              className="flex items-center gap-3 rounded-[14px] border border-[#ECECEC] bg-white p-2.5 transition hover:border-[#14532D]/30"
+              className="flex items-center gap-3 rounded-[14px] border border-kraft-200 bg-white p-2.5 transition hover:border-ds-btn/30"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={p?.image?.thumbnail || p?.image?.original || productPlaceholder}
                 alt={p?.name}
                 loading="lazy"
-                className="h-11 w-11 shrink-0 rounded-[10px] border border-[#ECECEC] object-cover"
+                className="h-11 w-11 shrink-0 rounded-[10px] border border-kraft-200 object-cover"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[14px] font-semibold leading-tight text-[#184A31]">
@@ -88,7 +88,7 @@ export function BundleContents({
           </p>
         ) : null
       ) : (
-        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-[#ECECEC] pt-4">
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-kraft-200 pt-4">
           {totalValue > 0 && (
             <span className="text-[13.5px] text-[#8A8A8A]">
               Total value <del>{fmtINR(totalValue)}</del>
@@ -96,7 +96,7 @@ export function BundleContents({
           )}
           <span className="text-[13.5px] text-[#5B5B5B]">
             Bundle price{' '}
-            <span className="text-[15px] font-bold text-[#14532D]">
+            <span className="text-[15px] font-bold text-ds-btn">
               {fmtINR(bundlePrice)}
             </span>
           </span>

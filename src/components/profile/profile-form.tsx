@@ -102,7 +102,7 @@ const ProfileForm = ({ user }: { user: User }) => {
             <p className="mt-1 text-[13.5px] text-stone-500">{t('profile-info-subtitle')}</p>
           </div>
 
-          <div className="flex flex-col gap-7 sm:flex-row sm:gap-9">
+          <div className="flex flex-col gap-7">
             {/* profile picture */}
             <div className="shrink-0">
               <label className="mb-2.5 block text-[13px] font-semibold text-forest-900">

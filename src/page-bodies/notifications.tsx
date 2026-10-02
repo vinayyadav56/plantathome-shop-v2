@@ -41,7 +41,7 @@ export default function NotifyLogsPage() {
         <div className="flex flex-col gap-4">
           {rangeMap(limit, (i) => (
             <div
-              className="border border-[#E9E3D6] rounded-md bg-white px-8 py-5"
+              className="border border-kraft-200 rounded-md bg-white px-8 py-5"
               key={i}
             >
               <NotifyLoader
@@ -61,7 +61,7 @@ export default function NotifyLogsPage() {
             <NotificationLists
               character={150}
               notifications={data?.notifyLogs as NotifyLogs[]}
-              className="border border-[#E9E3D6] border-solid rounded-md before:bg-[#F2B926] flex 2xl:justify-between 2xl:items-center 2xl:flex-row flex-col justify-start items-start gap-y-4 2xl:gap-y-0"
+              className="border border-kraft-200 border-solid rounded-md before:bg-[#F2B926] flex 2xl:justify-between 2xl:items-center 2xl:flex-row flex-col justify-start items-start gap-y-4 2xl:gap-y-0"
               showButton
             />
           </div>

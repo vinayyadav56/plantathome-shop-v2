@@ -144,7 +144,7 @@ export default function ChangeCityDialog({ open, targetCity, onClose, onSwitched
                       type="button"
                       onClick={confirm}
                       disabled={busy || !targetCity}
-                      className="rounded-lg bg-forest-800 px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-50"
+                      className="rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110 disabled:opacity-50"
                     >
                       {busy ? 'Checking cart…' : `Switch to ${targetCity}`}
                     </button>
@@ -172,7 +172,7 @@ export default function ChangeCityDialog({ open, targetCity, onClose, onSwitched
                     <button
                       type="button"
                       onClick={done}
-                      className="rounded-lg bg-forest-800 px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
+                      className="rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
                     >
                       Got it
                     </button>

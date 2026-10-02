@@ -77,18 +77,9 @@ export default function GooglePlacesAutocomplete({
             );
           }}
         />
-        {/* "Use my current location" belongs on BOTH paths — it is the fastest route to a correct
-            pin and has nothing to do with which autocomplete API is in play. */}
-        <div className="absolute top-0 right-0 flex h-12 w-12 items-center justify-center text-accent">
-          <CurrentLocation
-            className="h-5 w-5 cursor-pointer hover:text-accent"
-            onClick={() => {
-              setSearchError(null);
-              getCurrentLocation();
-              setInputValue(location?.formattedAddress!);
-            }}
-          />
-        </div>
+        {/* The crosshair overlay is gone (annotation 2026-10-03): it sat on top of the
+            autocomplete's own clear-x. The labelled "Use current location" chip rendered
+            directly below by AddressMapPicker is the one GPS control. */}
         {searchError && (
           <p className="mt-1 text-xs text-red-500" role="alert">
             {searchError}
@@ -127,21 +118,12 @@ export default function GooglePlacesAutocomplete({
           placeholder={t('common:placeholder-search-location')}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className={`line-clamp-1 flex h-12 w-full appearance-none items-center rounded border border-border-base p-4 pr-9 text-sm font-medium text-heading transition duration-300 ease-in-out invalid:border-red-500 focus:border-accent focus:outline-0 focus:ring-0 ${
+          className={`line-clamp-1 flex h-12 w-full appearance-none items-center rounded border border-border-base p-4 text-sm font-medium text-heading transition duration-300 ease-in-out invalid:border-red-500 focus:border-accent focus:outline-0 focus:ring-0 ${
             disabled ? 'cursor-not-allowed border-[#D4D8DD] bg-[#EEF1F4]' : ''
           }`}
           disabled={disabled}
         />
       </Autocomplete>
-      <div className="absolute top-0 right-0 flex h-12 w-12 items-center justify-center text-accent">
-        <CurrentLocation
-          className="h-5 w-5 cursor-pointer hover:text-accent"
-          onClick={() => {
-            getCurrentLocation();
-            setInputValue(location?.formattedAddress!);
-          }}
-        />
-      </div>
     </div>
   ) : (
     <SpinnerLoader />

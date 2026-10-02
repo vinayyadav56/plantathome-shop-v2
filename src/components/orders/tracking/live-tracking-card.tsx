@@ -256,7 +256,7 @@ export default function LiveTrackingCard({
     : null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#E7E5DC] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-sm">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}

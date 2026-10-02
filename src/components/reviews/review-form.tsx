@@ -52,7 +52,7 @@ export default function ReviewForm() {
     });
   };
   return (
-    <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-light md:h-auto md:min-h-0 md:max-w-[590px] md:rounded-xl">
+    <div className="flex h-full min-h-screen w-screen flex-col justify-center bg-light md:h-auto md:min-h-0 md:max-w-[590px] md:rounded-2xl">
       <div className="flex items-center border-b border-border-200 p-7">
         <div className="flex shrink-0">
           <Image

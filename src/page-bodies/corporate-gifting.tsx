@@ -93,7 +93,7 @@ function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
 
   if (done) {
     return (
-      <div className={`${onDark ? 'rounded-[18px] bg-black/85 shadow-[0_18px_45px_rgba(0,0,0,0.45)] ring-1 ring-white/15 backdrop-blur-[6px]' : 'rounded-[18px] bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35]'} p-8 text-center`}>
+      <div className={`${onDark ? 'rounded-2xl bg-black/85 shadow-[0_18px_45px_rgba(0,0,0,0.45)] ring-1 ring-white/15 backdrop-blur-[6px]' : 'rounded-2xl bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35]'} p-8 text-center`}>
         <div className="mb-3 text-4xl">🎁</div>
         <h3 className={`font-cormorant text-2xl font-medium ${onDark ? 'text-white' : 'text-forest-900'}`}>Enquiry received!</h3>
         <p className={`mt-2 text-sm ${onDark ? 'text-white/70' : 'text-stone-600'}`}>Our corporate gifting team will reach out with a tailored proposal.</p>
@@ -111,7 +111,7 @@ function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
     // Frosted, reusing the header pill's glass numbers rather than inventing a
     // second frost recipe. 80% white is the floor: below it the helper line
     // stops clearing AA over an admin image of unknown brightness.
-    <form onSubmit={handleSubmit(onSubmit)} className={`${onDark ? 'rounded-[18px] bg-black/85 shadow-[0_18px_45px_rgba(0,0,0,0.45)] ring-1 ring-white/15 backdrop-blur-[6px]' : 'rounded-[18px] bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35]'} p-6 sm:p-8`}>
+    <form onSubmit={handleSubmit(onSubmit)} className={`${onDark ? 'rounded-2xl bg-black/85 shadow-[0_18px_45px_rgba(0,0,0,0.45)] ring-1 ring-white/15 backdrop-blur-[6px]' : 'rounded-2xl bg-white/80 shadow-[0_18px_45px_rgba(5,24,10,0.18)] ring-1 ring-white/60 backdrop-blur-[22px] backdrop-saturate-[1.35]'} p-6 sm:p-8`}>
       <h3 className={`font-cormorant text-2xl font-medium ${onDark ? 'text-white' : 'text-forest-900'}`}>Get a custom gifting quote</h3>
       <p className="mt-1 text-sm text-stone-500">Tell us your needs — we’ll tailor a proposal & pricing.</p>
       <div className="mt-5 space-y-3">
@@ -262,7 +262,7 @@ export default function CorporateGiftingPage() {
         <h2 className="font-cormorant mt-2 text-center text-4xl font-medium text-forest-900 sm:text-5xl">Perfect for every occasion</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {AUDIENCE.map((a) => (
-            <div key={a.title} className="rounded-[18px] border border-kraft-200 bg-white p-7 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)]">
+            <div key={a.title} className="rounded-2xl border border-kraft-200 bg-white p-7 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_24px_rgba(34,48,26,0.09)]">
               {/* text-2xl was left over from when these were emoji; they are icon
                   components now, so it sized nothing. */}
               <div className="grid h-12 w-12 place-items-center rounded-full bg-sage-100 text-forest-700 ring-1 ring-sage-200">{a.icon}</div>
@@ -287,7 +287,7 @@ export default function CorporateGiftingPage() {
             {tiers.map((t) => {
               const highlight = !!t.badge;
               return (
-                <div key={t.id} className={`relative flex flex-col rounded-[18px] p-7 ring-1 ${highlight ? 'bg-white/[0.07] ring-2 ring-ds-cta' : 'bg-white/5 ring-white/10'}`}>
+                <div key={t.id} className={`relative flex flex-col rounded-2xl p-7 ring-1 ${highlight ? 'bg-white/[0.07] ring-2 ring-ds-cta' : 'bg-white/5 ring-white/10'}`}>
                   {t.badge && <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-ds-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-ds-cta-ink">{t.badge}</div>}
                   <h3 className="font-cormorant text-2xl font-medium">{t.name}</h3>
                   {t.tagline ? <p className="mt-1 text-sm text-cream-50/65">{t.tagline}</p> : null}
@@ -304,7 +304,7 @@ export default function CorporateGiftingPage() {
                       you had to hunt for. An outline at 45% carries real edge
                       contrast without competing with the featured tier's solid. */}
                   <button onClick={() => buy(t.id)} disabled={buying && buyingId === t.id}
-                    className={`mt-6 w-full rounded-[13px] px-5 py-3 text-sm font-semibold uppercase tracking-[0.06em] transition-colors active:scale-[0.97] disabled:opacity-60 ${highlight ? 'bg-ds-cta text-ds-cta-ink hover:bg-ds-cta-hover' : 'border border-white/45 text-white hover:border-white hover:bg-white/15'}`}>
+                    className={`mt-6 w-full rounded-[14px] px-5 py-3 text-sm font-semibold uppercase tracking-[0.06em] transition-colors active:scale-[0.97] disabled:opacity-60 ${highlight ? 'bg-ds-cta text-ds-cta-ink hover:bg-ds-cta-hover' : 'border border-white/45 text-white hover:border-white hover:bg-white/15'}`}>
                     {buying && buyingId === t.id ? 'Starting…' : isAuthorize ? 'Buy now' : 'Login to buy'}
                   </button>
                   <QuoteLink className="mt-2.5 justify-center text-center text-sm text-sage-300 underline underline-offset-2 hover:text-sage-200">or get a bulk quote</QuoteLink>
@@ -383,7 +383,7 @@ export default function CorporateGiftingPage() {
         <div className="mx-auto max-w-3xl px-5">
           <h2 className="font-cormorant text-4xl font-medium sm:text-5xl">Gifting at scale, made effortless</h2>
           <p className="mt-3 text-cream-50/85">Tell us your occasion and quantity — we’ll handle the rest.</p>
-          <QuoteLink className="font-jost mt-6 rounded-xl bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</QuoteLink>
+          <QuoteLink className="font-jost mt-6 rounded-[14px] bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</QuoteLink>
         </div>
       </section>
     </div>
