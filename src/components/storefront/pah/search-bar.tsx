@@ -12,7 +12,7 @@ export function SearchBar() {
         onSubmit={(e) => {
           e.preventDefault();
           const t = q.trim();
-          router.push(t ? `/search?text=${encodeURIComponent(t)}` : '/plants/search');
+          router.push(t ? `/plants/search?text=${encodeURIComponent(t)}` : '/plants/search');
         }}
         className="flex h-[52px] items-center gap-2 rounded-2xl border border-kraft-200 bg-white py-1.5 pl-4 pr-1.5 shadow-[0_9px_22px_rgba(15,30,18,0.22)]"
       >

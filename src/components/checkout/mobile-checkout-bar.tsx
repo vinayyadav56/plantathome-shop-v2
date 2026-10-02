@@ -23,17 +23,34 @@ export default function MobileCheckoutBar() {
     // peeks into the first viewport long before its CTA does, and hiding this
     // bar then leaves the shopper with no CTA at all. The bar yields only once
     // the actual Place-Order/Check-Availability button is mostly readable.
-    const el =
-      document.querySelector('.pa-place-order-btn') ??
-      document.querySelector('.pa-order-summary');
-    if (!el || typeof IntersectionObserver === 'undefined') return;
+    //
+    // That button can't be looked up once at mount: the summary is a separate
+    // lazy chunk that usually mounts AFTER this bar (on the live site the
+    // lookup found nothing and the bar never hid), and verifying swaps Check
+    // Availability for Place Order — a different node. So re-bind whenever the
+    // node under `.pa-place-order-btn` changes.
+    if (typeof IntersectionObserver === 'undefined') return;
+    let observed: Element | null = null;
     const io = new IntersectionObserver(
       ([entry]) => setSummaryVisible(entry.isIntersecting),
       { threshold: 0.5 },
     );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [isEmpty]);
+    const bind = () => {
+      const el = document.querySelector('.pa-place-order-btn');
+      if (el === observed) return;
+      if (observed) io.unobserve(observed);
+      observed = el;
+      if (el) io.observe(el);
+      else setSummaryVisible(false);
+    };
+    bind();
+    const mo = new MutationObserver(bind);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      mo.disconnect();
+      io.disconnect();
+    };
+  }, []);
 
   if (isEmpty) return null;
 
