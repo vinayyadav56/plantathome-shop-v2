@@ -86,7 +86,12 @@ function shallowNavigate(href: string, replace: boolean): void {
 
 export function useRouter() {
   const nav = useNavRouter();
-  const pathname = usePathname() ?? '/';
+  // Vercel's ISR regeneration renders the root route as "/index" (payload
+  // `"c":["","index"]`) while the browser says "/": every pathname-derived
+  // branch (e.g. the bottom-nav active pill) then differs server vs client and
+  // React throws #418 on the home page. Self-hosted `next start` (prod) says "/".
+  const raw = usePathname() ?? '/';
+  const pathname = raw === '/index' ? '/' : raw;
   const params = useParams() ?? {};
   const search = useSyncExternalStore(subscribeToLocation, getSearchSnapshot, getServerSearchSnapshot);
 
