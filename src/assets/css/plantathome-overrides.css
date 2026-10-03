@@ -72,12 +72,12 @@
   /* ── Density multiplier (comfortable = 1; compact set on <html data-density="compact">) ── */
   --density: 1;
 
-  /* Radius — owner, 2026-10-03: 5px EVERYWHERE; only circles and pills stay
+  /* Radius — owner, 2026-10-04: 8px EVERYWHERE (was 5px); only circles and pills stay
      round. Boxes (cards, panels, tiles, modals) and controls (buttons, inputs,
      option tiles) each read one token — change them here only. The Tailwind
      radius scale (rounded-sm … rounded-3xl) and rounded-control point at these. */
-  --radius-box:     5px;
-  --radius-control: 5px;
+  --radius-box:     8px;
+  --radius-control: 8px;
   --pa-radius:      var(--radius-box);
   --pa-radius-card: var(--radius-box);
   --pa-radius-pill: 100px;

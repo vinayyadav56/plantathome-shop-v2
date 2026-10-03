@@ -77,7 +77,7 @@ export default function CourierTrackingMap({ tracking }: { tracking?: string }) 
         {eta && <span className="text-xs font-medium text-emerald-700">≈ {eta.duration} · {eta.distance} away</span>}
       </div>
       <GoogleMap
-        mapContainerStyle={{ width: '100%', height: 260, borderRadius: 5 }}
+        mapContainerStyle={{ width: '100%', height: 260, borderRadius: 8 }}
         center={center as any}
         zoom={13}
         options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
