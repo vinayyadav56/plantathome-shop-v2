@@ -56,7 +56,7 @@ export function BundleContents({
             <Link
               key={p.id}
               href={`/products/${p.slug}`}
-              className="flex items-center gap-3 rounded-[14px] border border-kraft-200 bg-white p-2.5 transition hover:border-ds-btn/30"
+              className="flex items-center gap-3 rounded-xl border border-kraft-200 bg-white p-2.5 transition hover:border-ds-btn/30"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

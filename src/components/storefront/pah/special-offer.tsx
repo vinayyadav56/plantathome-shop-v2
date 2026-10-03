@@ -23,7 +23,7 @@ export function SpecialOffer() {
           <div className="mb-[5px] font-hanken text-[7.5px] font-bold uppercase tracking-[0.18em] text-[#DCC07A]">{t('m-offer-eyebrow')}</div>
           <div className="whitespace-nowrap font-hanken text-[18px] font-extrabold leading-none tracking-[-0.01em] text-[#DCC07A]">{t('m-offer-headline')}</div>
           <div className="mt-1 text-[9px] text-white/[0.72]">{t('m-offer-subtext')}</div>
-          <button type="button" onClick={() => router.push('/plants/search')} className="mt-2.5 inline-flex items-center gap-[5px] rounded-[14px] bg-ds-btn px-3 py-1.5 font-hanken text-[11px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,0,0.2)]">
+          <button type="button" onClick={() => router.push('/plants/search')} className="mt-2.5 inline-flex items-center gap-[5px] rounded-control bg-ds-btn px-3 py-1.5 font-hanken text-[11px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,0,0.2)]">
             {t('m-offer-cta')}
             <ArrowRight size={12} aria-hidden style={{ color: '#fff' }} />
           </button>

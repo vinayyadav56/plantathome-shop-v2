@@ -256,7 +256,7 @@ function PincodeChecker() {
         />
         <button
           type="submit"
-          className="shrink-0 rounded-[14px] bg-ds-btn px-[22px] py-[11px] text-[14px] font-bold text-white transition hover:bg-ds-btn-hover"
+          className="shrink-0 rounded-control bg-ds-btn px-[22px] py-[11px] text-[14px] font-bold text-white transition hover:bg-ds-btn-hover"
         >
           {isFetching ? t('home-hero-pincode-checking') : t('home-hero-pincode-check-cta')}
         </button>
@@ -391,7 +391,7 @@ export function HeroPlant() {
             >
               <Link
                 href={ctaLink}
-                className="inline-flex items-center gap-2 rounded-[14px] bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] transition hover:bg-ds-btn-hover"
+                className="inline-flex items-center gap-2 rounded-control bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white shadow-[0_20px_50px_-20px_rgba(0,0,0,0.6)] transition hover:bg-ds-btn-hover"
               >
                 {ctaText} <span aria-hidden>→</span>
               </Link>
@@ -441,7 +441,7 @@ export function HeroPlant() {
         >
           <div className="flex items-center gap-4 rounded-2xl border border-white/[0.14] bg-white/[0.08] px-5 py-4 backdrop-blur-2xl">
             {/* icon */}
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] bg-[#4ADE80]/20 ring-1 ring-[#4ADE80]/25">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#4ADE80]/20 ring-1 ring-[#4ADE80]/25">
               <Percent className="h-[18px] w-[18px] text-[#4ADE80]" />
             </div>
             {/* text */}

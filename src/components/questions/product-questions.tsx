@@ -117,13 +117,13 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder={t('text-question-search-placeholder')}
                 aria-label={t('text-search-label')}
-                className="h-12 w-full rounded-[14px] border border-kraft-200 bg-white pl-11 pr-4 text-[15px] text-[#333333] outline-none transition placeholder:text-[#A0A0A0] focus:border-ds-btn focus:ring-2 focus:ring-ds-accent/15"
+                className="h-12 w-full rounded-control border border-kraft-200 bg-white pl-11 pr-4 text-[15px] text-[#333333] outline-none transition placeholder:text-[#A0A0A0] focus:border-ds-btn focus:ring-2 focus:ring-ds-accent/15"
               />
             </div>
             <button
               type="button"
               onClick={openQuestionModal}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-[14px] bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+              className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-control bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
               <MessageCircle size={18} className="shrink-0" aria-hidden />
               {t('text-ask-question')}

@@ -86,7 +86,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
         <button
           type="submit"
           disabled={!valid || state === 'loading'}
-          className="h-11 shrink-0 rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover px-5 text-[14px] font-semibold text-white transition-opacity disabled:opacity-40"
+          className="h-11 shrink-0 rounded-control bg-ds-btn hover:bg-ds-btn-hover px-5 text-[14px] font-semibold text-white transition-opacity disabled:opacity-40"
         >
           {state === 'loading' ? 'Checking…' : 'Check'}
         </button>

@@ -71,7 +71,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
           ))}
           <button
             onClick={() => logout()}
-            className="shrink-0 whitespace-nowrap rounded-[14px] border border-red-200 bg-white px-4 py-2 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
+            className="shrink-0 whitespace-nowrap rounded-control border border-red-200 bg-white px-4 py-2 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
           >
             {t('profile-sidebar-logout')}
           </button>

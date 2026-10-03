@@ -46,7 +46,7 @@ const CARD =
   'rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
 
 const BTN_PRIMARY =
-  'inline-flex items-center justify-center gap-2.5 rounded-[14px] bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-ds-btn';
+  'inline-flex items-center justify-center gap-2.5 rounded-control bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-ds-btn';
 
 const SEVERITY_STYLE: Record<Severity, { label: string; cls: string; bar: string }> = {
   low:      { label: 'Low',      cls: 'bg-[#F3F8EC] text-[#24693E] border-[#DCE8D3]', bar: '#2E5E2A' },
@@ -308,7 +308,7 @@ function StepsStrip() {
           <span className="absolute right-4 top-4 text-[26px] font-bold leading-none text-[#EFECE3]">
             {String(i + 1).padStart(2, '0')}
           </span>
-          <span className="flex h-11 w-11 items-center justify-center rounded-[14px] bg-[#F3F8EC] text-[#24693E]">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F3F8EC] text-[#24693E]">
             <Icon name={s.icon} className="h-5 w-5" />
           </span>
           <p className="mt-3.5 text-[15px] font-bold text-[#184A31]">{s.title}</p>
@@ -441,7 +441,7 @@ function DiagnosisView({ result, onReset }: { result: DiagnosisResponse; onReset
                 </div>
               )}
               {d.vet_consultation_needed && (
-                <p className="mt-5 flex items-start gap-2.5 rounded-[14px] border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3 text-[13px] text-[#A23022]">
+                <p className="mt-5 flex items-start gap-2.5 rounded-xl border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3 text-[13px] text-[#A23022]">
                   <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
                   <span>
                     This may need an in-person expert.{' '}
@@ -562,7 +562,7 @@ function HistorySection({
 
       {entries.length === 0 ? (
         <div className={`${CARD} mt-5 flex items-center gap-4 p-6`}>
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[#F3F8EC] text-[#24693E]">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F3F8EC] text-[#24693E]">
             <Icon name="history" className="h-5 w-5" />
           </span>
           <p className="text-[13.5px] leading-relaxed text-[#5B5B5B]">
@@ -592,10 +592,10 @@ function HistorySection({
                     <img
                       src={e.thumb}
                       alt=""
-                      className="h-14 w-14 shrink-0 rounded-[14px] object-cover"
+                      className="h-14 w-14 shrink-0 rounded-xl object-cover"
                     />
                   ) : (
-                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] bg-[#F7F5EF] text-[#24693E]/50">
+                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#F7F5EF] text-[#24693E]/50">
                       <Icon name="leaf" className="h-6 w-6" />
                     </span>
                   )}
@@ -638,7 +638,7 @@ function HistorySection({
                     <div className="mt-3.5 flex items-center gap-3">
                       <button
                         onClick={() => onOpen(e)}
-                        className="inline-flex items-center gap-1.5 rounded-[14px] bg-ds-btn px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
+                        className="inline-flex items-center gap-1.5 rounded-control bg-ds-btn px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
                       >
                         Open full report
                         <Icon name="arrowRight" className="h-3 w-3" />
@@ -687,7 +687,7 @@ function HistoryLoginTeaser() {
         </div>
         <Link
           href={Routes.login}
-          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-ds-btn px-6 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
+          className="inline-flex shrink-0 items-center gap-2 rounded-control bg-ds-btn px-6 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
         >
           Sign in
           <Icon name="arrowRight" className="h-3.5 w-3.5" />
@@ -1052,7 +1052,7 @@ export default function PlantDoctorPage() {
                 </div>
 
                 {/* photo tips */}
-                <ul className="mt-4 space-y-1.5 rounded-[14px] bg-[#F7F5EF] px-4 py-3">
+                <ul className="mt-4 space-y-1.5 rounded-xl bg-[#F7F5EF] px-4 py-3">
                   {['Use natural light — avoid flash', 'Focus on the affected leaves', 'Include the whole plant if you can'].map((t) => (
                     <li key={t} className="flex items-center gap-2 text-[12px] text-[#5B5B5B]">
                       <span className="text-[#24693E]">
@@ -1074,7 +1074,7 @@ export default function PlantDoctorPage() {
                   value={plantName}
                   onChange={(e) => setPlantName(e.target.value)}
                   placeholder="e.g. Money Plant, Tulsi, Snake Plant"
-                  className="mt-1.5 rounded-[14px] border border-kraft-200 bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
+                  className="mt-1.5 rounded-control border border-kraft-200 bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
                 />
 
                 <label htmlFor="pd-symptoms" className="mt-5 text-[13px] font-semibold text-[#184A31]">
@@ -1107,11 +1107,11 @@ export default function PlantDoctorPage() {
                   onChange={(e) => setSymptoms(e.target.value)}
                   rows={4}
                   placeholder="e.g. Leaves turning yellow with brown spots, drooping despite regular watering…"
-                  className="mt-2.5 resize-none rounded-[14px] border border-kraft-200 bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
+                  className="mt-2.5 resize-none rounded-control border border-kraft-200 bg-white px-4 py-2.5 text-[13.5px] text-[#184A31] shadow-[0_1px_4px_rgba(0,0,0,0.04)] outline-none placeholder:text-[#B9B9B9] focus:border-[#24693E]/60 focus:ring-2 focus:ring-[#24693E]/15"
                 />
 
                 {error && (
-                  <div className="mt-3 flex items-start gap-2.5 rounded-[14px] border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3">
+                  <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-[#E9B7AE] bg-[#FBE2DE] px-4 py-3">
                     <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0 text-[#A23022]" />
                     <p className="text-[13px] text-[#A23022]">{error}</p>
                   </div>

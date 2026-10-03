@@ -48,7 +48,7 @@ export const PlantAtHomeCardSkeleton: React.FC = () => (
           <div className="h-[19px] w-16 animate-pulse rounded-full bg-stone-200/60" />
         </div>
         <div className="mt-[11px] h-8 w-32 animate-pulse rounded bg-stone-200/70" />
-        <div className="mt-[13px] h-12 w-full animate-pulse rounded-[14px] bg-stone-200/70" />
+        <div className="mt-[13px] h-12 w-full animate-pulse rounded-control bg-stone-200/70" />
       </div>
     </div>
   </div>
@@ -411,7 +411,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
                  as heavy slabs on wide cards. Kept in lockstep with the qty stepper
                  below and add-to-cart-btn/add-to-cart, which share this baseline —
                  changing one alone breaks the action row's alignment. */
-              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-ds-btn px-2 text-[clamp(11px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-2 text-[clamp(11px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
               {/* Cart glyph dropped: on a ~150px two-up card it ate the width the label
                   needed, crowding "Select Options". The wording alone is unambiguous —

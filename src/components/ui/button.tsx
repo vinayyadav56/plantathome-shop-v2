@@ -20,14 +20,16 @@ const classes = {
   outline:
     'border border-border-400 bg-transparent text-body hover:text-light hover:bg-ds-accent-ink hover:border-ds-accent-ink',
   // The FORM design system (auth modal spec, applied to every form on the site):
-  // 52px, 14px radius, solid botanical green / white secondary. These variants emit
+  // 52px (size="small": 44px, for dense surfaces like the account page), the one
+  // control radius (rounded-control = --radius-control), solid botanical green /
+  // white secondary. These variants emit
   // data-variant="formPrimary|formSecondary", so the global pill override
   // (button[data-variant="normal"] in plantathome-overrides.css) can never touch them —
   // that override is exactly why per-form colours silently stopped applying.
   formPrimary:
-    'h-[52px] rounded-[14px] bg-ds-btn text-white text-base font-semibold hover:bg-ds-btn-hover focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-body',
+    'rounded-control bg-ds-btn text-white font-semibold hover:bg-ds-btn-hover focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-body',
   formSecondary:
-    'h-[52px] rounded-[14px] border border-border-base bg-white text-base font-semibold text-heading hover:border-ds-btn hover:text-ds-btn focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:text-muted',
+    'rounded-control border border-border-base bg-white font-semibold text-heading hover:border-ds-btn hover:text-ds-btn focus-visible:ring-2 focus-visible:ring-ds-accent focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:text-muted',
   disabled:
     'border border-border-base bg-gray-300 hover:bg-gray-300 border-border-400 text-body cursor-not-allowed',
   disabledOutline: 'border border-border-base text-muted cursor-not-allowed',
@@ -60,7 +62,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         [classes.small]: size === 'small' && !variant.startsWith('form'),
         [classes.medium]: size === 'medium' && !variant.startsWith('form'),
         [classes.big]: size === 'big' && !variant.startsWith('form'),
-        ['px-5']: variant.startsWith('form'),
+        // Form variants size by height only; the default stays the 52px form size.
+        ['h-[52px] px-5 text-base']: variant.startsWith('form') && size !== 'small',
+        ['h-11 px-4 text-sm']: variant.startsWith('form') && size === 'small',
       },
       className
     );

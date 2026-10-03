@@ -128,7 +128,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                 <button
                   type="button"
                   onClick={handleWriteReview}
-                  className="inline-flex h-12 items-center gap-2.5 rounded-[14px] bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+                  className="inline-flex h-12 items-center gap-2.5 rounded-control bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
                 >
                   <Pencil size={18} className="shrink-0" aria-hidden />
                   Write a review

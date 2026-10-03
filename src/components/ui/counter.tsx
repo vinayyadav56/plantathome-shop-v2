@@ -50,7 +50,7 @@ const variantClasses = {
   bordered:
     'h-14 rounded text-heading bg-transparent inline-flex justify-between shrink-0',
   plantathome:
-    'w-full h-12 rounded-[14px] text-white bg-ds-btn inline-flex justify-between text-[18px] font-semibold sm:text-[20px]',
+    'w-full h-12 rounded-control text-white bg-ds-btn inline-flex justify-between text-[18px] font-semibold sm:text-[20px]',
   florine: '',
 };
 

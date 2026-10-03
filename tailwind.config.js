@@ -254,6 +254,8 @@ module.exports = {
       },
       borderRadius: {
         DEFAULT: '5px',
+        // `rounded-control` — the single control radius (--radius-control in plantathome-overrides.css)
+        control: 'var(--radius-control)',
       },
       inset: {
         22: '5.25rem',

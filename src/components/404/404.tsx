@@ -109,7 +109,7 @@ const NotFound: React.FC<NotFoundProps> = ({
             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href={Routes.home}
-                className="w-full rounded-[14px] bg-ds-btn px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-ds-btn-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2 sm:w-auto"
+                className="w-full rounded-control bg-ds-btn px-7 py-3 text-sm font-semibold text-white transition-colors hover:bg-ds-btn-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2 sm:w-auto"
               >
                 {t('404-back-home')}
               </Link>

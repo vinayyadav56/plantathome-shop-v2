@@ -650,7 +650,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 onClick={handleAdd}
                 disabled={ctaDisabled}
                 className={classNames(
-                  'flex flex-1 items-center justify-center gap-2.5 rounded-[14px] px-7 py-3.5 text-[14px] font-bold uppercase tracking-[0.04em] text-white transition',
+                  'flex flex-1 items-center justify-center gap-2.5 rounded-control px-7 py-3.5 text-[14px] font-bold uppercase tracking-[0.04em] text-white transition',
                   ctaDisabled
                     ? 'cursor-not-allowed bg-stone-300'
                     : 'bg-ds-btn shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-ds-btn-hover',
@@ -665,7 +665,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 CTA. Single-line rows: the 3-column tiles wrapped every label
                 onto two lines (owner feedback). */}
             {!isModal && (
-              <div className="mt-5 divide-y divide-[#ECECEC] rounded-[14px] border border-kraft-200 bg-white px-4">
+              <div className="mt-5 divide-y divide-[#ECECEC] rounded-2xl border border-kraft-200 bg-white px-4">
                 {[
                   { icon: 'shield', label: '30-day healthy-arrival guarantee' },
                   { icon: 'box', label: 'Secure eco-friendly packaging' },
@@ -681,7 +681,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* What's included — admin-configured list (Product Page Sections) */}
             {!isModal && includedItems.length > 0 && (
-              <div className="mt-4 rounded-[14px] border border-kraft-200 bg-white p-4">
+              <div className="mt-4 rounded-2xl border border-kraft-200 bg-white p-4">
                 <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (

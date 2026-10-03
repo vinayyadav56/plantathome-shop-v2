@@ -94,7 +94,7 @@ export function GiftingBand() {
               </div>
             ))}
           </div>
-          <Link href="/corporate-gifting" className="font-jost mt-6 inline-flex w-fit items-center gap-3 rounded-[14px] bg-ds-btn px-[30px] py-[17px] text-[14px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-ds-btn-hover">
+          <Link href="/corporate-gifting" className="font-jost mt-6 inline-flex w-fit items-center gap-3 rounded-control bg-ds-btn px-[30px] py-[17px] text-[14px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-ds-btn-hover">
             <Gift size={18} aria-hidden />
             {t('home-gift-cta')}
           </Link>
@@ -155,8 +155,8 @@ export function GiftingBand() {
               >
                 {/* icon with glow ring */}
                 <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-[14px] bg-[#4ADE80]/0 blur-md transition-all duration-500 group-hover:bg-[#4ADE80]/20 group-hover:blur-lg" />
-                  <div className="relative grid h-11 w-11 place-items-center rounded-[14px] border border-[#4ADE80]/20 bg-[#4ADE80]/[0.10] text-[#86EFAC] transition-all duration-300 group-hover:border-[#4ADE80]/35 group-hover:bg-[#4ADE80]/[0.16]">
+                  <div className="absolute inset-0 rounded-xl bg-[#4ADE80]/0 blur-md transition-all duration-500 group-hover:bg-[#4ADE80]/20 group-hover:blur-lg" />
+                  <div className="relative grid h-11 w-11 place-items-center rounded-xl border border-[#4ADE80]/20 bg-[#4ADE80]/[0.10] text-[#86EFAC] transition-all duration-300 group-hover:border-[#4ADE80]/35 group-hover:bg-[#4ADE80]/[0.16]">
                     {g.icon}
                   </div>
                 </div>

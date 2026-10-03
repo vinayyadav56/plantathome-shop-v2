@@ -70,7 +70,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
             return (
               <React.Fragment key={it?.id ?? i}>
                 <div className="flex w-[84px] shrink-0 flex-col items-center text-center">
-                  <div className="h-[72px] w-[72px] overflow-hidden rounded-[14px] border border-kraft-200 bg-[#F7F5EF]">
+                  <div className="h-[72px] w-[72px] overflow-hidden rounded-xl border border-kraft-200 bg-[#F7F5EF]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={img || productPlaceholder}
@@ -101,7 +101,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
           <button
             type="button"
             onClick={addAll}
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[14px] bg-ds-btn px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
           >
             {added ? (
               <>

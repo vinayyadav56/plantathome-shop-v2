@@ -65,7 +65,7 @@ export function StickyAtcBar({
           onClick={onAdd}
           disabled={disabled}
           className={classNames(
-            'flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-[14px] px-4 py-2 text-[13px] font-semibold transition sm:gap-2 sm:px-6 sm:py-2.5 sm:text-sm',
+            'flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-control px-4 py-2 text-[13px] font-semibold transition sm:gap-2 sm:px-6 sm:py-2.5 sm:text-sm',
             disabled
               ? 'cursor-not-allowed bg-stone-300 text-stone-500'
               : 'bg-ds-btn text-white hover:bg-ds-btn-hover',

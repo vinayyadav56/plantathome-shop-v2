@@ -85,7 +85,7 @@ export function CorporateGifting() {
         ))}
       </div>
       {/* CTA */}
-      <Link href="/corporate-gifting" className="font-jost mt-[20px] inline-flex w-full items-center justify-center gap-[10px] rounded-[14px] bg-ds-btn p-[15px] text-[12px] font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:bg-ds-btn-hover">
+      <Link href="/corporate-gifting" className="font-jost mt-[20px] inline-flex w-full items-center justify-center gap-[10px] rounded-control bg-ds-btn p-[15px] text-[12px] font-semibold uppercase tracking-[0.13em] text-white transition-colors hover:bg-ds-btn-hover">
         <Gift size={16} aria-hidden />
         {t('m-gift-cta')}
       </Link>

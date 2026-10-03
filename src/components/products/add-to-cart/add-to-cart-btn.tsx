@@ -76,7 +76,7 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
           onClick={onClick}
           disabled={disabled}
           className={cn(
-            'flex w-full items-center justify-center rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover py-4 px-5 text-sm font-light text-light transition duration-300 hover:brightness-110 focus:outline-0 lg:text-base',
+            'flex w-full items-center justify-center rounded-control bg-ds-btn hover:bg-ds-btn-hover py-4 px-5 text-sm font-light text-light transition duration-300 hover:brightness-110 focus:outline-0 lg:text-base',
             {
               'cursor-not-allowed border border-border-400 !bg-gray-300 !text-body hover:!bg-gray-300':
                 disabled,
@@ -98,7 +98,7 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
             // The clamp bounds keep it sane if this ever renders outside a
             // container, where cqw falls back to the viewport.
             // Shares the card action row's baseline — see plantathome.tsx's CTA.
-            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-[14px] bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(10.5px,3.4cqw,14px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0',
+            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-control bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(10.5px,3.4cqw,14px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0',
             {
               'cursor-not-allowed !bg-stone-300 !text-stone-500 hover:!bg-stone-300':
                 disabled,

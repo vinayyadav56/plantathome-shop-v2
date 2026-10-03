@@ -78,7 +78,7 @@ export default function CityMismatchDialog({
                   <button
                     type="button"
                     onClick={() => setPickerOpen(true)}
-                    className="rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
+                    className="rounded-control bg-ds-btn hover:bg-ds-btn-hover px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110"
                   >
                     Change Shopping City
                   </button>

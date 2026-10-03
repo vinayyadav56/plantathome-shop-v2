@@ -49,7 +49,7 @@ export function ProductGrid({
             <FadeUp delay={0.1}>
               <Link
                 href={viewAllTo}
-                className="group inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-[14px] border border-forest-700 px-6 py-3 text-xs font-bold uppercase tracking-[0.12em] text-forest-800 transition hover:bg-sage-100"
+                className="group inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-control border border-forest-700 px-6 py-3 text-xs font-bold uppercase tracking-[0.12em] text-forest-800 transition hover:bg-sage-100"
               >
                 {viewAllLabel ?? 'View all'}
                 <Icon.arrow className="h-4 w-4 transition group-hover:translate-x-1" />
@@ -76,7 +76,7 @@ export function ProductGrid({
               type="button"
               onClick={onLoadMore}
               disabled={isLoadingMore}
-              className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[14px] bg-ds-btn px-7 py-3 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-ds-btn-hover disabled:opacity-60 sm:w-auto"
+              className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-control bg-ds-btn px-7 py-3 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-ds-btn-hover disabled:opacity-60 sm:w-auto"
             >
               {isLoadingMore ? 'Loading…' : 'Load more'}
             </button>

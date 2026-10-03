@@ -132,7 +132,7 @@ function SectionHead({
 /* ─── Refined inquiry form (same fields, hooks and submission as before) ─── */
 
 const FIELD =
-  'w-full rounded-[14px] border border-[#E6E3DA] bg-[#FAF9F6] px-4 py-3 text-[15px] text-[#1F2E1F] placeholder:text-[#A6A29A] transition focus:border-ds-btn focus:bg-white focus:outline-none focus:ring-4 focus:ring-ds-accent/10';
+  'w-full rounded-control border border-[#E6E3DA] bg-[#FAF9F6] px-4 py-3 text-[15px] text-[#1F2E1F] placeholder:text-[#A6A29A] transition focus:border-ds-btn focus:bg-white focus:outline-none focus:ring-4 focus:ring-ds-accent/10';
 const LABEL = 'mb-1.5 block text-[13px] font-semibold text-[#184A31]';
 
 function LeadForm() {
@@ -159,7 +159,7 @@ function LeadForm() {
         </p>
         <a
           href={`tel:${PHONE}`}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-[14px] bg-ds-btn px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-ds-btn-hover"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-control bg-ds-btn px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-ds-btn-hover"
         >
           <GsIcon name="phone" className="h-4 w-4" />
           Or call us now
@@ -226,7 +226,7 @@ function LeadForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-[14px] bg-ds-btn px-6 py-3.5 text-[15.5px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-control bg-ds-btn px-6 py-3.5 text-[15.5px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? 'Sending…' : 'Get my free garden plan'}
         {!isLoading && <LineIcon name="arrowRight" className="h-4 w-4" />}
@@ -347,14 +347,14 @@ export default function GardenServicePage() {
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
               <a
                 href="#quote"
-                className="inline-flex items-center gap-2 rounded-[14px] bg-ds-btn px-7 py-3.5 text-[15.5px] font-semibold text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/15 transition hover:bg-ds-btn-hover"
+                className="inline-flex items-center gap-2 rounded-control bg-ds-btn px-7 py-3.5 text-[15.5px] font-semibold text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/15 transition hover:bg-ds-btn-hover"
               >
                 Get my free garden plan
                 <LineIcon name="arrowRight" className="h-4 w-4" />
               </a>
               <a
                 href={`tel:${PHONE}`}
-                className="inline-flex items-center gap-2 rounded-[14px] border border-white/30 bg-white/[0.08] px-7 py-3.5 text-[15.5px] font-semibold text-white backdrop-blur transition hover:border-white/60 hover:bg-white/[0.16]"
+                className="inline-flex items-center gap-2 rounded-control border border-white/30 bg-white/[0.08] px-7 py-3.5 text-[15.5px] font-semibold text-white backdrop-blur transition hover:border-white/60 hover:bg-white/[0.16]"
               >
                 <GsIcon name="phone" className="h-4 w-4" />
                 Call an expert
@@ -441,7 +441,7 @@ export default function GardenServicePage() {
                 {...reveal(i * 0.06)}
                 className={`${CARD} ${CARD_HOVER} p-7 transition-transform duration-300 hover:-translate-y-1.5`}
               >
-                <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#F3F8EC] text-[#24693E]">
+                <span className="grid h-12 w-12 place-items-center rounded-xl bg-[#F3F8EC] text-[#24693E]">
                   <GsIcon name={f.icon} className="h-6 w-6" />
                 </span>
                 <h3 className="mt-5 text-[16.5px] font-medium leading-snug text-[#184A31]">{f.title}</h3>
@@ -554,7 +554,7 @@ export default function GardenServicePage() {
 
                     <a
                       href="#quote"
-                      className={`mt-7 flex w-full items-center justify-center gap-2 rounded-[14px] py-3.5 text-[15px] font-semibold transition ${
+                      className={`mt-7 flex w-full items-center justify-center gap-2 rounded-control py-3.5 text-[15px] font-semibold transition ${
                         popular
                           ? 'bg-ds-btn text-white hover:bg-ds-btn-hover'
                           : 'border border-ds-btn/25 bg-white text-ds-btn hover:border-ds-btn hover:bg-[#F3F8EC]'
@@ -646,14 +646,14 @@ export default function GardenServicePage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             <a
               href="#quote"
-              className="inline-flex items-center gap-2 rounded-[14px] bg-white px-7 py-3.5 text-[15.5px] font-semibold text-ds-btn shadow-[0_12px_30px_rgba(0,0,0,0.3)] transition hover:bg-[#F3F8EC]"
+              className="inline-flex items-center gap-2 rounded-control bg-white px-7 py-3.5 text-[15.5px] font-semibold text-ds-btn shadow-[0_12px_30px_rgba(0,0,0,0.3)] transition hover:bg-[#F3F8EC]"
             >
               Get my free garden plan
               <LineIcon name="arrowRight" className="h-4 w-4" />
             </a>
             <a
               href={`tel:${PHONE}`}
-              className="inline-flex items-center gap-2 rounded-[14px] border border-white/30 bg-white/[0.06] px-7 py-3.5 text-[15.5px] font-semibold text-white transition hover:border-white/60 hover:bg-white/[0.14]"
+              className="inline-flex items-center gap-2 rounded-control border border-white/30 bg-white/[0.06] px-7 py-3.5 text-[15.5px] font-semibold text-white transition hover:border-white/60 hover:bg-white/[0.14]"
             >
               <GsIcon name="phone" className="h-4 w-4" />
               Call an expert

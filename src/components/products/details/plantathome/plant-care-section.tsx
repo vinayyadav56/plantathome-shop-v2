@@ -30,7 +30,7 @@ function VideoBlock({ url }: { url: string }) {
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="mt-8 inline-flex items-center gap-2.5 rounded-[14px] border border-kraft-200 bg-white px-5 py-3.5 text-sm font-semibold text-[#184A31] transition hover:border-ds-btn/40"
+        className="mt-8 inline-flex items-center gap-2.5 rounded-control border border-kraft-200 bg-white px-5 py-3.5 text-sm font-semibold text-[#184A31] transition hover:border-ds-btn/40"
       >
         <LineIcon name="play" className="h-4 w-4 text-[#24693E]" />
         Watch the plant video
@@ -178,7 +178,7 @@ export function PlantCareSection({
               />
             )}
             {careTips.length > 0 && (
-              <div className="rounded-[14px] bg-[#F3F8EC] p-5">
+              <div className="rounded-2xl bg-[#F3F8EC] p-5">
                 <h3 className="text-sm font-medium text-[#184A31]">Care at a glance</h3>
                 <ul className="mt-1.5 space-y-1.5 text-sm leading-6 text-[#5B5B5B]">
                   {careTips.map((tip) => (
@@ -193,7 +193,7 @@ export function PlantCareSection({
             {(benefits || medicinal) && (
               <div className={`${contentHtml || careTips.length ? 'mt-5' : ''} space-y-4`}>
                 {benefits && (
-                  <div className="rounded-[14px] bg-[#F3F8EC] p-5">
+                  <div className="rounded-2xl bg-[#F3F8EC] p-5">
                     <h3 className="text-sm font-medium text-[#184A31]">Benefits</h3>
                     <p className="mt-1.5 text-sm leading-6 text-[#5B5B5B]">
                       {benefits}
@@ -201,7 +201,7 @@ export function PlantCareSection({
                   </div>
                 )}
                 {medicinal && (
-                  <div className="rounded-[14px] bg-[#F3F8EC] p-5">
+                  <div className="rounded-2xl bg-[#F3F8EC] p-5">
                     <h3 className="text-sm font-medium text-[#184A31]">
                       Medicinal uses
                     </h3>

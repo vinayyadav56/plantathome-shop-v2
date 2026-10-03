@@ -77,6 +77,9 @@
   --pa-radius-card: 24px;
   --pa-radius-pill: 100px;
   --pa-radius-sm:   12px;
+  /* ONE radius for every control — buttons, inputs, selectable option tiles.
+     Owner picked 10px sitewide (2026-10-03; was 14px). Change it here only. */
+  --radius-control: 10px;
 
   /* Shadows */
   --pa-shadow-xs: 0 1px 4px rgba(0,0,0,0.06);
@@ -269,7 +272,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Primary buttons ────────────────────────────────────────── */
-/* THE button canon (owner, 2026-10-03): one solid deep green, 14px corners —
+/* THE button canon (owner, 2026-10-03): one solid deep green, --radius-control corners —
    the gradient pill retired sitewide. Still !important on purpose: this single
    block is what makes ~30 legacy call sites consistent without touching them. */
 button[data-variant="normal"] {
@@ -277,7 +280,7 @@ button[data-variant="normal"] {
   border-color: transparent !important;
   box-shadow: 0 2px 8px rgba(27,94,32,0.22) !important;
   transition: var(--pa-t) !important;
-  border-radius: 14px !important;
+  border-radius: var(--radius-control) !important;
   font-family: var(--font-body) !important;
   font-weight: 600 !important;
 }
@@ -300,7 +303,7 @@ button[data-variant="normal"]:disabled {
 .pa-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-family: var(--font-body); font-weight: 600; line-height: 1;
-  border-radius: 14px; padding: 12px 24px; font-size: 14px;
+  border-radius: var(--radius-control); padding: 12px 24px; font-size: 14px;
   cursor: pointer; white-space: nowrap; border: 1px solid transparent;
   transition: var(--pa-t); text-decoration: none;
 }
@@ -660,7 +663,7 @@ input[class*="search"]:focus {
 /* (Removed 2026-10-03: three `!important` radius traps — [class*="shadow-700"],
    [class*="address-card"] forced to 20px (which killed .pa-address-card's own
    checked border), and .rounded-md.bg-light forced to 24px. Components now own
-   their radii per the box canon: cards 16px, control tiles 14px.) */
+   their radii per the box canon: cards 16px, control tiles --radius-control.) */
 span.flex.h-8.w-8.items-center.justify-center.rounded-full.bg-accent {
   background: var(--ds-btn, #2E5E2A) !important;
 }
@@ -713,10 +716,10 @@ footer a:hover { color: var(--pa-accent) !important; }
 input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 textarea,
 select {
-  /* The single enforcement point for the form design system: 14px corners and a
+  /* The single enforcement point for the form design system: --radius-control corners and a
      NEUTRAL grey border (the old pale-green rgba(129,199,132,.3) made every idle
      field look half-focused). Focus below keeps the botanical-green border+ring. */
-  border-radius: 14px !important;
+  border-radius: var(--radius-control) !important;
   font-family: var(--font-body) !important;
   border-color: #E4E5E1 !important;
   transition: var(--pa-t-fast) !important;
@@ -902,7 +905,7 @@ select:focus {
   align-items: flex-start;
   gap: 12px;
   background: #fff;
-  border-radius: 14px;
+  border-radius: var(--pa-radius-sm);
   margin: 10px 16px 0;
   padding: 12px;
   border: 1px solid rgba(46,107,74,0.08);
@@ -1105,7 +1108,7 @@ select:focus {
   padding: 10px 24px;
   background: var(--ds-btn, #2E5E2A);
   color: #fff;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   font-size: 13.5px;
   font-weight: 600;
   border: none;
@@ -1132,7 +1135,7 @@ select:focus {
   justify-content: space-between;
   width: 100%;
   height: 52px;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   background: var(--ds-btn, #2E5E2A);
   border: none;
   cursor: pointer;
@@ -1153,7 +1156,7 @@ select:focus {
   height: 44px;
   padding: 0 18px;
   background: rgba(255,255,255,0.18);
-  border-radius: 10px;
+  border-radius: calc(var(--radius-control) - 4px);
   display: flex;
   align-items: center;
   font-size: 15px;
@@ -1387,7 +1390,7 @@ select:focus {
   justify-content: center;
   width: 100%;
   height: 54px;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   background: var(--ds-btn, #2E5E2A);
   color: #fff;
   font-size: 15px;
@@ -1569,7 +1572,7 @@ textarea:focus {
   margin-top: 20px;
   padding: 20px;
   background: #F4F7F1;
-  border-radius: 14px;
+  border-radius: var(--pa-radius-sm);
   border: 1px solid rgba(46,107,74,0.10);
 }
 .pa-payment-grid .text-heading { color: var(--ds-accent-ink, #1E4023); }
@@ -1592,7 +1595,7 @@ textarea:focus {
 .pa-address-card {
   position: relative;
   cursor: pointer;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   border: 1.5px solid rgba(46,107,74,0.12);
   background: #F4F7F1;
   padding: 16px;
@@ -1675,7 +1678,7 @@ textarea:focus {
 .pa-schedule-card {
   position: relative;
   cursor: pointer;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   border: 1.5px solid rgba(46,107,74,0.12);
   background: #F4F7F1;
   padding: 16px 14px;
@@ -1742,7 +1745,7 @@ textarea:focus {
 
 /* ── Phone input override ─────────────────────────────────────── */
 .react-tel-input .form-control {
-  border-radius: 10px !important;
+  border-radius: var(--radius-control) !important;
   border-color: rgba(46,107,74,0.2) !important;
   background: #F4F7F1 !important;
 }
@@ -1751,7 +1754,7 @@ textarea:focus {
   box-shadow: 0 0 0 2px rgba(44,95,46,0.15) !important;
 }
 .react-tel-input .flag-dropdown {
-  border-radius: 10px 0 0 10px !important;
+  border-radius: var(--radius-control) 0 0 var(--radius-control) !important;
   border-color: rgba(46,107,74,0.2) !important;
   background: #F4F7F1 !important;
 }
@@ -1765,7 +1768,7 @@ textarea:focus {
   border-right: 0 !important;
   background: transparent !important;
 }
-.react-tel-input .selected-flag { border-radius: 10px 0 0 10px !important; }
+.react-tel-input .selected-flag { border-radius: var(--radius-control) 0 0 var(--radius-control) !important; }
 /* Match the field's real corner radius so the focus ring traces one continuous shape. */
 .react-tel-input .form-control { border-width: 1px !important; }
 
@@ -1815,7 +1818,7 @@ textarea:focus {
   gap: 6px;
   background: #fff;
   border: 1px solid #ECEEEA;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 18px 18px 14px;
   box-shadow: 0 1px 2px rgba(16,24,40,0.03);
   overflow-x: auto;
@@ -1984,7 +1987,7 @@ textarea:focus {
   height: 46px;
   padding: 0 22px;
   border: none;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   background: var(--ds-btn, #2E5E2A);
   color: #fff;
   font-size: 14.5px;
@@ -2000,7 +2003,7 @@ textarea:focus {
   align-items: stretch;
   width: 100%;
   border: 1px solid #E4E5E1;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   overflow: hidden;
   background: #fff;
   transition: border-color 0.2s ease;
@@ -2036,7 +2039,7 @@ textarea:focus {
 .pa-phone-stack {
   position: relative;
   border: 1px solid #E4E5E1;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   background: #fff;
   transition: border-color 0.2s ease;
 }
@@ -2045,7 +2048,7 @@ textarea:focus {
   height: 56px !important;
   width: 100% !important;
   border: none !important;
-  border-radius: 14px !important;
+  border-radius: var(--radius-control) !important;
   box-shadow: none !important;
   background: transparent !important;
   padding-left: 72px !important;
@@ -2055,7 +2058,7 @@ textarea:focus {
 .pa-phone-stack .react-tel-input .flag-dropdown.open {
   border: none !important;
   background: transparent !important;
-  border-radius: 14px 0 0 14px !important;
+  border-radius: var(--radius-control) 0 0 var(--radius-control) !important;
   width: 58px;
   border-right: 1px solid #E4E5E1 !important;
 }
@@ -2088,7 +2091,7 @@ textarea:focus {
   background: var(--ds-btn, #2E5E2A) !important;
   color: #fff !important;
   border: none;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   height: 48px;
   padding: 0 28px;
   font-size: 14.5px;

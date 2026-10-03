@@ -132,7 +132,7 @@ function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
         </div>
         <textarea {...register('message')} placeholder="Anything specific? (branding, budget, timeline)" rows={2} className={inputCls} />
       </div>
-      <button type="submit" disabled={isLoading} className="mt-5 w-full rounded-[14px] bg-ds-btn px-6 inline-flex h-[52px] items-center justify-center text-sm font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-ds-btn-hover active:scale-[0.97] disabled:opacity-60">
+      <button type="submit" disabled={isLoading} className="mt-5 w-full rounded-control bg-ds-btn px-6 inline-flex h-[52px] items-center justify-center text-sm font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-ds-btn-hover active:scale-[0.97] disabled:opacity-60">
         {isLoading ? 'Sending…' : 'Request a quote →'}
       </button>
       <p className={`mt-3 flex items-center justify-center gap-1 text-center text-xs ${onDark ? 'text-white/55' : 'text-stone-500'}`}>
@@ -304,7 +304,7 @@ export default function CorporateGiftingPage() {
                       you had to hunt for. An outline at 45% carries real edge
                       contrast without competing with the featured tier's solid. */}
                   <button onClick={() => buy(t.id)} disabled={buying && buyingId === t.id}
-                    className={`mt-6 w-full rounded-[14px] px-5 py-3 text-sm font-semibold uppercase tracking-[0.06em] transition-colors active:scale-[0.97] disabled:opacity-60 ${highlight ? 'bg-ds-cta text-ds-cta-ink hover:bg-ds-cta-hover' : 'border border-white/45 text-white hover:border-white hover:bg-white/15'}`}>
+                    className={`mt-6 w-full rounded-control px-5 py-3 text-sm font-semibold uppercase tracking-[0.06em] transition-colors active:scale-[0.97] disabled:opacity-60 ${highlight ? 'bg-ds-cta text-ds-cta-ink hover:bg-ds-cta-hover' : 'border border-white/45 text-white hover:border-white hover:bg-white/15'}`}>
                     {buying && buyingId === t.id ? 'Starting…' : isAuthorize ? 'Buy now' : 'Login to buy'}
                   </button>
                   <QuoteLink className="mt-2.5 justify-center text-center text-sm text-sage-300 underline underline-offset-2 hover:text-sage-200">or get a bulk quote</QuoteLink>
@@ -383,7 +383,7 @@ export default function CorporateGiftingPage() {
         <div className="mx-auto max-w-3xl px-5">
           <h2 className="font-cormorant text-4xl font-medium sm:text-5xl">Gifting at scale, made effortless</h2>
           <p className="mt-3 text-cream-50/85">Tell us your occasion and quantity — we’ll handle the rest.</p>
-          <QuoteLink className="font-jost mt-6 rounded-[14px] bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</QuoteLink>
+          <QuoteLink className="font-jost mt-6 rounded-control bg-ds-cta px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.1em] text-ds-cta-ink shadow-lg transition-colors hover:bg-ds-cta-hover">Get a custom quote →</QuoteLink>
         </div>
       </section>
     </div>

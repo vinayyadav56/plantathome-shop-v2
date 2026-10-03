@@ -88,7 +88,7 @@ const SearchBox: React.FC<Props> = ({
         {variant === 'normal' ? (
           <>
             <VoiceMic className="z-10 shrink-0 self-center ltr:mr-1 rtl:ml-1" />
-            <button className="flex h-full min-w-[143px] items-center justify-center rounded-[14px] bg-accent px-8 font-semibold text-light transition-colors duration-200 hover:bg-accent-hover focus:bg-accent-hover focus:outline-0 ltr:rounded-tl-none ltr:rounded-bl-none rtl:rounded-tr-none rtl:rounded-br-none">
+            <button className="flex h-full min-w-[143px] items-center justify-center rounded-control bg-accent px-8 font-semibold text-light transition-colors duration-200 hover:bg-accent-hover focus:bg-accent-hover focus:outline-0 ltr:rounded-tl-none ltr:rounded-bl-none rtl:rounded-tr-none rtl:rounded-br-none">
               <SearchIcon className="h-4 w-4 ltr:mr-2.5 rtl:ml-2.5" />
               {t('common:text-search')}
             </button>

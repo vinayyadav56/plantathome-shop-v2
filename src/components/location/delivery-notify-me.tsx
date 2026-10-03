@@ -62,7 +62,7 @@ export default function DeliveryNotifyMe({ pincode }: { pincode: string }) {
       <button
         type="submit"
         disabled={isLoading || !email.includes('@')}
-        className="shrink-0 rounded-[14px] bg-ds-btn hover:bg-ds-btn-hover px-3 py-1.5 text-[12.5px] font-semibold text-white transition hover:bg-forest-800 disabled:opacity-50"
+        className="shrink-0 rounded-control bg-ds-btn hover:bg-ds-btn-hover px-3 py-1.5 text-[12.5px] font-semibold text-white transition hover:bg-forest-800 disabled:opacity-50"
       >
         Notify me
       </button>

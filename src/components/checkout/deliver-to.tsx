@@ -60,7 +60,7 @@ export default function DeliverTo({ count, label }: { count?: number; label?: st
             <RadioGroup.Option key={opt.value} value={opt.value}>
               {({ checked }) => (
                 <div
-                  className={`h-full cursor-pointer rounded-[14px] border p-2.5 transition-colors sm:p-4 ${
+                  className={`h-full cursor-pointer rounded-control border p-2.5 transition-colors sm:p-4 ${
                     checked
                       ? 'border-forest-800 bg-forest-800/5 ring-1 ring-forest-800'
                       : 'border-border-200 hover:border-forest-800/40'

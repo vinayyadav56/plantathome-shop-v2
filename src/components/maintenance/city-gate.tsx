@@ -114,7 +114,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
         <button
           type="button"
           onClick={openCityPicker}
-          className="rounded-[14px] bg-ds-btn px-6 py-3 text-sm font-semibold text-white transition hover:bg-ds-btn-hover"
+          className="rounded-control bg-ds-btn px-6 py-3 text-sm font-semibold text-white transition hover:bg-ds-btn-hover"
         >
           {m.buttonTitle || 'Change delivery city'}
         </button>
@@ -125,7 +125,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
                 ? `mailto:${m.supportContact}`
                 : `tel:${m.supportContact}`
             }
-            className="rounded-[14px] border border-forest-700 px-6 py-3 text-sm font-semibold text-forest-800 transition hover:bg-sage-100"
+            className="rounded-control border border-forest-700 px-6 py-3 text-sm font-semibold text-forest-800 transition hover:bg-sage-100"
           >
             Contact support
           </a>

@@ -38,7 +38,7 @@ export function GardenServiceBand() {
           <div className="flex flex-col gap-3.5 sm:flex-row lg:flex-col lg:items-end">
             <Link
               href="/garden-service"
-              className="inline-flex min-h-[48px] w-full items-center justify-center rounded-[14px] bg-goldlight px-7 py-3.5 text-center text-sm font-bold uppercase tracking-[0.14em] text-forest-900 shadow-[0_14px_34px_rgba(8,18,9,0.35)] transition hover:bg-goldlight/90 sm:w-auto"
+              className="inline-flex min-h-[48px] w-full items-center justify-center rounded-control bg-goldlight px-7 py-3.5 text-center text-sm font-bold uppercase tracking-[0.14em] text-forest-900 shadow-[0_14px_34px_rgba(8,18,9,0.35)] transition hover:bg-goldlight/90 sm:w-auto"
             >
               Get my free garden plan →
             </Link>

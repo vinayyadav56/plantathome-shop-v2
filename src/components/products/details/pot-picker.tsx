@@ -121,7 +121,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
           type="button"
           onClick={() => choose('without')}
           className={classNames(
-            'flex items-center gap-2 rounded-[14px] border-2 px-3 py-2 text-left transition',
+            'flex items-center gap-2 rounded-control border-2 px-3 py-2 text-left transition',
             !withPot
               ? 'border-forest-700 bg-forest-700/[0.06] shadow-[0_4px_14px_rgba(22,48,26,0.10)]'
               : 'border-kraft-300 bg-white hover:border-forest-500',
@@ -145,7 +145,7 @@ const PotPicker: React.FC<Props> = ({ plantSize, fallbackSize = null, selected, 
           type="button"
           onClick={() => choose('with')}
           className={classNames(
-            'flex items-center gap-2 rounded-[14px] border-2 px-3 py-2 text-left transition',
+            'flex items-center gap-2 rounded-control border-2 px-3 py-2 text-left transition',
             withPot
               ? 'border-forest-700 bg-forest-700/[0.06] shadow-[0_4px_14px_rgba(22,48,26,0.10)]'
               : 'border-kraft-300 bg-white hover:border-forest-500',

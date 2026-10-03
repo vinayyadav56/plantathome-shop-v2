@@ -219,7 +219,7 @@ export function WhyPlants() {
             {/* CTA — the design-system button, minus the green glow it used to carry */}
             <Link
               href="/plants/search"
-              className="shrink-0 inline-flex items-center gap-2 rounded-[14px] bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
+              className="shrink-0 inline-flex items-center gap-2 rounded-control bg-ds-cta px-6 py-3.5 font-hanken text-[14px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97]"
             >
               {t('home-why-cta')}
               <ArrowRight size={16} aria-hidden />

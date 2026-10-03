@@ -85,11 +85,11 @@ export function Hero() {
             </div>
 
             {showOffer ? (
-              <div className="w-[104px] shrink-0 rounded-[14px] border border-white/20 bg-[#0D1C10]/[0.64] p-[9px_8px] text-center shadow-[0_10px_26px_rgba(0,0,0,0.32)]">
+              <div className="w-[104px] shrink-0 rounded-xl border border-white/20 bg-[#0D1C10]/[0.64] p-[9px_8px] text-center shadow-[0_10px_26px_rgba(0,0,0,0.32)]">
                 <div className="mb-[3px] whitespace-nowrap text-[6.8px] font-semibold uppercase tracking-[0.05em] text-white/[0.82]">{t('m-hero-offer-eyebrow')}</div>
                 <div className="whitespace-nowrap font-hanken text-[21px] font-extrabold leading-none text-white">40%<span className="text-[12px]"> {t('m-hero-offer-off')}</span></div>
                 <div className="my-0.5 mb-2 text-[8px] text-white/[0.78]">{t('m-hero-offer-subtext')}</div>
-                <button type="button" onClick={() => router.push('/plants/search')} className="inline-flex w-full items-center justify-center gap-1 rounded-[14px] bg-ds-btn px-1 py-1.5 font-hanken text-[10px] font-semibold text-white transition hover:bg-ds-btn-hover active:scale-95 active:bg-forest-800">
+                <button type="button" onClick={() => router.push('/plants/search')} className="inline-flex w-full items-center justify-center gap-1 rounded-control bg-ds-btn px-1 py-1.5 font-hanken text-[10px] font-semibold text-white transition hover:bg-ds-btn-hover active:scale-95 active:bg-forest-800">
                   {t('m-hero-offer-cta')}
                   <LineIcon name="arrowRight" className="h-[10px] w-[10px]" />
                 </button>

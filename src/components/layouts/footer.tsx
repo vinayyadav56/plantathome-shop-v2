@@ -174,7 +174,7 @@ function NewsletterForm() {
     <div className="w-full lg:w-[400px]">
       <form
         onSubmit={(e) => { e.preventDefault(); if (email.trim() && !isLoading) subscribe({ email: email.trim() }); }}
-        className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.14] bg-white/[0.07] py-1.5 pe-1.5 ps-4"
+        className="flex items-center gap-2.5 rounded-control border border-white/[0.14] bg-white/[0.07] py-1.5 pe-1.5 ps-4"
       >
         <Mail size={16} className="shrink-0 text-[#86EFAC]" aria-hidden />
         <input
@@ -185,7 +185,7 @@ function NewsletterForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex shrink-0 items-center gap-2 rounded-[14px] bg-ds-cta px-6 py-3 font-hanken text-[13.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] disabled:opacity-60"
+          className="inline-flex shrink-0 items-center gap-2 rounded-control bg-ds-cta px-6 py-3 font-hanken text-[13.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] disabled:opacity-60"
         >
           {isSubscribed ? t('footer-newsletter-subscribed') : t('footer-newsletter-subscribe')}
           <ArrowRight size={12} aria-hidden />
