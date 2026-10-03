@@ -17,9 +17,11 @@ const Loader = dynamic(
   { ssr: false }
 );
 
-const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+const PrivateRoute: React.FC<{
+  children?: React.ReactNode;
+  /** What to show while the session resolves (default: the full-page loader). */
+  fallback?: React.ReactNode;
+}> = ({ children, fallback }) => {
   const { getEmailVerified, setEmailVerified } = useToken();
   const { me, isAuthorized, error } = useUser();
   const { settings } = useSettings();
@@ -55,7 +57,7 @@ const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
   // The effect above is already navigating; hold a spinner rather than flashing
   // page content on the way out.
   if (mustSignIn) {
-    return <Loader showText={false} />;
+    return <>{fallback ?? <Loader showText={false} />}</>;
   }
 
   if (isAuthorized && emailVerified === false) {
@@ -81,7 +83,7 @@ const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="rounded-md bg-accent px-6 py-2.5 text-sm font-semibold text-light hover:bg-accent-hover"
+          className="rounded-control bg-accent px-6 py-2.5 text-sm font-semibold text-light hover:bg-accent-hover"
         >
           Retry
         </button>
@@ -90,7 +92,7 @@ const PrivateRoute: React.FC<{ children?: React.ReactNode }> = ({
   }
 
   // Session is still being fetched.
-  return <Loader showText={false} />;
+  return <>{fallback ?? <Loader showText={false} />}</>;
 };
 
 export default PrivateRoute;

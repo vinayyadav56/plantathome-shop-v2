@@ -68,7 +68,7 @@ const Input = React.forwardRef<HTMLInputElement, Props>(
               shadow && 'focus:shadow',
               variantClasses[variant],
               sizeClasses[dimension],
-              disabled && 'cursor-not-allowed bg-gray-100',
+              'disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-100 disabled:[-webkit-text-fill-color:currentColor]',
               inputClassName,
             ),
           )}

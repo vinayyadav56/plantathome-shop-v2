@@ -798,6 +798,11 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  first_name?: string;
+  last_name?: string;
+  /** Appended by the API (User::$appends) — true once email_verified_at is set. */
+  email_verified?: boolean;
+  created_at?: string;
   wallet: {
     total_points: number;
     points_used: number;
@@ -806,6 +811,9 @@ export interface User {
   profile: {
     id?: string;
     contact?: string;
+    contact_2?: string | null;
+    email_2?: string | null;
+    email_2_verified_at?: string | null;
     bio?: string;
     avatar?: Attachment;
   };

@@ -92,7 +92,8 @@ export const useDeleteAddress = () => {
   return useMutation(client.users.deleteAddress, {
     onSuccess: (data) => {
       if (data) {
-        toast.success('successfully-address-deleted');
+        // was the raw i18n key 'successfully-address-deleted' (never defined)
+        toast.success('Address deleted');
         closeModal();
         return;
       }
@@ -171,6 +172,7 @@ export const useUpdateEmail = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries(API_ENDPOINTS.USERS_ME);
+      queryClient.invalidateQueries(['me-contacts']);
     },
   });
 };
@@ -190,7 +192,10 @@ export const useUpdateUser = () => {
       toast.error(`${t('error-something-wrong')}`);
     },
     onSettled: () => {
+      // /me and /me/contacts both carry the phone + email: refresh both, or the
+      // other card (and checkout's contact grid) keeps showing the old value.
       queryClient.invalidateQueries(API_ENDPOINTS.USERS_ME);
+      queryClient.invalidateQueries(['me-contacts']);
     },
   });
 };

@@ -43,63 +43,31 @@ export const siteSettings = {
     { href: Routes.checkout, label: 'auth-menu-checkout' },
     { href: Routes.changePassword, label: 'profile-sidebar-password' },
   ],
-  // Order matches the account-page reference; Change Password + the two
-  // conditionally-shown items (notifications, cards) sit after the primary set.
+  // Account sidebar — the brief's names over the pages that actually exist
+  // (owner, 2026-10-03). Keys shared with the header menus (wishlist, cards,
+  // password) get their own account-nav-* keys so the header copy is untouched.
+  // My Addresses is a jump link into /profile. Logout must stay LAST: the
+  // sidebar drops it with .slice(0, -1) and renders its own button.
   dashboardSidebarMenu: [
-    {
-      href: Routes.profile,
-      label: 'profile-sidebar-profile',
-    },
-    {
-      href: Routes.orders,
-      label: 'profile-sidebar-orders',
-    },
-    {
-      href: Routes.myPackages,
-      label: 'My Garden Packages',
-    },
-    {
-      href: Routes.downloads,
-      label: 'profile-sidebar-downloads',
-    },
-    {
-      href: Routes.wishlists,
-      label: 'profile-sidebar-my-wishlist',
-    },
-    {
-      href: Routes.questions,
-      label: 'profile-sidebar-my-questions',
-    },
-    {
-      href: Routes.refunds,
-      label: 'text-my-refunds',
-    },
-    {
-      href: Routes.reports,
-      label: 'profile-sidebar-my-reports',
-    },
-    {
-      href: Routes.help,
-      label: 'profile-sidebar-help',
-    },
-    {
-      href: Routes.changePassword,
-      label: 'profile-sidebar-password',
-    },
-    {
-      href: Routes.notifyLogs,
-      label: 'profile-sidebar-notifications',
-    },
+    { href: Routes.profile, label: 'profile-sidebar-profile' },
+    { href: Routes.orders, label: 'profile-sidebar-orders' },
+    { href: Routes.myPackages, label: 'My Garden Packages' },
+    { href: Routes.wishlists, label: 'account-nav-wishlist' },
+    { href: Routes.questions, label: 'profile-sidebar-my-questions' },
+    { href: Routes.downloads, label: 'profile-sidebar-downloads' },
+    { href: Routes.refunds, label: 'text-my-refunds' },
+    { href: Routes.reports, label: 'profile-sidebar-my-reports' },
+    { href: `${Routes.profile}#addresses`, label: 'account-nav-addresses' },
+    { href: Routes.notifyLogs, label: 'profile-sidebar-notifications' },
     {
       href: Routes.cards,
-      label: 'profile-sidebar-my-cards',
+      label: 'account-nav-payments',
       // MultiPayment: Make it dynamic or from mapper
       cardsPayment: [PaymentGateway.STRIPE],
     },
-    {
-      href: Routes.logout,
-      label: 'profile-sidebar-logout',
-    },
+    { href: Routes.help, label: 'profile-sidebar-help' },
+    { href: Routes.changePassword, label: 'account-nav-settings' },
+    { href: Routes.logout, label: 'profile-sidebar-logout' },
   ],
   sellingAdvertisement: {
     image: {

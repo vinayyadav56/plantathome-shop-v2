@@ -8,7 +8,7 @@ const MyCards: React.FC = () => {
   const { cards, isLoading, error } = useCards();
 
   if (isLoading) {
-    return <Spinner showText={false} />;
+    return <Spinner simple className="mx-auto my-16 h-6 w-6" />;
   }
 
   if (error) return <ErrorMessage message={error?.message} />;

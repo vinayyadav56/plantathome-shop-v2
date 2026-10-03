@@ -67,6 +67,7 @@ export function useUpdateContacts() {
       },
       onSettled: () => {
         queryClient.invalidateQueries(['me-contacts']);
+        queryClient.invalidateQueries(API_ENDPOINTS.USERS_ME);
       },
     },
   );
@@ -97,11 +98,15 @@ export function useVerifyEmailOtp() {
     (input: { email: string; code: string }) =>
       HttpClient.post<ContactResponse>(API_ENDPOINTS.EMAIL_OTP_VERIFY, input),
     {
+      onSuccess: () => {
+        toast.success(t('email-verified-toast'));
+      },
       onError: (error) => {
         toast.error(errorMessage(error) ?? t('error-something-wrong'));
       },
       onSettled: () => {
         queryClient.invalidateQueries(['me-contacts']);
+        queryClient.invalidateQueries(API_ENDPOINTS.USERS_ME);
       },
     },
   );

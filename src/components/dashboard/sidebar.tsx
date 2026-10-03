@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useRef } from 'react';
 import Link from '@/components/ui/link';
 import { siteSettings } from '@/config/site';
 import { useTranslation } from 'next-i18next';
@@ -8,32 +9,60 @@ import { useLogout, useUser } from '@/framework/user';
 import { useSettings } from '@/framework/settings';
 import { Routes } from '@/config/routes';
 import { isStripeAvailable } from '@/lib/is-stripe-available';
-import { Bell, CircleHelp, CreditCard, Download, FileText, Heart, Wallet, Lock, LogOut, Package, Plus, RotateCcw, ShoppingBag, User } from '@/components/ui/icon';
+import UserAvatar from '@/components/ui/user-avatar';
+import {
+  ArrowRight,
+  Bell,
+  CircleHelp,
+  CreditCard,
+  Download,
+  FileText,
+  Heart,
+  LogOut,
+  MapPin,
+  MessageCircle,
+  Package,
+  RotateCcw,
+  Settings,
+  ShoppingBag,
+  User,
+} from '@/components/ui/icon';
 
 type Props = { className?: string };
 
-/* Line icons per account route, from the shared Lucide funnel. */
+const ICON = { size: 20, className: 'shrink-0', 'aria-hidden': true } as const;
+
+/* One Tabler line icon per account route. */
 const NAV_ICON: Record<string, React.ReactNode> = {
-  [Routes.profile]: <User size={18} className="shrink-0" aria-hidden />,
-  [Routes.orders]: <ShoppingBag size={18} className="shrink-0" aria-hidden />,
-  [Routes.myPackages]: <Package size={18} className="shrink-0" aria-hidden />,
-  [Routes.downloads]: <Download size={18} className="shrink-0" aria-hidden />,
-  [Routes.wishlists]: <Heart size={18} className="shrink-0" aria-hidden />,
-  [Routes.questions]: <CircleHelp size={18} className="shrink-0" aria-hidden />,
-  [Routes.refunds]: <RotateCcw size={18} className="shrink-0" aria-hidden />,
-  [Routes.reports]: <FileText size={18} className="shrink-0" aria-hidden />,
-  [Routes.help]: <CircleHelp size={18} className="shrink-0" aria-hidden />,
-  [Routes.changePassword]: <Lock size={18} className="shrink-0" aria-hidden />,
-  [Routes.notifyLogs]: <Bell size={18} className="shrink-0" aria-hidden />,
-  [Routes.cards]: <CreditCard size={18} className="shrink-0" aria-hidden />,
+  [Routes.profile]: <User {...ICON} />,
+  [Routes.orders]: <ShoppingBag {...ICON} />,
+  [Routes.myPackages]: <Package {...ICON} />,
+  [Routes.wishlists]: <Heart {...ICON} />,
+  [Routes.questions]: <MessageCircle {...ICON} />,
+  [Routes.downloads]: <Download {...ICON} />,
+  [Routes.refunds]: <RotateCcw {...ICON} />,
+  [Routes.reports]: <FileText {...ICON} />,
+  [`${Routes.profile}#addresses`]: <MapPin {...ICON} />,
+  [Routes.notifyLogs]: <Bell {...ICON} />,
+  [Routes.cards]: <CreditCard {...ICON} />,
+  [Routes.help]: <CircleHelp {...ICON} />,
+  [Routes.changePassword]: <Settings {...ICON} />,
 };
 
+/**
+ * Account sidebar (owner brief 2026-10-03): one white card — who you are, then
+ * where you can go. A single nav list serves every width: a horizontal chip
+ * strip below lg, a 44px-row column from lg. No wallet (it lives on /profile
+ * now) and no decorative photo.
+ */
 const DashboardSidebar: React.FC<Props> = ({ className }) => {
   const { mutate: logout } = useLogout();
   const { settings } = useSettings();
   const { me }: any = useUser();
   const { t } = useTranslation();
   const { pathname } = useRouter();
+  const scrollerRef = useRef<HTMLUListElement>(null);
+  const activeRef = useRef<HTMLLIElement>(null);
 
   const navItems = (siteSettings.dashboardSidebarMenu ?? [])
     .slice(0, -1)
@@ -43,108 +72,96 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
       return true;
     });
 
-  const w = me?.wallet ?? {};
-  const walletStats = [
-    { k: t('wallet-total'), v: w.total_points ?? 0, accent: true },
-    { k: t('wallet-used'), v: w.points_used ?? 0 },
-    { k: t('wallet-available'), v: w.available_points ?? 0 },
-  ];
+  // A jump link (#addresses) is never "the page you're on", so My Profile and
+  // My Addresses can't both light up. Child routes (/notification/123) count.
+  const isActive = (href: string) =>
+    !href.includes('#') && (pathname === href || pathname.startsWith(`${href}/`));
+
+  // Below lg the list is a horizontal strip: bring the active chip into view.
+  // scrollLeft only — scrollIntoView would also scroll the page vertically.
+  useEffect(() => {
+    const strip = scrollerRef.current;
+    const active = activeRef.current;
+    if (strip && active && strip.scrollWidth > strip.clientWidth) {
+      strip.scrollLeft = active.offsetLeft - 12;
+    }
+  }, [pathname]);
+
+  const name = me?.name || [me?.first_name, me?.last_name].filter(Boolean).join(' ');
+  const subline = me?.email ?? me?.profile?.contact ?? '';
+
+  const item =
+    'flex items-center gap-3 whitespace-nowrap font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-btn focus-visible:ring-offset-2 ' +
+    'h-10 rounded-full border px-4 text-[13.5px] lg:h-11 lg:w-full lg:rounded-control lg:border-0 lg:px-3 lg:text-[15px]';
 
   return (
     <aside className={className}>
-      {/* mobile: horizontal scroll tabs (wallet + promo are desktop-only) */}
-      <div className="lg:hidden">
-        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {navItems.map((item: any, i: number) => (
-            <Link
-              key={i}
-              href={item.href}
-              className={classNames(
-                'shrink-0 whitespace-nowrap rounded-full border px-4 py-2 font-poppins text-[13.5px] font-medium transition',
-                pathname === item.href
-                  ? 'border-transparent bg-ds-accent text-white'
-                  : 'border-kraft-200 bg-white text-forest-900 hover:bg-[var(--ds-accent-soft)]',
-              )}
+      <div className="flex flex-col gap-5">
+        <div className="rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_12px_rgba(22,48,26,0.04)]">
+          {/* who you are */}
+          <div className="flex items-center gap-3 p-4 lg:px-5 lg:pt-5">
+            <UserAvatar user={me} className="h-12 w-12 text-[15px]" />
+            <div className="min-w-0">
+              <p className="truncate text-[15px] font-semibold text-forest-900">{name}</p>
+              {subline && <p className="truncate text-[13px] text-stone-500">{subline}</p>}
+            </div>
+          </div>
+
+          {/* where you can go */}
+          <nav aria-label={t('account-nav-label')} className="border-t border-kraft-200">
+            <ul
+              ref={scrollerRef}
+              className="relative flex gap-2 overflow-x-auto p-3 [-ms-overflow-style:none] [scrollbar-width:none] lg:flex-col lg:gap-0.5 lg:overflow-visible [&::-webkit-scrollbar]:hidden"
             >
-              {t(item.label)}
-            </Link>
-          ))}
-          <button
-            onClick={() => logout()}
-            className="shrink-0 whitespace-nowrap rounded-control border border-red-200 bg-white px-4 py-2 text-body-sm font-semibold text-red-500 transition hover:bg-red-50"
+              {navItems.map((nav: any) => {
+                const active = isActive(nav.href);
+                return (
+                  <li key={nav.href} ref={active ? activeRef : undefined} className="shrink-0">
+                    <Link
+                      href={nav.href}
+                      aria-current={active ? 'page' : undefined}
+                      className={classNames(
+                        item,
+                        active
+                          ? 'border-transparent bg-ds-btn text-white'
+                          : 'border-kraft-200 bg-white text-forest-900 hover:bg-sage-50',
+                      )}
+                    >
+                      <span className={classNames('hidden lg:inline-flex', active ? 'text-white' : 'text-forest-600')}>
+                        {NAV_ICON[nav.href] ?? NAV_ICON[Routes.profile]}
+                      </span>
+                      {t(nav.label)}
+                    </Link>
+                  </li>
+                );
+              })}
+              <li className="shrink-0 lg:mt-2 lg:border-t lg:border-kraft-200 lg:pt-2">
+                <button
+                  type="button"
+                  onClick={() => logout()}
+                  className={classNames(item, 'border-red-200 bg-white text-red-600 hover:bg-red-50')}
+                >
+                  <span className="hidden lg:inline-flex">
+                    <LogOut {...ICON} />
+                  </span>
+                  {t('profile-sidebar-logout')}
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        {/* a quiet nudge back to the shop — text only, no decorative photo */}
+        <div className="hidden rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_2px_12px_rgba(22,48,26,0.04)] lg:block">
+          <p className="text-[16px] font-semibold leading-snug text-forest-900">{t('promo-title')}</p>
+          <p className="mt-1.5 text-[13px] leading-relaxed text-stone-600">{t('promo-sub')}</p>
+          <Link
+            href="/plants"
+            className="mt-4 inline-flex h-10 items-center gap-2 rounded-control bg-ds-btn px-4 text-[13.5px] font-semibold text-white transition-colors duration-200 hover:bg-ds-btn-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-btn focus-visible:ring-offset-2"
           >
-            {t('profile-sidebar-logout')}
-          </button>
-        </div>
-      </div>
-
-      {/* desktop: wallet card + nav card + promo card */}
-      <div className="hidden flex-col gap-5 lg:flex">
-        {/* wallet points */}
-        <div className="rounded-2xl border border-kraft-200 bg-white p-5">
-          <div className="mb-4 flex items-center gap-2">
-            <Wallet size={18} className="text-forest-600" aria-hidden />
-            <span className="text-body-sm font-semibold text-forest-900">{t('wallet-points')}</span>
-          </div>
-          <div className="grid grid-cols-3 gap-2 text-center">
-            {walletStats.map((s) => (
-              <div key={s.k}>
-                <div className={classNames('text-card-title font-semibold leading-none tabular-nums', s.accent ? 'text-forest-600' : 'text-forest-900')}>{s.v}</div>
-                <div className="mt-1.5 text-caption font-medium text-stone-500">{s.k}</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center gap-2 rounded-xl bg-sage-100 px-3.5 py-2.5 text-caption font-semibold text-forest-700">
-            <Plus size={16} className="shrink-0" aria-hidden />
-            {t('earn-more-points')}
-          </div>
-        </div>
-
-        {/* nav */}
-        <div className="overflow-hidden rounded-2xl border border-kraft-200 bg-white">
-          <ul className="p-2.5">
-            {navItems.map((item: any, i: number) => {
-              const active = pathname === item.href;
-              return (
-                <li key={i}>
-                  <Link
-                    href={item.href}
-                    className={classNames(
-                      'flex items-center gap-3 rounded-xl px-4 py-2.5 font-poppins text-[14px] font-medium transition',
-                      active ? 'bg-ds-accent text-white' : 'text-forest-900 hover:bg-[var(--ds-accent-soft)]',
-                    )}
-                  >
-                    <span className={active ? 'text-white' : 'text-forest-500'}>{NAV_ICON[item.href] ?? NAV_ICON[Routes.profile]}</span>
-                    {t(item.label)}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="border-t border-kraft-200 p-2.5">
-            <button
-              onClick={() => logout()}
-              className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 font-poppins text-[14px] font-medium text-red-500 transition hover:bg-red-50"
-            >
-              <LogOut size={18} className="shrink-0" aria-hidden />
-              {t('profile-sidebar-logout')}
-            </button>
-          </div>
-        </div>
-
-        {/* promo */}
-        <div className="overflow-hidden rounded-2xl border border-kraft-200 bg-sage-100/70">
-          <div className="px-5 pt-5">
-            <h3 className="text-card-title font-semibold leading-tight text-forest-900">{t('promo-title')}</h3>
-            <p className="mt-2 text-body-sm leading-snug text-stone-600">{t('promo-sub')}</p>
-          </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/plants-1.jpg"
-            alt=""
-            className="mt-4 h-[150px] w-full object-cover"
-            loading="lazy"
-          />
+            {t('promo-cta')}
+            <ArrowRight size={16} aria-hidden />
+          </Link>
         </div>
       </div>
     </aside>

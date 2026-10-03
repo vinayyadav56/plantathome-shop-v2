@@ -14,7 +14,9 @@ const NotFound: React.FC<Props> = ({ className, text }) => {
   const { t } = useTranslation();
   return (
     <div className={cn('flex flex-col items-center py-10', className)}>
-      <div className="relative grid h-36 w-36 place-items-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#EAF4E6,#F6FAF7)] sm:h-44 sm:w-44">
+      {/* Hidden inside the account shell (.pah-account): account empty states are
+          text-only — no plant illustration there (owner brief 2026-10-03). */}
+      <div className="relative grid h-36 w-36 place-items-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#EAF4E6,#F6FAF7)] sm:h-44 sm:w-44 [.pah-account_&]:hidden">
         <PottedPlantIllustration />
       </div>
       {text && (

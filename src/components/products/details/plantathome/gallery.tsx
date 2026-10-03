@@ -129,7 +129,7 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName, overlay }) 
                 type="button"
                 onClick={() => setActive(i)}
                 aria-label={`View image ${i + 1}`}
-                className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_20px_-8px_rgba(34,48,26,0.4)] transition lg:h-[68px] lg:w-[68px] ${
+                className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white shadow-[0_8px_20px_-8px_rgba(34,48,26,0.4)] transition lg:h-[68px] lg:w-[68px] ${
                   active === i
                     ? 'ring-2 ring-forest-600 ring-offset-2 ring-offset-[#F4F1E6]'
                     : 'opacity-90 hover:opacity-100'

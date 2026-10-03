@@ -112,8 +112,7 @@ export default function MyPackagesPage() {
         <div className="rounded-2xl border border-kraft-200 bg-white p-10 text-center text-stone-500">Loading your packages…</div>
       ) : packages.length === 0 ? (
         <div className="rounded-2xl border border-kraft-200 bg-white p-10 text-center">
-          <div className="text-4xl">🌱</div>
-          <h3 className="mt-3 text-lg font-medium text-forest-900">No packages yet</h3>
+          <h3 className="text-lg font-medium text-forest-900">No packages yet</h3>
           <p className="mt-1 text-stone-500">Want a garden built and cared for at home? Get a free plan tailored to your space.</p>
           <a href="/garden-service" className="pa-btn pa-btn-primary mt-5">Explore garden service →</a>
         </div>

@@ -1,71 +1,110 @@
-import { PlusIcon } from '@/components/icons/plus-icon';
-import Card from '@/components/ui/cards/card';
-import { useModalAction } from '@/components/ui/modal/modal.context';
+import { useState } from 'react';
 import { useTranslation } from 'next-i18next';
-import PhoneInput from '@/components/ui/forms/phone-input';
-import { WhatsAppIcon } from '@/components/icons/whatsapp';
-import { Check } from '@/components/ui/icon';
+import Button from '@/components/ui/button';
+import Card from '@/components/ui/cards/card';
+import Input from '@/components/ui/forms/input';
+import { useModalAction } from '@/components/ui/modal/modal.context';
+import { useUpdateContacts } from '@/framework/contact';
+import { Phone } from '@/components/ui/icon';
+import type { User } from '@/types';
 
-interface Props {
-  userId: string;
-  profileId: string;
-  contact: string;
+/** "+919996469046" / "9996469046" → "+91 99964 69046"; anything else as stored. */
+function formatPhone(raw?: string | null) {
+  const digits = (raw ?? '').replace(/\D/g, '');
+  const local = digits.length === 12 && digits.startsWith('91') ? digits.slice(2) : digits;
+  return local.length === 10 ? `+91 ${local.slice(0, 5)} ${local.slice(5)}` : (raw ?? '');
 }
 
-const ProfileContact = ({ userId, profileId, contact }: Props) => {
-  const { openModal } = useModalAction();
+/**
+ * Contact Details (owner brief 2026-10-03). The PRIMARY phone — the number used
+ * for OTP sign-in and order updates — is shown read-only and only changes
+ * through the existing OTP-verified modal. It used to be editable a second
+ * time, without OTP, in the old "Contact details" card (PUT /me/contacts),
+ * which could silently replace a verified number. Only the optional secondary
+ * phone is edited here. No "Verified" pill: there is no phone-verified flag, so
+ * the old pill only meant "has a number".
+ */
+const ProfileContact = ({ user }: { user: User }) => {
   const { t } = useTranslation('common');
+  const { openModal } = useModalAction();
+  const { mutate: saveContacts, isLoading } = useUpdateContacts();
+  const profile = user?.profile ?? {};
+  const contact = profile.contact ?? '';
+  const saved2 = profile.contact_2 ?? '';
+  // null = untouched, so the field always shows the latest saved number
+  // without an effect to re-sync it after a refetch.
+  const [draft, setDraft] = useState<string | null>(null);
+  const phone2 = draft ?? saved2;
 
-  function onAdd() {
+  function onChangePrimary() {
     openModal('ADD_OR_UPDATE_PROFILE_CONTACT', {
-      customerId: userId,
-      profileId,
+      customerId: user.id,
+      profileId: profile.id,
       contact,
     });
   }
+
+  function onSaveSecondary(e: React.FormEvent) {
+    e.preventDefault();
+    // PUT /me/contacts writes BOTH fields and nulls whatever is missing — send
+    // the primary back unchanged or it would be erased.
+    saveContacts(
+      { contact: contact || null, contact_2: phone2.trim() || null },
+      { onSuccess: () => setDraft(null) },
+    );
+  }
+
   return (
-    <Card className="flex w-full flex-col">
-      <div className="mb-2 flex items-center justify-between">
-        <p className="flex items-center gap-2 text-lg capitalize text-heading lg:text-xl">
-          {t('text-contact-number')}
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#25D366]/10 px-2 py-0.5 text-xs font-medium normal-case text-[#1da851]">
-            <WhatsAppIcon className="h-3.5 w-3.5" />
-            {t('text-whatsapp-number')}
-          </span>
-        </p>
-
-        {onAdd && (
-          <button
-            className="flex items-center text-sm font-semibold text-accent transition-colors duration-200 hover:text-accent-hover focus:text-accent-hover focus:outline-0"
-            onClick={onAdd}
-          >
-            <PlusIcon className="h-4 w-4 stroke-2 ltr:mr-0.5 rtl:ml-0.5" />
-            {Boolean(contact) ? t('text-update') : t('text-add')}
-          </button>
-        )}
-      </div>
-
-      <p className="mb-5 text-sm text-body md:mb-6">
-        {t('whatsapp-contact-helper')}
-      </p>
-
-      <div className="flex items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <PhoneInput
-            country="in"
-            value={contact}
-            disabled={true}
-            inputClass="!p-0 ltr:!pr-4 rtl:!pl-4 ltr:!pl-14 rtl:!pr-14 !flex !items-center !w-full !appearance-none !transition !duration-300 !ease-in-out !text-heading !text-sm focus:!outline-none focus:!ring-0 !border !border-border-base !rounded focus:!border-accent !h-12"
-            dropdownClass="focus:!ring-0 !border !border-border-base !shadow-350"
-          />
+    <Card className="w-full">
+      <div className="flex items-start gap-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sage-100 text-forest-700">
+          <Phone size={18} aria-hidden />
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-[18px] font-semibold leading-snug text-forest-900">
+            {t('text-contact-details')}
+          </h2>
+          <p className="mt-0.5 text-[13.5px] text-stone-500">{t('contact-card-subtitle')}</p>
         </div>
-        {Boolean(contact) && (
-          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-forest-600/10 px-2.5 py-1 text-xs font-semibold text-forest-700">
-            <Check size={12} aria-hidden />
-            {t('text-verified')}
-          </span>
-        )}
       </div>
+
+      <div className="mt-5">
+        <p className="text-[13px] font-semibold text-forest-900">{t('contact-primary-phone')}</p>
+        <div className="mt-2 flex min-h-[48px] items-center justify-between gap-3 rounded-control border border-kraft-200 bg-white px-4 py-2">
+          <span className="truncate text-[15px] font-medium tabular-nums text-forest-900">
+            {contact ? formatPhone(contact) : <span className="font-normal text-stone-400">—</span>}
+          </span>
+          <button
+            type="button"
+            onClick={onChangePrimary}
+            className="shrink-0 rounded-control px-2 py-1 text-[13.5px] font-semibold text-forest-700 transition-colors duration-200 hover:bg-sage-50 hover:text-forest-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-btn"
+          >
+            {contact ? t('text-update') : t('text-add')}
+          </button>
+        </div>
+        <p className="mt-1.5 text-[12.5px] text-stone-500">{t('contact-updates-note')}</p>
+      </div>
+
+      <form onSubmit={onSaveSecondary} className="mt-5">
+        <Input
+          name="contact_2"
+          type="tel"
+          inputMode="tel"
+          label={t('contact-secondary-phone')}
+          variant="outline"
+          value={phone2}
+          onChange={(e) => setDraft(e.target.value)}
+          disabled={isLoading}
+        />
+        {/* Appears once there's something to save — no idle disabled button. */}
+        {(phone2.trim() !== saved2 || isLoading) && (
+          <div className="mt-3 flex justify-end">
+            <Button variant="formPrimary" size="small" loading={isLoading} disabled={isLoading}>
+              {t('account-save-changes')}
+            </Button>
+          </div>
+        )}
+      </form>
     </Card>
   );
 };

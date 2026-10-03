@@ -66,8 +66,9 @@ test.describe('storefront auth', () => {
 
     await page.goto(`${BASE}/profile`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2500);
-    const values = await page.$$eval('input', (els) => els.map((e) => (e as HTMLInputElement).value).filter(Boolean));
-    expect(values.join(' ')).toContain('@');
+    // The profile shows the account email as text (it can't be edited once set),
+    // not inside an input.
+    await expect(page.getByText(EMAIL, { exact: false }).first()).toBeVisible();
   });
 });
 
