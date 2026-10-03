@@ -54,8 +54,7 @@ export const selectStyles = {
     width: state.selectProps.width,
     borderRadius: 'var(--radius-box)',
     border: '1px solid #E5E7EB',
-    boxShadow:
-      '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+    boxShadow: 'var(--shadow-box)', // dropdowns carry the one box elevation
     // react-select ships the open menu at z-index 1. Product cards put their
     // wishlist heart at z-10, so on any listing the heart punched through an
     // open dropdown — the sort control on /search being where it shows most.
