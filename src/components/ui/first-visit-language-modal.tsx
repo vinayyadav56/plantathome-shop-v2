@@ -67,7 +67,7 @@ export default function FirstVisitLanguageModal() {
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={dismiss} aria-hidden />
-      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-box">
         <div className="bg-[radial-gradient(120%_120%_at_30%_0%,#1E4023,#16301A)] px-6 pb-5 pt-6 text-center">
           <LineIcon name="language" className="mx-auto mb-2 h-7 w-7 text-[#8FD56F]" />
           <div className="font-pahserif text-2xl font-semibold leading-tight text-white">Choose your language</div>

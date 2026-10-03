@@ -44,7 +44,7 @@ export function VideoModal({
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.5, ease: EXPO }}
             onClick={(e) => e.stopPropagation()}
-            className="relative aspect-video w-full max-w-5xl overflow-hidden rounded-2xl bg-black shadow-2xl"
+            className="relative aspect-video w-full max-w-5xl overflow-hidden rounded-2xl bg-black shadow-box"
           >
             <KenBurns images={scenes} interval={4} />
             <div className="absolute inset-0 bg-gradient-to-t from-deep/85 via-transparent to-deep/30" />

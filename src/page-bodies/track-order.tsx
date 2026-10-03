@@ -25,7 +25,7 @@ export default function TrackOrderPage() {
         items={[{ label: 'Home', href: Routes.home }, { label: 'Track Order' }]}
       />
       <div className="flex w-full flex-1 items-center justify-center py-10">
-      <div className="w-full max-w-md rounded-2xl border border-kraft-200/80 bg-white p-8 shadow-[0_8px_30px_-12px_rgba(34,48,26,0.18)]">
+      <div className="w-full max-w-md rounded-2xl border border-kraft-200/80 bg-white p-8 shadow-box">
         <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage-100">
           <ShoppingBag size={20} style={{ color: '#2E5E3A' }} aria-hidden />
         </div>

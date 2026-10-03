@@ -78,7 +78,7 @@ export default function ParcelShipments({ tracking }: ParcelShipmentsProps) {
           return (
             <div
               key={idx}
-              className="rounded border border-border-200 px-5 py-4 shadow-sm"
+              className="rounded border border-border-200 px-5 py-4 shadow-box"
             >
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-medium text-forest-900">

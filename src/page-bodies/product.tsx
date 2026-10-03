@@ -95,7 +95,7 @@ const ProductPage = ({ product }: any) => {
                     <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
                       Size guide
                     </h2>
-                    <div className="mt-6 max-w-2xl rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+                    <div className="mt-6 max-w-2xl rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
                       <SizeGuideContent
                         sizeGuide={product?.size_guide}
                         sizes={sizeOptions}

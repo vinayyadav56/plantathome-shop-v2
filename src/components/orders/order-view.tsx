@@ -37,7 +37,7 @@ const TERMINAL_COPY: Record<string, { title: string; text: string }> = {
 function TerminalStatusBanner({ status }: { status: string }) {
   const copy = TERMINAL_COPY[status] ?? TERMINAL_COPY[OrderStatus.CANCELLED];
   return (
-    <div className="rounded-2xl border border-[#F0D9D9] bg-[#FBF1F1] px-6 py-5 text-center">
+    <div className="shadow-box rounded-2xl border border-[#F0D9D9] bg-[#FBF1F1] px-6 py-5 text-center">
       <p className="text-[15px] font-semibold text-[#B23B3B]">{copy.title}</p>
       <p className="mt-1 text-[13px] text-[#8C6A6A]">{copy.text}</p>
     </div>
@@ -82,7 +82,7 @@ function OrderView({ order, settings, loadingStatus }: any) {
               ) : null}
 
               {shipments.length > 1 ? (
-                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
+                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-box sm:px-6">
                   <ParcelShipments tracking={order?.tracking_number} />
                 </div>
               ) : null}
@@ -94,7 +94,7 @@ function OrderView({ order, settings, loadingStatus }: any) {
               />
 
               {order?.children?.length > 1 ? (
-                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
+                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-box sm:px-6">
                   <h3 className="mb-2 text-base font-medium text-forest-900">Sub Orders</h3>
                   <p className="mb-4 text-[13px] leading-relaxed text-[#8C8A81]">
                     Items from different nurseries ship as their own sub-orders, each
@@ -108,7 +108,7 @@ function OrderView({ order, settings, loadingStatus }: any) {
               ) : null}
 
               {order?.note ? (
-                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
+                <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-box sm:px-6">
                   <h3 className="mb-2 text-base font-medium text-forest-900">Purchase Note</h3>
                   <p className="text-[13px] leading-relaxed text-[#6F6D64]">{order.note}</p>
                 </div>

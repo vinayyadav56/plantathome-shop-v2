@@ -61,7 +61,7 @@ export default function LanguageSwitcher() {
           >
             <Listbox.Options
               static
-              className={`absolute mt-3.5 max-h-60 w-[130px] -translate-y-0.5 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-0 ltr:right-0 rtl:left-0 lg:mt-6`}
+              className={`absolute mt-3.5 max-h-60 w-[130px] -translate-y-0.5 overflow-auto rounded-md bg-white py-1 text-sm shadow-box ring-1 ring-black ring-opacity-5 focus:outline-0 ltr:right-0 rtl:left-0 lg:mt-6`}
             >
               {filterItem?.map((option, index) => (
                 <Listbox.Option

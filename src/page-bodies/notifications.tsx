@@ -22,7 +22,7 @@ export default function NotifyLogsPage() {
 
   if (!Boolean(settings?.enableEmailForDigitalProduct)) {
     return (
-      <Card className="w-full shadow-none sm:shadow flex flex-col">
+      <Card className="w-full flex flex-col">
         <div className="m-auto">
           <FeatureNotAvailable />
         </div>
@@ -33,7 +33,7 @@ export default function NotifyLogsPage() {
   if (data?.error) return <ErrorMessage message={data?.error?.message} />;
 
   return (
-    <Card className="w-full shadow-none sm:shadow flex flex-col">
+    <Card className="w-full flex flex-col">
       <h1 className="font-pahserif text-xl font-medium text-forest-900 sm:text-xl mb-8 sm:mb-10">
         {t('profile-sidebar-notifications')}
       </h1>

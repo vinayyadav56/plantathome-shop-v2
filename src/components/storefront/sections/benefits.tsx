@@ -56,7 +56,7 @@ export function Benefits() {
         <div className="pah-rail [--rail-w:78%] sm:[--rail-w:46%] lg:[--rail-w:calc((100%_-_80px)/5)] mt-12 grid grid-cols-1 gap-5 sm:mt-14">
           {BENEFITS.map((b, i) => (
             <FadeUp key={b.title} delay={(i % 5) * 0.06}>
-              <div className="group flex h-full flex-col items-center rounded-lg border border-kraft-200 bg-white p-6 text-center shadow-[0_2px_8px_rgba(34,48,26,0.06)] transition-shadow hover:shadow-[0_8px_24px_rgba(34,48,26,0.10)]">
+              <div className="group flex h-full flex-col items-center rounded-lg border border-kraft-200 bg-white p-6 text-center shadow-box transition-shadow hover:shadow-[0_8px_24px_rgba(34,48,26,0.10)]">
                 <span className="grid h-14 w-14 place-items-center rounded-full bg-sage-100 text-forest-700 transition-colors group-hover:bg-forest-700 group-hover:text-white">
                   <b.icon className="h-6 w-6" />
                 </span>

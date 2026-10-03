@@ -150,7 +150,7 @@ export default function CityPickerDialog({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-2"
           >
-            <Dialog.Panel className="relative w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
+            <Dialog.Panel className="relative w-full max-w-md rounded-2xl bg-white p-5 shadow-box">
               {!blocking && (
                 <button
                   type="button"

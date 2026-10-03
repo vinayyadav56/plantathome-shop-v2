@@ -8,7 +8,7 @@ const MyReportsPage = () => {
   return (
     <>
       <Seo noindex={true} nofollow={true} />
-      <Card className="w-full self-stretch shadow-none sm:shadow">
+      <Card className="w-full self-stretch">
         <MyReports />
       </Card>
     </>

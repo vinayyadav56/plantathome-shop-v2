@@ -45,7 +45,7 @@ export function DeliveryCard(props: {
   const dayWord = `day${shownEta === 1 ? '' : 's'}`;
 
   return (
-    <div className="rounded-2xl border border-kraft-200 bg-white p-4">
+    <div className="shadow-box rounded-2xl border border-kraft-200 bg-white p-4">
       <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         Delivery &amp; availability
       </h3>

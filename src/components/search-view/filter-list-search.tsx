@@ -17,7 +17,7 @@ const FilterListSearch: React.FC<{
         onChange={(e) => onChange(e.target.value)}
         placeholder={t('filter-search-placeholder') as string}
         aria-label={t('filter-search-placeholder') as string}
-        className="h-9 w-full rounded-[10px] border border-kraft-200 bg-white pe-3 ps-9 text-[13px] text-forest-900 outline-none placeholder:text-stone-400 focus:border-accent"
+        className="h-9 w-full rounded border border-kraft-200 bg-white pe-3 ps-9 text-[13px] text-forest-900 outline-none placeholder:text-stone-400 focus:border-accent"
       />
     </div>
   );

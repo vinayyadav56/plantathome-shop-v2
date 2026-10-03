@@ -216,9 +216,9 @@ const Header = ({ layout }: { layout?: string }) => {
             clipped child span instead. The city chip moved OUT of here to the
             green strip above; this still renders at every width and every
             scroll offset, so nav, search and cart stay reachable too. */}
-        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-3 border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-[0_18px_45px_rgba(5,24,10,0.12),0_2px_8px_rgba(5,24,10,0.05),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 max-md:border-x-0 max-md:border-t-0 md:gap-4 md:rounded-[12px] lg:h-[78px] lg:gap-6 lg:px-[42px]">
+        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-3 border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-box backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 max-md:border-x-0 max-md:border-t-0 md:gap-4 md:rounded lg:h-[78px] lg:gap-6 lg:px-[42px]">
           {/* glass shine — top-half highlight, clipped to the pill radius */}
-          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden md:rounded-[12px]">
+          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden md:rounded">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
           {/* BrandLogo is a fixed 160px image — on a 360px phone that is most of
@@ -266,12 +266,12 @@ const Header = ({ layout }: { layout?: string }) => {
                     </Link>
                     {/* dropdown — glass panel */}
                     <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                      <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+                      <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-box backdrop-blur-2xl">
                         {n.menu.map((m) => (
                           <Link
                             key={m.label}
                             href={m.href}
-                            className="rounded-[10px] px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900"
+                            className="rounded px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900"
                           >
                             {m.label}
                           </Link>
@@ -306,12 +306,12 @@ const Header = ({ layout }: { layout?: string }) => {
                     <ChevronDown size={12} className="opacity-60 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
                   </button>
                   <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+                    <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-box backdrop-blur-2xl">
                       {NAV.slice(2).map((n, i) => (
                         <Link
                           key={n.label}
                           href={n.href}
-                          className={`rounded-[10px] px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'min-[900px]:hidden' : ''}`}
+                          className={`rounded px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'min-[900px]:hidden' : ''}`}
                         >
                           {n.label}
                         </Link>
@@ -377,7 +377,7 @@ const Header = ({ layout }: { layout?: string }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: EXPO }}
-              className="pointer-events-auto mx-auto mt-2 max-w-[1360px] rounded-[12px] border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.94)_0%,rgba(248,247,241,0.88)_48%,rgba(255,255,255,0.92)_100%)] shadow-[0_18px_45px_rgba(5,24,10,0.12),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-[22px] backdrop-saturate-[1.35]"
+              className="pointer-events-auto mx-auto mt-2 max-w-[1360px] rounded border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.94)_0%,rgba(248,247,241,0.88)_48%,rgba(255,255,255,0.92)_100%)] shadow-box backdrop-blur-[22px] backdrop-saturate-[1.35]"
             >
               <div className="mx-auto flex max-w-5xl items-center gap-3 px-5 py-4 sm:px-8">
                 <div className="flex-1">

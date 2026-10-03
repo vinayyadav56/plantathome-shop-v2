@@ -85,7 +85,7 @@ export function Hero() {
             </div>
 
             {showOffer ? (
-              <div className="w-[104px] shrink-0 rounded-xl border border-white/20 bg-[#0D1C10]/[0.64] p-[9px_8px] text-center shadow-[0_10px_26px_rgba(0,0,0,0.32)]">
+              <div className="w-[104px] shrink-0 rounded-xl border border-white/20 bg-[#0D1C10]/[0.64] p-[9px_8px] text-center shadow-box">
                 <div className="mb-[3px] whitespace-nowrap text-[6.8px] font-semibold uppercase tracking-[0.05em] text-white/[0.82]">{t('m-hero-offer-eyebrow')}</div>
                 <div className="whitespace-nowrap font-hanken text-[21px] font-extrabold leading-none text-white">40%<span className="text-[12px]"> {t('m-hero-offer-off')}</span></div>
                 <div className="my-0.5 mb-2 text-[8px] text-white/[0.78]">{t('m-hero-offer-subtext')}</div>

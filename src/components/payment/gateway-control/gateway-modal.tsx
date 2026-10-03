@@ -141,7 +141,7 @@ const GatewayModal: React.FC<Props> = ({ buttonSize = 'small' }) => {
   disabledSelection = gateway === order?.payment_gateway;
   return (
     <Fragment>
-      <div className="payment-modal relative h-full w-screen max-w-md overflow-hidden rounded-2xl bg-light md:h-auto md:min-h-0 lg:max-w-[46rem]">
+      <div className="shadow-box payment-modal relative h-full w-screen max-w-md overflow-hidden rounded-2xl bg-light md:h-auto md:min-h-0 lg:max-w-[46rem]">
         <div className="p-6 lg:p-12">
           <RadioGroup value={gateway} onChange={setGateway}>
             <RadioGroup.Label className="mb-5 block text-lg font-semibold text-heading">

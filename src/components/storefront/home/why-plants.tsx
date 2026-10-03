@@ -136,11 +136,11 @@ export function WhyPlants() {
               whileInView={{ y: 0 }}
               viewport={{ once: true, margin: '-40px' }}
               transition={{ duration: 0.5, delay: (i % 3) * 0.07, ease: EXPO }}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white p-2.5 shadow-[0_2px_8px_rgba(34,48,26,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-forest-200 hover:shadow-[0_14px_32px_rgba(34,48,26,0.12)]"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white p-2.5 shadow-box transition-all duration-300 hover:-translate-y-1 hover:border-forest-200 hover:shadow-[0_14px_32px_rgba(34,48,26,0.12)]"
             >
               {/* image — inset with its own radius, so it reads as a framed
                   photograph instead of a bleed fighting the card's corners */}
-              <div className="relative h-[150px] overflow-hidden rounded-[12px] bg-cream-100 sm:h-[160px] md:h-[130px] lg:h-[160px]">
+              <div className="relative h-[150px] overflow-hidden rounded bg-cream-100 sm:h-[160px] md:h-[130px] lg:h-[160px]">
                 <SafeImage
                   src={b.img}
                   alt={b.title}
@@ -153,7 +153,7 @@ export function WhyPlants() {
 
               <div className="flex flex-1 flex-col px-2.5 pb-3.5 pt-4 md:px-2 md:pb-3 md:pt-3.5">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-forest-600/[0.08] text-forest-700 [&>svg]:h-[16px] [&>svg]:w-[16px]">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-forest-600/[0.08] text-forest-700 [&>svg]:h-[16px] [&>svg]:w-[16px]">
                     {b.icon}
                   </span>
                   <h3 className="font-hanken text-[15.5px] font-semibold leading-snug text-forest-900 md:text-[14px] lg:text-[15.5px]">

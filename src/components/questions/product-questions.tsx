@@ -18,7 +18,7 @@ type ProductQuestionsProps = {
 };
 
 const CARD_SHADOW =
-  'shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+  'shadow-box';
 
 const ProductQuestions: React.FC<ProductQuestionsProps> = ({
   productId,

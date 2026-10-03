@@ -26,7 +26,7 @@ const StaticMenu = () => {
           </span>
           <ArrowDownIcon className="mt-1" />
         </div>
-        <ul className="shadow-dropDown invisible absolute top-full z-30 w-[220px] rounded-md bg-light py-4 opacity-0 shadow transition-all duration-300 group-hover:visible group-hover:opacity-100 ltr:left-0 rtl:right-0 xl:w-[240px]">
+        <ul className="shadow-dropDown invisible absolute top-full z-30 w-[220px] rounded-md bg-light py-4 opacity-0 shadow-box transition-all duration-300 group-hover:visible group-hover:opacity-100 ltr:left-0 rtl:right-0 xl:w-[240px]">
           {headerLinks
             ?.slice(3, headerLinks?.length)
             ?.map(({ href, label }, index) => (

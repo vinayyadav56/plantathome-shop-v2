@@ -42,7 +42,7 @@ export function Testimonials() {
       <div className="pah-rail [--rail-w:82%] md:[--rail-w:55%] lg:[--rail-w:calc((100%_-_48px)/3)] grid gap-4 md:gap-6">
         {TESTIMONIALS.map((t, i) => (
           <FadeUp key={t.name} delay={i * 0.08}>
-            <div className="flex h-full flex-col rounded-2xl bg-white p-5 shadow-[0_22px_50px_rgba(31,42,33,0.08)] sm:p-7">
+            <div className="flex h-full flex-col rounded-2xl bg-white p-5 shadow-box sm:p-7">
               <Icon.quote className="h-8 w-8 text-goldlight" />
               <p className="mt-4 flex-1 text-[15px] leading-7 text-[#3a4a3e]">
                 “{t.quote}”

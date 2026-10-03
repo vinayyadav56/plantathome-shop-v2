@@ -93,7 +93,7 @@ export function CategoryRow() {
       {/* warm-glass panel the cards float on (design spec §8). Total height is
           pinned to the navbar pill: 56 card + 8 rail py + 12 panel p + 2
           border = 78px (annotation: strip = navbar height). */}
-      <div className="relative rounded-2xl border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-1.5 shadow-[0_22px_60px_rgba(6,25,11,0.18),0_3px_10px_rgba(6,25,11,0.06),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-[24px] backdrop-saturate-[1.3]">
+      <div className="relative rounded-2xl border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.93),rgba(248,248,243,0.86))] p-1.5 shadow-box backdrop-blur-[24px] backdrop-saturate-[1.3]">
         <div
           ref={railRef}
           // py-1 gives the 3px hover lift headroom INSIDE the scroll box —
@@ -124,7 +124,7 @@ export function CategoryRow() {
                       {/* product photo — left, 44x44 on a soft radial tile. object-cover, not
                           contain: at 40px with 5px padding a 4:3 shot rendered ~30x22 and
                           read as washed out against the near-white tile. */}
-                      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-[10px] bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
+                      <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={CATEGORY_FALLBACK} />
                       </div>
                       {/* 56px fits one text row: name + arrow, no "Shop Now" line */}

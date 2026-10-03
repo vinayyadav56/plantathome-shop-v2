@@ -71,13 +71,13 @@ export default function CourierTrackingMap({ tracking }: { tracking?: string }) 
   const center = courier ?? drop ?? pickup ?? { lat: 20.5937, lng: 78.9629 };
 
   return (
-    <div className="rounded-2xl border border-gray-200 p-4">
+    <div className="shadow-box rounded-2xl border border-gray-200 p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium text-gray-800">Out for delivery</h3>
         {eta && <span className="text-xs font-medium text-emerald-700">≈ {eta.duration} · {eta.distance} away</span>}
       </div>
       <GoogleMap
-        mapContainerStyle={{ width: '100%', height: 260, borderRadius: 12 }}
+        mapContainerStyle={{ width: '100%', height: 260, borderRadius: 5 }}
         center={center as any}
         zoom={13}
         options={{ streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}

@@ -68,7 +68,7 @@ export default function ListingToolbar({ view, onViewChange, count, hasMore }: P
   ];
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-xl border border-kraft-200 bg-white px-3 py-2.5 sm:px-4">
+    <div className="shadow-box mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-xl border border-kraft-200 bg-white px-3 py-2.5 sm:px-4">
       {typeof count === 'number' && count > 0 ? (
         <span className="font-hanken text-[13px] text-stone-500">
           <strong className="font-medium text-forest-900">

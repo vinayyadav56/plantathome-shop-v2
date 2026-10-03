@@ -8,7 +8,7 @@ const MyQuestionsPage = () => {
   return (
     <>
       <Seo noindex={true} nofollow={true} />
-      <Card className="w-full shadow-none sm:shadow">
+      <Card className="w-full">
         <MyQuestions />
       </Card>
     </>

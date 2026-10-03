@@ -12,7 +12,7 @@ export default function OrderSummaryCard({ order, loading }: { order: any; loadi
   const placed = order?.created_at ? dayjs(order.created_at) : null;
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-kraft-200 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+    <div className="flex flex-col gap-4 rounded-2xl border border-kraft-200 bg-white px-5 py-4 shadow-box sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
       <div>
         <div className="flex items-center gap-2">
           <h2 className="text-base font-medium text-forest-900">

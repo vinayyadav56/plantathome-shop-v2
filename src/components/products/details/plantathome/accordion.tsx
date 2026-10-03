@@ -17,7 +17,7 @@ const PlantAtHomeAccordion: React.FC<{ items: AccordionItem[]; defaultOpen?: num
         return (
           <div
             key={i}
-            className="overflow-hidden rounded-2xl border border-kraft-300/70 bg-white/40 transition"
+            className="shadow-box overflow-hidden rounded-2xl border border-kraft-300/70 bg-white/40 transition"
           >
             <button
               type="button"

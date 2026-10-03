@@ -84,7 +84,7 @@ const BADGES: { label: string; icon: JSX.Element }[] = [
 ];
 
 const PayMark = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <span aria-label={label} className="inline-flex h-[22px] w-[34px] items-center justify-center rounded-[4px] border border-white/20 text-[8px] font-bold tracking-tight text-white/60">
+  <span aria-label={label} className="inline-flex h-[22px] w-[34px] items-center justify-center rounded border border-white/20 text-[8px] font-bold tracking-tight text-white/60">
     {children}
   </span>
 );
@@ -338,7 +338,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={s.name}
-                className="grid h-9 w-9 place-items-center rounded-[10px] border border-white/[0.12] bg-white/[0.05] text-white/55 transition duration-200 hover:border-[#4ADE80]/40 hover:bg-[#4ADE80]/10 hover:text-[#86EFAC] active:scale-90"
+                className="grid h-9 w-9 place-items-center rounded border border-white/[0.12] bg-white/[0.05] text-white/55 transition duration-200 hover:border-[#4ADE80]/40 hover:bg-[#4ADE80]/10 hover:text-[#86EFAC] active:scale-90"
               >
                 {s.icon}
               </a>

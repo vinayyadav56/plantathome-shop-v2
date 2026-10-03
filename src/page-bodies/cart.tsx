@@ -75,7 +75,7 @@ export default function CartPage() {
           </h1>
 
           {isEmpty ? (
-            <div className="pa-cart-empty mt-8 rounded-2xl border border-kraft-200 bg-white">
+            <div className="shadow-box pa-cart-empty mt-8 rounded-2xl border border-kraft-200 bg-white">
               <div className="pa-cart-empty-icon">
                 <ShoppingBag size={40} style={{ color: '#2C5F2E' }} aria-hidden />
               </div>
@@ -94,7 +94,7 @@ export default function CartPage() {
               {/* items */}
               <div className="w-full lg:max-w-2xl">
                 {freeDeliveryOffered && (
-                <div className="pa-cart-delivery-bar rounded-2xl border border-kraft-200 bg-white">
+                <div className="shadow-box pa-cart-delivery-bar rounded-2xl border border-kraft-200 bg-white">
                   <p className={`pa-cart-delivery-label${isFreeDelivery ? ' is-free' : ''}`}>
                     {isFreeDelivery ? (
                       <>
@@ -114,7 +114,7 @@ export default function CartPage() {
                 </div>
                 )}
 
-                <div className="mt-4 overflow-hidden rounded-2xl border border-kraft-200 bg-white">
+                <div className="shadow-box mt-4 overflow-hidden rounded-2xl border border-kraft-200 bg-white">
                   {items.map((item) => (
                     <CartItem item={item} key={item.id} />
                   ))}
@@ -123,7 +123,7 @@ export default function CartPage() {
 
               {/* summary */}
               <aside className="w-full lg:sticky lg:top-28 lg:w-96">
-                <div className="rounded-2xl border border-kraft-200 bg-white p-5">
+                <div className="shadow-box rounded-2xl border border-kraft-200 bg-white p-5">
                   <div className="pa-cart-summary">
                     <div className="pa-cart-summary-row">
                       <span>Subtotal ({totalUniqueItems} {totalUniqueItems === 1 ? 'item' : 'items'})</span>

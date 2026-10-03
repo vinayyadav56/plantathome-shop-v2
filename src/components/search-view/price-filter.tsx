@@ -91,7 +91,7 @@ const PriceFilter = () => {
       {/* Reference layout: EDITABLE From/To inputs (the boxes used to be
           display-only). Typing uses the same debounced URL push as dragging. */}
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <label className="flex flex-col items-start rounded-[10px] border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
+        <label className="flex flex-col items-start rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">From</span>
           <span className="flex w-full items-center text-[13px] font-bold text-forest-900">
             ₹
@@ -107,7 +107,7 @@ const PriceFilter = () => {
             />
           </span>
         </label>
-        <label className="flex flex-col rounded-[10px] border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
+        <label className="flex flex-col rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">To</span>
           <span className="flex w-full items-center text-[13px] font-bold text-forest-900">
             ₹

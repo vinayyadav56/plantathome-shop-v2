@@ -189,7 +189,7 @@ const MaintenanceMode = ({
       {isMultiLangEnable && !isEmpty(filterItem) ? (
         <div className="fixed bottom-5 right-5 z-50">
           {langOnClick ? (
-            <div className="absolute bottom-16 right-1 max-w-md overflow-hidden rounded-2xl bg-white shadow-lg md:bottom-24">
+            <div className="absolute bottom-16 right-1 max-w-md overflow-hidden rounded-2xl bg-white shadow-box md:bottom-24">
               <div className="bg-[#f0f4f8] px-4 py-5 text-left text-lg font-bold leading-none text-black md:px-8">
                 <h3>{t('text-title-change-language')}</h3>
               </div>

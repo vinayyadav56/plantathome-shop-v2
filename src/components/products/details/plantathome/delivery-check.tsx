@@ -81,7 +81,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
           }}
           placeholder="Enter pincode"
           aria-describedby="delivery-check-result"
-          className="h-11 w-full rounded-[10px] border border-[#DCDCDC] px-3 text-[14px] text-[#184A31] outline-none placeholder:text-[#9A9A9A] focus:border-[#24693E]"
+          className="h-11 w-full rounded border border-[#DCDCDC] px-3 text-[14px] text-[#184A31] outline-none placeholder:text-[#9A9A9A] focus:border-[#24693E]"
         />
         <button
           type="submit"
@@ -116,7 +116,7 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
             {result.options.map((o) => (
               <div
                 key={o.type}
-                className="flex items-start gap-2.5 rounded-[10px] border border-kraft-200 bg-[#FAFAF7] px-3 py-2.5"
+                className="flex items-start gap-2.5 rounded border border-kraft-200 bg-[#FAFAF7] px-3 py-2.5"
               >
                 <LineIcon
                   name={o.type === 'instant' ? 'bike' : 'truck'}

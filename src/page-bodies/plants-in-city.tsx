@@ -117,7 +117,7 @@ function PlantsInCityPage({
         )}
 
         {/* Delivery information */}
-        <div className="mt-14 rounded-xl border border-border-200 bg-white p-6 md:p-8">
+        <div className="shadow-box mt-14 rounded-xl border border-border-200 bg-white p-6 md:p-8">
           <h2 className="mb-3 inline-flex items-center gap-2 text-xl font-semibold text-heading">
             <Truck className="h-5 w-5 text-accent" aria-hidden />
             Plant Delivery in {page.city_name}

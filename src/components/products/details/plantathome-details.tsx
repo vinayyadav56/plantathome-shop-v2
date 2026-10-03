@@ -225,7 +225,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
         <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>
       )}
       {!hasVendorPrice && discount && (
-        <span className="rounded-[8px] bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
+        <span className="rounded bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
           {discount} OFF
         </span>
       )}
@@ -665,7 +665,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 CTA. Single-line rows: the 3-column tiles wrapped every label
                 onto two lines (owner feedback). */}
             {!isModal && (
-              <div className="mt-5 divide-y divide-[#ECECEC] rounded-2xl border border-kraft-200 bg-white px-4">
+              <div className="shadow-box mt-5 divide-y divide-[#ECECEC] rounded-2xl border border-kraft-200 bg-white px-4">
                 {[
                   { icon: 'shield', label: '30-day healthy-arrival guarantee' },
                   { icon: 'box', label: 'Secure eco-friendly packaging' },
@@ -681,7 +681,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* What's included — admin-configured list (Product Page Sections) */}
             {!isModal && includedItems.length > 0 && (
-              <div className="mt-4 rounded-2xl border border-kraft-200 bg-white p-4">
+              <div className="shadow-box mt-4 rounded-2xl border border-kraft-200 bg-white p-4">
                 <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (

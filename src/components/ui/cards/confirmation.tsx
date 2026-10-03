@@ -32,7 +32,7 @@ const Confirmation: React.FC<ConfirmationCardProps> = ({
 }) => {
   const { t } = useTranslation('common');
   return (
-    <div className="m-auto w-full max-w-sm rounded-md bg-light p-4 pb-6 sm:w-[24rem] md:rounded-2xl">
+    <div className="shadow-box m-auto w-full max-w-sm rounded-md bg-light p-4 pb-6 sm:w-[24rem] md:rounded-2xl">
       <div className="h-full w-full text-center">
         <div className="flex h-full flex-col justify-between">
           <span className="m-auto mt-4 text-accent">

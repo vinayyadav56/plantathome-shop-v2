@@ -117,7 +117,7 @@ export default function AddressMapPicker({ lat, lng, onPin, className = '' }: Pr
         </div>
       ) : (
         <GoogleMap
-          mapContainerStyle={{ width: '100%', height: 220, borderRadius: 12 }}
+          mapContainerStyle={{ width: '100%', height: 220, borderRadius: 5 }}
           center={pos ?? FALLBACK_CENTER}
           zoom={pos ? 16 : 11}
           options={{

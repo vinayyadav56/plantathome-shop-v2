@@ -252,15 +252,24 @@ module.exports = {
       minWidth: {
         150: '150px',
       },
+      // One radius for boxes, one for controls (both 5px, owner 2026-10-03) —
+      // tokens in plantathome-overrides.css. `none` and `full` keep their meaning.
       borderRadius: {
-        DEFAULT: '5px',
-        // `rounded-control` — the single control radius (--radius-control in plantathome-overrides.css)
+        sm: 'var(--radius-box)',
+        DEFAULT: 'var(--radius-box)',
+        md: 'var(--radius-box)',
+        lg: 'var(--radius-box)',
+        xl: 'var(--radius-box)',
+        '2xl': 'var(--radius-box)',
+        '3xl': 'var(--radius-box)',
         control: 'var(--radius-control)',
       },
       inset: {
         22: '5.25rem',
       },
       boxShadow: {
+        // `shadow-box` — the one card/box elevation (--shadow-box, owner 2026-10-03)
+        box: 'var(--shadow-box)',
         200: 'rgba(0, 0, 0, 0.16) 0px 3px 6px',
         300: 'rgba(0, 0, 0, 0.16) 0px 0px 6px',
         350: 'rgba(0, 0, 0, 0.16) 0px 3px 6px',

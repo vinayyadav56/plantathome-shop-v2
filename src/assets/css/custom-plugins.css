@@ -383,7 +383,7 @@ html[dir='rtl'] .react-tel-input .country-list .flag {
 }
 .StripePay {
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   outline: none;
   text-decoration: none;
   color: #fff;
@@ -396,7 +396,7 @@ html[dir='rtl'] .react-tel-input .country-list .flag {
   box-shadow:
     0 4px 6px rgba(50, 50, 93, 0.11),
     0 1px 3px rgba(0, 0, 0, 0.08);
-  border-radius: 5px;
+  border-radius: var(--radius-control);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.025em;
@@ -630,7 +630,7 @@ html[dir='rtl'] .react-tel-input .country-list .flag {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
-  border-radius: 3px;
+  border-radius: var(--radius-control);
   background-color: #ffffff;
   @apply ltr:mr-2.5 rtl:ml-2.5;
 }
@@ -843,7 +843,7 @@ html[dir='rtl'] .react-tel-input .country-list .flag {
     rgba(0, 0, 0, 0.35) 65.1%,
     rgba(0, 0, 0, 0.85) 100%
   );
-  border-radius: 8px 8px 0px 0px;
+  border-radius: var(--radius-box) var(--radius-box) 0 0;
 }
 
 .line-clamp-1 {
@@ -855,7 +855,7 @@ html[dir='rtl'] .react-tel-input .country-list .flag {
 
 .pac-container {
   @apply rounded-lg py-2 after:hidden;
-  box-shadow: -8px 8px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-box);
 }
 
 .pac-container .pac-item {

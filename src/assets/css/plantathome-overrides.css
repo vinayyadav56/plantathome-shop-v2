@@ -72,14 +72,20 @@
   /* ── Density multiplier (comfortable = 1; compact set on <html data-density="compact">) ── */
   --density: 1;
 
-  /* Radius */
-  --pa-radius:      20px;
-  --pa-radius-card: 24px;
+  /* Radius — owner, 2026-10-03: 5px EVERYWHERE; only circles and pills stay
+     round. Boxes (cards, panels, tiles, modals) and controls (buttons, inputs,
+     option tiles) each read one token — change them here only. The Tailwind
+     radius scale (rounded-sm … rounded-3xl) and rounded-control point at these. */
+  --radius-box:     5px;
+  --radius-control: 5px;
+  --pa-radius:      var(--radius-box);
+  --pa-radius-card: var(--radius-box);
   --pa-radius-pill: 100px;
-  --pa-radius-sm:   12px;
-  /* ONE radius for every control — buttons, inputs, selectable option tiles.
-     Owner picked 10px sitewide (2026-10-03; was 14px). Change it here only. */
-  --radius-control: 10px;
+  --pa-radius-sm:   var(--radius-box);
+
+  /* ONE elevation for every card / box / dropdown / modal (owner, 2026-10-03).
+     Buttons, inputs and round elements keep their own. `shadow-box` in Tailwind. */
+  --shadow-box: 0 4px 20px rgba(0, 0, 0, 0.12);
 
   /* Shadows */
   --pa-shadow-xs: 0 1px 4px rgba(0,0,0,0.06);
@@ -252,7 +258,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   line-height: 1;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-control);
   transition: var(--pa-t-fast);
 }
 .pa-bar-close:hover { color: #fff; background: rgba(255,255,255,0.15); }
@@ -869,7 +875,7 @@ select:focus {
 .pa-cart-delivery-bar {
   margin: 12px 16px 0;
   background: #fff;
-  border-radius: 12px;
+  border-radius: var(--radius-box);
   padding: 12px 14px;
   border: 1px solid rgba(46,107,74,0.12);
 }
@@ -901,6 +907,7 @@ select:focus {
 
 /* ── Cart item ───────────────────────────────────────────────── */
 .pa-cart-item {
+  box-shadow: var(--shadow-box);
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -913,12 +920,12 @@ select:focus {
   transition: box-shadow 0.2s;
 }
 .pa-cart-item:hover {
-  box-shadow: 0 4px 16px rgba(46,107,74,0.10);
+  box-shadow: var(--shadow-box);
 }
 .pa-cart-item-img {
   width: 72px;
   height: 72px;
-  border-radius: 10px;
+  border-radius: var(--radius-box);
   overflow: hidden;
   background: var(--ds-accent-soft, #E7EEE2);
   flex-shrink: 0;
@@ -1032,7 +1039,7 @@ select:focus {
   font-weight: 700;
   background: #FFF0E0;
   color: #D97706;
-  border-radius: 4px;
+  border-radius: var(--radius-box);
   padding: 2px 5px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1040,9 +1047,10 @@ select:focus {
 
 /* ── Order summary ───────────────────────────────────────────── */
 .pa-cart-summary {
+  box-shadow: var(--shadow-box);
   margin: 12px 16px 0;
   background: #fff;
-  border-radius: 12px;
+  border-radius: var(--radius-box);
   border: 1px solid rgba(46,107,74,0.10);
   padding: 14px;
 }
@@ -1189,7 +1197,11 @@ select:focus {
    lift these out of that scope. */
 .pa-cart-page .pa-cart-delivery-bar { margin: 0; }
 
+/* On /cart the items are rows inside ONE card (and the summary sits in an outer
+   card): the container carries the box shadow, the rows stay flat — never stack. */
+.pa-cart-page .pa-cart-summary { box-shadow: none; }
 .pa-cart-page .pa-cart-item {
+  box-shadow: none;
   margin: 0;
   border: 0;
   border-radius: 0;
@@ -1294,10 +1306,10 @@ select:focus {
 /* ── Step card (contact, address, etc.) ─────────────────────── */
 .pa-checkout-step {
   background: #fff;
-  border-radius: 16px;
+  border-radius: var(--radius-box);
   padding: 22px 24px;
   border: 1px solid #ECEEEA;
-  box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+  box-shadow: var(--shadow-box);
   margin-bottom: 16px;
 }
 @media (min-width: 768px) { .pa-checkout-step { padding: 26px 30px; } }
@@ -1335,10 +1347,10 @@ select:focus {
 /* ── Order summary panel ─────────────────────────────────────── */
 .pa-order-summary {
   background: #fff;
-  border-radius: 16px;
+  border-radius: var(--radius-box);
   padding: 22px;
   border: 1px solid #ECEEEA;
-  box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+  box-shadow: var(--shadow-box);
   position: sticky;
   top: 24px;
 }
@@ -1455,11 +1467,11 @@ select:focus {
 .Toastify__toast--success {
   background: var(--ds-accent, #2E5E2A) !important;
   color: #fff !important;
-  border-radius: 12px !important;
+  border-radius: var(--radius-box) !important;
 }
 .Toastify__toast--error {
   background: #B91C1C !important;
-  border-radius: 12px !important;
+  border-radius: var(--radius-box) !important;
 }
 .Toastify__progress-bar { background: rgba(255,255,255,0.4) !important; }
 
@@ -1818,9 +1830,9 @@ textarea:focus {
   gap: 6px;
   background: #fff;
   border: 1px solid #ECEEEA;
-  border-radius: 16px;
+  border-radius: var(--radius-box);
   padding: 18px 18px 14px;
-  box-shadow: 0 1px 2px rgba(16,24,40,0.03);
+  box-shadow: var(--shadow-box);
   overflow-x: auto;
 }
 .pa-steps-track {
@@ -1889,7 +1901,7 @@ textarea:focus {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-box);
   overflow: hidden;
   background: #F1F3EE;
   margin-right: 12px;
@@ -1916,7 +1928,7 @@ textarea:focus {
 .pa-od-ship {
   background: #F7F8F5;
   border: 1px solid #ECEEEA;
-  border-radius: 12px;
+  border-radius: var(--radius-box);
   padding: 10px 12px;
   margin-bottom: 14px;
 }
@@ -2113,7 +2125,7 @@ textarea:focus {
 /* ── Pincode serviceability banner ───────────────────────────── */
 .pa-pin {
   margin-top: 6px;
-  border-radius: 12px;
+  border-radius: var(--radius-box);
   padding: 11px 14px;
   font-size: 13px;
   font-weight: 600;

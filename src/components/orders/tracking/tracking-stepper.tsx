@@ -160,7 +160,7 @@ export default function TrackingStepper({
   const steps = buildSteps(order, shipments);
 
   return (
-    <div className="rounded-2xl border border-kraft-200 bg-white px-4 py-6 shadow-sm sm:px-8 sm:py-8">
+    <div className="rounded-2xl border border-kraft-200 bg-white px-4 py-6 shadow-box sm:px-8 sm:py-8">
       {/* ≥ md: horizontal stepper */}
       <ol className="hidden md:flex">
         {steps.map((step, i) => (

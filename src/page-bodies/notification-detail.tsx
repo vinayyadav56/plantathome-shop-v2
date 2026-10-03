@@ -33,7 +33,7 @@ const NotifyLogPage = () => {
 
   if (!Boolean(settings?.enableEmailForDigitalProduct)) {
     return (
-      <Card className="w-full shadow-none sm:shadow flex flex-col">
+      <Card className="w-full flex flex-col">
         <div className="m-auto">
           <FeatureNotAvailable />
         </div>
@@ -42,7 +42,7 @@ const NotifyLogPage = () => {
   }
 
   return (
-    <Card className="w-full shadow-none sm:shadow flex flex-col">
+    <Card className="w-full flex flex-col">
       {isLoading ? (
         <NotifySingleContentLoader className="h-full w-full" />
       ) : (

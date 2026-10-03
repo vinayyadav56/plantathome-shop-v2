@@ -12,7 +12,7 @@ const CategoryCard: React.FC<CategoryItemProps> = ({ item, onClick }) => {
 
   return (
     <div
-      className="group relative h-80 w-full rounded-lg bg-light p-8 shadow-downfall-sm transition-shadow hover:shadow-downfall-lg"
+      className="group relative h-80 w-full rounded-lg bg-light p-8 shadow-box transition-shadow hover:shadow-downfall-lg"
       onClick={onClick}
       role="button"
     >

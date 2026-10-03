@@ -49,12 +49,12 @@ export default function CorporatePanel() {
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="h-72 animate-pulse rounded-2xl border border-kraft-200 bg-white"
+              className="shadow-box h-72 animate-pulse rounded-2xl border border-kraft-200 bg-white"
             />
           ))}
         </div>
       ) : tiers.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-kraft-200 bg-white p-10 text-center">
+        <div className="shadow-box mt-8 rounded-2xl border border-kraft-200 bg-white p-10 text-center">
           <Gift size={40} className="mx-auto text-forest-600" aria-hidden />
           <h3 className="mt-3 font-pahserif text-lg font-medium text-forest-900">
             Corporate gifting, made effortless
@@ -76,7 +76,7 @@ export default function CorporatePanel() {
             {tiers.map((t, i) => (
               <div
                 key={t.id}
-                className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
+                className={`flex flex-col rounded-2xl border bg-white p-6 shadow-box ${
                   i === 2
                     ? 'border-gold-400 ring-1 ring-gold-400'
                     : 'border-kraft-200'
@@ -118,7 +118,7 @@ export default function CorporatePanel() {
             ))}
           </div>
 
-          <div className="mt-10 rounded-2xl border border-kraft-200 bg-white p-6 text-center sm:p-8">
+          <div className="shadow-box mt-10 rounded-2xl border border-kraft-200 bg-white p-6 text-center sm:p-8">
             <h3 className="font-pahserif text-xl font-medium text-forest-900">
               Need custom branding or bulk quantities?
             </h3>

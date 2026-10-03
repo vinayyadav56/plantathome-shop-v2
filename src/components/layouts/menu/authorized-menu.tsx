@@ -49,7 +49,7 @@ const AuthorizedMenu: React.FC<{ minimal?: boolean }> = ({ minimal }) => {
         <Menu.Items
           as="ul"
           className={cn(
-            'absolute mt-5 w-48 rounded bg-white pb-4 shadow-700 focus:outline-none ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left',
+            'absolute mt-5 w-48 rounded bg-white pb-4 shadow-box focus:outline-none ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left',
             {
               '!mt-2': minimal,
             }

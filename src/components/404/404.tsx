@@ -51,7 +51,7 @@ function PlantFacts() {
 
   return (
     <div
-      className="mx-auto mt-10 max-w-md rounded-2xl border border-kraft-200 bg-sage-100/60 px-6 py-4"
+      className="shadow-box mx-auto mt-10 max-w-md rounded-2xl border border-kraft-200 bg-sage-100/60 px-6 py-4"
       aria-live={reduced ? undefined : 'polite'}
     >
       <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-forest-600">

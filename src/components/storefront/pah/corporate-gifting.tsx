@@ -57,7 +57,7 @@ export function CorporateGifting() {
   const { t } = useTranslation('common');
   if (!useBannerEnabled('gifting')) return null;
   return (
-    <div className="mx-5 mb-7 mt-[14px] rounded-2xl bg-sage-100 pb-[24px] pl-[20px] pr-[20px] pt-[30px] shadow-[0_1px_3px_rgba(20,40,24,0.06)]">
+    <div className="mx-5 mb-7 mt-[14px] rounded-2xl bg-sage-100 pb-[24px] pl-[20px] pr-[20px] pt-[30px] shadow-box">
       {/* hero photo */}
       <div className="relative mb-[20px] h-[182px] overflow-hidden rounded-2xl shadow-[0_2px_8px_rgba(34,48,26,0.07)]"><HeroImg /></div>
       {/* copy */}

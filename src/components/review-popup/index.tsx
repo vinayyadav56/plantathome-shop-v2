@@ -26,7 +26,7 @@ const ReviewModal = () => {
     closeModal();
   }, []);
   return isOpen ? (
-    <div className="fixed lg:bottom-4 bottom-16 right-2 shadow-400 lg:right-4 rounded-xl lg:bg-white bg-slate-50 max-w-full z-50 sm:max-w-md sm:w-full">
+    <div className="fixed lg:bottom-4 bottom-16 right-2 shadow-box lg:right-4 rounded-xl lg:bg-white bg-slate-50 max-w-full z-50 sm:max-w-md sm:w-full">
       <div className="flex justify-between relative px-4 py-5 border-b border-b-slate-100 lg:text-xl sm:text-lg text-base">
         <h2>
           You last order <span className="text-accent">{tracking_number}</span>{' '}

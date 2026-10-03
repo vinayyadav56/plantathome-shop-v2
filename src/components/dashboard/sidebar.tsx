@@ -97,7 +97,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
   return (
     <aside className={className}>
       <div className="flex flex-col gap-5">
-        <div className="rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_12px_rgba(22,48,26,0.04)]">
+        <div className="rounded-2xl border border-kraft-200 bg-white shadow-box">
           {/* who you are */}
           <div className="flex items-center gap-3 p-4 lg:px-5 lg:pt-5">
             <UserAvatar user={me} className="h-12 w-12 text-[15px]" />
@@ -152,7 +152,7 @@ const DashboardSidebar: React.FC<Props> = ({ className }) => {
         </div>
 
         {/* a quiet nudge back to the shop — text only, no decorative photo */}
-        <div className="hidden rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_2px_12px_rgba(22,48,26,0.04)] lg:block">
+        <div className="hidden rounded-2xl border border-kraft-200 bg-white p-5 shadow-box lg:block">
           <p className="text-[16px] font-semibold leading-snug text-forest-900">{t('promo-title')}</p>
           <p className="mt-1.5 text-[13px] leading-relaxed text-stone-600">{t('promo-sub')}</p>
           <Link

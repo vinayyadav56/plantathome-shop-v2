@@ -53,7 +53,7 @@ export default function StyledSpaces() {
             {tiles.map((t, i) => (
               <div
                 key={`${t.caption}-${i}`}
-                className="group w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] sm:w-[31%] lg:w-[calc((100%-60px)/6)]"
+                className="group w-[46%] shrink-0 snap-start overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box sm:w-[31%] lg:w-[calc((100%-60px)/6)]"
               >
                 <div className="aspect-[4/3] overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}

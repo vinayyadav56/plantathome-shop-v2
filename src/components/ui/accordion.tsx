@@ -26,13 +26,13 @@ const Collapse: React.FC<CollapseProps> = ({
 }) => {
   const isOpen = i === expanded;
   // active state style
-  const activeClass = isOpen ? 'shadow-sm' : '';
+  const activeClass = isOpen ? 'shadow-box' : '';
 
   const { t } = useTranslation(translatorNS);
   const description = useSanitizeContent({ description: content });
   return (
     <div
-      className={cn(
+      className={cn('shadow-box', 
         'border border-solid border-border-200 bg-light rounded mb-2.5 transition-all hover:border-border-base',
         activeClass,
       )}

@@ -55,7 +55,7 @@ const CouponCard: React.FC<CouponCardProps> = ({ coupon, className }) => {
           }}
         />
       </div>
-      <div className="grid items-center w-11/12 grid-flow-col px-5 py-4 mx-auto rounded-bl shadow-sm rounded-be auto-cols-fr bg-light">
+      <div className="grid items-center w-11/12 grid-flow-col px-5 py-4 mx-auto rounded-bl shadow-box rounded-be auto-cols-fr bg-light">
         <>
           <span className="flex items-center font-semibold uppercase text-heading focus:outline-none gap-1.5">
             {copyText.value}{' '}

@@ -79,7 +79,7 @@ export function WhyPlants() {
       {/* carousel */}
       <div className="pah-scroll -mx-5 flex gap-3 overflow-x-auto px-5 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {cards.map((b, i) => (
-          <div key={`${b.title}-${i}`} className="relative w-[168px] shrink-0 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_2px_8px_rgba(34,48,26,0.07)]">
+          <div key={`${b.title}-${i}`} className="relative w-[168px] shrink-0 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
             <div className="relative h-[124px] bg-cream-100"><CardImg src={b.img} alt={b.title} /></div>
             {/* the badge straddles the image seam — it is pinned to the image
                 height and has to move with it */}
@@ -93,7 +93,7 @@ export function WhyPlants() {
         ))}
       </div>
       {/* closing CTA strip */}
-      <div className="mt-4 flex items-center gap-[11px] rounded-[13px] border border-kraft-200 bg-white py-2 pl-3 pr-2 shadow-[0_2px_8px_rgba(20,40,24,0.05)]">
+      <div className="mt-4 flex items-center gap-[11px] rounded border border-kraft-200 bg-white py-2 pl-3 pr-2 shadow-box">
         <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-forest-800 text-white"><Flower2 size={16} aria-hidden /></span>
         <p className="min-w-0 flex-1 text-[11.5px] leading-[1.32] text-forest-900">{t('m-why-cta-text')} <strong className="font-bold">{t('m-why-cta-text-strong-1')}</strong> &amp; <strong className="font-bold">{t('m-why-cta-text-strong-2')}</strong></p>
         <Link href="/plants/search" className="inline-flex shrink-0 items-center gap-[5px] rounded-control bg-ds-btn px-[14px] py-[9px] font-hanken text-[11.5px] font-bold text-white">{t('m-why-cta-button')}<ArrowRight size={12} aria-hidden /></Link>

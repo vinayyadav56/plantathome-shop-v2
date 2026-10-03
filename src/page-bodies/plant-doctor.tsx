@@ -43,7 +43,7 @@ import {
    ──────────────────────────────────────────────────────────────────────────── */
 
 const CARD =
-  'rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+  'rounded-2xl border border-kraft-200 bg-white shadow-box';
 
 const BTN_PRIMARY =
   'inline-flex items-center justify-center gap-2.5 rounded-control bg-ds-btn px-7 py-3.5 text-[14px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover active:scale-[0.98] disabled:opacity-60 disabled:hover:bg-ds-btn';

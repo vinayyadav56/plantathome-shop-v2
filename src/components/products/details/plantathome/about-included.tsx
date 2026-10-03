@@ -24,7 +24,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
     <section className="bg-[#FAF8F2]">
       <div className="mx-auto grid max-w-7xl gap-5 px-5 py-8 sm:px-8 lg:grid-cols-3">
         {/* About */}
-        <div className="rounded-2xl bg-white p-6 shadow-[0_12px_34px_-22px_rgba(34,48,26,0.28)]">
+        <div className="rounded-2xl bg-white p-6 shadow-box">
           <h3 className="font-poppins text-[13px] font-medium uppercase tracking-[0.08em] text-forest-700">About {name}</h3>
           <p className="mt-3 text-[13.5px] leading-7 text-stone-600">
             {text ||
@@ -51,7 +51,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
         </a>
 
         {/* What's Included */}
-        <div className="rounded-2xl bg-white p-6 shadow-[0_12px_34px_-22px_rgba(34,48,26,0.28)]">
+        <div className="rounded-2xl bg-white p-6 shadow-box">
           <h3 className="font-poppins text-[13px] font-medium uppercase tracking-[0.08em] text-forest-700">What&apos;s Included</h3>
           <ul className="mt-4 space-y-2.5">
             {INCLUDED(name).map((it) => (

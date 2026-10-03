@@ -12,7 +12,7 @@ const DownloadableProductsPage = () => {
   return (
     <>
       <Seo noindex={true} nofollow={true} />
-      <Card className="relative w-full self-stretch shadow-none sm:shadow">
+      <Card className="relative w-full self-stretch">
         <h1 className="mb-8 text-center font-pahserif text-xl font-medium text-forest-900 sm:mb-10 sm:text-xl">
           {t('text-downloads')}
         </h1>

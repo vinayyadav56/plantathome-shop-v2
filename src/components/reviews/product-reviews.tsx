@@ -25,7 +25,7 @@ type ProductReviewsProps = {
 };
 
 const CARD_SHADOW =
-  'shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+  'shadow-box';
 
 const ProductReviews: React.FC<ProductReviewsProps> = ({
   productId,
@@ -119,7 +119,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
               {showOrdersLink ? (
                 <Link
                   href={Routes.orders}
-                  className="inline-flex items-center gap-2.5 rounded-[12px] bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-snug text-[#24693E] transition hover:bg-[#E9F2DD]"
+                  className="inline-flex items-center gap-2.5 rounded bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-snug text-[#24693E] transition hover:bg-[#E9F2DD]"
                 >
                   Bought this plant? Review it from your orders.
                   <ArrowRight size={16} className="shrink-0" aria-hidden />

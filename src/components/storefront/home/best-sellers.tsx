@@ -88,7 +88,7 @@ export function BestSellers({
         {loading
           ? Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="w-full">
-                <div className="aspect-square w-full animate-pulse rounded-t-[14px] bg-[#D9EDE2]" />
+                <div className="aspect-square w-full animate-pulse rounded-t bg-[#D9EDE2]" />
                 <div className="mt-3 h-4 w-3/4 animate-pulse rounded bg-[#D9EDE2]" />
                 <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-[#D9EDE2]" />
               </div>

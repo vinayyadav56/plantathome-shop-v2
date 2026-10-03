@@ -98,7 +98,7 @@ const OrderDetails = ({ order, loadingStatus }: Props) => {
     amount: order?.sales_tax,
   });
   return (
-    <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-sm">
+    <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
       {/* Title + actions. Actions used to be two bare text links jammed into one flex row —
           the ONLY route to the tracking page was an eye-icon link with no button chrome. Real
           buttons now, wrapping under the title on small screens. */}

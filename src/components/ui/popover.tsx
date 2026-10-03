@@ -68,7 +68,7 @@ const PopOver = ({
             >
               <Popover.Panel
                 className={cn(
-                  'w-full min-w-[10rem] rounded bg-white py-2 px-1 text-left shadow-cardAction',
+                  'w-full min-w-[10rem] rounded bg-white py-2 px-1 text-left shadow-box',
                   popOverPanelClass,
                 )}
               >

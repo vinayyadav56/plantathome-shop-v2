@@ -40,7 +40,7 @@ function VideoBlock({ url }: { url: string }) {
   }
 
   return (
-    <div className="mt-8 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+    <div className="mt-8 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
       <div className="relative aspect-video w-full bg-stone-100">
         {playing ? (
           <iframe
@@ -218,7 +218,7 @@ export function PlantCareSection({
         {/* RIGHT — spec rows + badges */}
         {hasRight && (
           <div className="min-w-0">
-            <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+            <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
               {specs.length > 0 && (
                 <dl>
                   {specs.map((s) => (

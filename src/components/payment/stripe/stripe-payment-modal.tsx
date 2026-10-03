@@ -24,7 +24,7 @@ const StripePaymentModal: React.FC<Props> = ({
 
   if (isLoading) {
     return (
-      <div className="h-96 w-screen max-w-md rounded-xl bg-white p-12 lg:w-full lg:min-w-[48rem]">
+      <div className="shadow-box h-96 w-screen max-w-md rounded-xl bg-white p-12 lg:w-full lg:min-w-[48rem]">
         <Spinner className="!h-full" showText={false} />
       </div>
     );
@@ -35,7 +35,7 @@ const StripePaymentModal: React.FC<Props> = ({
   return (
     <Elements stripe={getStripe()}>
       {cards?.length > 0 ? (
-        <div className="w-full max-w-4xl rounded-xl bg-white p-6 md:p-12">
+        <div className="shadow-box w-full max-w-4xl rounded-xl bg-white p-6 md:p-12">
           <SavedCardViewHeader
             paymentIntentInfo={paymentIntentInfo}
             trackingNumber={trackingNumber}

@@ -39,7 +39,7 @@ const PromoPopup = () => {
       open={isOpen}
       onClose={closeModalAction}
     >
-      <div className="w-full overflow-hidden max-w-4xl rounded-xl bg-white">
+      <div className="shadow-box w-full overflow-hidden max-w-4xl rounded-xl bg-white">
         {isLoading ? (
           <div className="p-6 md:p-12">
             <Spinner className="!h-auto" />

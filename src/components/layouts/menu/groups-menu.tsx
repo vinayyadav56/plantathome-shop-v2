@@ -89,7 +89,7 @@ const GroupsMenu: React.FC<GroupsMenuProps> = ({
         <Menu.Items
           as="div"
           className={cn(
-            'absolute mt-2 h-56 max-h-56 min-h-40 w-48 overflow-hidden rounded bg-light py-2 shadow-700 focus:outline-none focus-visible:outline-0 sm:max-h-72 lg:h-72 2xl:h-auto 2xl:max-h-screen',
+            'absolute mt-2 h-56 max-h-56 min-h-40 w-48 overflow-hidden rounded bg-light py-2 shadow-box focus:outline-none focus-visible:outline-0 sm:max-h-72 lg:h-72 2xl:h-auto 2xl:max-h-screen',
             {
               'border border-border-200 ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left':
                 variant === 'minimal',

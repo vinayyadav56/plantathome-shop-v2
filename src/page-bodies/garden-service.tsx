@@ -71,7 +71,7 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 
 /* Luxury card language shared across the page (matches the product-card bar). */
 const CARD =
-  'rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]';
+  'rounded-2xl border border-kraft-200 bg-white shadow-box';
 const CARD_HOVER =
   'transition-shadow duration-300 hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)]';
 
@@ -414,7 +414,7 @@ export default function GardenServicePage() {
               </div>
               <div className="p-6 sm:p-7">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-[#F3F8EC] text-[#24693E]">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded bg-[#F3F8EC] text-[#24693E]">
                     <GsIcon name={s.icon} className="h-5 w-5" />
                   </span>
                   <h3 className="text-[18px] font-medium leading-snug text-[#184A31]">{s.title}</h3>
@@ -474,7 +474,7 @@ export default function GardenServicePage() {
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 sm:gap-6">
           {strip.map((src, i) => (
-            <motion.div key={i} {...reveal(0.1 + i * 0.06)} className="overflow-hidden rounded-2xl border border-kraft-200 shadow-[0_4px_10px_rgba(0,0,0,0.04)]">
+            <motion.div key={i} {...reveal(0.1 + i * 0.06)} className="overflow-hidden rounded-2xl border border-kraft-200 shadow-box">
               <img src={src} alt="A recent PlantAtHome garden project" className="h-32 w-full object-cover sm:h-44" />
             </motion.div>
           ))}
@@ -505,7 +505,7 @@ export default function GardenServicePage() {
                   <motion.div
                     key={t.id}
                     {...reveal(i * 0.08)}
-                    className={`relative flex flex-col rounded-2xl bg-white p-7 shadow-[0_4px_10px_rgba(0,0,0,0.15),0_24px_50px_rgba(0,0,0,0.3)] sm:p-8 ${
+                    className={`relative flex flex-col rounded-2xl bg-white p-7 shadow-box sm:p-8 ${
                       popular ? 'ring-2 ring-[#B58E39] lg:-translate-y-3' : 'border border-kraft-200'
                     }`}
                   >

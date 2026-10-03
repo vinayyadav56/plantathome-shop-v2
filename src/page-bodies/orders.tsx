@@ -15,7 +15,7 @@ import { useTranslation } from 'next-i18next';
 
 function NoOrderFound() {
   return (
-    <div className="flex min-h-[40vh] w-full items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8">
+    <div className="shadow-box flex min-h-[40vh] w-full items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8">
       <NotFound text="text-no-order-found" />
     </div>
   );
@@ -43,7 +43,7 @@ export default function OrdersPage() {
 
   if (isLoading && isEmpty(ordersItem)) {
     return (
-      <div className="flex min-h-[40vh] w-full items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8">
+      <div className="shadow-box flex min-h-[40vh] w-full items-center justify-center rounded-2xl border border-kraft-200 bg-white p-8">
         <Spinner simple className="w-10 h-10" />
       </div>
     );

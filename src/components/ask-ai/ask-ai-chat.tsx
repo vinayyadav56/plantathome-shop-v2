@@ -55,7 +55,7 @@ export default function AskAiChat() {
   }
 
   return (
-    <div className="flex h-[80vh] max-h-[680px] w-[440px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl bg-white sm:h-[640px]">
+    <div className="shadow-box flex h-[80vh] max-h-[680px] w-[440px] max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden rounded-2xl bg-white sm:h-[640px]">
       {/* header */}
       <div className="flex items-center gap-3 border-b border-stone-100 bg-gradient-to-r from-[#F4F7F1] to-white px-5 py-4">
         <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-[#E7EEE2]">

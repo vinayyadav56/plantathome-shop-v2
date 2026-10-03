@@ -79,7 +79,7 @@ export default function FeaturedPlants() {
   if (!isLoading && !products?.length) return null;
 
   return (
-    <section className="mb-8 rounded-2xl border border-kraft-200/70 bg-[linear-gradient(135deg,#FBF6EE_0%,#F4F0E6_45%,#EDF4EC_100%)] p-4 sm:p-5">
+    <section className="shadow-box mb-8 rounded-2xl border border-kraft-200/70 bg-[linear-gradient(135deg,#FBF6EE_0%,#F4F0E6_45%,#EDF4EC_100%)] p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between px-1">
         <h2 className="flex items-center gap-2 text-lg font-medium text-forest-900">
           <Sparkles size={18} className="shrink-0 text-forest-600" aria-hidden /> Featured Plants

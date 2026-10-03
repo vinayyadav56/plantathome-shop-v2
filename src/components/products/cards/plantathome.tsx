@@ -30,7 +30,7 @@ const AddToCart = dynamic(
 /* ─── Loading Skeleton (export kept for callers) — mirrors the real card's
        geometry exactly so swapping in data causes no layout shift ─────── */
 export const PlantAtHomeCardSkeleton: React.FC = () => (
-  <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+  <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
     <div className="aspect-[25/24] w-full animate-pulse bg-[#F7F5EF]" />
     <div className="flex flex-1 flex-col p-6">
       <div className="flex items-start justify-between gap-4">
@@ -162,7 +162,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
       // (cqw units): full reference sizes at its native 390px, fluidly smaller
       // in dense grids (search page cells are ~230px) — nothing truncates or
       // wraps at any grid density.
-      className={`group flex h-full overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)] transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${
+      className={`group flex h-full overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box transition-shadow duration-300 [container-type:inline-size] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)] ${
         isList ? 'flex-row items-stretch' : 'flex-col'
       } ${className}`}
     >
@@ -210,15 +210,15 @@ const PlantAtHomeCard: React.FC<Props> = ({
           uses that corner (and Ask AI is hidden on those cards, below).
         */}
         {noImage ? (
-          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
+          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
             No Image
           </span>
         ) : badge ? (
-          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
+          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
             {badge}
           </span>
         ) : reviewCount === 0 ? (
-          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded-[10px] bg-sage-100 px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-forest-800">
+          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-sage-100 px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-forest-800">
             New
           </span>
         ) : null}
@@ -394,7 +394,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
               )}
             </span>
             {!isVariable && discount && (
-              <span className="shrink-0 whitespace-nowrap rounded-[8px] bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(9.5px,3.4cqw,14px)] font-bold leading-none text-[#D73C3C]">
+              <span className="shrink-0 whitespace-nowrap rounded bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(9.5px,3.4cqw,14px)] font-bold leading-none text-[#D73C3C]">
                 {discount} OFF
               </span>
             )}
@@ -421,7 +421,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           ) : (
             <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
               {!inCart && !displayOnly && (
-                <div className="flex h-[clamp(34px,9.5cqw,40px)] w-[clamp(80px,27cqw,104px)] shrink-0 items-center justify-around rounded-[12px] border border-[#DDDDDD]">
+                <div className="flex h-[clamp(34px,9.5cqw,40px)] w-[clamp(80px,27cqw,104px)] shrink-0 items-center justify-around rounded border border-[#DDDDDD]">
                   <button
                     type="button"
                     aria-label="Decrease quantity"

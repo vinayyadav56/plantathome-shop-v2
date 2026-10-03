@@ -53,7 +53,7 @@ export default function CityMismatchDialog({
               leaveFrom="opacity-100 translate-y-0"
               leaveTo="opacity-0 translate-y-2"
             >
-              <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6 shadow-box">
                 <Dialog.Title className="text-lg font-semibold text-forest-900">
                   Address city doesn&rsquo;t match your shopping city
                 </Dialog.Title>

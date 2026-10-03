@@ -131,7 +131,7 @@ export default function StripeElementBaseForm({
   };
 
   return (
-    <div className="stripe-payment-modal relative h-full w-screen max-w-md overflow-hidden rounded-2xl bg-light md:h-auto md:min-h-0 lg:max-w-[46rem]">
+    <div className="shadow-box stripe-payment-modal relative h-full w-screen max-w-md overflow-hidden rounded-2xl bg-light md:h-auto md:min-h-0 lg:max-w-[46rem]">
       <div className="p-6 lg:p-12">
         <form id="payment-form" onSubmit={handleSubmit}>
           {/* <LinkAuthenticationElement

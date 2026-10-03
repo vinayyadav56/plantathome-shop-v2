@@ -18,7 +18,7 @@ export function SpecialOffer() {
   if (!useBannerEnabled('specialOffer')) return null;
   return (
     <div className="mb-6 px-5">
-      <div className="relative flex items-center gap-3 overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#234a2a,#0e2012)] p-4 text-white shadow-[0_8px_24px_rgba(34,48,26,0.09)]">
+      <div className="relative flex items-center gap-3 overflow-hidden rounded-2xl bg-[linear-gradient(135deg,#234a2a,#0e2012)] p-4 text-white shadow-box">
         <div className="w-[112px] flex-none">
           <div className="mb-[5px] font-hanken text-[7.5px] font-bold uppercase tracking-[0.18em] text-[#DCC07A]">{t('m-offer-eyebrow')}</div>
           <div className="whitespace-nowrap font-hanken text-[18px] font-extrabold leading-none tracking-[-0.01em] text-[#DCC07A]">{t('m-offer-headline')}</div>

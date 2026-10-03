@@ -63,7 +63,7 @@ export default function OrderDetailsCard({ order }: { order: any }) {
   const gateways: any[] = (settings as any)?.paymentGateway ?? [];
 
   return (
-    <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-sm sm:px-6">
+    <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-box sm:px-6">
       <h3 className="mb-3 text-base font-medium text-forest-900">Order Details</h3>
 
       <dl>

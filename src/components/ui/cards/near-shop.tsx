@@ -18,7 +18,7 @@ const NearShopCard: React.FC<ShopCardProps> = ({ shop }) => {
 
   return (
     <Link href={Routes.shop(shop.slug)}>
-      <div className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-[0_1px_3px_rgba(0,0,0,0.1),_0_1px_2px_rgba(0,0,0,0.06)]">
+      <div className="group relative cursor-pointer overflow-hidden rounded-lg bg-white shadow-box">
         <div className="relative z-10">
           {isNew && (
             <span className="absolute px-2 py-1 text-xs bg-blue-500 rounded top-2 text-light ltr:right-2 rtl:left-2">

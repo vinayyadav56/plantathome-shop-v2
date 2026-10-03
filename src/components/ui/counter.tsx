@@ -70,7 +70,7 @@ const Counter: React.FC<CounterProps> = ({
         variant !== 'florine'
           ? cn('flex overflow-hidden', variantClasses[variant], className)
           : cn(
-              'flex w-24 items-center justify-between rounded-[0.25rem] border border-[#dbdbdb]',
+              'flex w-24 items-center justify-between rounded border border-[#dbdbdb]',
               className
             )
       )}

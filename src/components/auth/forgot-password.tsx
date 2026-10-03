@@ -313,7 +313,7 @@ export default function ForgotUserPassword({ onBack, inline = false }: ForgotUse
         className={
           inline
             ? 'flex flex-col'
-            : 'relative flex max-h-dvh min-h-dvh w-screen flex-col overflow-y-auto bg-white px-5 py-6 sm:px-9 sm:py-8 md:min-h-0 md:h-auto md:max-h-[92dvh] md:w-[540px] md:max-w-[92vw] md:rounded-2xl md:shadow-[0_24px_64px_rgba(14,32,17,0.28)]'
+            : 'relative flex max-h-dvh min-h-dvh w-screen flex-col overflow-y-auto bg-white px-5 py-6 sm:px-9 sm:py-8 md:min-h-0 md:h-auto md:max-h-[92dvh] md:w-[540px] md:max-w-[92vw] md:rounded-2xl md:shadow-box'
         }
       >
         {!inline && (

@@ -101,7 +101,7 @@ export default function PlantCareDetails({
             return (
               <div
                 key={s.label}
-                className="rounded-2xl border border-border-200 bg-light p-4"
+                className="shadow-box rounded-2xl border border-border-200 bg-light p-4"
               >
                 {I && (
                   <span className="grid h-9 w-9 place-items-center rounded-xl bg-mint text-forest">

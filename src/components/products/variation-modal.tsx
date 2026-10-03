@@ -40,7 +40,7 @@ const Variation = ({ product }: Props) => {
     );
   }
   return (
-    <div className="w-[95vw] max-w-lg rounded-2xl bg-white p-8">
+    <div className="shadow-box w-[95vw] max-w-lg rounded-2xl bg-white p-8">
       <h3 className="mb-2 text-center text-2xl font-medium text-heading">
         {product?.name}
       </h3>

@@ -179,7 +179,7 @@ const ManagedModal = () => {
         {view === "NEWSLETTER_MODAL" && <NewsLetterModal />}
         {view === "ASK_AI" && <AskAiChat />}
         {view === "SIZE_GUIDE" && (
-          <div className="w-full max-w-md rounded-2xl bg-white p-6">
+          <div className="shadow-box w-full max-w-md rounded-2xl bg-white p-6">
             <h3 className="mb-4 text-[15px] font-semibold text-forest-900">
               Size guide
             </h3>

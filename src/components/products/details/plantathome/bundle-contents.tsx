@@ -42,7 +42,7 @@ export function BundleContents({
   const more = items.length - rows.length;
 
   return (
-    <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-[0_4px_10px_rgba(0,0,0,0.04),0_20px_40px_rgba(0,0,0,0.08)]">
+    <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
       <h3 className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
         <LineIcon name="box" className="h-4 w-4 text-[#24693E]" />
         What&apos;s inside this bundle ({items.length} item{items.length === 1 ? '' : 's'})
@@ -63,7 +63,7 @@ export function BundleContents({
                 src={p?.image?.thumbnail || p?.image?.original || productPlaceholder}
                 alt={p?.name}
                 loading="lazy"
-                className="h-11 w-11 shrink-0 rounded-[10px] border border-kraft-200 object-cover"
+                className="h-11 w-11 shrink-0 rounded border border-kraft-200 object-cover"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[14px] font-semibold leading-tight text-[#184A31]">

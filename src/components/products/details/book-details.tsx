@@ -103,7 +103,7 @@ const BookDetails: React.FC<Props> = ({ product, isModal = false }) => {
   const previewImages = displayImage(selectedVariation?.image, gallery, image);
   const content = useSanitizeContent({ description: description });
   return (
-    <article className="mx-auto max-w-screen-xl rounded-lg bg-light px-5 py-16 xl:px-0">
+    <article className="shadow-box mx-auto max-w-screen-xl rounded-lg bg-light px-5 py-16 xl:px-0">
       <div className="flex flex-col border-b border-border-200 border-opacity-70 pb-14 lg:flex-row">
         <div className="lg:w-1/2">
           <div

@@ -47,7 +47,7 @@ const CategoryItem: React.FC<CategoryItemProps> = ({ item }) => {
 
   return (
     <div
-      className={cn(
+      className={cn('shadow-box', 
         'relative cursor-pointer overflow-hidden rounded border-2 bg-light text-center md:py-2',
         selectedQueries === item.slug ? 'border-accent' : 'border-light',
       )}

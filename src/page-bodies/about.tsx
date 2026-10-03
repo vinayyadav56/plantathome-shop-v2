@@ -82,7 +82,7 @@ export default function AboutPage() {
             {WHAT_WE_DO.map((it) => (
               <div
                 key={it.title}
-                className="rounded-xl border border-kraft-200 bg-white p-5"
+                className="shadow-box rounded-xl border border-kraft-200 bg-white p-5"
               >
                 <h3 className="mb-2 text-base font-semibold text-forest-900">{it.title}</h3>
                 <p className="text-sm leading-relaxed text-body-dark">{it.body}</p>

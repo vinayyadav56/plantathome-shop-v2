@@ -38,7 +38,7 @@ const VerifyEmail = () => {
   return (
     <section className="relative flex min-h-screen w-full items-center justify-center g-light-a py-5 px-5 md:py-8">
       <div className="max-w-[36rem]">
-        <Card className="text-center !shadow-900 md:px-[4.375rem] md:py-[2.875rem]">
+        <Card className="text-center md:px-[4.375rem] md:py-[2.875rem]">
           <Logo />
 
           <h2 className="mb-5 mt-2 font-cormorant text-3xl font-medium text-forest-900">

@@ -142,7 +142,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
               <Menu.Items
                 as="ul"
                 className={cn(
-                  'absolute mt-2 w-48 overflow-hidden rounded border border-border-200 bg-light py-2 shadow-700 focus:outline-none ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left'
+                  'absolute mt-2 w-48 overflow-hidden rounded border border-border-200 bg-light py-2 shadow-box focus:outline-none ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left'
                 )}
               >
                 <Menu.Item>
