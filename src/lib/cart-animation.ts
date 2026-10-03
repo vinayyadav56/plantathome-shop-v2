@@ -69,7 +69,7 @@ export const cartAnimation = (event: any) => {
       width: `${from.width}px`,
       height: `${from.height}px`,
       margin: '0',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-box)',
       objectFit: 'cover',
       zIndex: '99999',
       pointerEvents: 'none',

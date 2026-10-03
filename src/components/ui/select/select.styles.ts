@@ -21,7 +21,7 @@ export const selectStyles = {
     alignItems: 'center',
     minHeight: !state.selectProps.isMinimal ? 50 : 0,
     backgroundColor: '#ffffff',
-    borderRadius: 5,
+    borderRadius: 'var(--radius-control)',
     border: !state.selectProps.isMinimal ? '1px solid #F1F1F1' : 'none',
     borderColor: state.isFocused ? 'rgb(var(--color-gray-500))' : '#F1F1F1',
     boxShadow:
@@ -52,7 +52,7 @@ export const selectStyles = {
   menu: (provided: any, state: any) => ({
     ...provided,
     width: state.selectProps.width,
-    borderRadius: 5,
+    borderRadius: 'var(--radius-box)',
     border: '1px solid #E5E7EB',
     boxShadow:
       '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
