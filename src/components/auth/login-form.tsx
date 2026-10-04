@@ -14,6 +14,8 @@ import { Form } from '@/components/ui/forms/form';
 import { useGoogleLogin, useLogin } from '@/framework/user';
 import { initialOtpState, optAtom } from '@/components/otp/atom';
 import { AnonymousIcon } from '@/components/icons/anonymous-icon';
+import { WhatsAppIcon } from '@/components/icons/whatsapp';
+import type { OtpChannel } from '@/types';
 import { useRouter } from '@/compat/next-router';
 import { Routes } from '@/config/routes';
 import { useSettings } from '@/framework/settings';
@@ -72,7 +74,7 @@ type LoginFormProps = {
    *  (header, checkout) it falls back to the modal, unchanged.
    *  Receives digits-only when the user reached it by typing a mobile number
    *  into the identifier field, so the next screen opens pre-filled. */
-  onPhoneOtp?: (phone?: string) => void;
+  onPhoneOtp?: (phone?: string, channel?: OtpChannel) => void;
 };
 
 /** Envelope / padlock affordances from the design. Wrapping rather than adding
@@ -98,12 +100,12 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
   const { login: googleLogin, isLoading: googleBusy } = useGoogleLogin();
   const guestCheckout = settings?.guestCheckout;
 
-  function goToOtp(phone?: string) {
-    if (onPhoneOtp) return onPhoneOtp(phone);
+  function goToOtp(phone?: string, channel: OtpChannel = 'sms') {
+    if (onPhoneOtp) return onPhoneOtp(phone, channel);
     // Modal callers have no place to put a prefill, so seed the shared atom
     // instead; OtpLogin's mount reset preserves phoneNumber when it is set.
-    if (phone) setOtpState({ ...initialOtpState, channel: 'sms', phoneNumber: phone });
-    openModal('OTP_LOGIN', { channel: 'sms' });
+    if (phone) setOtpState({ ...initialOtpState, channel, phoneNumber: phone });
+    openModal('OTP_LOGIN', { channel });
   }
 
   function onSubmit({ email, password, remember }: LoginFormValues) {
@@ -245,6 +247,17 @@ export function LoginForm({ onSwitchToRegister, onForgot, onPhoneOtp }: LoginFor
         >
           <Smartphone size={18} className="ltr:mr-3 rtl:ml-3" aria-hidden />
           Continue with Phone (OTP)
+        </Button>
+
+        <Button
+          type="button"
+          variant="formSecondary"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => goToOtp(undefined, 'whatsapp')}
+        >
+          <WhatsAppIcon className="h-5 w-5 text-[#25D366] ltr:mr-3 rtl:ml-3" />
+          Continue with WhatsApp
         </Button>
 
         {isCheckout && guestCheckout && (

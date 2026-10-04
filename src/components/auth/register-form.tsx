@@ -9,6 +9,8 @@ import Button from '@/components/ui/button';
 import { useTranslation } from 'next-i18next';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { GoogleIcon } from '@/components/icons/google';
+import { WhatsAppIcon } from '@/components/icons/whatsapp';
+import type { OtpChannel } from '@/types';
 import { Smartphone, ArrowRight } from '@/components/ui/icon';
 import { Form } from '@/components/ui/forms/form';
 import * as yup from 'yup';
@@ -55,7 +57,7 @@ type RegisterFormProps = {
   onSwitchToLogin?: () => void;
   /** Renders the phone-OTP step in the page column instead of a dialog. Absent
    *  (header, checkout) it falls back to the modal, unchanged. */
-  onPhoneOtp?: () => void;
+  onPhoneOtp?: (channel?: OtpChannel) => void;
 };
 
 export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps = {}) {
@@ -216,10 +218,21 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
           variant="formSecondary"
           className="w-full"
           disabled={isLoading}
-          onClick={onPhoneOtp ?? (() => openModal('OTP_LOGIN', { channel: 'sms' }))}
+          onClick={() => (onPhoneOtp ? onPhoneOtp('sms') : openModal('OTP_LOGIN', { channel: 'sms' }))}
         >
           <Smartphone size={18} className="ltr:mr-3 rtl:ml-3" aria-hidden />
           Continue with Phone (OTP)
+        </Button>
+
+        <Button
+          type="button"
+          variant="formSecondary"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => (onPhoneOtp ? onPhoneOtp('whatsapp') : openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
+        >
+          <WhatsAppIcon className="h-5 w-5 text-[#25D366] ltr:mr-3 rtl:ml-3" />
+          Continue with WhatsApp
         </Button>
       </div>
 

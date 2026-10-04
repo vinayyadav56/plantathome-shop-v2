@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { OtpChannel } from '@/types';
 import { useRouter } from '@/compat/next-router';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -71,6 +72,7 @@ function SignInPage() {
   // an email: the OTP step then opens with that number already in it, rather
   // than asking them to type what they just typed.
   const [otpPrefill, setOtpPrefill] = useState<string>();
+  const [otpChannel, setOtpChannel] = useState<OtpChannel>('sms');
   const reduceMotion = useReducedMotion();
   // login/register are the two tabbed forms; phone/forgot are full replacements
   // for the card, reached from inside those forms.
@@ -234,7 +236,10 @@ function SignInPage() {
                   down every time you switched tabs — under the very heading you were reading. */}
               <p className="mb-6 mt-1 min-h-[2.5rem] text-center text-[14px] text-stone-500 sm:min-h-[1.25rem]">
                 {mode === 'login' && t('signin-login-sub')}
-                {mode === 'phone' && 'Sign in or create your account using your mobile number.'}
+                {mode === 'phone' &&
+                  (otpChannel === 'whatsapp'
+                    ? 'Sign in or create your account — we’ll send a code to your WhatsApp.'
+                    : 'Sign in or create your account using your mobile number.')}
                 {mode === 'forgot' && t('forgot-password-helper')}
                 {/* `registration-helper` is a fragment ("…you agree to our"); the two
                     words that finish it are separate keys meant to be inlined as links. */}
@@ -283,21 +288,23 @@ function SignInPage() {
                         <LoginForm
                           onSwitchToRegister={() => setMode('register')}
                           onForgot={() => setMode('forgot')}
-                          onPhoneOtp={(phone) => {
+                          onPhoneOtp={(phone, channel = 'sms') => {
                             setOtpPrefill(phone);
+                            setOtpChannel(channel);
                             setMode('phone');
                           }}
                         />
                       ) : mode === 'register' ? (
                         <RegisterForm
                           onSwitchToLogin={() => setMode('login')}
-                          onPhoneOtp={() => {
+                          onPhoneOtp={(channel = 'sms') => {
                             setOtpPrefill(undefined);
+                            setOtpChannel(channel);
                             setMode('phone');
                           }}
                         />
                       ) : mode === 'phone' ? (
-                        <OtpLoginView inline channel="sms" prefillPhone={otpPrefill} onBack={() => setMode('login')} />
+                        <OtpLoginView inline channel={otpChannel} prefillPhone={otpPrefill} onBack={() => setMode('login')} />
                       ) : (
                         <ForgotUserPassword inline onBack={() => setMode('login')} />
                       )}
