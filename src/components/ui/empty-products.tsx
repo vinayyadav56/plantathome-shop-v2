@@ -56,11 +56,11 @@ export function EmptyProducts({
       {/* Three CTAs side-by-side exceed a 768px viewport once "Change delivery city" shows —
           wrap instead of spilling (this row was the only horizontal overflow on the site). */}
       <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-        <Link href="/plants/search" className="pa-btn pa-btn-primary">
+        <Link href="/plants" className="pa-btn pa-btn-primary">
           Browse all plants
           <ArrowRight size={16} aria-hidden />
         </Link>
-        <Link href="/plants/search" className="pa-btn pa-btn-secondary">Explore categories</Link>
+        <Link href="/plants" className="pa-btn pa-btn-secondary">Explore categories</Link>
         {city && (
           <button type="button" onClick={changeCity} className="pa-btn pa-btn-outline">
             Change delivery city

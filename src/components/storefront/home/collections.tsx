@@ -109,7 +109,7 @@ export function Collections() {
           </h2>
         </div>
         <Link
-          href="/plants/search"
+          href="/plants"
           className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap text-[14px] font-semibold text-forest-700"
         >
           {t('home-collections-view-all')}

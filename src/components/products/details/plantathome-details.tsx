@@ -324,7 +324,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     { label: 'Home', href: Routes.home },
     ...(type?.slug ? [{ label: type.name, href: `/${type.slug}` }] : []),
     ...(type?.slug && firstCat
-      ? [{ label: firstCat.name, href: `/${type.slug}/search?category=${firstCat.slug}` }]
+      ? [{ label: firstCat.name, href: `/c/${firstCat.slug}` }]
       : []),
     { label: name },
   ];

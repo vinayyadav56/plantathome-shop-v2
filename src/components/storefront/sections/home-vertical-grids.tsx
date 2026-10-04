@@ -21,7 +21,7 @@ function VerticalRow({ type, tint }: { type: Type; tint?: boolean }) {
       isLoading={isLoading}
       eyebrow={meta.label}
       title={meta.tagline}
-      viewAllTo={`/${type.slug}/search`}
+      viewAllTo={`/${type.slug}`}
       viewAllLabel={`View all ${meta.label}`}
       tint={tint}
     />

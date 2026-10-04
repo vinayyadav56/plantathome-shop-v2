@@ -37,7 +37,7 @@ export function CategoryGrid({
           </div>
           <FadeUp delay={0.1}>
             <Link
-              href={`/${typeSlug}/search`}
+              href={`/${typeSlug}`}
               className="group inline-flex min-h-[40px] items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-forest-800"
             >
               View all <Icon.arrow className="h-4 w-4 transition group-hover:translate-x-1" />

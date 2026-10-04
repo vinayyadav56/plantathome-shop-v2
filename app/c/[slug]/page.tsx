@@ -1,7 +1,9 @@
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadGeneralData } from '@/framework/ssr/prefetch';
+import { loadCategoryData } from '@/framework/ssr/prefetch';
+import { pageTitle } from '@/lib/seo';
 import { PageBody } from '@/page-bodies/category';
 import { SITE_URL as BASE } from '@/lib/site-url';
 
@@ -34,7 +36,7 @@ const prettify = (slug: string) => {
 /** The category, `null` when the API could not be asked (fail-soft to the
  *  prettified slug), or `false` when the API answered and the slug does not
  *  exist — that one must 404, not render an empty category page. */
-async function fetchCategory(slug: string): Promise<any | null | false> {
+const fetchCategory = cache(async (slug: string): Promise<any | null | false> => {
   const api = (process.env.NEXT_PUBLIC_REST_API_ENDPOINT || '').replace(/\/$/, '');
   if (!api) return null;
   try {
@@ -47,7 +49,10 @@ async function fetchCategory(slug: string): Promise<any | null | false> {
   } catch {
     return null;
   }
-}
+});
+
+/** One load per request, shared by generateMetadata and the page. */
+const loadCategory = cache(async (slug: string, category: any) => loadCategoryData(slug, category));
 
 const stripTags = (s?: string | null) =>
   (s ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -61,7 +66,11 @@ export async function generateMetadata({
   const category = await fetchCategory(slug);
   if (category === false) notFound();
   const name = category?.name ?? prettify(slug);
-  const title = category?.seo_title || `Buy ${name} Online in India`;
+  const title = pageTitle(category?.seo_title || `Buy ${name} Online in India`);
+  // A category with no products is thin content (e.g. the empty "-plants"
+  // twins of indoor/outdoor/flowering): keep it out of the index, keep links followed.
+  const { productTotal } = category ? await loadCategory(slug, category) : { productTotal: null };
+  const noindex = Boolean(category?.noindex) || productTotal === 0;
   const description =
     category?.seo_description ||
     stripTags(category?.details).slice(0, 160) ||
@@ -72,7 +81,7 @@ export async function generateMetadata({
     title,
     description,
     alternates: { canonical: `/c/${slug}` },
-    ...(category?.noindex ? { robots: { index: false, follow: true } } : {}),
+    ...(noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: { type: 'website', url, title, description, ...(image ? { images: [image] } : {}) },
     twitter: { card: 'summary_large_image', title, description, ...(image ? { images: [image] } : {}) },
   };
@@ -86,9 +95,11 @@ export default async function Page({
   const { slug } = await params;
   // A slug the API does not know is a real 404 (the root loading boundary that
   // used to stream a 200 shell first is gone).
-  if ((await fetchCategory(slug)) === false) notFound();
-  const { dehydratedState } = await loadGeneralData();
-  const name = prettify(slug);
+  const category = await fetchCategory(slug);
+  if (category === false) notFound();
+  const { dehydratedState } = await loadCategory(slug, category);
+  const name = category?.name ?? prettify(slug);
+  const parent = category?.parent?.slug ? category.parent : null;
   // BreadcrumbList emitted server-side (the client-side BreadcrumbJsonLd from
   // next-seo is shimmed to null in this app).
   const breadcrumb = {
@@ -97,7 +108,10 @@ export default async function Page({
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: BASE },
       { '@type': 'ListItem', position: 2, name: 'Categories', item: `${BASE}/categories` },
-      { '@type': 'ListItem', position: 3, name, item: `${BASE}/c/${slug}` },
+      ...(parent
+        ? [{ '@type': 'ListItem', position: 3, name: parent.name, item: `${BASE}/c/${parent.slug}` }]
+        : []),
+      { '@type': 'ListItem', position: parent ? 4 : 3, name, item: `${BASE}/c/${slug}` },
     ],
   };
   return (

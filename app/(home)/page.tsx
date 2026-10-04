@@ -26,6 +26,8 @@ const HOME_JSONLD = {
       '@type': 'Organization',
       '@id': `${SITE}/#org`,
       name: 'PlantAtHome',
+      alternateName: 'Plant At Home',
+      legalName: 'Silvestrix Green LLP',
       url: SITE,
       logo: `${SITE}/icons/manifest-icon-192.png`,
       sameAs: SOCIAL_URL_LIST,
@@ -41,6 +43,7 @@ const HOME_JSONLD = {
       '@type': 'WebSite',
       url: SITE,
       name: 'PlantAtHome',
+      alternateName: 'Plant At Home',
       publisher: { '@id': `${SITE}/#org` },
       potentialAction: {
         '@type': 'SearchAction',

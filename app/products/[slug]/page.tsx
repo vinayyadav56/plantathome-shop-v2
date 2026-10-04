@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
+import { pageTitle } from '@/lib/seo';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadProductData } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/product';
@@ -24,8 +25,13 @@ export async function generateMetadata({
   if (!data) return {};
   const p: any = data.product;
   // Admin-set SEO fields win; the name/description are the fallback.
-  const title = p?.seo_title || p?.name;
-  const description = p?.seo_description || stripHtml(p?.description).slice(0, 160);
+  const title = pageTitle(p?.seo_title || p?.name || '');
+  const description =
+    p?.seo_description ||
+    stripHtml(p?.description).slice(0, 160) ||
+    // No copy yet: a plain, true sentence beats an empty description (Google
+    // would otherwise lift random page text into the snippet).
+    `Buy ${p?.name ?? 'this plant'} online at PlantAtHome${p?.type?.name ? ` — ${p.type.name}` : ''}, hand-checked and delivered across India.`;
   const url = `${BASE}/products/${slug}`;
   return {
     title, // root layout template appends "| PlantAtHome"
@@ -72,17 +78,25 @@ function productJsonLd(p: any, url: string) {
     sku: p?.sku || undefined,
     brand: { '@type': 'Brand', name: 'PlantAtHome' },
   };
-  if (price > 0) {
+  const availability =
+    p?.in_stock === false || Number(p?.quantity ?? 1) <= 0
+      ? 'https://schema.org/OutOfStock'
+      : 'https://schema.org/InStock';
+  const lo = Number(p?.min_price), hi = Number(p?.max_price);
+  if (p?.product_type === 'variable' && lo > 0 && hi > lo) {
+    // Sizes are priced differently: a range is the truthful offer (the page shows
+    // "₹219 – ₹579"), not one price that misrepresents every other size.
     data.offers = {
-      '@type': 'Offer',
+      '@type': 'AggregateOffer',
       url,
       priceCurrency: 'INR',
-      price: price.toFixed(2),
-      availability:
-        p?.in_stock === false || Number(p?.quantity ?? 1) <= 0
-          ? 'https://schema.org/OutOfStock'
-          : 'https://schema.org/InStock',
+      lowPrice: lo.toFixed(2),
+      highPrice: hi.toFixed(2),
+      offerCount: Array.isArray(p?.variation_options) ? p.variation_options.length || undefined : undefined,
+      availability,
     };
+  } else if (price > 0) {
+    data.offers = { '@type': 'Offer', url, priceCurrency: 'INR', price: price.toFixed(2), availability };
   }
   if (Number(p?.ratings ?? 0) > 0 && Number(p?.total_reviews ?? 0) > 0) {
     data.aggregateRating = {
@@ -94,7 +108,7 @@ function productJsonLd(p: any, url: string) {
   return data;
 }
 
-/** Home → vertical → product. Same server-side emission rationale as above. */
+/** Home → vertical → category → product. Same server-side emission rationale as above. */
 function breadcrumbJsonLd(p: any, url: string) {
   const items: any[] = [{ '@type': 'ListItem', position: 1, name: 'Home', item: BASE }];
   if (p?.type?.slug && p?.type?.name) {
@@ -104,6 +118,11 @@ function breadcrumbJsonLd(p: any, url: string) {
       name: p.type.name,
       item: `${BASE}/${p.type.slug}`,
     });
+  }
+  // Same category the visible breadcrumb shows (plantathome-details: categories[0]).
+  const cat = p?.categories?.[0];
+  if (p?.type?.slug && cat?.slug && cat?.name) {
+    items.push({ '@type': 'ListItem', position: items.length + 1, name: cat.name, item: `${BASE}/c/${cat.slug}` });
   }
   items.push({ '@type': 'ListItem', position: items.length + 1, name: p?.name, item: url });
   return { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items };

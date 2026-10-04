@@ -184,3 +184,13 @@ export function formatINR(n?: number | null) {
   const v = Number(n ?? 0);
   return '₹' + v.toLocaleString('en-IN');
 }
+
+/** The plant categories every crawler and shopper should find from any page —
+ *  ONE list shared by the header's Plants dropdown and the footer (SEO 2026-10-04).
+ *  Slugs are the live categories with products (/c/indoor 25, /c/outdoor 54 …). */
+export const POPULAR_PLANT_CATEGORIES = [
+  { label: 'Indoor Plants', href: '/c/indoor' },
+  { label: 'Outdoor Plants', href: '/c/outdoor' },
+  { label: 'Flowering Plants', href: '/c/flowering' },
+  { label: 'Air-purifying Plants', href: '/c/air-purifying' },
+];

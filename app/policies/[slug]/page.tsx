@@ -29,13 +29,16 @@ async function fetchPolicy(slug: string): Promise<PublicPolicy | null> {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const policy = await fetchPolicy(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  // Next 16: params is a Promise — reading .slug off it gave undefined, so every
+  // policy page 404'd (and the sitemap advertised them).
+  const { slug } = await params;
+  const policy = await fetchPolicy(slug);
   const title = policy?.title ?? 'Policy';
-  const url = `${BASE}/policies/${params.slug}`;
+  const url = `${BASE}/policies/${slug}`;
 
   return {
-    title: `${title} | PlantAtHome`,
+    title,
     description: policy
       ? `${title} for PlantAtHome, operated by Silvestrix Green LLP.${policy.updated_at ? ` Last updated ${policy.updated_at}.` : ''}`
       : undefined,
@@ -45,9 +48,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const [policy, { dehydratedState }] = await Promise.all([
-    fetchPolicy(params.slug),
+    fetchPolicy(slug),
     loadGeneralData(),
   ]);
   if (!policy) notFound();

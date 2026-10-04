@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { SearchBar } from './search-bar';
 import React from 'react';
 import Image from 'next/image';
@@ -89,10 +90,10 @@ export function Hero() {
                 <div className="mb-[3px] whitespace-nowrap text-[6.8px] font-semibold uppercase tracking-[0.05em] text-white/[0.82]">{t('m-hero-offer-eyebrow')}</div>
                 <div className="whitespace-nowrap font-hanken text-[21px] font-extrabold leading-none text-white">40%<span className="text-[12px]"> {t('m-hero-offer-off')}</span></div>
                 <div className="my-0.5 mb-2 text-[8px] text-white/[0.78]">{t('m-hero-offer-subtext')}</div>
-                <button type="button" onClick={() => router.push('/plants/search')} className="inline-flex w-full items-center justify-center gap-1 rounded-control bg-ds-btn px-1 py-1.5 font-hanken text-[10px] font-semibold text-white transition hover:bg-ds-btn-hover active:scale-95 active:bg-forest-800">
+                <Link href="/plants" className="inline-flex w-full items-center justify-center gap-1 rounded-control bg-ds-btn px-1 py-1.5 font-hanken text-[10px] font-semibold text-white transition hover:bg-ds-btn-hover active:scale-95 active:bg-forest-800">
                   {t('m-hero-offer-cta')}
                   <LineIcon name="arrowRight" className="h-[10px] w-[10px]" />
-                </button>
+                </Link>
               </div>
             ) : null}
           </div>

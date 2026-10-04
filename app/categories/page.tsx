@@ -1,5 +1,5 @@
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadGeneralData } from '@/framework/ssr/prefetch';
+import { loadCategoriesIndexData } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/categories';
 
 import type { Metadata } from 'next';
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function Page() {
-  const { dehydratedState } = await loadGeneralData();
+  const { dehydratedState } = await loadCategoriesIndexData();
   return (
     <Hydrate state={dehydratedState}>
       <PageBody />

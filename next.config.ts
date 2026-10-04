@@ -35,6 +35,10 @@ import type { NextConfig } from 'next';
  * domain never gets a localhost origin in its policy.
  */
 const IS_PRODUCTION_SITE = (process.env.NEXT_PUBLIC_SITE_URL ?? '').includes('plantathome.in');
+/** Only www production is indexable (src/lib/site-url.ts IS_INDEXABLE_SITE). */
+const IS_INDEXABLE_SITE =
+  (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.plantathome.in').replace(/\/$/, '') ===
+  'https://www.plantathome.in';
 const AGENTATION_CONNECT = IS_PRODUCTION_SITE
   ? ''
   : ' http://localhost:4747 http://127.0.0.1:4747 ws://localhost:4747';
@@ -130,6 +134,14 @@ const nextConfig: NextConfig = {
       shahdara: 'delhi',
     };
     return [
+      // One host: the apex served a 200 duplicate of every page beside www
+      // (canonicals already say www). 308 = permanent, preserves the method.
+      {
+        source: '/:path*',
+        has: [{ type: 'host' as const, value: 'plantathome.in' }],
+        destination: 'https://www.plantathome.in/:path*',
+        permanent: true,
+      },
       { source: '/shops', destination: '/', permanent: true },
       { source: '/shops/:path*', destination: '/', permanent: true },
       ...Object.entries(CITY_ALIASES).map(([alias, canonical]) => ({
@@ -186,6 +198,10 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Staging/previews: belt to robots.ts's braces — never indexed even if linked.
+      ...(IS_INDEXABLE_SITE
+        ? []
+        : [{ source: '/:path*', headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }] }]),
       {
         source: '/:dir(images|brand|fonts|icons)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],

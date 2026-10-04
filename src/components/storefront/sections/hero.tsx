@@ -95,16 +95,19 @@ export function Hero({
         style={{ y: contentY, opacity: fade }}
         className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-center px-5 sm:px-8"
       >
-        <motion.span
+        {/* SEO: the page's ONE h1 is the eyebrow ("PlantAtHome · Plants") — it names
+            the section; the big decorative tagline below is a <p>. Same look:
+            !font-body beats the global h1 font rule. */}
+        <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.7, ease: EXPO }}
-          className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-white backdrop-blur-md"
+          className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 !font-body text-[11px] font-semibold uppercase leading-normal tracking-[0.25em] text-white backdrop-blur-md"
         >
           <Icon.spark className="h-3.5 w-3.5 text-goldlight" /> {eyebrow}
-        </motion.span>
+        </motion.h1>
 
-        <h1 className="max-w-4xl font-serif text-[2.8rem] font-medium leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-[5.75rem]">
+        <p className="max-w-4xl font-serif text-[2.8rem] font-medium leading-[0.95] tracking-tight text-white sm:text-7xl lg:text-[5.75rem]">
           {cfgHeadline ? (
             // Admin headline replaces the whole two-line title.
             <WordReveal text={cfgHeadline} delay={0.15} />
@@ -116,7 +119,7 @@ export function Hero({
               </span>
             </>
           )}
-        </h1>
+        </p>
 
         <motion.p
           initial={{ opacity: 0, y: 18 }}

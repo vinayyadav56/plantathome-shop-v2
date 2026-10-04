@@ -1,10 +1,12 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL as BASE } from '@/lib/site-url';
+import { IS_INDEXABLE_SITE, SITE_URL as BASE } from '@/lib/site-url';
 
 /** Dynamic, env-aware robots (replaces the stale static public/robots.txt that
  *  hardcoded the staging host). */
 
 export default function robots(): MetadataRoute.Robots {
+  // Staging / previews: nothing to crawl (see IS_INDEXABLE_SITE).
+  if (!IS_INDEXABLE_SITE) return { rules: { userAgent: '*', disallow: '/' } };
   return {
     rules: {
       userAgent: '*',

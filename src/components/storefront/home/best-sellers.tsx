@@ -76,7 +76,7 @@ export function BestSellers({
           </h2>
         </div>
         <Link
-          href={`/${activeSlug}/search`}
+          href={`/${activeSlug}`}
           className="flex shrink-0 items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold text-forest-700"
         >
           {t('home-bestsellers-view-all')}

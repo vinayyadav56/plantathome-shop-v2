@@ -31,7 +31,7 @@ export function BestSellers() {
             {t('m-bestsellers-title')}
             <TrendingUp size={16} className="text-forest-500" aria-hidden />
           </h2>
-          <Link href="/plants/search" className="flex shrink-0 items-center gap-[3px] text-[12.5px] font-semibold text-forest-700">
+          <Link href="/plants" className="flex shrink-0 items-center gap-[3px] text-[12.5px] font-semibold text-forest-700">
             {t('m-bestsellers-view-all')}
             <ArrowRight size={12} aria-hidden />
           </Link>

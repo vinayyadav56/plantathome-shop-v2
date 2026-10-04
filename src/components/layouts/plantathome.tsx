@@ -60,7 +60,9 @@ export default function PlantAtHomeLayout({ variables }: HomePageProps) {
   const typeList = types ?? [];
   const homeSlug =
     typeList.find((t) => t?.settings?.isHome)?.slug ?? typeList[0]?.slug ?? typeSlug;
-  const isHome = typeSlug === homeSlug;
+  // `/` is the homepage; `/plants` (the home TYPE's own URL) is a real Plants
+  // listing, not a second copy of the homepage (SEO audit 2026-10-04).
+  const isHome = !(variables as any)?.verticalPage && typeSlug === homeSlug;
   const currentType = typeList.find((t) => t.slug === typeSlug);
   const meta = getVerticalMeta(typeSlug, currentType?.name);
 

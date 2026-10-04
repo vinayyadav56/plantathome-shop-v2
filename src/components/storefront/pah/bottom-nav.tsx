@@ -3,6 +3,7 @@ import React from 'react';
 import { goToSignin } from '@/lib/go-to-signin';
 import { useRouter } from '@/compat/next-router';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { useAtom } from 'jotai';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { drawerAtom } from '@/store/drawer-atom';
@@ -10,6 +11,13 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { Routes } from '@/config/routes';
 import { Flower2, Heart, Home, LayoutGrid, type LucideIcon, ShoppingBag, User } from '@/components/ui/icon';
+
+// Destinations that are pages render as real <a href> (crawlable, middle-click,
+// long-press) with the same motion; drawer / sign-in actions stay buttons.
+const MotionLink = motion(Link);
+function NavItem({ href, ...rest }: any) {
+  return href ? <MotionLink href={href} {...rest} /> : <motion.button {...rest} />;
+}
 
 const ACCENT = '#2E5E2A';
 const MUTED = '#8A8A82';
@@ -37,14 +45,14 @@ export function BottomNav() {
   const path = (router.asPath || '/').split(/[?#]/)[0];
 
   const items = [
-    { label: 'Home', active: path === '/', go: () => router.push('/') },
+    { label: 'Home', active: path === '/', href: '/', go: () => router.push('/') },
     { label: 'Categories', active: path.startsWith('/c/'), go: () => setDrawer({ display: true, view: 'MAIN_MENU_VIEW' }) },
-    { label: 'Plants', active: path.startsWith('/plants') || path.startsWith('/products'), go: () => router.push('/plants') },
+    { label: 'Plants', active: path.startsWith('/plants') || path.startsWith('/products'), href: '/plants', go: () => router.push('/plants') },
     // The cart had NO persistent control on a phone: not here, and not in the
     // mobile header (logo + Search + Menu only) — it was reachable only by
     // opening the hamburger drawer. On a storefront the cart is the one
     // control that must always be one tap away, and it carries its count.
-    { label: 'Cart', active: path.startsWith('/cart'), go: () => router.push(Routes.cart), badge: totalUniqueItems },
+    { label: 'Cart', active: path.startsWith('/cart'), href: Routes.cart, go: () => router.push(Routes.cart), badge: totalUniqueItems },
     { label: 'Wishlist', active: path.startsWith('/wishlist'), go: () => (authorized ? router.push('/wishlists') : goToSignin()) },
     { label: 'Profile', active: path.startsWith('/profile') || path.startsWith('/orders'), go: () => (authorized ? router.push('/profile') : goToSignin()) },
   ];
@@ -53,11 +61,10 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 z-30 w-full border-t border-kraft-200/80 bg-white/95 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 shadow-[0_-8px_28px_rgba(34,48,26,0.10)] backdrop-blur-xl md:hidden">
       <div className="mx-auto flex max-w-[440px] items-stretch">
         {items.map((n) => (
-          <motion.button
+          <NavItem
             key={n.label}
-            type="button"
+            {...((n as any).href ? { href: (n as any).href } : { type: 'button', onClick: n.go })}
             whileTap={{ scale: 0.9 }}
-            onClick={n.go}
             aria-label={n.badge ? `${n.label}, ${n.badge} item${n.badge === 1 ? '' : 's'}` : n.label}
             aria-current={n.active ? 'page' : undefined}
             className="relative flex flex-1 select-none flex-col items-center justify-center gap-[3px] pb-0.5 pt-1"
@@ -100,7 +107,7 @@ export function BottomNav() {
             >
               {n.label}
             </span>
-          </motion.button>
+          </NavItem>
         ))}
       </div>
     </nav>

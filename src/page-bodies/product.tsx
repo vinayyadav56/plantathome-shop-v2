@@ -128,7 +128,7 @@ const ProductPage = ({ product }: any) => {
                         You May Also Like
                         <Sparkles size={20} className="text-forest-500" aria-hidden />
                       </h2>
-                      <Link href="/plants/search" className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest-600 hover:text-forest-700">
+                      <Link href="/plants" className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest-600 hover:text-forest-700">
                         View All Plants
                         <ArrowRight size={14} aria-hidden />
                       </Link>

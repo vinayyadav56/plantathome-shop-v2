@@ -8,7 +8,7 @@ import { useTypes } from '@/framework/type';
 import { useLocationPages } from '@/framework/location';
 import { SOCIAL_URLS } from '@/lib/socials';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
-import { getVerticalMeta } from '@/components/storefront/verticals';
+import { POPULAR_PLANT_CATEGORIES, getVerticalMeta } from '@/components/storefront/verticals';
 import { Image } from '@/components/ui/image';
 import { siteSettings } from '@/config/site';
 import AppStoreImg from '@/assets/app-store-btn.png';
@@ -33,13 +33,12 @@ import {
 
 const COLS: { title: string; links: { name: string; href: string }[] }[] = [
   {
-    title: 'Plant Care',
+    // Real category pages (five anchors used to point at /plant-doctor under
+    // different names — no such pages exist). Shared list with the header.
+    title: 'Plants',
     links: [
-      { name: 'Care Guides', href: '/plant-doctor' },
-      { name: 'Repotting', href: '/plant-doctor' },
+      ...POPULAR_PLANT_CATEGORIES.map((c) => ({ name: c.label, href: c.href })),
       { name: 'Plant Doctor', href: '/plant-doctor' },
-      { name: 'Watering Tips', href: '/plant-doctor' },
-      { name: 'Light Guide', href: '/plant-doctor' },
     ],
   },
   {
@@ -54,16 +53,15 @@ const COLS: { title: string; links: { name: string; href: string }[] }[] = [
       { name: 'Contact Us', href: '/contact' },
       { name: 'Garden Service', href: '/garden-service' },
       { name: 'Corporate Gifting', href: '/corporate-gifting' },
-      { name: 'Plant Doctor', href: '/plant-doctor' },
     ],
   },
   {
     title: 'Help',
     links: [
       { name: 'Track Order', href: '/track-order' },
-      { name: 'Shipping & Returns', href: '/terms' },
+      { name: 'Shipping & Returns', href: '/customer-refund-policies' },
       { name: 'Bulk & Corporate', href: '/corporate-gifting' },
-      { name: 'FAQ', href: '/terms' },
+      { name: 'FAQ', href: '/help' },
       { name: 'Contact Us', href: '/contact' },
     ],
   },

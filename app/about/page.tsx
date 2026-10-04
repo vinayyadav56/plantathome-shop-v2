@@ -5,7 +5,7 @@ import { PageBody } from '@/page-bodies/about';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'About PlantAtHome',
+  title: 'About Us',
   description:
     'PlantAtHome is an online plant company serving homes across India, operated by Silvestrix Green LLP (LLPIN ACP-3683), registered in Haryana.',
   alternates: { canonical: '/about' },

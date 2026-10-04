@@ -19,7 +19,7 @@ import { Routes } from '@/config/routes';
 import CitySwitcher from '@/components/location/city-switcher';
 import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
-import { getVerticalMeta } from '@/components/storefront/verticals';
+import { POPULAR_PLANT_CATEGORIES, getVerticalMeta } from '@/components/storefront/verticals';
 import Search from '@/components/ui/search/search';
 import { ChevronDown, CircleHelp, Heart, Truck } from '@/components/ui/icon';
 
@@ -35,10 +35,7 @@ type NavItem = { label: string; href: string; menu?: { label: string; href: stri
 // simply renders as a plain link.
 const CATEGORY_MENUS: Record<string, { label: string; href: string }[]> = {
   plants: [
-    { label: 'Indoor Plants', href: '/c/indoor' },
-    { label: 'Outdoor Plants', href: '/c/outdoor' },
-    { label: 'Flowering Plants', href: '/c/flowering' },
-    { label: 'Air-purifying', href: '/c/air-purifying' },
+    ...POPULAR_PLANT_CATEGORIES,
     { label: 'Succulents & Cacti', href: '/c/succulents-cacti' },
     { label: 'Pet-friendly', href: '/c/pet-friendly' },
     { label: 'Herbs', href: '/c/herbs' },

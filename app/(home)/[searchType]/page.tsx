@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadHomeData, loadTypeSlugs } from '@/framework/ssr/prefetch';
+import { loadHomeData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import HomeScreen from '@/app-shell/home-screen';
 
 export const revalidate = 30;
@@ -37,10 +37,10 @@ export async function generateMetadata({
   // decide.
   const slugs: string[] = await loadTypeSlugs();
   if (slugs.length && !slugs.includes(searchType)) notFound();
-  const name = prettify(searchType);
+  const name = (await loadTypeName(searchType)) ?? prettify(searchType);
   return {
-    title: `${name} — Shop ${name} Online`,
-    description: `Explore the ${name} world at PlantAtHome — hand-checked quality, delivered across 500+ Indian cities.`,
+    title: `${name} Online in India`,
+    description: `Shop ${name.toLowerCase()} online at PlantAtHome — hand-checked quality, delivered across 500+ Indian cities.`,
     alternates: { canonical: `/${searchType}` },
   };
 }
@@ -57,7 +57,7 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
   const { variables, layout, dehydratedState } = data;
   return (
     <Hydrate state={dehydratedState}>
-      <HomeScreen variables={variables} layout={layout} />
+      <HomeScreen variables={{ ...variables, verticalPage: true }} layout={layout} />
     </Hydrate>
   );
 }

@@ -22,6 +22,19 @@ import { formatProductsArgs } from '@/framework/utils/format-products-args';
 
 const LOCALE = 'en';
 
+/** Footer "Plant Delivery Across India" links (and the only site-wide link to
+ *  /plants-in) read ['location-pages'] — seed it so they are server HTML. */
+async function prefetchLocationPages(queryClient: QueryClient) {
+  const api = (process.env.NEXT_PUBLIC_REST_API_ENDPOINT || '').replace(/\/$/, '');
+  if (!api) return;
+  try {
+    const res = await fetch(`${api}${API_ENDPOINTS.LOCATION_PAGES}`, { next: { revalidate: 1800 } });
+    if (res.ok) queryClient.setQueryData(['location-pages'], await res.json());
+  } catch {
+    /* fail-soft: the band renders nothing until the client fetch */
+  }
+}
+
 export type HomeLoad = {
   variables: {
     popularProducts: any;
@@ -124,6 +137,7 @@ export async function loadHomeData(vertical?: string): Promise<HomeLoad | null> 
     initialPageParam: undefined,
   } as any);
 
+  await prefetchLocationPages(queryClient);
   return {
     variables: {
       popularProducts: popularProductVariables,
@@ -153,6 +167,81 @@ export async function loadGeneralData() {
   } catch {
     /* fail-soft: client fetches on mount */
   }
+  await prefetchLocationPages(queryClient);
+  return { dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))) };
+}
+
+/**
+ * Category loader: settings + types + THE category + its first product page,
+ * under the exact keys useCategory / useProducts build (category.tsx), so the
+ * server HTML carries the real H1, description, subcategory links and product
+ * links instead of a "Loading…" shell (SEO audit 2026-10-04). City-less like
+ * every SSR prefetch — crawlers get the all-India catalogue.
+ * `productTotal` lets the route noindex an empty category.
+ */
+export async function loadCategoryData(slug: string, category: any) {
+  const { dehydratedState: general } = await loadGeneralData();
+  const queryClient = new QueryClient();
+  let productTotal: number | null = null;
+  try {
+    if (category) {
+      queryClient.setQueryData([`${API_ENDPOINTS.CATEGORIES}/${slug}`, { language: LOCALE }], category);
+    }
+    const typeSlug = category?.type?.slug;
+    const products: any = await queryClient.fetchInfiniteQuery({
+      queryKey: [
+        API_ENDPOINTS.PRODUCTS,
+        {
+          ...formatProductsArgs({
+            limit: PRODUCTS_PER_PAGE,
+            orderBy: 'created_at',
+            sortedBy: 'DESC',
+            categories: slug,
+            ...(typeSlug && { type: typeSlug }),
+          } as any),
+          language: LOCALE,
+        },
+      ],
+      queryFn: ({ queryKey }: any) => client.products.all(queryKey[1]),
+      initialPageParam: undefined,
+    } as any);
+    productTotal = products?.pages?.[0]?.total ?? null;
+  } catch {
+    /* fail-soft: client fetches on mount */
+  }
+  const own = JSON.parse(JSON.stringify(dehydrate(queryClient)));
+  return {
+    dehydratedState: { ...general, queries: [...(general?.queries ?? []), ...(own.queries ?? [])] },
+    productTotal,
+  };
+}
+
+/** /categories index: every vertical's root categories (first page) under the
+ *  key categories.tsx builds — the index of all category links is server HTML. */
+export async function loadCategoriesIndexData() {
+  const queryClient = new QueryClient();
+  try {
+    await queryClient.prefetchQuery({
+      queryKey: [API_ENDPOINTS.SETTINGS, { language: LOCALE }],
+      queryFn: ({ queryKey }: any) => client.settings.all(queryKey[1]),
+    });
+    const types: any[] = await queryClient.fetchQuery({
+      queryKey: [API_ENDPOINTS.TYPES, { limit: TYPES_PER_PAGE, language: LOCALE }],
+      queryFn: ({ queryKey }: any) => client.types.all(queryKey[1]),
+    });
+    await Promise.all(
+      (types ?? []).map((t: any) =>
+        queryClient.prefetchInfiniteQuery({
+          queryKey: [API_ENDPOINTS.CATEGORIES, { type: t.slug, parent: 'null', limit: 100, language: LOCALE }],
+          queryFn: ({ queryKey }: any) => client.categories.all(queryKey[1]),
+          initialPageParam: undefined,
+        } as any),
+      ),
+    );
+  } catch {
+    /* fail-soft: client fetches on mount */
+  }
+  await prefetchLocationPages(queryClient);
   return { dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))) };
 }
 
@@ -166,6 +255,15 @@ export async function loadProductData(slug: string) {
       queryFn: ({ queryKey }: any) => client.settings.all(queryKey[1]),
     })
     .catch(() => {});
+  // Header/footer vertical links read the types query — without it every PDP
+  // shipped its HTML with no category navigation at all.
+  await queryClient
+    .prefetchQuery({
+      queryKey: [API_ENDPOINTS.TYPES, { limit: TYPES_PER_PAGE, language: LOCALE }],
+      queryFn: ({ queryKey }: any) => client.types.all(queryKey[1]),
+    })
+    .catch(() => {});
+  await prefetchLocationPages(queryClient);
   try {
     const product = await client.products.get({ slug, language: LOCALE });
     return {
@@ -184,5 +282,15 @@ export async function loadTypeSlugs(): Promise<string[]> {
     return (types ?? []).map((t: any) => t.slug);
   } catch {
     return [];
+  }
+}
+
+/** A vertical's display name from the API ("Pots & Planters"), null if unknown. */
+export async function loadTypeName(slug: string): Promise<string | null> {
+  try {
+    const types = await client.types.all({ limit: 100 } as any);
+    return (types ?? []).find((t: any) => t.slug === slug)?.name ?? null;
+  } catch {
+    return null;
   }
 }

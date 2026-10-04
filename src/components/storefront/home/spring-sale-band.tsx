@@ -66,7 +66,7 @@ export function SpringSaleBand() {
           </div>
 
           <Link
-            href="/plants/search"
+            href="/plants"
             className="inline-flex shrink-0 items-center gap-2 self-start rounded-control bg-ds-cta px-5 py-2.5 font-hanken text-[13px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] lg:self-auto lg:px-6 lg:py-3 lg:text-[14px]"
           >
             {t('home-sale-cta')}

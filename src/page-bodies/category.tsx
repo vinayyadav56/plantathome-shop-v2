@@ -121,6 +121,9 @@ export default function CategoryPage() {
               items={[
                 { label: 'Home', href: Routes.home },
                 { label: 'Categories', href: Routes.categories },
+                ...((category as any)?.parent?.slug
+                  ? [{ label: (category as any).parent.name, href: `/c/${(category as any).parent.slug}` }]
+                  : []),
                 { label: category?.name ?? '' },
               ]}
             />
@@ -129,7 +132,7 @@ export default function CategoryPage() {
           {/* back pill */}
           {typeSlug && (
             <Link
-              href={`/${typeSlug}/search`}
+              href={`/${typeSlug}`}
               className="mb-5 inline-flex w-max items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 py-1.5 font-hanken text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80 backdrop-blur-md transition hover:text-white"
             >
               <ArrowLeft size={12} aria-hidden />

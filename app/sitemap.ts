@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL as BASE } from '@/lib/site-url';
+import { IS_INDEXABLE_SITE, SITE_URL as BASE } from '@/lib/site-url';
+import { getVerticalMeta } from '@/components/storefront/verticals';
 
 /**
  * Dynamic, env-aware sitemap. Replaces the stale static public/sitemap*.xml
@@ -107,8 +108,33 @@ async function fetchLocationPages(): Promise<{ slug: string }[]> {
   }
 }
 
+/** Categories that actually list something. An empty category is noindex on
+ *  the page (app/c/[slug]) — advertising it here would contradict that. Same
+ *  product filters as the listing; one tiny request per category, hourly. */
+async function categoriesWithProducts(slugs: string[]): Promise<string[]> {
+  const checks = await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        const res = await fetch(
+          `${API}/products?limit=1&language=en&searchJoin=and&hide_unpriced=1&search=${encodeURIComponent(
+            `categories.slug:${slug};status:publish;visibility:visibility_public`,
+          )}`,
+          { next: { revalidate: 3600 } },
+        );
+        if (!res.ok) return slug; // unknown → keep (fail-open, page decides)
+        const total = Number((await res.json())?.total);
+        return Number.isFinite(total) && total === 0 ? null : slug;
+      } catch {
+        return slug;
+      }
+    }),
+  );
+  return checks.filter((s): s is string => Boolean(s));
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date();
+  // Staging/previews advertise nothing (robots disallows everything there too).
+  if (!IS_INDEXABLE_SITE) return [];
 
   const [productSlugs, categorySlugs, typeSlugs, policySlugs, locationPages] = await Promise.all([
     fetchAllSlugs('products', PRODUCT_FILTERS),
@@ -123,25 +149,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const entries: MetadataRoute.Sitemap = STATIC_ROUTES.map((r) => ({
     url: `${BASE}${r}`,
-    lastModified: now,
     changeFrequency: 'daily',
     priority: r === '' ? 1 : 0.7,
   }));
 
   for (const slug of productSlugs) {
-    entries.push({ url: `${BASE}/products/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.8 });
+    entries.push({ url: `${BASE}/products/${slug}`, changeFrequency: 'daily', priority: 0.8 });
   }
-  for (const slug of categorySlugs) {
-    entries.push({ url: `${BASE}/c/${slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.6 });
+  for (const slug of await categoriesWithProducts(categorySlugs)) {
+    entries.push({ url: `${BASE}/c/${slug}`, changeFrequency: 'weekly', priority: 0.6 });
   }
-  for (const slug of typeSlugs) {
-    entries.push({ url: `${BASE}/${slug}`, lastModified: now, changeFrequency: 'daily', priority: 0.9 });
+  // Coming-soon verticals (seeds, fertilizers) are empty shells — not yet.
+  for (const slug of typeSlugs.filter((t) => !getVerticalMeta(t).comingSoon)) {
+    entries.push({ url: `${BASE}/${slug}`, changeFrequency: 'daily', priority: 0.9 });
   }
   for (const slug of policySlugs) {
-    entries.push({ url: `${BASE}/policies/${slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.3 });
+    entries.push({ url: `${BASE}/policies/${slug}`, changeFrequency: 'monthly', priority: 0.3 });
   }
   for (const page of locationPages) {
-    entries.push({ url: `${BASE}/plants-in/${page.slug}`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 });
+    entries.push({ url: `${BASE}/plants-in/${page.slug}`, changeFrequency: 'weekly', priority: 0.7 });
   }
 
   return entries;
