@@ -90,7 +90,8 @@ export default function PlantAtHomeLayout({ variables }: HomePageProps) {
       }
     : {
         scenes: meta.scenes,
-        eyebrow: `PlantAtHome · ${meta.label}`,
+        // the vertical page's h1 — carries the buying intent ("Buy Plants Online")
+        eyebrow: `Buy ${meta.label} Online`,
         titleA: meta.tagline.split(' ').slice(0, -1).join(' '),
         titleB: meta.tagline.split(' ').slice(-1).join(' '),
         sub: meta.blurb,

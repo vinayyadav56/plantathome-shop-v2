@@ -25,7 +25,12 @@ export interface LocationPageData {
   delivery_html: string | null;
   faqs: { question: string; answer: string }[] | null;
   is_active: boolean;
+  /** Admin flag AND live supply (API gate: >= 8 orderable products). */
   is_indexable: boolean;
+  /** Published products orderable in this city (absent on an older API). */
+  products_count?: number;
+  /** Categories that actually have products here, most-stocked first. */
+  categories?: { slug: string; name: string; products_count: number }[];
 }
 
 export interface LocationPageSummary {
@@ -33,6 +38,7 @@ export interface LocationPageSummary {
   city_name: string;
   state_name: string | null;
   is_indexable: boolean;
+  products_count?: number;
 }
 
 async function getJson<T>(path: string): Promise<T | null> {
@@ -55,10 +61,11 @@ export async function loadLocationPage(slug: string): Promise<LocationPageData |
   return getJson<LocationPageData>(`locations/pages/${encodeURIComponent(slug)}`);
 }
 
-/** Live products in this city — the same publish filters the sitemap uses. */
+/** Live products in this city (all-India when cityName is '') — the same
+ *  publish filters the sitemap uses. */
 export async function loadCityProducts(cityName: string, limit = 8): Promise<any[]> {
   const params =
-    `limit=${limit}&city=${encodeURIComponent(cityName)}&hide_unpriced=1` +
+    `limit=${limit}${cityName ? `&city=${encodeURIComponent(cityName)}` : ''}&hide_unpriced=1` +
     `&searchJoin=and&search=${encodeURIComponent('status:publish;visibility:visibility_public')}`;
   const json = await getJson<any>(`products?${params}`);
   const rows = Array.isArray(json) ? json : json?.data ?? [];

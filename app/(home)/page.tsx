@@ -10,15 +10,17 @@ export const revalidate = 30;
 
 export const metadata: Metadata = {
   // Home keeps the full default title (no template suffix duplication).
-  title: { absolute: 'PlantAtHome — Premium Plants, Pots & Care, Delivered' },
+  title: { absolute: 'PlantAtHome – Plant Delivery Online in India | Buy Plants Online' },
   description:
-    'India’s plant company. Healthy indoor & outdoor plants, premium pots and plant care — hand-checked and delivered across 500+ cities.',
+    'Buy plants online with PlantAtHome. Explore indoor, outdoor, flowering and air-purifying plants, pots and gardening essentials with convenient plant delivery across India.',
   alternates: { canonical: '/' },
 };
 
 
 
-/** Organization + WebSite (with sitelinks-search) — crawler-visible, server-rendered. */
+/** Organization + WebSite — crawler-visible, server-rendered. No SearchAction:
+ *  the only search URLs (/{vertical}/search) are robots-blocked + noindex, and
+ *  Google retired the sitelinks search box. */
 const HOME_JSONLD = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -45,13 +47,6 @@ const HOME_JSONLD = {
       name: 'PlantAtHome',
       alternateName: 'Plant At Home',
       publisher: { '@id': `${SITE}/#org` },
-      potentialAction: {
-        '@type': 'SearchAction',
-        // Search is vertical-scoped in this app (/{vertical}/search) — there is
-        // no bare /search route; it would be swallowed by [searchType] and 404.
-        target: { '@type': 'EntryPoint', urlTemplate: `${SITE}/plants/search?text={query}` },
-        'query-input': 'required name=query',
-      },
     },
   ],
 };

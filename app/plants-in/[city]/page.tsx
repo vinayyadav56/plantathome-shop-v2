@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!page) notFound();
   if (page.slug !== city) permanentRedirect(`/plants-in/${page.slug}`);
 
-  const title = page.seo_title || `Buy Plants Online in ${page.city_name} | Plant Delivery | PlantAtHome`;
+  const title = page.seo_title || `Plant Delivery in ${page.city_name} | Buy Plants Online | PlantAtHome`;
   const description =
     page.seo_description ||
     `Order healthy indoor and outdoor plants, pots and gardening essentials online in ${page.city_name}. Hand-checked plants with doorstep delivery from PlantAtHome.`;
@@ -67,7 +67,9 @@ export default async function Page({ params }: Params) {
   const [{ dehydratedState }, products, categories, allCities] = await Promise.all([
     loadGeneralData(),
     loadCityProducts(page.city_name),
-    loadTopCategories(),
+    // The city's own stocked categories when the API sends them; the global
+    // top list is the fallback for an API that predates the live-supply fields.
+    page.categories?.length ? page.categories : loadTopCategories(),
     loadLocationPages(),
   ]);
 
@@ -76,7 +78,7 @@ export default async function Page({ params }: Params) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-      { '@type': 'ListItem', position: 2, name: 'Plant Delivery Cities', item: `${SITE_URL}/plants-in` },
+      { '@type': 'ListItem', position: 2, name: 'Plant Delivery', item: `${SITE_URL}/plant-delivery` },
       { '@type': 'ListItem', position: 3, name: page.city_name, item: `${SITE_URL}/plants-in/${page.slug}` },
     ],
   };

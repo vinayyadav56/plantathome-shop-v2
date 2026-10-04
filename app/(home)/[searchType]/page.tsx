@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadHomeData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import HomeScreen from '@/app-shell/home-screen';
+import { SITE_URL } from '@/lib/site-url';
 
 export const revalidate = 30;
 export const dynamicParams = true;
@@ -40,7 +41,7 @@ export async function generateMetadata({
   const name = (await loadTypeName(searchType)) ?? prettify(searchType);
   return {
     title: `${name} Online in India`,
-    description: `Shop ${name.toLowerCase()} online at PlantAtHome — hand-checked quality, delivered across 500+ Indian cities.`,
+    description: `Shop ${name.toLowerCase()} online at PlantAtHome — hand-checked quality, delivered across India.`,
     alternates: { canonical: `/${searchType}` },
   };
 }
@@ -55,8 +56,21 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
   const data = await loadHomeData(vertical);
   if (!data) return notFound(); // unknown type slug (V1: notFound + revalidate)
   const { variables, layout, dehydratedState } = data;
+  const name = (await loadTypeName(vertical)) ?? prettify(vertical);
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name, item: `${SITE_URL}/${vertical}` },
+    ],
+  };
   return (
     <Hydrate state={dehydratedState}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb).replace(/</g, '\\u003c') }}
+      />
       <HomeScreen variables={{ ...variables, verticalPage: true }} layout={layout} />
     </Hydrate>
   );

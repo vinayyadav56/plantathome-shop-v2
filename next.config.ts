@@ -143,6 +143,9 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       { source: '/shops', destination: '/', permanent: true },
+      // The city hub became the plant-delivery landing page (city pages stay
+      // at /plants-in/{city}); exact path only.
+      { source: '/plants-in', destination: '/plant-delivery', permanent: true },
       { source: '/shops/:path*', destination: '/', permanent: true },
       ...Object.entries(CITY_ALIASES).map(([alias, canonical]) => ({
         source: `/plants-in/${alias}`,

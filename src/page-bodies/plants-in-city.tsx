@@ -44,7 +44,7 @@ function PlantsInCityPage({
         <Breadcrumb
           items={[
             { label: 'Home', href: '/' },
-            { label: 'Plant Delivery Cities', href: '/plants-in' },
+            { label: 'Plant Delivery', href: '/plant-delivery' },
             { label: page.city_name },
           ]}
           className="mb-6"
@@ -58,8 +58,13 @@ function PlantsInCityPage({
             {page.state_name ? `, ${page.state_name}` : ''}
           </p>
           <h1 className="text-3xl font-semibold text-heading md:text-4xl">
-            Buy Plants Online in {page.city_name}
+            Plant Delivery in {page.city_name}
           </h1>
+          {page.products_count ? (
+            <p className="mt-3 text-sm font-medium text-forest-700">
+              {page.products_count} plants and essentials available for delivery in {page.city_name}
+            </p>
+          ) : null}
           {page.intro_html ? (
             <div
               className="prose prose-sm mt-4 max-w-none text-body"
@@ -90,6 +95,7 @@ function PlantsInCityPage({
                   className="rounded-full border border-border-200 bg-white px-4 py-2 text-sm font-medium text-heading transition-colors hover:border-accent hover:text-accent"
                 >
                   {c.name}
+                  {c.products_count ? <span className="ml-1.5 text-body">({c.products_count})</span> : null}
                 </Link>
               ))}
               <Link
@@ -120,7 +126,7 @@ function PlantsInCityPage({
         <div className="shadow-box mt-14 rounded-xl border border-border-200 bg-white p-6 md:p-8">
           <h2 className="mb-3 inline-flex items-center gap-2 text-xl font-semibold text-heading">
             <Truck className="h-5 w-5 text-accent" aria-hidden />
-            Plant Delivery in {page.city_name}
+            How Delivery Works in {page.city_name}
           </h2>
           {page.delivery_html ? (
             <div

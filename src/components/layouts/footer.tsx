@@ -38,6 +38,7 @@ const COLS: { title: string; links: { name: string; href: string }[] }[] = [
     title: 'Plants',
     links: [
       ...POPULAR_PLANT_CATEGORIES.map((c) => ({ name: c.label, href: c.href })),
+      { name: 'Plant Delivery', href: '/plant-delivery' },
       { name: 'Plant Doctor', href: '/plant-doctor' },
     ],
   },
@@ -392,7 +393,7 @@ const Footer = () => {
               ))}
               <li>
                 <Link
-                  href="/plants-in"
+                  href="/plant-delivery"
                   className="text-[13px] text-[#4ADE80] transition-colors hover:text-white"
                 >
                   All cities →

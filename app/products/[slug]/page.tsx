@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { pageTitle } from '@/lib/seo';
+import { pageTitle, productTitle } from '@/lib/seo';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadProductData } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/product';
@@ -25,7 +25,9 @@ export async function generateMetadata({
   if (!data) return {};
   const p: any = data.product;
   // Admin-set SEO fields win; the name/description are the fallback.
-  const title = pageTitle(p?.seo_title || p?.name || '');
+  const title = p?.seo_title
+    ? pageTitle(p.seo_title)
+    : productTitle(p?.name ?? '', p?.type?.slug === 'plants');
   const description =
     p?.seo_description ||
     stripHtml(p?.description).slice(0, 160) ||

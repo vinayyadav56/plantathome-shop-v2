@@ -131,7 +131,7 @@ export default function LocationGate() {
   // /plants-in is exempt too: a search visitor landing on a city SEO page must
   // read it, not hit a modal — the page's own "Shop plants in {city}" CTA is
   // the explicit choice; the gate re-arms on any other shopping surface.
-  const exemptRoute = ['/signin', '/verify-email', '/access-denied', '/plants-in'].some(
+  const exemptRoute = ['/signin', '/verify-email', '/access-denied', '/plants-in', '/plant-delivery'].some(
     (p) => path === p || path.startsWith(`${p}/`),
   );
 

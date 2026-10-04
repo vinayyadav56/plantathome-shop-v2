@@ -34,7 +34,7 @@ const STATIC_ROUTES = [
   // declares noindex) — the public policy page is /customer-refund-policies.
   '/customer-refund-policies',
   '/vendor-refund-policies',
-  '/plants-in',
+  '/plant-delivery',
 ];
 
 async function fetchSlugs(path: string): Promise<string[]> {

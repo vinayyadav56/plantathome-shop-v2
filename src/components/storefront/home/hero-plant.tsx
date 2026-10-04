@@ -334,18 +334,21 @@ export function HeroPlant() {
 
       <div className="relative z-10 mx-auto max-w-none px-5 pb-[120px] pt-[135px] max-lg:pb-[110px] sm:px-8 lg:px-16 lg:pt-[150px]">
         <div className="max-w-2xl">
-          <motion.span
+          {/* The page's h1 is this eyebrow ("Plant Delivery Across India") —
+              the big brand line below is display text, not the heading, so the
+              search intent lives in the h1 without changing the look. */}
+          <motion.h1
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.7, ease: EXPO }}
-            className="mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/35 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/90"
+            className="mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/35 px-4 py-1.5 !font-body text-[11px] font-semibold uppercase leading-normal tracking-[0.2em] text-white/90"
           >
             {t('home-hero-eyebrow')}
             <Sprout size={12} className="shrink-0 text-[#8FD56F]" aria-hidden />
-          </motion.span>
+          </motion.h1>
 
           {headline ? (
-            <motion.h1
+            <motion.p
               key={`h-${idx}`}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -353,7 +356,7 @@ export function HeroPlant() {
               className="font-pahserif text-[2.4rem] font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]"
             >
               {headline}
-            </motion.h1>
+            </motion.p>
           ) : (
             // No WordReveal here ON PURPOSE: it holds every word at
             // translateY(115%) until hydration + up to ~1.25s of staggered
@@ -362,14 +365,14 @@ export function HeroPlant() {
             // renders immediately; the sub-copy and CTAs below keep their
             // entrance motion, which preserves the cinematic feel without
             // taxing first paint.
-            <h1 className="font-pahserif text-[2.4rem] font-medium leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]">
+            <p className="font-pahserif text-[2.4rem] font-medium leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]">
               <span className="block lg:whitespace-nowrap">
                 {t('home-hero-title-1')}
               </span>
               <span className="block text-[#8FD56F]">
                 {t('home-hero-title-2')}
               </span>
-            </h1>
+            </p>
           )}
 
           <motion.p
