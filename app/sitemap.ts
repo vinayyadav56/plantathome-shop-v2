@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { isCityIndexable, loadCityProducts, loadLocationPages } from '@/framework/ssr/location-pages';
 import { IS_INDEXABLE_SITE, SITE_URL as BASE } from '@/lib/site-url';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 
@@ -93,19 +94,12 @@ const PRODUCT_FILTERS =
     'status:publish;visibility:visibility_public;noindex:0',
   )}`;
 
-/** Active city landing pages, indexable only (the endpoint already filters active). */
+/** Active city landing pages the page itself would index: admin flag AND a
+ *  real shelf (isCityIndexable — same gate as app/plants-in/[city]). */
 async function fetchLocationPages(): Promise<{ slug: string }[]> {
-  if (!API) return [];
-  try {
-    const res = await fetch(`${API}/locations/pages`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    const rows: any[] = await res.json();
-    return (Array.isArray(rows) ? rows : []).filter(
-      (r) => typeof r?.slug === 'string' && r.is_indexable !== false,
-    );
-  } catch {
-    return [];
-  }
+  const pages = (await loadLocationPages()).filter((r) => typeof r?.slug === 'string');
+  const totals = await Promise.all(pages.map((p) => loadCityProducts(p.city_name, 1)));
+  return pages.filter((p, i) => isCityIndexable(p, totals[i].total));
 }
 
 /** Categories that actually list something. An empty category is noindex on

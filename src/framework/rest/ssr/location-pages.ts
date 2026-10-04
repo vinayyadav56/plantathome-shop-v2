@@ -25,12 +25,7 @@ export interface LocationPageData {
   delivery_html: string | null;
   faqs: { question: string; answer: string }[] | null;
   is_active: boolean;
-  /** Admin flag AND live supply (API gate: >= 8 orderable products). */
   is_indexable: boolean;
-  /** Published products orderable in this city (absent on an older API). */
-  products_count?: number;
-  /** Categories that actually have products here, most-stocked first. */
-  categories?: { slug: string; name: string; products_count: number }[];
 }
 
 export interface LocationPageSummary {
@@ -38,7 +33,6 @@ export interface LocationPageSummary {
   city_name: string;
   state_name: string | null;
   is_indexable: boolean;
-  products_count?: number;
 }
 
 async function getJson<T>(path: string): Promise<T | null> {
@@ -61,15 +55,30 @@ export async function loadLocationPage(slug: string): Promise<LocationPageData |
   return getJson<LocationPageData>(`locations/pages/${encodeURIComponent(slug)}`);
 }
 
-/** Live products in this city (all-India when cityName is '') — the same
- *  publish filters the sitemap uses. */
-export async function loadCityProducts(cityName: string, limit = 8): Promise<any[]> {
+/**
+ * A city page is worth indexing only with a real shelf: the page shows 8
+ * products, so fewer is a thin page. Gated on the product list's own `total`
+ * — the exact list shoppers get (catalogue, price, visibility and vertical
+ * gates all applied by the API), so the count can never drift from the shelf.
+ */
+export const MIN_CITY_PRODUCTS = 8;
+
+export const isCityIndexable = (page: { is_indexable: boolean }, total: number) =>
+  page.is_indexable && total >= MIN_CITY_PRODUCTS;
+
+/** Live products in this city (all-India when cityName is '') plus the full
+ *  count — the same publish filters the sitemap uses. */
+export async function loadCityProducts(
+  cityName: string,
+  limit = 8,
+): Promise<{ products: any[]; total: number }> {
   const params =
     `limit=${limit}${cityName ? `&city=${encodeURIComponent(cityName)}` : ''}&hide_unpriced=1` +
     `&searchJoin=and&search=${encodeURIComponent('status:publish;visibility:visibility_public')}`;
   const json = await getJson<any>(`products?${params}`);
   const rows = Array.isArray(json) ? json : json?.data ?? [];
-  return Array.isArray(rows) ? rows : [];
+  const products = Array.isArray(rows) ? rows : [];
+  return { products, total: Number(json?.total ?? products.length) || 0 };
 }
 
 /** Top-level categories for the internal-link grid. */

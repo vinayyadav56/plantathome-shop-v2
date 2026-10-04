@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [{ dehydratedState }, cities, products] = await Promise.all([
+  const [{ dehydratedState }, cities, { products }] = await Promise.all([
     loadGeneralData(),
     loadLocationPages(),
     loadCityProducts('', 8),

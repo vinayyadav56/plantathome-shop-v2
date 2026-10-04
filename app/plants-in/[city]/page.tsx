@@ -3,6 +3,7 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadGeneralData } from '@/framework/ssr/prefetch';
 import {
+  isCityIndexable,
   loadCityProducts,
   loadLocationPage,
   loadLocationPages,
@@ -53,7 +54,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     alternates: { canonical: url },
     openGraph: { type: 'website', url, title, description },
     twitter: { card: 'summary_large_image', title, description },
-    ...(page.is_indexable ? {} : { robots: { index: false, follow: true } }),
+    // Same request as the page body (fetch-cached), so the gate and the shelf agree.
+    ...(isCityIndexable(page, (await loadCityProducts(page.city_name)).total)
+      ? {}
+      : { robots: { index: false, follow: true } }),
   };
 }
 
@@ -64,12 +68,10 @@ export default async function Page({ params }: Params) {
   // Alias slug (gurgaon, new-delhi…) — one canonical URL per city.
   if (page.slug !== city) permanentRedirect(`/plants-in/${page.slug}`);
 
-  const [{ dehydratedState }, products, categories, allCities] = await Promise.all([
+  const [{ dehydratedState }, { products, total }, categories, allCities] = await Promise.all([
     loadGeneralData(),
     loadCityProducts(page.city_name),
-    // The city's own stocked categories when the API sends them; the global
-    // top list is the fallback for an API that predates the live-supply fields.
-    page.categories?.length ? page.categories : loadTopCategories(),
+    loadTopCategories(),
     loadLocationPages(),
   ]);
 
@@ -114,6 +116,7 @@ export default async function Page({ params }: Params) {
       <PageBody
         page={page}
         products={products}
+        productTotal={total}
         categories={categories}
         otherCities={allCities.filter((c) => c.slug !== page.slug)}
       />

@@ -17,8 +17,7 @@ Status key: **Fixed** = shipped in the two SEO passes (sitelinks pass `0673477` 
 | 7 | `/policies/*` 404'd (Next 16 `params` is a Promise) | Medium | `await params` | `app/policies/[slug]/page.tsx` |
 | 8 | Homepage title and H1 didn't target plant delivery | High | Title "PlantAtHome – Plant Delivery Online in India \| Buy Plants Online"; H1 "Plant Delivery Across India" (brand line kept as display text) | `app/(home)/page.tsx`, `src/components/storefront/home/hero-plant.tsx` |
 | 9 | No plant-delivery landing page; the `/plants-in` hub competed for the same query | High | New `/plant-delivery` (how it works, categories, real products, cities, care); `/plants-in` 308s to it | `app/plant-delivery/page.tsx`, `src/page-bodies/plant-delivery.tsx` |
-| 10 | City pages indexable regardless of real stock | High | API computes live `products_count`; `is_indexable` = admin flag AND ≥ 8 orderable products, so the page meta and the sitemap both follow it | API `LocationPageController.php`, `app/plants-in/[city]/page.tsx` |
-| 11 | City pages showed the same global category list everywhere | Medium | Categories that actually have stock in that city, with counts | same |
+| 10 | City pages indexable regardless of real stock | High | `isCityIndexable`: admin flag AND ≥ 8 products in the product list's own `total` for that city; the page meta and the sitemap share it | `src/framework/rest/ssr/location-pages.ts`, `app/plants-in/[city]/page.tsx`, `app/sitemap.ts` |
 | 12 | Product titles were the bare name | Medium | Plants: "Buy {name} Plant Online" when it fits in 60 chars; admin `seo_title` wins | `src/lib/seo.ts`, `app/products/[slug]/page.tsx` |
 | 13 | WebSite SearchAction targeted a robots-blocked URL | Low | Removed (Google retired the sitelinks search box) | `app/(home)/page.tsx` |
 | 14 | Vertical pages had no breadcrumb data | Low | BreadcrumbList JSON-LD | `app/(home)/[searchType]/page.tsx` |

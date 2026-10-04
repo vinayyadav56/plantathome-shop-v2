@@ -23,11 +23,13 @@ import type { LocationPageData, LocationPageSummary } from '@/framework/ssr/loca
 function PlantsInCityPage({
   page,
   products,
+  productTotal,
   categories,
   otherCities,
 }: {
   page: LocationPageData;
   products: any[];
+  productTotal: number;
   categories: any[];
   otherCities: LocationPageSummary[];
 }) {
@@ -60,9 +62,9 @@ function PlantsInCityPage({
           <h1 className="text-3xl font-semibold text-heading md:text-4xl">
             Plant Delivery in {page.city_name}
           </h1>
-          {page.products_count ? (
+          {productTotal > 0 ? (
             <p className="mt-3 text-sm font-medium text-forest-700">
-              {page.products_count} plants and essentials available for delivery in {page.city_name}
+              {productTotal} plants and essentials available for delivery in {page.city_name}
             </p>
           ) : null}
           {page.intro_html ? (
@@ -95,7 +97,6 @@ function PlantsInCityPage({
                   className="rounded-full border border-border-200 bg-white px-4 py-2 text-sm font-medium text-heading transition-colors hover:border-accent hover:text-accent"
                 >
                   {c.name}
-                  {c.products_count ? <span className="ml-1.5 text-body">({c.products_count})</span> : null}
                 </Link>
               ))}
               <Link
@@ -183,6 +184,7 @@ function PlantsInCityPage({
 export function PageBody(props: {
   page: LocationPageData;
   products: any[];
+  productTotal: number;
   categories: any[];
   otherCities: LocationPageSummary[];
 }) {

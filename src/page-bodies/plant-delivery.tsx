@@ -139,9 +139,6 @@ function PlantDeliveryPage({
                         >
                           <MapPin className="h-5 w-5 shrink-0 text-accent" aria-hidden />
                           <span className="font-medium">Plant delivery in {c.city_name}</span>
-                          {c.products_count ? (
-                            <span className="ml-auto text-sm text-body">{c.products_count} items</span>
-                          ) : null}
                         </Link>
                       ))}
                     </div>
