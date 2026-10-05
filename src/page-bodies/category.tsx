@@ -187,14 +187,14 @@ export default function CategoryPage() {
 
       {/* ── PRODUCTS ── */}
       {/* Full-bleed listing (matches /search): no max-width cap, slim gutters */}
-      <section className="min-h-[40vh] border-t border-kraft-200 px-4 py-10 sm:px-5 lg:px-6 xl:px-8 xl:py-14">
+      <section className="min-h-[40vh] border-t border-kraft-200 px-4 pb-10 pt-5 sm:px-5 lg:px-6 xl:px-8 xl:pb-14 xl:pt-9">
         {/* section header */}
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="font-hanken text-[10.5px] font-bold uppercase tracking-[0.2em] text-gold">
               {category?.name ?? 'Products'}
             </p>
-            <h2 className="mt-1.5 font-pahserif text-[2rem] font-medium leading-none tracking-[-0.01em] text-forest-900 sm:text-[2.6rem]">
+            <h2 className="mt-1.5 font-pahserif text-[1.6rem] font-medium leading-none tracking-[-0.01em] text-forest-900 sm:text-[2.1rem]">
               Shop the collection.
             </h2>
           </div>
@@ -204,7 +204,7 @@ export default function CategoryPage() {
             search page, so the two listing surfaces feel identical */}
         <div className="flex w-full md:gap-6 lg:gap-10">
           <div className="hidden w-72 shrink-0 md:block lg:w-80">
-            <StickyBox offsetTop={140} offsetBottom={30}>
+            <StickyBox offsetTop={102} offsetBottom={30}>
               {/* showSort={false}: sorting lives in the toolbar above the grid
                   now, where shoppers expect it. Two sort controls on one page
                   that write the same URL params is a way to confuse people. */}

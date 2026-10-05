@@ -156,7 +156,7 @@ const GetLayout = (page: React.ReactElement) => {
                 two cards at ~229px, narrower than the 2-up a 375px phone renders. Below lg the
                 floating filter button opens the same filters in a drawer. */}
             <div className="hidden w-72 shrink-0 lg:block lg:w-80">
-              <StickyBox offsetTop={140} offsetBottom={30}>
+              <StickyBox offsetTop={102} offsetBottom={30}>
                 <SidebarFilter inRail />
               </StickyBox>
             </div>

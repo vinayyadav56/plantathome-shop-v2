@@ -36,30 +36,77 @@ export function getCardBadge(product: Product): string | null {
   return null;
 }
 
-/** Quick-glance plant facts (pet / air / light / water / placement), in the
- *  order a plant shopper cares about. Only REAL plant_attribute values are
- *  returned — nothing is invented, so a product with no attributes yields [].
+export type PlantFact = {
+  key: string;
+  /** LineIcon name */
+  icon: string;
+  /** Spec-grid heading ("Light") and its value ("Bright Indirect"). */
+  label: string;
+  value: string;
+  /** The same fact as one self-explanatory phrase, for chip rows. */
+  chip: string;
+};
+
+/** Every REAL plant_attribute fact, in the order a shopper scans them: light,
+ *  water, placement, pets, air — then the secondary ones. Nothing is invented,
+ *  so a product with no attributes yields [].
  *
- *  Shared by the PDP's chip row and the product card, which previously each
- *  had their own copy of this list. */
-export function plantQuickFacts(product: Product): { icon: string; label: string }[] {
+ *  The single source for plant facts: the card's chips, the list view's spec
+ *  grid and the PDP's chip row all read this list. */
+export function plantFactRows(product: Product): PlantFact[] {
   const pa = (product as any)?.plant_attribute;
   if (!pa) return [];
-  const facts: { icon: string; label: string }[] = [];
   const head = (v: unknown) => String(v).split(/[,/]/)[0].trim();
+  // 'None' is how the catalogue import spells "no value" for some columns.
+  const has = (v: unknown) => v != null && !['', 'none'].includes(String(v).trim().toLowerCase());
+  const rows: PlantFact[] = [];
+  if (has(pa.sunlight)) {
+    const v = head(pa.sunlight);
+    rows.push({ key: 'light', icon: 'lotus', label: 'Light', value: v, chip: v });
+  }
+  if (has(pa.water_requirement)) {
+    const v = head(pa.water_requirement);
+    rows.push({ key: 'water', icon: 'droplet', label: 'Water', value: v, chip: `${v} water` });
+  }
+  if (has(pa.indoor_outdoor)) {
+    const v = String(pa.indoor_outdoor).trim();
+    rows.push({ key: 'placement', icon: 'box', label: 'Placement', value: v, chip: v });
+  }
   if (pa.pet_friendly != null)
-    facts.push({ icon: 'shield', label: pa.pet_friendly ? 'Pet friendly' : 'Keep from pets' });
-  if (pa.air_purifying) facts.push({ icon: 'leaf', label: 'Air purifying' });
-  if (pa.sunlight) facts.push({ icon: 'lotus', label: head(pa.sunlight) });
-  if (pa.water_requirement) facts.push({ icon: 'droplet', label: `${head(pa.water_requirement)} water` });
-  if (pa.indoor_outdoor) facts.push({ icon: 'box', label: pa.indoor_outdoor });
+    rows.push({
+      key: 'pets',
+      icon: 'shield',
+      label: 'Pets',
+      value: pa.pet_friendly ? 'Pet friendly' : 'Keep away',
+      chip: pa.pet_friendly ? 'Pet friendly' : 'Keep from pets',
+    });
+  if (pa.air_purifying)
+    rows.push({ key: 'air', icon: 'leaf', label: 'Air', value: 'Air purifying', chip: 'Air purifying' });
   // Secondary facts — fill in when the primary five are sparse so a plant
-  // with any attribute data at all still gets chips on its card.
-  if (pa.difficulty_level) facts.push({ icon: 'sprout', label: `${head(pa.difficulty_level)} care` });
-  if (pa.growth_rate) facts.push({ icon: 'plant', label: `${head(pa.growth_rate)} growth` });
-  if (pa.humidity) facts.push({ icon: 'humidity', label: `${head(pa.humidity)} humidity` });
-  if (pa.height_range) facts.push({ icon: 'prune', label: head(pa.height_range) });
-  return facts;
+  // with any attribute data at all still gets something on its card.
+  if (has(pa.difficulty_level)) {
+    const v = head(pa.difficulty_level);
+    rows.push({ key: 'care', icon: 'sprout', label: 'Care', value: v, chip: `${v} care` });
+  }
+  if (has(pa.growth_rate)) {
+    const v = head(pa.growth_rate);
+    rows.push({ key: 'growth', icon: 'plant', label: 'Growth', value: v, chip: `${v} growth` });
+  }
+  if (has(pa.humidity)) {
+    const v = head(pa.humidity);
+    rows.push({ key: 'humidity', icon: 'humidity', label: 'Humidity', value: v, chip: `${v} humidity` });
+  }
+  if (has(pa.height_range)) {
+    const v = head(pa.height_range);
+    rows.push({ key: 'height', icon: 'prune', label: 'Height', value: v, chip: v });
+  }
+  return rows;
+}
+
+/** Quick-glance chips ({icon, label}) — plantFactRows as one-phrase labels.
+ *  Shared by the PDP's chip row and the product card. */
+export function plantQuickFacts(product: Product): { icon: string; label: string }[] {
+  return plantFactRows(product).map(({ icon, chip }) => ({ icon, label: chip }));
 }
 
 /** Quill descriptions are HTML — flatten to plain text for the 2-line clamp. */
@@ -81,12 +128,14 @@ export function stripHtml(html: string | null | undefined): string {
  *  line from plant attributes, then the category. Never throws, may be ''.
  *  List payloads omit the full HTML description but carry the server-built
  *  `description_preview` — prefer it so cards always match the admin copy. */
-export function shortDescription(product: Product): string {
+export function shortDescription(product: Product, synthesize = true): string {
   const preview = (product as any)?.description_preview;
   if (preview && String(preview).trim()) return String(preview).trim();
   const plain = stripHtml((product as any)?.description);
   if (plain) return plain;
-  const a = product?.plant_attribute;
+  // `synthesize: false` is for surfaces that already show the plant facts as
+  // chips/specs — there this line would just repeat them one row higher.
+  const a = synthesize ? product?.plant_attribute : null;
   if (a) {
     const bits: string[] = [];
     if (a.sunlight) bits.push(String(a.sunlight).split(/[,/]/)[0].trim());

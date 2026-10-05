@@ -18,7 +18,7 @@ import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
-import { compactPrice, getCardBadge, plantQuickFacts, shortDescription, PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
+import { compactPrice, getCardBadge, plantFactRows, shortDescription, PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
 import { PlantMark } from '@/components/storefront/logo-mark';
 import type { Product } from '@/types';
 
@@ -121,8 +121,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
     (product as any).scientific_name ??
     (product.plant_attribute as any)?.scientific_name ??
     null;
-  const desc = shortDescription(product);
-  const facts = plantQuickFacts(product);
+  const facts = plantFactRows(product);
+  // With facts on the card, don't also spell them out as the description line.
+  const desc = shortDescription(product, facts.length === 0);
   const inCart =
     mounted && !isVariable && isInCart(generateCartItem(product as any, undefined as any)?.id);
 
@@ -152,6 +153,183 @@ const PlantAtHomeCard: React.FC<Props> = ({
     }
     toggleWishlist({ product_id: product.id });
   }
+
+  /* ── pieces shared by the grid and list bodies ── */
+  const titleRow = (
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        {/* Product name — same family as the body text, bold (user note:
+            weight alone distinguishes the name), #184A31 */}
+        {/* Type spec given exactly: weight 500, 0.9rem, line-height 1. Fixed, not a clamp —
+            the previous clamp scaled the name from 15.5px to 23px with card width, which is
+            what made it read as oversized in the grid. A list row has the room for a
+            slightly larger name on up to two lines. */}
+        <Link
+          {...PRODUCT_LINK_PROPS}
+          href={Routes.product(product.slug)}
+          // The name is truncated, so a long or awkward one is unreadable with no
+          // way to see the rest. `title` is the one tooltip that works on both a desktop hover
+          // and a mobile long-press without shipping a popover — same approach as cart-item.
+          title={product.name}
+          className={`block w-full text-left font-medium text-[#184A31] transition hover:text-forest-700 ${
+            isList
+              ? 'text-[14px] leading-snug line-clamp-2 sm:text-[16px]'
+              : 'truncate text-[12.5px] leading-tight sm:text-[0.9rem]'
+          }`}
+        >
+          {product.name}
+        </Link>
+        {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
+        {sciName ? (
+          <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
+        ) : null}
+      </div>
+      {/* Rating only. The "New" chip that used to be the else-branch here
+          now lives on the image, bottom-left — beside the name it stole
+          width from long product names, and it could sit next to a "New
+          Arrival" badge on the same card. For an unreviewed product this
+          renders empty and the name takes the full row, which is the point.
+          leading-none keeps the rating aligned with the name's first line. */}
+      {reviewCount > 0 ? (
+        <div className="shrink-0 text-right leading-none">
+          <span className="flex items-center justify-end gap-1.5">
+            <GoldStar />
+            <strong className="text-[clamp(11px,3.6cqw,13px)] font-semibold leading-none text-gray-900">
+              {ratingVal.toFixed(1)}
+            </strong>
+          </span>
+          <span className="mt-[6px] block text-[clamp(9.5px,3.2cqw,11px)] leading-none text-[#888888]">
+            ({reviewCount.toLocaleString('en-IN')})
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+
+  /* Plant facts as chips — whole chips only, on at most two lines.
+     flex-wrap + a two-row max-height shows as many complete chips as fit and
+     hides the rest cleanly, with no JS measuring. Chips are a fixed 20px tall
+     so the cap (2 x 20 + 6 gap) is exact. */
+  const chips =
+    facts.length > 0 ? (
+      <div
+        className={`flex max-h-[46px] flex-wrap items-center gap-1.5 overflow-hidden ${
+          isList ? 'pah-list-chips mt-2.5' : 'mb-[clamp(7px,2.8cqw,11px)]'
+        }`}
+      >
+        {facts.slice(0, 4).map((f) => (
+          <span
+            key={f.key}
+            className={`inline-flex h-5 max-w-full items-center gap-1 whitespace-nowrap rounded-full bg-[#F3F8EC] font-medium leading-none text-[#24693E] ${
+              isList ? 'px-2 text-[10.5px]' : 'px-[clamp(6px,2.4cqw,9px)] text-[clamp(9px,2.9cqw,11px)]'
+            }`}
+          >
+            {/* icon shrink-0 so truncation only ever eats the label */}
+            <LineIcon name={f.icon} className="h-3 w-3 shrink-0" aria-hidden />
+            <span className="min-w-0 truncate">{f.chip}</span>
+          </span>
+        ))}
+      </div>
+    ) : null;
+
+  /* price row — 34px (28px mobile) var(--ds-btn, #2E5E2A) · struck 18px #A0A0A0 ·
+     chip #FFEAEA / #D73C3C. Sits directly on top of the CTA.
+
+     Price and struck price group on the LEFT, discount chip pinned RIGHT.
+     Previously all three were loose flex items in one wrapping row: at two-up
+     mobile they measure 63 + 46 + 58 = 167px inside a 140px row, so the row
+     broke onto THREE lines with the chip stranded underneath.
+
+     `compactPrice` drops a whole-rupee ".00" (₹899.00 → ₹899), which is what
+     buys the ~40px that lets all three share one line at that width. flex-wrap
+     is kept so the narrowest cards still degrade by wrapping rather than
+     overflowing. (No bottom margin in the list body — its own gap spaces it.) */
+  const priceRow = (
+    <div
+      className={`flex flex-wrap items-center justify-between gap-x-[clamp(6px,2.6cqw,14px)] gap-y-1 ${
+        isList ? '' : 'mb-[clamp(9px,3.4cqw,13px)]'
+      }`}
+    >
+      <span className="flex min-w-0 items-center gap-x-[clamp(5px,2.2cqw,10px)]">
+        {/* variable products show the size range min–max */}
+        <span
+          className={`whitespace-nowrap leading-none text-ds-btn ${
+            isVariable && hasRange
+              ? 'text-[clamp(12px,4.4cqw,16px)] font-semibold'
+              : 'text-[clamp(13.5px,5.4cqw,19px)] font-bold'
+          }`}
+        >
+          {isVariable
+            ? hasRange
+              ? `${compactPrice(minPrice)} – ${compactPrice(maxPrice)}`
+              : compactPrice(minPrice)
+            : compactPrice(price)}
+        </span>
+        {!isVariable && basePrice && (
+          <del className="whitespace-nowrap text-[clamp(11px,4.4cqw,18px)] leading-none text-[#A0A0A0]">
+            {compactPrice(basePrice)}
+          </del>
+        )}
+      </span>
+      {!isVariable && discount && (
+        <span className="shrink-0 whitespace-nowrap rounded bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(9.5px,3.4cqw,14px)] font-bold leading-none text-[#D73C3C]">
+          {discount} OFF
+        </span>
+      )}
+    </div>
+  );
+
+  /* footer — qty stepper + Add to Cart (reference .footer) */
+  const cta = isVariable ? (
+    /* Sizes are chosen on the product page — this used to open a
+       quick-view popup over the grid. */
+    <Link
+      {...PRODUCT_LINK_PROPS}
+      href={Routes.product(product.slug)}
+      /* Slimmer scale (2026-08-07): the 48px/18px ceilings made these read
+         as heavy slabs on wide cards. Kept in lockstep with the qty stepper
+         below and add-to-cart-btn/add-to-cart, which share this baseline —
+         changing one alone breaks the action row's alignment. */
+      className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-2 text-[clamp(11px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+    >
+      {/* Cart glyph dropped: on a ~150px two-up card it ate the width the label
+          needed, crowding "Select Options". The wording alone is unambiguous —
+          this opens the product page to choose a size, it does not add to cart. */}
+      Select Options
+    </Link>
+  ) : (
+    <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
+      {!inCart && !displayOnly && (
+        <div className="flex h-[clamp(34px,9.5cqw,40px)] w-[clamp(80px,27cqw,104px)] shrink-0 items-center justify-around rounded border border-[#DDDDDD]">
+          <button
+            type="button"
+            aria-label="Decrease quantity"
+            onClick={() => setQty((q) => Math.max(1, q - 1))}
+            className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-ds-btn"
+          >
+            −
+          </button>
+          <span className="text-[clamp(13.5px,5.2cqw,20px)] font-semibold leading-none text-gray-900">{qty}</span>
+          <button
+            type="button"
+            aria-label="Increase quantity"
+            onClick={() => setQty((q) => q + 1)}
+            className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-ds-btn"
+          >
+            +
+          </button>
+        </div>
+      )}
+      <div className="min-w-0 flex-1">
+        <AddToCart
+          variant="plantathome"
+          counterVariant="plantathome"
+          data={product}
+          quantity={qty}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <motion.article
@@ -264,194 +442,81 @@ const PlantAtHomeCard: React.FC<Props> = ({
           the full row — a list card is wide, and without this every clamp
           would pin to its maximum. */}
       <div
-        className={`flex flex-1 flex-col p-[clamp(14px,6.2cqw,24px)] ${
-          isList ? 'min-w-0 [container-type:inline-size]' : ''
+        className={`flex flex-1 p-[clamp(14px,6.2cqw,24px)] ${
+          isList ? 'min-w-0 [container-type:inline-size]' : 'flex-col'
         }`}
       >
-        {/* title row */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            {/* Product name — same family as the body text, bold (user note:
-                weight alone distinguishes the name), #184A31 */}
-            {/* Type spec given exactly: weight 500, 0.9rem, line-height 1. Fixed, not a clamp —
-                the previous clamp scaled the name from 15.5px to 23px with card width, which is
-                what made it read as oversized in the grid. */}
-            <Link
-              {...PRODUCT_LINK_PROPS}
-              href={Routes.product(product.slug)}
-              // The name is truncated to one line, so a long or awkward one is unreadable with no
-              // way to see the rest. `title` is the one tooltip that works on both a desktop hover
-              // and a mobile long-press without shipping a popover — same approach as cart-item.
-              title={product.name}
-              className="block w-full truncate text-left text-[12.5px] font-medium leading-tight text-[#184A31] transition hover:text-forest-700 sm:text-[0.9rem]"
-            >
-              {product.name}
-            </Link>
-            {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
-            {sciName ? (
-              <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
-            ) : null}
-          </div>
-          {/* Rating only. The "New" chip that used to be the else-branch here
-              now lives on the image, bottom-left — beside the name it stole
-              width from long product names, and it could sit next to a "New
-              Arrival" badge on the same card. For an unreviewed product this
-              renders empty and the name takes the full row, which is the point.
-              leading-none keeps the rating aligned with the name's first line. */}
-          {reviewCount > 0 ? (
-            <div className="shrink-0 text-right leading-none">
-              <span className="flex items-center justify-end gap-1.5">
-                <GoldStar />
-                <strong className="text-[clamp(11px,3.6cqw,13px)] font-semibold leading-none text-gray-900">
-                  {ratingVal.toFixed(1)}
-                </strong>
-              </span>
-              <span className="mt-[6px] block text-[clamp(9.5px,3.2cqw,11px)] leading-none text-[#888888]">
-                ({reviewCount.toLocaleString('en-IN')})
-              </span>
-            </div>
-          ) : null}
-        </div>
-
-        {/* description — Inter 17px (15px mobile), #5B5B5B, lh 1.6; 2-line
-            clamp with fixed min-height so grid rows stay aligned. Vertical
-            margins are tighter than the reference's standalone card — inside a
-            grid the full 18/22px rhythm made cards run too long. */}
-        <p className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(10.5px,3.4cqw,12.5px)] leading-[1.3] text-[#5B5B5B] line-clamp-2">
-          {desc}
-        </p>
-
-        <div
-          className={`mt-auto ${isList ? 'max-w-[340px]' : ''}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Plant facts — replaced the "Free Delivery | 2–4 Days" band, which
-              read identically on every card (so it distinguished nothing) while
-              costing a full row of height and stretching the card's proportions.
-              These say something per-plant instead, and sit ABOVE the price.
-              Capped at 3 and never wrapped so a card can't grow a second row.
-              No reserved min-height: this whole block is mt-auto, so the CTAs
-              line up across a grid row whether or not a product has attributes,
-              and an empty strip would just be the dead space we removed. */}
-          {facts.length > 0 && (
-            <div className="mb-[clamp(7px,2.8cqw,11px)] flex flex-nowrap items-center gap-1.5 overflow-hidden">
-              {facts.slice(0, 3).map((f, i) => (
-                <span
-                  key={f.label}
-                  className={[
-                    // shrink-0: flex was allowed to compress these to fit three across a
-                    // ~165px two-up mobile card, which rendered them as "P…", "F…", "Mo…" —
-                    // present but unreadable. A chip now keeps its natural width…
-                    'shrink-0 inline-flex items-center gap-1 max-w-[46%] whitespace-nowrap rounded-full bg-[#F3F8EC] px-[clamp(6px,2.4cqw,9px)] py-[4px] text-[clamp(8.5px,2.9cqw,11px)] font-medium leading-none text-[#24693E]',
-                    // …and instead we show only as many as genuinely fit: two on a phone
-                    // grid, all three once the card is wide enough. The list layout is
-                    // full-width even on mobile, so it keeps all three.
-                    !isList && i === 2 ? 'hidden sm:inline-flex' : '',
-                  ].join(' ')}
-                >
-                  {/* icon shrink-0 so truncation only ever eats the label */}
-                  <LineIcon name={f.icon} className="h-3 w-3 shrink-0" aria-hidden />
-                  <span className="min-w-0 truncate">{f.label}</span>
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* price row — 34px (28px mobile) var(--ds-btn, #2E5E2A) · struck 18px #A0A0A0 ·
-              chip #FFEAEA / #D73C3C. Sits directly on top of the CTA. */}
-          {/*
-            Price and struck price group on the LEFT, discount chip pinned
-            RIGHT. Previously all three were loose flex items in one wrapping
-            row: at two-up mobile they measure 63 + 46 + 58 = 167px inside a
-            140px row, so the row broke onto THREE lines with the chip stranded
-            underneath.
-
-            `compactPrice` drops a whole-rupee ".00" (₹899.00 → ₹899), which is
-            what buys the ~40px that lets all three share one line at that
-            width. flex-wrap is kept so the narrowest cards still degrade by
-            wrapping rather than overflowing.
-          */}
-          <div className="mb-[clamp(9px,3.4cqw,13px)] flex flex-wrap items-center justify-between gap-x-[clamp(6px,2.6cqw,14px)] gap-y-1">
-            <span className="flex min-w-0 items-center gap-x-[clamp(5px,2.2cqw,10px)]">
-              {/* variable products show the size range min–max */}
-              <span
-                className={`whitespace-nowrap leading-none text-ds-btn ${
-                  isVariable && hasRange
-                    ? 'text-[clamp(12px,4.4cqw,16px)] font-semibold'
-                    : 'text-[clamp(13.5px,5.4cqw,19px)] font-bold'
-                }`}
-              >
-                {isVariable
-                  ? hasRange
-                    ? `${compactPrice(minPrice)} – ${compactPrice(maxPrice)}`
-                    : compactPrice(minPrice)
-                  : compactPrice(price)}
-              </span>
-              {!isVariable && basePrice && (
-                <del className="whitespace-nowrap text-[clamp(11px,4.4cqw,18px)] leading-none text-[#A0A0A0]">
-                  {compactPrice(basePrice)}
-                </del>
+        {isList ? (
+          /* LIST (annotation 2026-10-05): the row is wide, so the plant facts
+             get a real spec grid and the price + a compact CTA move to a zone
+             on the right — instead of three clipped chips, a 340px button and
+             an empty right half. Layout lives in plantathome-overrides.css
+             (.pah-list-*), keyed off THIS column's width by container query. */
+          <div className="pah-list-body">
+            <div className="flex min-w-0 flex-1 flex-col">
+              {titleRow}
+              {desc ? (
+                <p className="mt-1.5 text-[12.5px] leading-[1.45] text-[#5B5B5B] line-clamp-2">{desc}</p>
+              ) : null}
+              {/* A phone-width row can't seat a label/value grid (values cut to
+                  "Brig…"), so it gets the same whole-chip row as the grid card;
+                  the spec grid takes over from 300px. Both are in the DOM and
+                  swapped by container query — display:none also keeps the
+                  hidden one out of the accessibility tree. */}
+              {chips}
+              {facts.length > 0 && (
+                <dl className="pah-list-facts">
+                  {facts.slice(0, 6).map((f) => (
+                    <div key={f.key} className="flex min-w-0 items-center gap-2">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#F3F8EC] text-[#24693E]">
+                        <LineIcon name={f.icon} className="h-3.5 w-3.5" aria-hidden />
+                      </span>
+                      <div className="min-w-0">
+                        <dt className="text-[10px] font-semibold uppercase leading-none tracking-[0.08em] text-stone-500">
+                          {f.label}
+                        </dt>
+                        <dd title={f.value} className="mt-1 truncate text-[12.5px] font-medium leading-tight text-forest-900">
+                          {f.value}
+                        </dd>
+                      </div>
+                    </div>
+                  ))}
+                </dl>
               )}
-            </span>
-            {!isVariable && discount && (
-              <span className="shrink-0 whitespace-nowrap rounded bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(9.5px,3.4cqw,14px)] font-bold leading-none text-[#D73C3C]">
-                {discount} OFF
-              </span>
-            )}
-          </div>
-
-          {/* footer — qty stepper + Add to Cart (reference .footer) */}
-          {isVariable ? (
-            /* Sizes are chosen on the product page — this used to open a
-               quick-view popup over the grid. */
-            <Link
-              {...PRODUCT_LINK_PROPS}
-              href={Routes.product(product.slug)}
-              /* Slimmer scale (2026-08-07): the 48px/18px ceilings made these read
-                 as heavy slabs on wide cards. Kept in lockstep with the qty stepper
-                 below and add-to-cart-btn/add-to-cart, which share this baseline —
-                 changing one alone breaks the action row's alignment. */
-              className="flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-2 text-[clamp(11px,3.6cqw,14px)] font-medium text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
-            >
-              {/* Cart glyph dropped: on a ~150px two-up card it ate the width the label
-                  needed, crowding "Select Options". The wording alone is unambiguous —
-                  this opens the product page to choose a size, it does not add to cart. */}
-              Select Options
-            </Link>
-          ) : (
-            <div className="pah-card-actions flex gap-[clamp(8px,3.9cqw,15px)]">
-              {!inCart && !displayOnly && (
-                <div className="flex h-[clamp(34px,9.5cqw,40px)] w-[clamp(80px,27cqw,104px)] shrink-0 items-center justify-around rounded border border-[#DDDDDD]">
-                  <button
-                    type="button"
-                    aria-label="Decrease quantity"
-                    onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-ds-btn"
-                  >
-                    −
-                  </button>
-                  <span className="text-[clamp(13.5px,5.2cqw,20px)] font-semibold leading-none text-gray-900">{qty}</span>
-                  <button
-                    type="button"
-                    aria-label="Increase quantity"
-                    onClick={() => setQty((q) => q + 1)}
-                    className="px-1.5 text-[clamp(18px,7.2cqw,28px)] leading-none text-[#333333] transition hover:text-ds-btn"
-                  >
-                    +
-                  </button>
-                </div>
-              )}
-              <div className="min-w-0 flex-1">
-                <AddToCart
-                  variant="plantathome"
-                  counterVariant="plantathome"
-                  data={product}
-                  quantity={qty}
-                />
-              </div>
             </div>
-          )}
-        </div>
+            <div className="pah-list-actions border-kraft-200" onClick={(e) => e.stopPropagation()}>
+              {priceRow}
+              <div className="pah-list-cta">{cta}</div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {titleRow}
+
+            {/* description — Inter 17px (15px mobile), #5B5B5B, lh 1.6; 2-line
+                clamp with fixed min-height so grid rows stay aligned. Vertical
+                margins are tighter than the reference's standalone card — inside a
+                grid the full 18/22px rhythm made cards run too long. */}
+            <p className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(10.5px,3.4cqw,12.5px)] leading-[1.3] text-[#5B5B5B] line-clamp-2">
+              {desc}
+            </p>
+
+            <div className="mt-auto" onClick={(e) => e.stopPropagation()}>
+              {/* Plant facts — replaced the "Free Delivery | 2–4 Days" band, which
+                  read identically on every card (so it distinguished nothing).
+                  These say something per-plant instead, and sit ABOVE the price
+                  (annotation 2026-10-05: "if there is some data about the plant,
+                  it should be shown"). The row used to be nowrap with each chip
+                  capped at 46%: labels truncated to "Bright Indir…" and the third
+                  chip was sliced mid-pill by the card edge — see `chips` above.
+                  No reserved min-height: this whole block is mt-auto, so the CTAs
+                  line up across a grid row whether or not a product has attributes. */}
+              {chips}
+              {priceRow}
+              {cta}
+            </div>
+          </>
+        )}
       </div>
     </motion.article>
   );

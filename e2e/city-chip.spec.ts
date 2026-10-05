@@ -14,10 +14,10 @@ import { test, expect, Page } from '@playwright/test';
  *     on a large phone in LANDSCAPE, the city was gone for the rest of the
  *     session after ~48px of scroll.
  *
- * The fix removed the scroll machinery entirely. The chip now lives in the
- * green announcement strip (owner annotation, 29 Sep) — and that strip was made
- * STICKY in the same change, because as a static bar it scrolls away after 48px
- * and would have re-created the very bug above.
+ * The fix removed the scroll machinery entirely. The chip then lived in a
+ * sticky green announcement strip (owner annotation, 29 Sep); on 5 Oct the
+ * owner removed that strip and the chip moved INTO the sticky header bar, one
+ * instance for every width.
  *
  * So the invariant these tests pin is deliberately about BEHAVIOUR, not about
  * which container holds the chip: exactly one chip, visible, at every path,

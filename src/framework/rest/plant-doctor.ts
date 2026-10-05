@@ -60,7 +60,10 @@ export function usePlantDoctorEnabled() {
 /** Submit a photo and/or symptoms; returns a structured diagnosis. */
 export function useDiagnose() {
   return useMutation((input: DiagnoseInput) =>
-    HttpClient.post<{ data: DiagnosisResponse }>('plant-doctor/diagnose', input),
+    // The API waits up to 90s on the vision service; the client default is 30s.
+    // A slow diagnosis used to error in the browser while still completing (and
+    // being paid for) server-side — and "try again" then ran it a second time.
+    HttpClient.post<{ data: DiagnosisResponse }>('plant-doctor/diagnose', input, { timeout: 100_000 }),
   );
 }
 

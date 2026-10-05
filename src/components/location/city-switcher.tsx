@@ -61,20 +61,7 @@ export function useCityPicker() {
  * aria-label, where it informs without competing for the ~92px the chip gets on
  * a phone.
  */
-export default function CitySwitcher({
-  className = '',
-  tone = 'light',
-}: {
-  className?: string;
-  /**
-   * `dark` is for the green announcement strip. It exists again because the
-   * strip hosts the chip again — but it is an OUTLINED chip here too, not the
-   * `text-white/60` text it used to be. That faded text with no border, hover
-   * or focus style is precisely what the owner reported as "disabled" when it
-   * had always been clickable. Never style this state as low-contrast text.
-   */
-  tone?: 'light' | 'dark';
-}) {
+export default function CitySwitcher({ className = '' }: { className?: string }) {
   const { city, label } = useCustomerCity();
   const { open, dialogs } = useCityPicker();
 
@@ -86,25 +73,17 @@ export default function CitySwitcher({
         onClick={open}
         title={label ?? undefined}
         aria-label={label ? `Delivery city: ${label}. Change city` : 'Select your delivery city'}
-        className={`group inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2.5 font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
-          tone === 'dark'
-            ? 'py-0.5 text-[12px] ' // fits the 28px strip
-            : 'py-1.5 text-[13px] '
-        }${
-          tone === 'dark'
-            ? // On the dark-green strip. White-on-green at full opacity with a
-              // visible border — the contrast is the affordance.
-              'border-white/40 bg-white/10 text-white hover:border-white/70 hover:bg-white/20 focus-visible:ring-white focus-visible:ring-offset-[#0a2916]'
-            : city
-              ? 'border-forest-900/25 bg-white/60 text-forest-900 hover:border-forest-700 hover:bg-white focus-visible:ring-forest-700'
-              : // No city yet — and useCustomerCity returns null on the server and
-                // the first client paint, so this is also the one-frame SSR state.
-                // Solid and high-contrast, so it reads as "tap to choose" rather
-                // than as a greyed-out control.
-                'border-forest-700 bg-sage-100 text-forest-800 hover:bg-white focus-visible:ring-forest-700'
+        className={`group inline-flex min-w-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-1 ${
+          city
+            ? 'border-forest-900/25 bg-white/60 text-forest-900 hover:border-forest-700 hover:bg-white'
+            : // No city yet — and useCustomerCity returns null on the server and
+              // the first client paint, so this is also the one-frame SSR state.
+              // Solid and high-contrast, so it reads as "tap to choose" rather
+              // than as a greyed-out control.
+              'border-forest-700 bg-sage-100 text-forest-800 hover:bg-white'
         } ${className}`}
       >
-        <MapPin size={14} className={`shrink-0 ${tone === 'dark' ? 'text-white/80' : 'text-forest-700'}`} aria-hidden />
+        <MapPin size={14} className="shrink-0 text-forest-700" aria-hidden />
         {/* `label` is "<area>, <city>"; the area is what does not fit. Below xl
             show the city alone, from xl the full label. CSS-gated so there is no
             JS measurement and no hydration mismatch. */}

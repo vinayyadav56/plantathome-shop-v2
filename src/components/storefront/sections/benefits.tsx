@@ -34,7 +34,7 @@ export function Benefits() {
     <section id="benefits" className="bg-cream-50">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
         {/* centered editorial intro */}
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-14">
           <FadeUp>
             <span className="inline-flex items-center gap-2 rounded-full bg-sage-100 px-4 py-1.5 font-display text-[11px] font-medium uppercase tracking-[0.28em] text-forest-700">
               <Icon.flask className="h-3.5 w-3.5" /> Science-backed benefits
@@ -53,7 +53,7 @@ export function Benefits() {
         </div>
 
         {/* benefit cards */}
-        <div className="pah-rail [--rail-w:78%] sm:[--rail-w:46%] lg:[--rail-w:calc((100%_-_80px)/5)] mt-12 grid grid-cols-1 gap-5 sm:mt-14">
+        <div className="pah-rail [--rail-w:78%] sm:[--rail-w:46%] lg:[--rail-w:calc((100%_-_80px)/5)] grid grid-cols-1 gap-5">
           {BENEFITS.map((b, i) => (
             <FadeUp key={b.title} delay={(i % 5) * 0.06}>
               <div className="group flex h-full flex-col items-center rounded-lg border border-kraft-200 bg-white p-6 text-center shadow-box transition-shadow hover:shadow-[0_8px_24px_rgba(34,48,26,0.10)]">

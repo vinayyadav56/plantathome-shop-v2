@@ -237,7 +237,7 @@ function PincodeChecker() {
   const serviceable = result?.serviceable;
   const isFetching = loading;
   return (
-    <div className="mt-7 max-w-[432px]">
+    <div className="mt-5 max-w-[432px]">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -262,13 +262,13 @@ function PincodeChecker() {
         </button>
       </form>
       {checked ? (
-        <p className={`mt-[14px] text-[13px] font-medium ${serviceable ? 'text-[#7FC95E]' : 'text-amber-200'}`}>
+        <p className={`mt-2.5 text-[13px] font-medium ${serviceable ? 'text-[#7FC95E]' : 'text-amber-200'}`}>
           {serviceable
             ? t('home-hero-pincode-serviceable', { pincode: submitted })
             : t('home-hero-pincode-not-serviceable', { pincode: submitted })}
         </p>
       ) : (
-        <p className="mt-[14px] flex items-center gap-[7px] text-[13px] text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.65)]">
+        <p className="mt-2.5 flex items-center gap-[7px] text-[13px] text-white/90 [text-shadow:0_1px_8px_rgba(0,0,0,0.65)]">
           <CircleCheck size={16} className="shrink-0" style={{ color: '#7FC95E' }} aria-hidden />
           {t('home-hero-pincode-coverage')}
         </p>
@@ -316,7 +316,7 @@ export function HeroPlant() {
   };
 
   return (
-    <section className="relative min-h-[620px] w-full overflow-hidden bg-[#0c1e12]">
+    <section className="relative min-h-[500px] w-full overflow-hidden bg-[#0c1e12]">
       <TourBurns slides={slides} active={active} reduce={reduce} />
 
       {/* premium green grade — protect the type on the left, reveal the room on the right */}
@@ -332,7 +332,7 @@ export function HeroPlant() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-none px-5 pb-[120px] pt-[135px] max-lg:pb-[110px] sm:px-8 lg:px-16 lg:pt-[150px]">
+      <div className="relative z-10 mx-auto max-w-none px-5 pb-[80px] pt-[96px] max-lg:pb-[78px] sm:px-8 lg:px-16 lg:pt-[100px]">
         <div className="max-w-2xl">
           {/* The page's h1 is this eyebrow ("Plant Delivery Across India") —
               the big brand line below is display text, not the heading, so the
@@ -341,7 +341,7 @@ export function HeroPlant() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.12, duration: 0.7, ease: EXPO }}
-            className="mb-7 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/35 px-4 py-1.5 !font-body text-[11px] font-semibold uppercase leading-normal tracking-[0.2em] text-white/90"
+            className="mb-5 inline-flex w-fit items-center gap-2.5 rounded-full border border-white/35 px-4 py-1.5 !font-body text-[11px] font-semibold uppercase leading-normal tracking-[0.2em] text-white/90"
           >
             {t('home-hero-eyebrow')}
             <Sprout size={12} className="shrink-0 text-[#8FD56F]" aria-hidden />
@@ -353,7 +353,7 @@ export function HeroPlant() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: EXPO }}
-              className="font-pahserif text-[2.4rem] font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]"
+              className="font-pahserif text-[2.1rem] font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-[2.6rem] lg:text-[3.1rem]"
             >
               {headline}
             </motion.p>
@@ -365,7 +365,7 @@ export function HeroPlant() {
             // renders immediately; the sub-copy and CTAs below keep their
             // entrance motion, which preserves the cinematic feel without
             // taxing first paint.
-            <p className="font-pahserif text-[2.4rem] font-medium leading-[1.12] tracking-[-0.02em] text-white sm:text-[3rem] lg:text-[3.6rem]">
+            <p className="font-pahserif text-[2.1rem] font-medium leading-[1.12] tracking-[-0.02em] text-white sm:text-[2.6rem] lg:text-[3.1rem]">
               <span className="block lg:whitespace-nowrap">
                 {t('home-hero-title-1')}
               </span>
@@ -380,7 +380,7 @@ export function HeroPlant() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: headline ? 0.12 : 0.58, duration: 0.7, ease: EXPO }}
-            className="mt-[22px] max-w-[432px] text-[17px] leading-[1.5] text-white/[0.86]"
+            className="mt-4 max-w-[432px] text-[15.5px] leading-[1.5] text-white/[0.86]"
           >
             {subheadline ?? t('home-hero-subtitle')}
           </motion.p>
@@ -405,13 +405,13 @@ export function HeroPlant() {
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ delay: 0.65, duration: 0.6, ease: EXPO }}
-            className="mt-8 h-px origin-left bg-gradient-to-r from-white/20 via-white/10 to-transparent"
+            className="mt-6 h-px origin-left bg-gradient-to-r from-white/20 via-white/10 to-transparent"
           />
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.72, duration: 0.7, ease: EXPO }}
-            className="mt-6 flex flex-wrap items-center gap-x-7 gap-y-3"
+            className="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3"
           >
             {TRUST.map((f, i) => {
               const Ico = Icon[f.icon];

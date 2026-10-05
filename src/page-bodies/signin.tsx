@@ -163,6 +163,9 @@ function SignInPage() {
               className="object-cover object-[70%_center] lg:object-contain lg:object-center"
             />
           </div>
+          {/* Black scrim (annotation 2026-10-05) — on the whole fixed layer, not
+              the image box, so the picture and its letterbox bands dim as one. */}
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
         {/* The page replaced the auth modal, which had a close X — this is its

@@ -21,7 +21,7 @@ import { useTypes } from '@/framework/type';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { POPULAR_PLANT_CATEGORIES, getVerticalMeta } from '@/components/storefront/verticals';
 import Search from '@/components/ui/search/search';
-import { ChevronDown, CircleHelp, Heart, Truck } from '@/components/ui/icon';
+import { ChevronDown, Heart, Truck } from '@/components/ui/icon';
 
 
 
@@ -78,9 +78,11 @@ const NAV_UNDERLINE =
   'after:absolute after:bottom-[3px] after:left-1/2 after:h-[2px] after:w-0 after:-translate-x-1/2 after:rounded-full after:bg-[linear-gradient(90deg,#70b943,#9bd85d)] after:transition-all after:duration-300 hover:after:w-[55%]';
 
 /**
- * PlantAtHome brand header — gradient dark-green announcement strip (static,
- * scrolls away) over a sticky floating warm-glass pill with centred nav,
- * inline search, profile + cart. Wired to the real cart drawer, login + search.
+ * PlantAtHome brand header — one sticky, full-width warm-glass bar: logo,
+ * centred nav, the shopping-city chip, search, track order, wishlist, cart and
+ * profile. (The dark-green announcement strip that used to sit above a floating
+ * pill is gone — owner annotation 2026-10-05.) Wired to the real cart drawer,
+ * login + search.
  */
 const noopSubscribe = () => () => {};
 
@@ -107,7 +109,7 @@ const Header = ({ layout }: { layout?: string }) => {
   // city between ~45px (where the static announcement strip scrolls away) and
   // 150px, and at >=768px — desktop, and a large phone in LANDSCAPE — the bar
   // could never appear at all, so the city vanished for the rest of the
-  // session. The header is pure CSS now: one sticky pill at every width. It
+  // session. The header is pure CSS now: one sticky bar at every width. It
   // cannot flicker at a threshold and cannot differ between server and client.
 
   // The cart icon lands on the /cart page (annotation: dedicated cart page).
@@ -162,71 +164,37 @@ const Header = ({ layout }: { layout?: string }) => {
 
   return (
     <>
-      {/* announcement bar — dark-green strip carrying the shopping-city chip
-          (annotation: "give this on the green strip only").
-
-          STICKY, and that is load-bearing rather than decorative: this strip is
-          the only home of the city control, and a control that governs prices,
-          availability and delivery has to be reachable at any scroll offset. As
-          a static bar it scrolled away after 48px, which is exactly how the
-          city went missing before. If anyone ever makes this `relative` again,
-          the city must move somewhere sticky in the same commit. */}
-      {/* Mobile (annotation 2026-10-03): no green strip — the city chip moves into
-          the header bar itself, so the "always reachable" invariant holds there. */}
-      <div className="sticky top-0 z-[51] hidden h-7 bg-[#0a2916] text-[12px] font-normal text-white/[0.92] md:block">
-        {/* 28px (annotation: "reduce the width of those line upto 50%" — the strip was 48px).
-            Nothing may spill out of it at any width: the side cells are block containers with
-            `truncate`, so an overflow ends in an ellipsis instead of a half-glyph.
-            City on the left, links in the right corner (annotations, twice). */}
-        <div className="relative z-[1] mx-auto flex h-full max-w-[1500px] items-center gap-3 overflow-hidden px-5 sm:px-8 xl:px-12">
-          <div className="flex min-w-0 flex-1 justify-start">
-            <CitySwitcher tone="dark" className="max-w-[9rem] lg:max-w-[12rem] xl:max-w-[16rem]" />
-          </div>
-          <span className="min-w-0 shrink truncate text-end">
-            <Link href="/track-order" className="inline-flex items-center gap-1.5 align-middle transition-colors hover:text-white">
-              <Truck size={14} aria-hidden />
-              Track Order
-            </Link>
-            <Link href="/help" className="ms-3 hidden items-center gap-1.5 align-middle transition-colors hover:text-white sm:ms-[22px] sm:inline-flex">
-              <CircleHelp size={14} aria-hidden />
-              Help &amp; Support
-            </Link>
-          </span>
-        </div>
-      </div>
-
       {/* Plain <header>, deliberately NOT a motion element: framer SSRs the
           entrance's initial state (opacity:0, translateY) into the HTML, so
           the navbar painted blank until hydration.
 
-          top-[27px] parks it directly under the now-sticky 28px strip (less the
-          1px the -mt tuck overlaps). A smaller offset would slide the pill up
-          OVER the strip and cover the city chip — the control this whole layout
-          exists to keep visible. z-50 sits below the strip's z-[51] for the
-          same reason. */}
+          Annotation 2026-10-05: the green strip is gone — one full-width sticky
+          bar carries the city chip and Track Order itself, so the city stays
+          reachable at every scroll offset (pinned by e2e/city-chip.spec.ts). */}
       <header
         id="site-header"
-        className="pointer-events-none sticky top-0 z-50 w-full px-0 md:top-[27px] md:-mt-px md:px-5"
+        className="pointer-events-none sticky top-0 z-50 w-full"
       >
-        {/* floating warm-glass pill. NOT overflow-hidden — the dropdown menus
+        {/* full-width warm-glass bar. NOT overflow-hidden — the dropdown menus
             render inside it and would be clipped; the shine lives in its own
-            clipped child span instead. The city chip moved OUT of here to the
-            green strip above; this still renders at every width and every
-            scroll offset, so nav, search and cart stay reachable too. */}
-        <div className="pointer-events-auto relative mx-auto flex h-[58px] max-w-[1360px] items-center gap-3 border border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-box backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 max-md:border-x-0 max-md:border-t-0 md:gap-4 md:rounded lg:h-[78px] lg:gap-6 lg:px-[42px]">
-          {/* glass shine — top-half highlight, clipped to the pill radius */}
-          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden md:rounded">
+            clipped child span instead. */}
+        <div className="pointer-events-auto relative flex h-[58px] w-full items-center gap-3 border-b border-white/[0.72] bg-[linear-gradient(110deg,rgba(255,255,255,0.88)_0%,rgba(248,247,241,0.78)_48%,rgba(255,255,255,0.84)_100%)] px-4 shadow-box backdrop-blur-[22px] backdrop-saturate-[1.35] transition-shadow duration-300 md:gap-4 md:px-6 lg:h-[68px] lg:gap-6 lg:px-10 xl:px-12">
+          {/* glass shine — top-half highlight, clipped to the bar */}
+          <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
             <span className="absolute inset-x-0 top-0 h-1/2 bg-[linear-gradient(180deg,rgba(255,255,255,0.38),transparent)]" />
           </span>
-          {/* BrandLogo is a fixed 160px image — on a 360px phone that is most of
-              the pill's width, so phones get the 34px leaf mark instead. */}
+          {/* BrandLogo paints into a fixed 160px box, but the artwork is ~67px
+              wide at 44px tall — ~90px of nothing beside it. Both spans size
+              the image to its own aspect instead (w-auto); on desktop that
+              reclaimed width is what pays for the city chip + Track Order now
+              living in this bar. */}
           <Link href="/" aria-label="PlantAtHome home" className="shrink-0">
             {/* Full wordmark at every width (annotation): capped on phones so it
                 shares the bar with the city chip + icons. */}
             <span className="inline-block max-w-[118px] md:hidden [&_img]:h-8 [&_img]:w-auto [&_img]:object-contain">
               <BrandLogo />
             </span>
-            <span className="hidden md:inline">
+            <span className="hidden md:inline-block [&_img]:h-11 [&_img]:w-auto [&_img]:max-w-[160px] [&_img]:object-contain">
               <BrandLogo />
             </span>
           </Link>
@@ -235,23 +203,20 @@ const Header = ({ layout }: { layout?: string }) => {
               In-flow (not absolutely centered) so it can never overlap the
               actions block at narrower desktop widths. ── */}
           {/* Shown from md (annotation: menu should be there on tablet too).
-              The full row genuinely does not fit below xl — with 8 verticals it
-              measures ~730px, while at 768 the pill's inner width is ~680px and
-              the logo (160) plus the icon actions (~225) already claim most of
-              it. So the row DEGRADES instead of vanishing into a hamburger:
-              2 items + "More" below 900px, 4 + "More" from 900, the full row at
-              xl (measured on staging's 8-vertical catalogue).
-              Action labels also drop to icons below xl, which buys ~90px.
-              1280–1439 keeps the smaller text + tighter gaps: at 15px/gap-5 the
-              row measured 684px against a 679px nav at exactly 1280 and spilled. */}
+              The full row does not fit below xl, so it DEGRADES instead of
+              vanishing into a hamburger: 2 items + "More" below lg, 4 + "More"
+              from lg, the full row at xl. Action labels also drop to icons
+              below xl, and 1280–1439 keeps the smaller text + tighter gaps.
+              These cuts are MEASURED against the bar as it is now (city chip +
+              Track Order inside it, logo sized to its artwork) with staging's
+              7-item nav and the longest city label: the tightest fit is ~37px
+              of clearance either side of the nav at 1440. Adding a nav item or
+              an action means re-measuring every width, not just eyeballing one. */}
           <nav className="relative z-[2] hidden min-w-0 flex-1 justify-center md:flex">
             <div className="flex items-center gap-3.5 min-[1440px]:gap-[34px]">
               {NAV.map((n, i) => {
-                // Fixed split — deterministic, no measurement loop. The 900px
-                // cut is measured, not guessed: at 768 the nav box is 265px and
-                // 2 items + More already fill 193px of it, while at 900 it is
-                // 397px and 4 + More fit with ~50px to spare.
-                const reveal = i < 2 ? '' : i < 4 ? 'hidden min-[900px]:block' : 'hidden xl:block';
+                // Fixed split — deterministic, no measurement loop (see above).
+                const reveal = i < 2 ? '' : i < 4 ? 'hidden lg:block' : 'hidden xl:block';
                 return n.menu ? (
                   <div key={n.label} className={`group relative ${reveal}`}>
                     <Link
@@ -308,7 +273,7 @@ const Header = ({ layout }: { layout?: string }) => {
                         <Link
                           key={n.label}
                           href={n.href}
-                          className={`rounded px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'min-[900px]:hidden' : ''}`}
+                          className={`rounded px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'lg:hidden' : ''}`}
                         >
                           {n.label}
                         </Link>
@@ -324,12 +289,19 @@ const Header = ({ layout }: { layout?: string }) => {
               Below xl the labels drop away (icons only): they cost ~90px, and
               at 768–1279 that width is what lets the nav row exist at all. ── */}
           <div className="relative z-[2] ml-auto flex items-center gap-3">
+            {/* The ONE city chip, every width (e2e/city-chip.spec.ts). */}
+            <CitySwitcher className="max-w-[7rem] md:max-w-[8.5rem] lg:max-w-[9rem] xl:max-w-[11rem] min-[1440px]:max-w-[14rem]" />
             <div className="hidden items-center gap-4 md:flex">
               {/* Search */}
               <button type="button" onClick={() => setSearchOpen(true)} className="grid h-10 w-10 place-items-center rounded-lg text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={t('text-search') ?? 'Search'}>
                 <SearchIcon className="h-[21px] w-[21px]" />
               </button>
               <span aria-hidden className="h-10 w-px bg-[linear-gradient(to_bottom,transparent,rgba(24,50,29,0.18),transparent)]" />
+              {/* Track order — moved in from the retired green strip */}
+              <Link href="/track-order" className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Track order">
+                <Truck size={24} aria-hidden />
+                <span className="hidden leading-none xl:block">Track</span>
+              </Link>
               {/* Wishlist */}
               <Link href="/wishlists" className="flex flex-col items-center gap-1.5 px-1 py-1 text-[12px] font-medium text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label="Wishlist">
                 <Heart size={24} aria-hidden />
@@ -352,10 +324,7 @@ const Header = ({ layout }: { layout?: string }) => {
               </button>
             </div>
 
-            {/* mobile: city + search + hamburger. The chip HERE is what keeps the
-                shopping city reachable below md now that the strip is desktop-only
-                (pinned by e2e/city-chip.spec.ts). */}
-            <CitySwitcher className="max-w-[7rem] md:hidden" />
+            {/* mobile: search + hamburger (the city chip is above, shared) */}
             <button type="button" onClick={() => setSearchOpen(true)} className={`${iconBtn} md:hidden`} aria-label={t('text-search') ?? 'Search'}>
               <SearchIcon className="h-[18px] w-[18px]" />
             </button>
@@ -365,8 +334,8 @@ const Header = ({ layout }: { layout?: string }) => {
           </div>
         </div>
 
-        {/* search overlay — its own floating glass panel below the pill (the
-            fixed-height pill can't grow to contain it) */}
+        {/* search overlay — its own floating glass panel below the bar (the
+            fixed-height bar can't grow to contain it) */}
         <AnimatePresence>
           {searchOpen && (
             <motion.div

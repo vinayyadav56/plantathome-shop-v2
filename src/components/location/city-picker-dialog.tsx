@@ -140,7 +140,15 @@ export default function CityPickerDialog({
           <div className="fixed inset-0 bg-black/40" aria-hidden="true" />
         </Transition.Child>
 
-        <div className="fixed inset-0 flex items-start justify-center p-4 pt-16 sm:pt-24">
+        {/* Sized to the SCREEN, whatever it is (annotation 2026-10-05). The panel
+            used to have no height limit over a fixed 18rem city list, so on a
+            short viewport (small phone, landscape, keyboard up) its lower half
+            sat below the fold of a non-scrolling fixed layer — unreachable.
+            Now: the top offset scales with the viewport height, the panel can
+            never exceed the space left (max-h-full of this padded box), the
+            city list is capped at 45% of the viewport height, and if the whole
+            still does not fit, the panel itself scrolls. */}
+        <div className="fixed inset-0 flex items-start justify-center p-3 pt-[clamp(0.75rem,8vh,6rem)] sm:p-4 sm:pt-[clamp(1rem,10vh,6rem)]">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-200"
@@ -150,7 +158,7 @@ export default function CityPickerDialog({
             leaveFrom="opacity-100 translate-y-0"
             leaveTo="opacity-0 translate-y-2"
           >
-            <Dialog.Panel className="relative w-full max-w-md rounded-2xl bg-white p-5 shadow-box">
+            <Dialog.Panel className="relative flex max-h-full w-full max-w-md flex-col overflow-y-auto overscroll-contain rounded-2xl bg-white p-4 shadow-box sm:p-5 lg:max-w-lg">
               {!blocking && (
                 <button
                   type="button"
@@ -241,7 +249,7 @@ export default function CityPickerDialog({
                 </div>
               ) : null}
 
-              <ul className="mt-3 max-h-72 divide-y divide-gray-100 overflow-auto rounded-lg border border-gray-100">
+              <ul className="mt-3 max-h-[min(24rem,45dvh)] shrink-0 divide-y divide-gray-100 overflow-auto overscroll-contain rounded-lg border border-gray-100">
                 {list.map((c) => (
                   <li key={c.id}>
                     <button

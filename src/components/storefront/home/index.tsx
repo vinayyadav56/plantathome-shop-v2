@@ -58,7 +58,7 @@ export function PlantCompanyHome({
           the pill's blur has the green environment behind it (md+ only — the
           phone home hides this header). Bottom margin clears the strip's 72px
           overhang before the next band. */}
-      <div className="relative mb-16 md:-mt-[74px] md:mb-20 lg:-mt-[94px]">
+      <div className="relative mb-16 md:-mt-[58px] md:mb-20 lg:-mt-[68px]">
         <HeroPlant />
         {/* z-20: must beat the hero's own z-10 content box, whose bottom padding
             overlaps this strip and would otherwise swallow the cards' clicks. */}

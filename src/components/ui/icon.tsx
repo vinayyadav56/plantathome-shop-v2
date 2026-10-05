@@ -28,6 +28,7 @@ import {
   IconBox,
   // status
   IconCheck,
+  IconChecks,
   IconCircleCheck,
   IconX,
   IconCircleX,
@@ -206,6 +207,7 @@ export const Box = g(IconBox);
 
 // status
 export const Check = g(IconCheck);
+export const Checks = g(IconChecks);
 export const CircleCheck = g(IconCircleCheck);
 export const X = g(IconX);
 export const CircleX = g(IconCircleX);

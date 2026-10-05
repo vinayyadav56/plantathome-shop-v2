@@ -170,6 +170,18 @@ h1, h2, h3, h4, h5, h6 {
 .pah-rail {
   display: flex !important;
   overflow-x: auto;
+  /* overflow-x:auto makes overflow-y clip too, so every card's --shadow-box
+     (0 4px 20px) and its hover lift were cut off flat at the rail's edge —
+     the grey "background" bands between and under the cards (annotation
+     2026-10-05). Give the shadow room inside the scrollport on all four sides
+     and take the same amount back from the layout, so nothing around the rail
+     moves; scroll-padding keeps the snap position where it was.
+     A rail must therefore NOT carry its own margin/padding utilities — put
+     them on a wrapper (see sections/promise-band.tsx, sections/benefits.tsx) —
+     and its parent needs >= 20px of horizontal padding to absorb the bleed. */
+  padding: 16px 20px 28px;
+  margin: -16px -20px -28px;
+  scroll-padding-inline: 20px;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
@@ -2193,6 +2205,41 @@ html[data-density='compact'] { --density: 0.78; }
 @container (max-width: 230px) {
   .pah-card-actions { flex-direction: column; align-items: stretch; }
   .pah-card-actions > * { width: 100%; flex: none; }
+}
+
+/* List-view product card (cards/plantathome.tsx, layout="list"). Keyed off the
+   card's CONTENT column (its own query container), not the viewport, so the
+   row lays out the same wherever a list is placed.
+     < 300px  (phones)   facts as chips; price, then a compact button
+     300px+   (tablets)  facts as a 2-column label/value grid (four of them)
+     520px+   (desktop)  the actions become a zone on the right — price over a
+                         small button — and the freed width shows six facts
+     700px+              three columns of facts */
+.pah-list-body { display: flex; flex: 1; flex-direction: column; gap: 14px; min-width: 0; }
+.pah-list-facts { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin-top: 12px; }
+.pah-list-facts > :nth-child(n + 5) { display: none; }
+.pah-list-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; }
+.pah-list-cta { width: 160px; max-width: 100%; }
+/* 160-190px can't seat the qty stepper AND "Add to Cart" side by side — stack
+   them (same remedy as the <=230px grid card above). */
+.pah-list-cta .pah-card-actions { flex-direction: column; align-items: stretch; gap: 8px; }
+.pah-list-cta .pah-card-actions > * { width: 100%; flex: none; }
+@container (min-width: 300px) {
+  .pah-list-chips { display: none; }
+  .pah-list-facts { display: grid; }
+}
+@container (min-width: 520px) {
+  .pah-list-body { flex-direction: row; gap: 24px; }
+  .pah-list-facts > :nth-child(n + 5) { display: flex; }
+  .pah-list-actions {
+    width: 190px; flex: none; flex-direction: column; flex-wrap: nowrap;
+    align-items: stretch; justify-content: center; gap: 12px;
+    border-left-width: 1px; padding-left: 24px;
+  }
+  .pah-list-cta { width: 100%; }
+}
+@container (min-width: 700px) {
+  .pah-list-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 /* PDP quick-fact chips: one row that scrolls rather than wrapping to two or
