@@ -1,24 +1,46 @@
 import Cookies from 'js-cookie';
+import { getStoredCity } from '@/lib/customer-location';
 
 /**
- * Storefront analytics tracker (Phase 3 — Visitor / Live Activity NOC).
+ * Storefront analytics tracker (Visitor / Live Activity NOC).
  *
  * RUTHLESSLY fail-safe: every path is wrapped so tracking can NEVER throw into
- * the storefront. Fire-and-forget via navigator.sendBeacon (fetch keepalive
- * fallback) so it never blocks rendering or navigation. Disable instantly with
+ * the storefront. Fire-and-forget (fetch keepalive, sendBeacon fallback) so it
+ * never blocks rendering or navigation. Disable instantly with
  * NEXT_PUBLIC_TRACKING_ENABLED='false'.
+ *
+ * Identity
+ *   pah_vid   cookie, 1 year — the VISITOR (one browser; clearing cookies, another
+ *             browser/device or a private window is a new visitor; not a person)
+ *   pah_sid   localStorage — the SESSION; rotates after 30 min without activity
+ *             (must match config('tracking.session_timeout_min') on the API)
+ *   pah_utm   localStorage — FIRST-touch utm_* (written once)
+ *
+ * Heartbeat: every HEARTBEAT_MS while the tab is visible, paused while hidden.
+ * The API's "online" window is 120 s = four missed beats. A beat only touches
+ * last_seen — it is not a page view and not an event.
+ *
+ * Non-JS crawlers never run this; proxy.ts covers them server-side.
  */
 
 const ENABLED = process.env.NEXT_PUBLIC_TRACKING_ENABLED !== 'false';
 const VID_COOKIE = 'pah_vid';
 const SID_KEY = 'pah_sid';
+const SID_AT_KEY = 'pah_sid_at';
+const UTM_KEY = 'pah_utm';
 const FLUSH_DELAY = 1200;
+const HEARTBEAT_MS = 30_000;
+const SESSION_TIMEOUT_MS = 30 * 60_000;
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
 
-type EventInput = { url?: string; label?: string; value?: number; meta?: any };
+type EventInput = { url?: string; label?: string; value?: number; meta?: Record<string, unknown> };
+type Utm = Partial<Record<(typeof UTM_KEYS)[number], string>>;
 
 let queue: any[] = [];
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
+let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 let currentUserId: string | number | null = null;
+let utmCaptured = false;
 
 function uuid(): string {
   try {
@@ -36,7 +58,11 @@ function visitorId(): string {
     let id = Cookies.get(VID_COOKIE);
     if (!id) {
       id = uuid();
-      Cookies.set(VID_COOKIE, id, { expires: 365, sameSite: 'lax' });
+      Cookies.set(VID_COOKIE, id, {
+        expires: 365,
+        sameSite: 'lax',
+        secure: typeof location !== 'undefined' && location.protocol === 'https:',
+      });
     }
     return id;
   } catch {
@@ -44,46 +70,96 @@ function visitorId(): string {
   }
 }
 
+/** The current session id; a new one after 30 min of inactivity. Every call counts as activity. */
 function sessionId(): string {
   try {
-    let s = sessionStorage.getItem(SID_KEY);
-    if (!s) {
+    const now = Date.now();
+    let s = localStorage.getItem(SID_KEY);
+    const at = Number(localStorage.getItem(SID_AT_KEY) ?? 0);
+    if (!s || !at || now - at > SESSION_TIMEOUT_MS) {
       s = uuid();
-      sessionStorage.setItem(SID_KEY, s);
+      localStorage.setItem(SID_KEY, s);
     }
+    localStorage.setItem(SID_AT_KEY, String(now));
     return s;
   } catch {
     return '';
   }
 }
 
-function endpoint(): string | null {
-  // Post SAME-ORIGIN via the Next rewrite (/rest-api/:path* → <API>/api/:path*), NOT the
-  // absolute API URL. A cross-origin sendBeacon sends credentials, which the browser rejects
-  // when the API replies Access-Control-Allow-Origin:'*' — the CORS error thrown on every page.
-  // Same-origin → no preflight, no CORS, and it still proxies to /api/track. track() only ever
-  // runs client-side (it guards on `typeof window`), so a relative URL resolves correctly.
-  return '/rest-api/track';
+/** Path only — query strings carry reset tokens and search terms; the API strips again anyway. */
+function cleanPath(url?: string): string {
+  try {
+    const raw = url ?? window.location.pathname;
+    return raw.split('?')[0].split('#')[0] || '/';
+  } catch {
+    return '/';
+  }
+}
+
+/** utm_* on the current URL (if any), captured once as first-touch; otherwise the stored first-touch. */
+function utm(): Utm | undefined {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const current: Utm = {};
+    for (const k of UTM_KEYS) {
+      const v = params.get(k);
+      if (v) current[k] = v.slice(0, 120);
+    }
+    if (Object.keys(current).length) {
+      if (!utmCaptured && !localStorage.getItem(UTM_KEY)) {
+        localStorage.setItem(UTM_KEY, JSON.stringify(current));
+      }
+      utmCaptured = true;
+      return current;
+    }
+    const stored = localStorage.getItem(UTM_KEY);
+    return stored ? (JSON.parse(stored) as Utm) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function endpoint(): string {
+  // DIRECT to the API (like every other browser call): no Node proxy hop on the
+  // storefront box, and the API sees Cloudflare's real-client headers for coarse
+  // geo. A text/plain body with no credentials is a "simple" request — no
+  // preflight — so the API's CORS '*' is enough.
+  const base = process.env.NEXT_PUBLIC_REST_API_ENDPOINT;
+  return base ? `${base.replace(/\/$/, '')}/track` : '/rest-api/track';
 }
 
 function send(payload: any): void {
-  const url = endpoint();
-  if (!url) return;
   try {
     const body = JSON.stringify(payload);
-    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
-      navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
-    } else {
-      fetch(url, {
+    if (typeof fetch === 'function') {
+      fetch(endpoint(), {
         method: 'POST',
         keepalive: true,
-        headers: { 'Content-Type': 'application/json' },
+        credentials: 'omit',
+        headers: { 'Content-Type': 'text/plain' },
         body,
       }).catch(() => {});
+      return;
+    }
+    // Very old browsers: sendBeacon always carries cookies, so it must stay SAME-ORIGIN
+    // (the Next rewrite) or the API's CORS '*' makes the browser log an error.
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      navigator.sendBeacon('/rest-api/track', new Blob([body], { type: 'application/json' }));
     }
   } catch {
     /* tracking must never throw */
   }
+}
+
+function envelope(page?: string) {
+  return {
+    visitor_id: visitorId(),
+    session_id: sessionId(),
+    user_id: currentUserId,
+    page: cleanPath(page),
+    shopping_city: getStoredCity() ?? undefined,
+  };
 }
 
 /** Attach the logged-in user id (advisory — analytics only). */
@@ -97,11 +173,9 @@ export function flush(page?: string): void {
     const events = queue;
     queue = [];
     send({
-      visitor_id: visitorId(),
-      session_id: sessionId(),
-      user_id: currentUserId,
-      page: page ?? window.location.pathname,
+      ...envelope(page),
       referrer: document.referrer || null,
+      utm: utm(),
       events,
     });
   } catch {
@@ -122,7 +196,7 @@ export function track(type: string, data: EventInput = {}): void {
   try {
     queue.push({
       type,
-      url: data.url ?? window.location.pathname,
+      url: cleanPath(data.url),
       label: data.label,
       value: data.value,
       meta: data.meta,
@@ -137,27 +211,60 @@ export function track(type: string, data: EventInput = {}): void {
 export function trackPage(pathname: string): void {
   if (!ENABLED || typeof window === 'undefined') return;
   try {
-    const path = (pathname || window.location.pathname).split('?')[0];
+    const path = cleanPath(pathname);
     track('page_view', { url: path });
-    if (/\/products\//.test(path)) {
-      track('product_view', { url: path });
-    } else if (/\/checkout/.test(path)) {
-      track('checkout_start', { url: path });
-    } else if (/\/orders\/.+\/thank-you/.test(path)) {
-      track('payment_complete', { url: path });
+    if (/^\/c\//.test(path)) {
+      track('category_view', { url: path, label: path.split('/')[2] });
+    } else if (/^\/cart\b/.test(path)) {
+      track('view_cart', { url: path });
+    } else if (/^\/checkout\b/.test(path)) {
+      track('begin_checkout', { url: path });
     }
+    // product_view is explicit (the PDP body sends product id + category);
+    // order_created / order_success are explicit too — nothing navigates to a
+    // thank-you page, which is why the old path rule never fired.
     flush(path);
+    startHeartbeat();
   } catch {
     /* noop */
   }
 }
 
-// Capture any queued events when the tab is hidden/closed.
+// ── Heartbeat ────────────────────────────────────────────────────────────────
+
+function beat(): void {
+  if (!ENABLED || typeof document === 'undefined' || document.visibilityState !== 'visible') return;
+  send({ ...envelope(), heartbeat: true, events: [] });
+}
+
+function startHeartbeat(): void {
+  if (heartbeatTimer || typeof document === 'undefined' || document.visibilityState !== 'visible') return;
+  heartbeatTimer = setInterval(beat, HEARTBEAT_MS);
+}
+
+function stopHeartbeat(): void {
+  if (heartbeatTimer) {
+    clearInterval(heartbeatTimer);
+    heartbeatTimer = null;
+  }
+}
+
+// Hidden tab: flush what is queued and stop beating. Visible again: one beat
+// now (so "online" recovers immediately) and resume.
 if (typeof window !== 'undefined') {
   try {
-    window.addEventListener('pagehide', () => flush());
+    window.addEventListener('pagehide', () => {
+      stopHeartbeat();
+      flush();
+    });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') flush();
+      if (document.visibilityState === 'hidden') {
+        stopHeartbeat();
+        flush();
+      } else {
+        beat();
+        startHeartbeat();
+      }
     });
   } catch {
     /* noop */

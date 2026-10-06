@@ -35,6 +35,7 @@ import { resolveOrderToken, saveOrderToken } from "@/lib/order-token";
 import { cartFingerprint } from "@/lib/checkout-totals";
 import { firstFieldError, getErrorMessage } from "@/lib/get-error-message";
 
+import { track } from "@/lib/analytics/track";
 export function useOrders(options?: Partial<OrderQueryOptions>) {
   const { locale } = useRouter();
 
@@ -300,13 +301,16 @@ export function useCreateOrder() {
   const { resetCart } = useCart();
   const [, resetCheckout] = useAtom(clearCheckoutAtom);
   const { mutate: createOrder, isLoading } = useMutation(client.orders.create, {
-    onSuccess: ({
-      tracking_number,
-      payment_gateway,
-      payment_intent,
-      tracking_token,
-    }) => {
+    onSuccess: (
+      { tracking_number, payment_gateway, payment_intent, tracking_token },
+      variables: any,
+    ) => {
       if (tracking_number) {
+        // The order row EXISTS from here — the funnel's last step. (Nothing navigates
+        // to a thank-you page, which is why the old path-derived event never fired.)
+        const gateway = String(payment_gateway ?? "").toLowerCase();
+        const orderMeta = { gateway, tracking_number, quantity: variables?.products?.length };
+        track("order_created", { label: tracking_number, value: Number(variables?.paid_total ?? variables?.total) || undefined, meta: orderMeta });
         // The order EXISTS — consume the cart + checkout state HERE, at the moment of
         // creation. This used to live in the shared OrderView, which is also rendered by
         // order HISTORY and the payment page — so merely opening a past order emptied the
@@ -337,6 +341,8 @@ export function useCreateOrder() {
             PaymentGateway.FULL_WALLET_PAYMENT,
           ].includes(payment_gateway as PaymentGateway)
         ) {
+          // COD / wallet: there is no payment step, the order is final now.
+          track("order_success", { label: tracking_number, meta: orderMeta });
           return router.push(`${Routes.order(tracking_number)}${tokenQuery}`);
         }
 
@@ -362,6 +368,9 @@ export function useCreateOrder() {
       // Safe access — the old `const { response: { data } } = error` itself threw inside
       // this handler on a network error with no response (D15).
       const data = error?.response?.data;
+      track("checkout_failed", {
+        meta: { reason: String(data?.code ?? error?.response?.status ?? "network").slice(0, 80) },
+      });
       // Shopping-City hard gate (422): the API encodes a structured payload in
       // message — surface the dedicated mismatch dialog instead of a raw toast.
       if (data?.code === "CITY_OUT_OF_STOCK") {

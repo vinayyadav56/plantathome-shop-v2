@@ -23,6 +23,8 @@ import StickyBox from 'react-sticky-box';
 import dynamic from 'next/dynamic';
 import { Product } from '@/types';
 import useLayout from '@/lib/hooks/use-layout';
+import { useEffect } from 'react';
+import { track } from '@/lib/analytics/track';
 
 const FeaturedPlants = dynamic(
   () => import('@/components/products/featured-plants'),
@@ -56,6 +58,16 @@ export default function SearchPage() {
   });
 
   const { layout } = useLayout();
+
+  // One `search` event per term once its results are in (every entry point —
+  // header, sidebar, banner — lands here, so nothing else needs a hook).
+  const term = typeof restQuery?.text === 'string' ? restQuery.text.trim() : '';
+  const total = (paginatorInfo as any)?.total;
+  useEffect(() => {
+    if (!term || isLoading) return;
+    track('search', { label: term, value: typeof total === 'number' ? total : undefined, meta: { term, results: total } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term, isLoading]);
 
   if (error) return <ErrorMessage message={error.message} />;
   return (

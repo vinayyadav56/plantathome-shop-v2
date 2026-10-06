@@ -11,6 +11,7 @@ import { useOrder } from "@/framework/order";
 import { useRouter } from "@/compat/next-router";
 import { useModalAction } from "@/components/ui/modal/modal.context";
 import { useSettings } from "@/framework/settings";
+import { track } from "@/lib/analytics/track";
 
 export default function OrderPage() {
   const { settings } = useSettings();
@@ -45,6 +46,10 @@ export default function OrderPage() {
       openedForRef.current !== intentId
     ) {
       openedForRef.current = intentId;
+      track("payment_initiated", {
+        label: tracking_number,
+        meta: { gateway: String(payment_intent?.payment_gateway ?? "").toLowerCase(), tracking_number },
+      });
       openModal("PAYMENT_MODAL", {
         paymentGateway: payment_intent?.payment_gateway,
         paymentIntentInfo: payment_intent?.payment_intent_info,

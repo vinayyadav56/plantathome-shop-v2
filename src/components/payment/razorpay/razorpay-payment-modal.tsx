@@ -11,6 +11,7 @@ import { API_ENDPOINTS } from '@/framework/client/api-endpoints';
 import { useQueryClient } from '@/compat/react-query';
 import { toast } from 'react-toastify';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
+import { track } from '@/lib/analytics/track';
 
 interface Props {
   paymentIntentInfo: PaymentIntentInfo;
@@ -88,7 +89,11 @@ const RazorpayPaymentModal: React.FC<Props> = ({
         // closeModal() before the confirm — unmounted this modal and the
         // mutation it owned, dropping the POST entirely, so a paid order was
         // never confirmed (order 248: captured on Razorpay, stuck pending).
-        await confirmPayment();
+        const confirmed = await confirmPayment();
+        track('payment_success', { label: trackingNumber, meta: { gateway: 'razorpay', tracking_number: trackingNumber } });
+        if (confirmed) {
+          track('order_success', { label: trackingNumber, meta: { gateway: 'razorpay', tracking_number: trackingNumber } });
+        }
         closeModal();
         await refetch();
       },
@@ -102,6 +107,7 @@ const RazorpayPaymentModal: React.FC<Props> = ({
       },
       modal: {
         ondismiss: async () => {
+          track('payment_failed', { label: trackingNumber, meta: { gateway: 'razorpay', reason: 'dismissed', tracking_number: trackingNumber } });
           closeModal();
           await refetch();
         },
@@ -109,6 +115,17 @@ const RazorpayPaymentModal: React.FC<Props> = ({
     };
     // checkout.js expects construction with `new`.
     const razorpay = new (window as any).Razorpay(options);
+    // Attach BEFORE open(): a declined card / bank failure is a funnel step we never saw.
+    try {
+      razorpay.on('payment.failed', (res: any) => {
+        track('payment_failed', {
+          label: trackingNumber,
+          meta: { gateway: 'razorpay', reason: String(res?.error?.reason ?? res?.error?.code ?? 'failed').slice(0, 80), tracking_number: trackingNumber },
+        });
+      });
+    } catch {
+      /* analytics only */
+    }
     return razorpay.open();
   }, [isLoading, isSettingsLoading]);
 
@@ -117,6 +134,7 @@ const RazorpayPaymentModal: React.FC<Props> = ({
     try {
       await paymentHandle();
     } catch {
+      track('payment_failed', { label: trackingNumber, meta: { gateway: 'razorpay', reason: 'script_load', tracking_number: trackingNumber } });
       setLoadError(true);
     }
   }, [paymentHandle]);

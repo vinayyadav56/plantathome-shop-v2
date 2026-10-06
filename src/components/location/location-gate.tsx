@@ -112,7 +112,6 @@ export default function LocationGate() {
   }
 
   function pickCity(name: string, area?: string | null) {
-    track('city_changed', { label: name, meta: { source: 'first_visit_gate' } });
     setStoredCity(name, area);
     setStoredPincode(null);
     setDeliveryMode('standard');

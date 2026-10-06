@@ -12,6 +12,8 @@ import { useTranslation } from 'next-i18next';
 import { useAtom } from 'jotai';
 import { drawerAtom } from '@/store/drawer-atom';
 import { Check, Clock, Lock, ShoppingBag, Truck, X } from '@/components/ui/icon';
+import { useEffect } from 'react';
+import { track } from '@/lib/analytics/track';
 
 
 const CartSidebarView = () => {
@@ -20,6 +22,12 @@ const CartSidebarView = () => {
   const { settings }: any = useSettings();
   const [_, closeSidebar] = useAtom(drawerAtom);
   const router = useRouter();
+
+  // The drawer mounts when it opens — that is a cart view, same as /cart.
+  useEffect(() => {
+    track('view_cart', { value: Number(total) || undefined, meta: { quantity: totalUniqueItems } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleCheckout() {
     router.push(checkoutRouteFor(items), undefined, { locale: language });

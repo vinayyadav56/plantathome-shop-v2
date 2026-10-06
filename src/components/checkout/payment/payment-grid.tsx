@@ -10,6 +10,7 @@ import { useSettings } from '@/framework/settings';
 import { PaymentGateway } from '@/types';
 import PaymentOnline from '@/components/checkout/payment/payment-online';
 import Image from 'next/image';
+import { track } from '@/lib/analytics/track';
 import PaymentSubGrid from './payment-sub-grid';
 import { PayMongoCase, SSLCommerceCase } from './payment-variable-case';
 import Spinner from '@/components/ui/loaders/spinner/spinner';
@@ -278,7 +279,13 @@ const PaymentGrid: React.FC<{ className?: string; theme?: 'bw' }> = ({
         />
       ) : null}
 
-      <RadioGroup value={gateway} onChange={setGateway}>
+      <RadioGroup
+        value={gateway}
+        onChange={(g: PaymentGateway) => {
+          setGateway(g);
+          track('select_payment', { label: String(g), meta: { gateway: String(g) } });
+        }}
+      >
         <RadioGroup.Label className="mb-5 block text-base font-semibold text-heading">
           {t('text-choose-payment')}
         </RadioGroup.Label>

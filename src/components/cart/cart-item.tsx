@@ -9,6 +9,7 @@ import { Minus, Plus } from '@/components/ui/icon';
 import { useToggleWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
+import { track } from '@/lib/analytics/track';
 
 interface CartItemProps {
   item: any;
@@ -93,13 +94,20 @@ const CartItem = ({ item }: CartItemProps) => {
               if (!isAuthorized) return goToSignin();
               toggleWishlist({ product_id: item?.productId ?? item?.id });
               clearItemFromCart(item.id);
+              track('remove_from_cart', { label: item?.name, meta: { product_id: item?.productId ?? item?.id, quantity: item?.quantity, reason: 'wishlist' } });
               toast.success('Moved to your wishlist');
             }}
           >
             Move to Wishlist
           </button>
           <span aria-hidden className="pa-cart-actions-divider" />
-          <button type="button" onClick={() => clearItemFromCart(item.id)}>
+          <button
+            type="button"
+            onClick={() => {
+              clearItemFromCart(item.id);
+              track('remove_from_cart', { label: item?.name, meta: { product_id: item?.productId ?? item?.id, quantity: item?.quantity, reason: 'remove' } });
+            }}
+          >
             Remove
           </button>
         </div>

@@ -15,6 +15,7 @@
 import { useEffect } from 'react';
 import { PlantLoader } from '@/components/ui/plant-loader';
 import { reportClientError } from '@/lib/report-client-error';
+import { track } from '@/lib/analytics/track';
 
 /**
  * A failed lazy-chunk fetch is not a code error — it's a STALE TAB. After every deploy the
@@ -48,6 +49,13 @@ export default function RouteError({
       digest: error?.digest,
       source: 'route-boundary',
     });
+    try {
+      if (window.location.pathname.startsWith('/checkout')) {
+        track('checkout_failed', { meta: { reason: 'route_error' } });
+      }
+    } catch {
+      /* analytics only */
+    }
 
     // Stale-deploy self-heal: hard-reload onto the fresh build. Guarded by a
     // 2-minute window (not once-per-session): on a multi-deploy day a long-

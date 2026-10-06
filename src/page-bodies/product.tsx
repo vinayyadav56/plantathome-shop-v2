@@ -33,6 +33,8 @@ import FrequentlyBoughtTogether from '@/components/products/details/plantathome/
 import PlantCareSection from '@/components/products/details/plantathome/plant-care-section';
 import SizeGuideContent from '@/components/products/details/size-guide-content';
 import { getVariations } from '@/lib/get-variations';
+import { useEffect } from 'react';
+import { track } from '@/lib/analytics/track';
 
 const BookDetails = dynamic(() => import('@/components/products/details/book-details'));
 
@@ -41,6 +43,16 @@ const CONTAINER = 'mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-10';
 
 const ProductPage = ({ product }: any) => {
   const { width } = useWindowSize();
+  // product_view carries the catalogue ids (the page_view only has the path).
+  useEffect(() => {
+    if (!product?.id) return;
+    const category = product?.categories?.[0];
+    track('product_view', {
+      label: product?.name,
+      value: Number(product?.sale_price ?? product?.price) || undefined,
+      meta: { product_id: product.id, category_id: category?.id, category: category?.name },
+    });
+  }, [product?.id]);
   const related = (product?.related_products ?? []).filter(
     (r: any) => r.id !== product.id
   );

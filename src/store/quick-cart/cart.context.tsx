@@ -1,3 +1,4 @@
+import { track } from '@/lib/analytics/track';
 import React, { useCallback } from 'react';
 import { cartReducer, State, initialState } from './cart.reducer';
 import { Item, getItem, inStock } from './cart.utils';
@@ -39,6 +40,17 @@ export const useCart = () => {
   }
   return React.useMemo(() => context, [context]);
 };
+
+
+/** product_id is the catalogue id (a variable product's cart-line id is "pid.vid"). */
+function cartItemMeta(item: any, quantity: number) {
+  return {
+    product_id: item?.productId ?? item?.id,
+    variation_id: item?.variationId,
+    quantity,
+    price: Number(item?.price) || undefined,
+  };
+}
 
 export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
   props
@@ -253,10 +265,28 @@ export const CartProvider: React.FC<{ children?: React.ReactNode }> = (
 
   const addItemsToCart = (items: Item[]) =>
     dispatch({ type: 'ADD_ITEMS_WITH_QUANTITY', items });
-  const addItemToCart = (item: Item, quantity: number) =>
+  // Analytics at the ONE place every user-initiated add/decrement goes through
+  // (card, PDP, bundle, cart +/-). Not addItemsToCart — that is the cross-tab /
+  // server sync path, not a customer action.
+  const addItemToCart = (item: Item, quantity: number) => {
     dispatch({ type: 'ADD_ITEM_WITH_QUANTITY', item, quantity });
-  const removeItemFromCart = (id: Item['id']) =>
+    track('add_to_cart', {
+      label: item?.name,
+      value: Number(item?.price) || undefined,
+      meta: cartItemMeta(item, quantity),
+    });
+  };
+  const removeItemFromCart = (id: Item['id']) => {
+    const existing = getItem(stateRef.current.items, id);
     dispatch({ type: 'REMOVE_ITEM_OR_QUANTITY', id });
+    if (existing) {
+      track('remove_from_cart', {
+        label: existing?.name,
+        value: Number(existing?.price) || undefined,
+        meta: cartItemMeta(existing, 1),
+      });
+    }
+  };
   const clearItemFromCart = (id: Item['id']) =>
     dispatch({ type: 'REMOVE_ITEM', id });
   const isInCart = useCallback(

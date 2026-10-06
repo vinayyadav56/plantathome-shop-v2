@@ -41,6 +41,7 @@ import {
 import { toast } from 'react-toastify';
 import { requestGoogleAccessToken } from '@/lib/google-identity';
 
+import { track } from '@/lib/analytics/track';
 export function useUser() {
   const [isAuthorized] = useAtom(authorizationAtom);
   const { setEmailVerified, getEmailVerified } = useToken();
@@ -125,6 +126,7 @@ export const useCreateAddress = () => {
   return useMutation(client.address.create, {
     onSuccess: () => {
       toast.success('Address saved');
+      track('add_address', { meta: { source: 'create' } });
       closeModal();
     },
     onError: (error) => {

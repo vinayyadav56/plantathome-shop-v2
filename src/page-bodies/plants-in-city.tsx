@@ -10,7 +10,6 @@ import PlantAtHomeCard from '@/components/products/cards/plantathome';
 import Button from '@/components/ui/button';
 import { sanitizeContent } from '@/lib/sanitize-content';
 import { setStoredCity } from '@/lib/customer-location';
-import { track } from '@/lib/analytics/track';
 import type { LocationPageData, LocationPageSummary } from '@/framework/ssr/location-pages';
 
 /**
@@ -36,7 +35,6 @@ function PlantsInCityPage({
   const router = useRouter();
   const shopHere = () => {
     setStoredCity(page.city_name);
-    track('city_changed', { label: page.city_name, meta: { source: 'landing_page' } });
     router.push('/plants');
   };
 

@@ -10,6 +10,7 @@ import { useCustomerCity } from '@/lib/use-customer-city';
 import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
 import { isAddressComplete } from '@/lib/address-complete';
 import CityMismatchDialog from './city-mismatch-dialog';
+import { track } from '@/lib/analytics/track';
 
 interface AddressesProps {
   addresses: Address[] | undefined | null;
@@ -123,6 +124,7 @@ export const AddressGrid: React.FC<AddressesProps> = ({
       return;
     }
     setAddress(address);
+    track('add_address', { meta: { source: 'select' } });
   }
 
   return (

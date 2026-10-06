@@ -7,7 +7,6 @@ import { authorizationAtom } from '@/store/authorization-atom';
 import { itemsToCartLines } from '@/framework/server-cart';
 import { setStoredCity, setStoredPincode } from '@/lib/customer-location';
 import { validateCartCity, saveShoppingCityToProfile } from '@/lib/shopping-city';
-import { track } from '@/lib/analytics/track';
 
 interface Props {
   open: boolean;
@@ -34,7 +33,6 @@ export default function ChangeCityDialog({ open, targetCity, onClose, onSwitched
   const count = items?.length ?? 0;
 
   function applyCity(city: string) {
-    track('city_changed', { label: city });
     setStoredCity(city);
     setStoredPincode(null); // manual switch — stale pincode must not linger
     if (isAuthorized) saveShoppingCityToProfile(city);
