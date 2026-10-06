@@ -32,7 +32,7 @@ const AppliedFilters: React.FC = () => {
   });
   // Botanical filters: facet values are already display-cased ("Bright
   // Indirect"), so no prettify; sizes/placement likewise.
-  (['sunlight', 'water', 'growth', 'sizes'] as const).forEach((param) => {
+  (['sunlight', 'water', 'growth', 'sizes', 'difficulty'] as const).forEach((param) => {
     const raw = router.query[param];
     if (typeof raw === 'string' && raw.length) {
       raw
@@ -41,6 +41,13 @@ const AppliedFilters: React.FC = () => {
         .forEach((value) => chips.push({ param, value, label: value }));
     }
   });
+  // Admin-defined characteristics travel as term SLUGS in one param.
+  if (typeof router.query.terms === 'string' && router.query.terms.length) {
+    router.query.terms
+      .split(',')
+      .filter(Boolean)
+      .forEach((value) => chips.push({ param: 'terms', value, label: prettify(value) }));
+  }
   if (typeof router.query.placement === 'string' && router.query.placement) {
     chips.push({ param: 'placement', value: router.query.placement, label: router.query.placement });
   }

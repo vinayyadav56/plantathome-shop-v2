@@ -26,6 +26,8 @@ export interface VerticalMeta {
   blurb: string;
   scenes: string[];
   promise: PromiseItem[];
+  /** One plain line under the listing page's H1 (the landing hero keeps `blurb`). */
+  shopBlurb?: string;
   /** Where "shop this world" should land when the vertical page itself has no
       catalogue yet (e.g. pots live under the tools type as a category). */
   shopPath?: string;
@@ -71,6 +73,7 @@ const META: Record<string, Omit<VerticalMeta, 'key' | 'path'>> = {
     tagline: 'Bring the wild indoors.',
     blurb:
       'Rare foliage, living water-gardens and statement plants — hand-picked by botanists, delivered fresh to your door.',
+    shopBlurb: 'Find the perfect plant for your home, office or garden.',
     scenes: PLANTS_SCENES,
     promise: PLANTS_PROMISE,
   },

@@ -359,7 +359,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             src={image}
             alt={product.name}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             priority={priority}
             onError={() => setImgError(true)}
             className="object-cover transition duration-[450ms] ease-out group-hover:scale-[1.04]"

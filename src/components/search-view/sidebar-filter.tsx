@@ -25,6 +25,8 @@ import AppliedFilters from '@/components/search-view/applied-filters';
 
 /** One admin-defined attribute as a collapsible section (own hook call ⇒ own component). */
 const DynamicFacetSection = ({ facet }: { facet: DynamicFacet }) => {
+  // DynamicFacetView reads its options from the facet object it is handed, so
+  // the scoping happens once, where the facets are fetched (below).
   const count = useDynamicFacetCount(facet);
   return (
     <FieldWrapper title={facet.name} count={count} defaultOpen={false}>
@@ -55,6 +57,12 @@ function ClearFiltersButton() {
   const router = useRouter();
 
   function clearFilters() {
+    // Everything a shopper can set from the rail or the toolbar. `rest` keeps
+    // only what is NOT a filter (and the compat router drops the route params,
+    // so `searchType`/`slug` never leak into the URL). The old version kept
+    // `manufacturer` behind a `router.route` check that could never match on
+    // the App Router — it spread `{ manufacturer: undefined }` into the URL and
+    // the API searched for `manufacturer.slug:undefined`: an empty grid.
     const {
       price,
       category,
@@ -63,6 +71,7 @@ function ClearFiltersButton() {
       tags,
       manufacturer,
       text,
+      limit,
       // botanical filters
       sunlight,
       water,
@@ -70,15 +79,11 @@ function ClearFiltersButton() {
       growth,
       pet_friendly,
       sizes,
+      difficulty,
+      terms,
       ...rest
     } = router.query;
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...rest,
-        ...(router.route !== '/[searchType]/search' && { manufacturer }),
-      },
-    });
+    router.push({ pathname: router.pathname, query: { ...rest } });
   }
   return (
     <button
@@ -97,12 +102,14 @@ const SidebarFilter: React.FC<{
   showCategories?: boolean;
   /** Pages with a listing toolbar own sorting there — hide the duplicate. */
   showSort?: boolean;
+  /** The PLP has the page-level search field — hide the rail's small one. */
+  showSearch?: boolean;
   className?: string;
   // When rendered as an always-visible rail (e.g. the PLP from md+), switch to
   // rail mode at `md` instead of `lg` so tablets don't show the drawer-only
   // close arrow / "Show Products" button. Drawer usages keep the lg switch.
   inRail?: boolean;
-}> = ({ type, showManufacturers = true, showCategories = true, showSort = true, className, inRail = false }) => {
+}> = ({ type, showManufacturers = true, showCategories = true, showSort = true, showSearch = true, className, inRail = false }) => {
   const router = useRouter();
   const { isRTL } = useIsRTL();
   const { t } = useTranslation('common');
@@ -112,7 +119,7 @@ const SidebarFilter: React.FC<{
   const manufacturerCount = useParamCount('manufacturer');
   const priceCount = useParamCount('price') ? 1 : 0;
   const plantCounts = usePlantFilterCounts();
-  const { data: facetData } = useFilterFacets();
+  const { data: facetData } = useFilterFacets({ type });
   const dynamicFacets = facetData?.facets?.dynamic ?? [];
 
   return (
@@ -156,9 +163,11 @@ const SidebarFilter: React.FC<{
       <AppliedFilters />
 
       <div className="flex-1 space-y-2 px-5">
-        <FieldWrapper title="text-search">
-          <Search variant="minimal" label="search" />
-        </FieldWrapper>
+        {showSearch && (
+          <FieldWrapper title="text-search">
+            <Search variant="minimal" label="search" />
+          </FieldWrapper>
+        )}
 
         {showSort && router.route !== '/[searchType]/search' && (
           <FieldWrapper title="text-sort">
@@ -173,7 +182,7 @@ const SidebarFilter: React.FC<{
         )}
 
         <FieldWrapper title="text-sort-by-price" count={priceCount}>
-          <PriceFilter />
+          <PriceFilter type={type} />
         </FieldWrapper>
 
         {/* Botanical facets — options + counts from products/filter-facets.
@@ -185,19 +194,19 @@ const SidebarFilter: React.FC<{
           <PlacementFilterView />
         </FieldWrapper>
         <FieldWrapper title="text-sunlight" count={plantCounts.sunlight}>
-          <FacetFilterView param="sunlight" facetKey="sunlight" />
+          <FacetFilterView param="sunlight" facetKey="sunlight" type={type} />
         </FieldWrapper>
         <FieldWrapper title="text-watering" count={plantCounts.water}>
-          <FacetFilterView param="water" facetKey="water_requirement" />
+          <FacetFilterView param="water" facetKey="water_requirement" type={type} />
         </FieldWrapper>
         <FieldWrapper title="text-growth-rate" count={plantCounts.growth} defaultOpen={false}>
-          <FacetFilterView param="growth" facetKey="growth_rate" />
+          <FacetFilterView param="growth" facetKey="growth_rate" type={type} />
         </FieldWrapper>
         <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
-          <PetFriendlyFilterView />
+          <PetFriendlyFilterView type={type} />
         </FieldWrapper>
         <FieldWrapper title="Difficulty" count={plantCounts.difficulty} defaultOpen={false}>
-          <FacetFilterView param="difficulty" facetKey="difficulty_level" />
+          <FacetFilterView param="difficulty" facetKey="difficulty_level" type={type} />
         </FieldWrapper>
 
         {/* Admin-defined attributes. The server tells us which sections exist and what is

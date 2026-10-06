@@ -1,9 +1,17 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadHomeData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
+import { loadHomeData, loadPlpData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import HomeScreen from '@/app-shell/home-screen';
+import { PageBody as PlpPageBody } from '@/page-bodies/plp';
 import { SITE_URL } from '@/lib/site-url';
+
+/**
+ * Verticals rendered as a real Product Listing Page (filters, sort, grid)
+ * instead of the cinematic landing. Only `plants` for now — the owner's call;
+ * the other verticals keep the hero landing until they get the same treatment.
+ */
+const PLP_VERTICALS = new Set(['plants']);
 
 export const revalidate = 30;
 export const dynamicParams = true;
@@ -53,9 +61,6 @@ export async function generateStaticParams() {
 
 export default async function VerticalPage({ params }: { params: Promise<{ searchType: string }> }) {
   const { searchType: vertical } = await params;
-  const data = await loadHomeData(vertical);
-  if (!data) return notFound(); // unknown type slug (V1: notFound + revalidate)
-  const { variables, layout, dehydratedState } = data;
   const name = (await loadTypeName(vertical)) ?? prettify(vertical);
   const breadcrumb = {
     '@context': 'https://schema.org',
@@ -65,6 +70,46 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
       { '@type': 'ListItem', position: 2, name, item: `${SITE_URL}/${vertical}` },
     ],
   };
+
+  if (PLP_VERTICALS.has(vertical)) {
+    const slugs = await loadTypeSlugs();
+    if (slugs.length && !slugs.includes(vertical)) return notFound();
+    const { dehydratedState, products } = await loadPlpData(vertical);
+    // The first server-rendered page as an ItemList, so the listing's products
+    // are structured data too (the category pages only emit the breadcrumb).
+    const itemList = products.length
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name,
+          itemListElement: products.slice(0, 12).map((p: any, i: number) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: p.name,
+            url: `${SITE_URL}/products/${p.slug}`,
+          })),
+        }
+      : null;
+    return (
+      <Hydrate state={dehydratedState}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb).replace(/</g, '\\u003c') }}
+        />
+        {itemList && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList).replace(/</g, '\\u003c') }}
+          />
+        )}
+        <PlpPageBody type={vertical} />
+      </Hydrate>
+    );
+  }
+
+  const data = await loadHomeData(vertical);
+  if (!data) return notFound(); // unknown type slug (V1: notFound + revalidate)
+  const { variables, layout, dehydratedState } = data;
   return (
     <Hydrate state={dehydratedState}>
       <script

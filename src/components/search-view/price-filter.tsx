@@ -6,12 +6,13 @@ import { useFilterFacets } from '@/framework/product';
 
 const defaultPriceRange = [0, 1000];
 
-const PriceFilter = () => {
+const PriceFilter = ({ type }: { type?: string } = {}) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   // Real catalogue bounds + distribution — the hardcoded 0–2000 slider ceiling
-  // hid every product above ₹2,000 from price filtering.
-  const { data: facets } = useFilterFacets();
+  // hid every product above ₹2,000 from price filtering. Scoped to the vertical
+  // so the histogram is the one the results beside it came from.
+  const { data: facets } = useFilterFacets({ type });
   const bounds = facets?.facets?.price;
   const sliderMin = Math.floor(bounds?.min ?? 0);
   const sliderMax = Math.ceil(bounds?.max ?? 2000);

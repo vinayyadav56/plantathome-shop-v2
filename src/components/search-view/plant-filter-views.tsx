@@ -23,7 +23,7 @@ const useParamValues = (param: string): string[] => {
   return typeof raw === 'string' && raw.length ? raw.split(',').filter(Boolean) : [];
 };
 
-const usePushParam = () => {
+export const usePushParam = () => {
   const router = useRouter();
   return (param: string, next: string[] | string | undefined) => {
     const query: Record<string, any> = { ...router.query };
@@ -74,11 +74,14 @@ export function DynamicFacetView({ facet }: { facet: DynamicFacet }) {
 export function FacetFilterView({
   param,
   facetKey,
+  type,
 }: {
   param: 'sunlight' | 'water' | 'growth' | 'difficulty';
   facetKey: 'sunlight' | 'water_requirement' | 'growth_rate' | 'difficulty_level';
+  /** The vertical the list is scoped to — keeps counts in step with the results. */
+  type?: string;
 }) {
-  const { data } = useFilterFacets();
+  const { data } = useFilterFacets({ type });
   const selected = useParamValues(param);
   const push = usePushParam();
   const options = data?.facets?.[facetKey] ?? [];
@@ -145,10 +148,10 @@ export function PlacementFilterView() {
 }
 
 /** Pet-friendly toggle (server coerces the boolean; unparseable is dropped). */
-export function PetFriendlyFilterView() {
+export function PetFriendlyFilterView({ type }: { type?: string } = {}) {
   const { query } = useRouter();
   const push = usePushParam();
-  const { data } = useFilterFacets();
+  const { data } = useFilterFacets({ type });
   const on = query.pet_friendly === 'true';
   const count = data?.facets?.pet_friendly?.true;
 

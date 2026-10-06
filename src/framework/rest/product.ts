@@ -26,13 +26,28 @@ import { useCustomerCity } from '@/lib/use-customer-city';
 
 /**
  * Filter-rail options (distinct values + counts + price histogram) from
- * GET products/filter-facets. Cached 5 min; a 404 from an older API build is
- * treated as "no facets" so the rail's static sections still render.
+ * GET products/filter-facets, scoped the way the LIST is scoped: the vertical,
+ * the shopper's city and `hide_unpriced`. Unscoped, the counts and the price
+ * histogram described the whole catalogue — every vertical, every city — and
+ * never matched the results beside them.
+ *
+ * ONE key shape for every caller (the rail's sections, the price slider, the
+ * PLP's need chips) so a page fires one request, not three; `city` is spread
+ * only when set, because it is null on the hydration render and would
+ * otherwise defeat the server-prefetched key. Cached 5 min; a 404 from an
+ * older API build is treated as "no facets" so the static sections still render.
  */
-export function useFilterFacets() {
+export function useFilterFacets(options: { type?: string; categories?: string } = {}) {
+  const { city } = useCustomerCity();
+  const params = {
+    ...(options.type ? { type: options.type } : {}),
+    ...(options.categories ? { categories: options.categories } : {}),
+    ...(city ? { city } : {}),
+    hide_unpriced: 1,
+  };
   return useQuery<import('@/types').FilterFacets, Error>(
-    [API_ENDPOINTS.PRODUCTS_FILTER_FACETS],
-    () => client.products.filterFacets(),
+    [API_ENDPOINTS.PRODUCTS_FILTER_FACETS, params],
+    () => client.products.filterFacets(params),
     { staleTime: 5 * 60 * 1000, retry: false },
   );
 }

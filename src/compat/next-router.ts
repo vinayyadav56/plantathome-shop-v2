@@ -125,7 +125,7 @@ export function useRouter() {
       asPath: pathname + search,
       isReady: true,
       push: (url: any, _as?: any, opts?: any) => {
-        const href = toUrl(url);
+        const href = toUrl(stripRouteParams(url, params));
         if (canShallowNavigate(href, pathname, opts)) {
           shallowNavigate(href, false);
           return Promise.resolve(true);
@@ -136,7 +136,7 @@ export function useRouter() {
         return Promise.resolve(true);
       },
       replace: (url: any, _as?: any, opts?: any) => {
-        const href = toUrl(url);
+        const href = toUrl(stripRouteParams(url, params));
         if (canShallowNavigate(href, pathname, opts)) {
           shallowNavigate(href, true);
           return Promise.resolve(true);
@@ -150,16 +150,38 @@ export function useRouter() {
       prefetch: (url: string) => Promise.resolve(nav.prefetch(url)),
       events: NOOP_EVENTS,
     }),
-    [query, pathname, search, nav],
+    [query, pathname, search, nav, params],
   );
 }
 
-/** Serialize v3-style UrlObject pushes ({pathname, query}) to a string URL. */
+/**
+ * `query` is route params ∪ search params (pages-router shape), and every filter
+ * control pushes `{ ...router.query, x }` back — so without this the route params
+ * leaked into the URL as real search params (`/plants?searchType=plants`,
+ * `/c/indoor?slug=indoor`) and from there into the products API as filters.
+ * Only a key whose value still equals the route param is dropped; a deliberate
+ * same-named search param survives.
+ */
+function stripRouteParams(url: any, params: Record<string, any>) {
+  if (typeof url === 'string' || !url?.query) return url;
+  const query: Record<string, any> = { ...url.query };
+  for (const [k, v] of Object.entries(params)) {
+    if (k in query && String(query[k]) === String(v)) delete query[k];
+  }
+  return { ...url, query };
+}
+
+/** Serialize v3-style UrlObject pushes ({pathname, query}) to a string URL.
+ *  `undefined`/`null` values are DROPPED, not stringified: "Clear all" used to
+ *  spread `{ manufacturer: undefined }` and the listing then searched for
+ *  `manufacturer.slug:undefined` — an empty grid. */
 function toUrl(url: string | { pathname?: string; query?: Record<string, any> }): string {
   if (typeof url === 'string') return url;
   const qs = url.query
     ? new URLSearchParams(
-        Object.entries(url.query).map(([k, v]) => [k, String(v)]),
+        Object.entries(url.query)
+          .filter(([, v]) => v !== undefined && v !== null && v !== '')
+          .map(([k, v]) => [k, String(v)]),
       ).toString()
     : '';
   return `${url.pathname ?? '/'}${qs ? `?${qs}` : ''}`;

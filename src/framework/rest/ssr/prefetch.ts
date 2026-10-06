@@ -216,6 +216,70 @@ export async function loadCategoryData(slug: string, category: any) {
   };
 }
 
+/**
+ * Vertical PLP loader (/plants): settings + types + the first product page, the
+ * vertical's flagged root categories and the filter facets, each under the EXACT
+ * key the client hooks build (plp.tsx), so the server HTML carries the H1, the
+ * category tiles, the need chips and 30 product links — not a shell. City-less
+ * like every SSR prefetch; the client re-scopes to the stored city after mount.
+ *
+ * Categories go through prefetchInfiniteQuery: useCategories is an infinite
+ * query, and a plain fetchQuery would hydrate `{data}` where the hook expects
+ * `{pages}` — the tiles would render empty with nothing to refetch for 60 s.
+ */
+export async function loadPlpData(typeSlug: string) {
+  const { dehydratedState: general } = await loadGeneralData();
+  const queryClient = new QueryClient();
+  let productTotal: number | null = null;
+  let products: any[] = [];
+  try {
+    const list: any = await queryClient.fetchInfiniteQuery({
+      queryKey: [
+        API_ENDPOINTS.PRODUCTS,
+        {
+          ...formatProductsArgs({
+            limit: PRODUCTS_PER_PAGE,
+            orderBy: 'created_at',
+            sortedBy: 'DESC',
+            type: typeSlug,
+          } as any),
+          language: LOCALE,
+        },
+      ],
+      queryFn: ({ queryKey }: any) => client.products.all(queryKey[1]),
+      initialPageParam: undefined,
+    } as any);
+    productTotal = list?.pages?.[0]?.total ?? null;
+    products = list?.pages?.[0]?.data ?? [];
+  } catch {
+    /* fail-soft: client fetches on mount */
+  }
+  await Promise.all([
+    queryClient
+      .prefetchInfiniteQuery({
+        queryKey: [
+          API_ENDPOINTS.CATEGORIES,
+          { type: typeSlug, parent: 'null', limit: CATEGORIES_PER_PAGE, home: 1, language: LOCALE },
+        ],
+        queryFn: ({ queryKey }: any) => client.categories.all(queryKey[1]),
+        initialPageParam: undefined,
+      } as any)
+      .catch(() => {}),
+    queryClient
+      .prefetchQuery({
+        queryKey: [API_ENDPOINTS.PRODUCTS_FILTER_FACETS, { type: typeSlug, hide_unpriced: 1 }],
+        queryFn: ({ queryKey }: any) => client.products.filterFacets(queryKey[1]),
+      })
+      .catch(() => {}),
+  ]);
+  const own = JSON.parse(JSON.stringify(dehydrate(queryClient)));
+  return {
+    dehydratedState: { ...general, queries: [...(general?.queries ?? []), ...(own.queries ?? [])] },
+    productTotal,
+    products,
+  };
+}
+
 /** /categories index: every vertical's root categories (first page) under the
  *  key categories.tsx builds — the index of all category links is server HTML. */
 export async function loadCategoriesIndexData() {

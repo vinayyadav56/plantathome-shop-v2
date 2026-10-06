@@ -170,8 +170,8 @@ class Client {
       }),
     /** Filter-rail options: distinct attribute values + counts + the price
      *  histogram, scoped exactly like the public list. */
-    filterFacets: () =>
-      HttpClient.get<import('@/types').FilterFacets>(API_ENDPOINTS.PRODUCTS_FILTER_FACETS),
+    filterFacets: (params?: { type?: string; categories?: string; city?: string; hide_unpriced?: number }) =>
+      HttpClient.get<import('@/types').FilterFacets>(API_ENDPOINTS.PRODUCTS_FILTER_FACETS, params),
     popular: (params: Partial<PopularProductQueryOptions>) =>
       HttpClient.get<Product[]>(API_ENDPOINTS.PRODUCTS_POPULAR, params),
 

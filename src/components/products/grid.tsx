@@ -2,7 +2,7 @@ import { useTranslation } from 'next-i18next';
 import { useEffect, useRef } from 'react';
 import cn from 'classnames';
 import Button from '@/components/ui/button';
-import ProductLoader from '@/components/ui/loaders/product-loader';
+import { PlantAtHomeCardSkeleton } from '@/components/products/cards/plantathome';
 import { EmptyProducts } from '@/components/ui/empty-products';
 import rangeMap from '@/lib/range-map';
 import ProductCard from '@/components/products/cards/card';
@@ -96,9 +96,10 @@ export function Grid({
         )}
       >
         {isLoading && !products?.length
-          ? rangeMap(limit, (i) => (
-              <ProductLoader key={i} uniqueKey={`product-${i}`} />
-            ))
+          ? // The skeleton that matches the card's geometry — the generic
+            // content-loader was a different shape, so the grid jumped when
+            // the real cards landed (CLS on every listing).
+            rangeMap(Math.min(limit, 12), (i) => <PlantAtHomeCardSkeleton key={i} />)
           : products?.map((product, index) => (
               <ProductCard
                 product={product}

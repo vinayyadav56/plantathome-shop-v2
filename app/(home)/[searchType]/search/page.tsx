@@ -3,6 +3,10 @@ import { notFound } from 'next/navigation';
 import { Hydrate } from '@/compat/react-query-hydration';
 import { loadGeneralData, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/search';
+import { PageBody as PlpPageBody } from '@/page-bodies/plp';
+
+/** Verticals whose search results render in the listing-page body (see [searchType]/page.tsx). */
+const PLP_VERTICALS = new Set(['plants']);
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +38,7 @@ export default async function Page({ params }: { params: Promise<{ searchType: s
   const { dehydratedState } = await loadGeneralData();
   return (
     <Hydrate state={dehydratedState}>
-      <PageBody />
+      {PLP_VERTICALS.has(searchType) ? <PlpPageBody type={searchType} mode="search" /> : <PageBody />}
     </Hydrate>
   );
 }

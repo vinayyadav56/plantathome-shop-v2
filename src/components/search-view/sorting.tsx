@@ -2,7 +2,6 @@ import Scrollbar from '@/components/ui/scrollbar';
 import Select from '@/components/ui/select/select';
 import { RadioGroup } from '@headlessui/react';
 import { useRouter } from '@/compat/next-router';
-import { useState, useEffect } from 'react';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/lib/locals';
 interface Plan {
@@ -20,6 +19,16 @@ const plans: Plan[] = [
     label: 'New Released',
     value: 'created_at',
     orderBy: 'created_at',
+    sortedBy: 'DESC',
+  },
+  {
+    // sold_quantity is a real column, kept current by the inventory listeners
+    // on every order — the one "popular" signal the catalogue actually has.
+    id: '4',
+    key: 'sorting',
+    label: 'Popular',
+    value: 'sold_quantity',
+    orderBy: 'sold_quantity',
     sortedBy: 'DESC',
   },
   {
@@ -48,16 +57,10 @@ const Sorting: React.FC<Props> = ({ variant = 'radio' }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
   const { isRTL } = useIsRTL();
-  const [selected, setSelected] = useState(
-    () =>
-      plans.find((plan) => plan.orderBy === router.query.orderBy) ?? plans[0]
-  );
-
-  useEffect(() => {
-    if (!router.query.orderBy) {
-      setSelected(plans[0]);
-    }
-  }, [router.query.orderBy]);
+  // Derived from the URL on every render — the URL is the one source of sort
+  // state. The old local copy was seeded once (`defaultValue`), so a sort set by
+  // a chip, a back-navigation or "Clear all" left the dropdown showing stale text.
+  const selected = plans.find((plan) => plan.orderBy === router.query.orderBy) ?? plans[0];
 
   function handleChange(values: Plan) {
     const { orderBy, sortedBy } = values;
@@ -69,14 +72,13 @@ const Sorting: React.FC<Props> = ({ variant = 'radio' }) => {
         sortedBy,
       },
     });
-    setSelected(values);
   }
 
   return (
     <>
       {variant === 'dropdown' && (
         <Select
-          defaultValue={selected}
+          value={selected}
           isRtl={isRTL}
           options={plans}
           isSearchable={false}
