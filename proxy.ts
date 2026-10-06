@@ -72,10 +72,17 @@ export function proxy(req: NextRequest, event: NextFetchEvent) {
       events: [{ type: 'page_view', url: page }],
     });
 
+    // Optional shared key (server-only env, never NEXT_PUBLIC_): when the API has
+    // TRACKING_CRAWL_SECRET set it drops pings without it.
+    const key = process.env.TRACKING_CRAWL_SECRET;
     event.waitUntil(
       fetch(`${base}/track/crawl`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'User-Agent': ua || 'unknown' },
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': ua || 'unknown',
+          ...(key ? { 'X-Track-Key': key } : {}),
+        },
         body,
         signal: AbortSignal.timeout(3000),
       }).catch(() => {}),
