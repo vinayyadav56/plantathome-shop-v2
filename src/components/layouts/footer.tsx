@@ -3,7 +3,7 @@ import Link from 'next/link';
 import SafeImage from '@/components/ui/safe-image';
 import React from 'react';
 import { useTranslation } from 'next-i18next';
-import { useSettings, useSubscription } from '@/framework/settings';
+import { useSettings } from '@/framework/settings';
 import { useTypes } from '@/framework/type';
 import { useLocationPages } from '@/framework/location';
 import { SOCIAL_URLS } from '@/lib/socials';
@@ -15,7 +15,6 @@ import AppStoreImg from '@/assets/app-store-btn.png';
 import PlayStoreImg from '@/assets/play-store-btn.png';
 import InlineLanguageSelect from '@/components/ui/inline-language-select';
 import {
-  ArrowRight,
   Lock,
   Mail,
   MapPin,
@@ -165,38 +164,6 @@ const AppBadges = ({ className = '' }: { className?: string }) => (
 
 const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`;
 
-function NewsletterForm() {
-  const { t } = useTranslation('common');
-  const [email, setEmail] = React.useState('');
-  const { mutate: subscribe, isLoading, isSubscribed } = useSubscription();
-  return (
-    <div className="w-full lg:w-[400px]">
-      <form
-        onSubmit={(e) => { e.preventDefault(); if (email.trim() && !isLoading) subscribe({ email: email.trim() }); }}
-        className="flex items-center gap-2.5 rounded-control border border-white/[0.14] bg-white/[0.07] py-1.5 pe-1.5 ps-4"
-      >
-        <Mail size={16} className="shrink-0 text-[#86EFAC]" aria-hidden />
-        <input
-          type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-          placeholder={t('footer-newsletter-email-placeholder')} aria-label="Email address"
-          className="min-w-0 flex-1 bg-transparent py-3 font-hanken text-[15px] text-white outline-none placeholder:text-white/40"
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="inline-flex shrink-0 items-center gap-2 rounded-control bg-ds-cta px-6 py-3 font-hanken text-[13.5px] font-bold text-ds-cta-ink transition duration-200 hover:bg-ds-cta-hover active:scale-[0.97] disabled:opacity-60"
-        >
-          {isSubscribed ? t('footer-newsletter-subscribed') : t('footer-newsletter-subscribe')}
-          <ArrowRight size={12} aria-hidden />
-        </button>
-      </form>
-      <p className="mt-2.5 flex items-center gap-2 font-hanken text-[12px] text-white/45">
-        <Lock size={12} className="shrink-0" aria-hidden />
-        {t('footer-newsletter-privacy-note')}
-      </p>
-    </div>
-  );
-}
 
 const Footer = () => {
   const { t } = useTranslation('common');
@@ -256,37 +223,11 @@ const Footer = () => {
         <path d="M11 21A8 8 0 0 1 3 13c0-6 5-10 10-10 0 6-2.5 10-2.5 10S15 11 19 11c0 5-4 9-8 10Z" />
       </svg>
 
-      {/* ── newsletter band ── */}
-      <div className="relative z-[1] border-b border-white/[0.09]">
-        {/* max-w-7xl, matching every other row in the footer. At max-w-5xl this
-            band was 256px narrower than the link columns below it, so "Grow with
-            us." started ~128px in from the gutter everything else lines up on.
-            Vertical padding trimmed too (52 -> 34 at lg) — it was the tallest
-            band in the footer by some way for two lines of text and one input. */}
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-6 sm:gap-8 sm:py-8 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-14 lg:px-16 lg:py-[34px]">
-          <div className="flex-1">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-white/[0.12] bg-white/[0.06] px-3.5 py-1.5">
-              <span className="relative flex h-[7px] w-[7px] shrink-0">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4ADE80] opacity-70" />
-                <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-[#4ADE80]" />
-              </span>
-              <span className="font-hanken text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#86EFAC]">
-                {t('footer-newsletter-eyebrow')}
-              </span>
-            </div>
-            <h3 className="font-cormorant mt-4 text-[2.2rem] font-medium leading-[1.02] tracking-[0.01em] text-white sm:text-[2.8rem]">
-              {t('footer-newsletter-heading')}
-            </h3>
-            {/* One line from xl (annotation). Measured 666px against a 666px column
-                before the form was narrowed to 400 — zero slack is a coin toss
-                across font metrics (this renders in Inter, not Hanken). */}
-            <p className="mt-3 font-hanken text-[14.5px] leading-relaxed text-white/[0.68] xl:whitespace-nowrap">
-              {t('footer-newsletter-subheading')}
-            </p>
-          </div>
-          <NewsletterForm />
-        </div>
-      </div>
+      {/* The newsletter band ("Grow with us." + email form) used to open the
+          footer. Removed on the owner's instruction — the whole band, not just
+          the input: a Subscribe button with no field under copy inviting people
+          to sign up is worse than no band. The /subscribe-to-newsletter endpoint
+          and the promo-popup / maintenance SubscriptionWidget are untouched. */}
 
       {/* ── main grid: brand + link columns ── */}
       <div className="relative z-[1] mx-auto grid max-w-7xl grid-cols-2 gap-x-8 gap-y-7 px-5 py-8 sm:gap-y-10 sm:py-12 sm:px-8 md:grid-cols-4 md:gap-x-6 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] lg:gap-10 lg:px-16 lg:pb-[46px] lg:pt-[54px]">

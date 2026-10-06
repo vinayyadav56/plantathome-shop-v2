@@ -8,7 +8,7 @@ import { useTranslation } from 'next-i18next';
 export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   inputClassName?: string;
-  label: string;
+  label: React.ReactNode;
   name: string;
   forgotPageLink?: string;
   shadow?: boolean;

@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   inputClassName?: string;
-  label?: string;
+  label?: React.ReactNode;
   name: string;
   error?: string;
   type?: string;

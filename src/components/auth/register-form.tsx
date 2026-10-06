@@ -1,4 +1,3 @@
-import Link from '@/components/ui/link';
 import { Controller } from 'react-hook-form';
 import AuthShell from '@/components/auth/auth-shell';
 import PhoneInput from '@/components/ui/forms/phone-input';
@@ -38,9 +37,6 @@ const registerFormSchema = yup.object().shape({
     .string()
     .required('error-password-required')
     .min(8, 'Password must be at least 8 characters'),
-  terms: yup
-    .boolean()
-    .oneOf([true], 'Please accept the Terms of Service to continue'),
 });
 
 type RegisterFormValues = {
@@ -49,18 +45,29 @@ type RegisterFormValues = {
   email: string;
   contact: string;
   password: string;
-  terms?: boolean;
 };
 
+/**
+ * Required-field marker. The convention already used by checkout/deliver-to and
+ * state-city-select — a red asterisk, hidden from screen readers because the
+ * field itself carries `required` semantics through validation.
+ */
+const Req = () => (
+  <span className="ms-0.5 text-red-500" aria-hidden>
+    *
+  </span>
+);
+
 type RegisterFormProps = {
-  /** When provided (page context), switches to the login view in place. */
+  /** Accepted for callers' sake; the in-form "Login" link that used it was
+   *  removed (the tab bar above the card is the same control). */
   onSwitchToLogin?: () => void;
   /** Renders the phone-OTP step in the page column instead of a dialog. Absent
    *  (header, checkout) it falls back to the modal, unchanged. */
   onPhoneOtp?: (channel?: OtpChannel) => void;
 };
 
-export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps = {}) {
+export function RegisterForm({ onPhoneOtp }: RegisterFormProps = {}) {
   const { t } = useTranslation('common');
   const { openModal } = useModalAction();
   const { mutate, isLoading, formError } = useRegister();
@@ -84,20 +91,82 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
 
   return (
     <>
+      {/* Social sign-up FIRST, as one row. Owner: "these options are hidden in
+          the first view". They used to sit below every field, the submit button
+          and a divider — ~820px down a card whose cap is ~730px at 1440×900, so
+          they were never in the first view on a laptop. Three stacked 52px
+          buttons cannot fit the budget at all (socials + fields + submit =
+          546px with zero margins against a 525px form box), so this is a row of
+          three compact buttons rather than a tighter stack. Outside <form> with
+          type="button", so Enter still submits the email form. */}
+      <div className="grid grid-cols-3 gap-3" data-social-row>
+        <Button
+          type="button"
+          variant="formSecondary"
+          size="small"
+          className="w-full"
+          loading={googleBusy}
+          disabled={isLoading || googleBusy}
+          onClick={googleLogin}
+          aria-label="Continue with Google"
+          title="Continue with Google"
+        >
+          <GoogleIcon className="h-5 w-5 shrink-0 ltr:mr-2 rtl:ml-2" />
+          {googleBusy ? 'Connecting…' : 'Google'}
+        </Button>
+        <Button
+          type="button"
+          variant="formSecondary"
+          size="small"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => (onPhoneOtp ? onPhoneOtp('sms') : openModal('OTP_LOGIN', { channel: 'sms' }))}
+          aria-label="Continue with phone OTP"
+          title="Continue with phone OTP"
+        >
+          <Smartphone size={18} className="shrink-0 ltr:mr-2 rtl:ml-2" aria-hidden />
+          Phone
+        </Button>
+        <Button
+          type="button"
+          variant="formSecondary"
+          size="small"
+          className="w-full"
+          disabled={isLoading}
+          onClick={() => (onPhoneOtp ? onPhoneOtp('whatsapp') : openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
+          aria-label="Continue with WhatsApp"
+          title="Continue with WhatsApp"
+        >
+          <WhatsAppIcon className="h-5 w-5 shrink-0 text-[#25D366] ltr:mr-2 rtl:ml-2" />
+          WhatsApp
+        </Button>
+      </div>
+
+      <div className="relative my-4 flex flex-col items-center justify-center text-sm text-heading">
+        <hr className="w-full" />
+        <span className="absolute -top-2.5 bg-white px-2 text-body">or sign up with email</span>
+      </div>
+
+      {/* mode: 'onTouched' — validate on the first blur and re-validate on every
+          change after that. The default (onSubmit) only showed the phone/email
+          format errors after a full submit attempt; plain onBlur would leave a
+          stale error standing until the NEXT blur. */}
       <Form<RegisterFormValues>
         onSubmit={onSubmit}
         validationSchema={registerFormSchema}
         serverError={formError as any}
+        useFormProps={{ mode: 'onTouched' }}
       >
         {({ register, control, formState: { errors } }) => (
           <>
-            <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="mb-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
-                label="First name"
+                label={<>First name<Req /></>}
                 {...register('first_name')}
                 autoComplete="given-name"
                 variant="outline"
                 dimension="big"
+                inputClassName="h-[52px]"
                 error={t(errors.first_name?.message!)}
               />
               <Input
@@ -106,22 +175,24 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
                 autoComplete="family-name"
                 variant="outline"
                 dimension="big"
+                inputClassName="h-[52px]"
                 error={t(errors.last_name?.message!)}
               />
             </div>
             <Input
-              label={t('text-email')}
+              label={<>{t('text-email')}<Req /></>}
               {...register('email')}
               type="email"
               autoComplete="email"
               variant="outline"
               dimension="big"
-              className="mb-5"
+              inputClassName="h-[52px]"
+              className="mb-3"
               error={t(errors.email?.message!)}
             />
-            <div className="mb-5">
-              <label className="mb-3 block text-sm font-semibold leading-none text-body-dark">
-                Mobile number
+            <div className="mb-3">
+              <label htmlFor="contact" className="mb-3 block text-sm font-semibold leading-none text-body-dark">
+                Mobile number<Req />
               </label>
               <Controller
                 name="contact"
@@ -133,8 +204,9 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
                     countryCodeEditable={false}
                     value={field.value}
                     onChange={field.onChange}
-                    inputProps={{ autoComplete: 'tel', inputMode: 'tel' }}
-                    inputClass="!h-14 !w-full !text-base"
+                    onBlur={field.onBlur}
+                    inputProps={{ id: 'contact', autoComplete: 'tel', inputMode: 'tel' }}
+                    inputClass="!h-[52px] !w-full !text-base"
                   />
                 )}
               />
@@ -145,39 +217,17 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
               )}
             </div>
             <PasswordInput
-              label={t('text-password')}
+              label={<>{t('text-password')}<Req /></>}
               {...register('password')}
               autoComplete="new-password"
               error={t(errors.password?.message!)}
               variant="outline"
-              inputClassName="h-14"
-              className="mb-5"
+              inputClassName="h-[52px]"
+              className="mb-4"
             />
-            {/* Terms acceptance gates registration (frontend only; the routes exist). */}
-            <div className="mb-6">
-              <label className="flex cursor-pointer items-start gap-3 text-sm text-body">
-                <input
-                  type="checkbox"
-                  {...register('terms')}
-                  className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 text-ds-btn focus:ring-ds-accent"
-                />
-                <span>
-                  I agree to the{' '}
-                  <Link href="/terms" target="_blank" className="font-semibold text-forest-700 underline hover:no-underline">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" target="_blank" className="font-semibold text-forest-700 underline hover:no-underline">
-                    Privacy Policy
-                  </Link>
-                </span>
-              </label>
-              {errors.terms?.message && (
-                <p role="alert" className="mt-2 text-xs text-red-500">
-                  {t(errors.terms.message)}
-                </p>
-              )}
-            </div>
+            {/* The terms checkbox that used to sit here duplicated the subtitle,
+                which already states "By signing up, you agree to our Terms &
+                Policy" next to the button. One consent statement, not two. */}
             <Button
               variant="formPrimary"
               className="w-full"
@@ -190,61 +240,8 @@ export function RegisterForm({ onSwitchToLogin, onPhoneOtp }: RegisterFormProps 
           </>
         )}
       </Form>
-      {/* End of forgot register form */}
-
-      <div className="relative mt-8 mb-6 flex flex-col items-center justify-center text-sm text-heading sm:mt-11 sm:mb-8">
-        <hr className="w-full" />
-        <span className="absolute -top-2.5 bg-white px-2 ltr:left-2/4 ltr:-ml-4 rtl:right-2/4 rtl:-mr-4">
-          {t('text-or')}
-        </span>
-      </div>
-
-      {/* Social + phone sign-up (NextAuth session is bridged to the API by the
-          global <SocialLogin/> in _app.tsx; OTP_LOGIN handles phone sign-up). */}
-      <div className="mb-8 grid grid-cols-1 gap-4">
-        <Button
-          type="button"
-          variant="formSecondary"
-          className="w-full"
-          loading={googleBusy}
-          disabled={isLoading || googleBusy}
-          onClick={googleLogin}
-        >
-          <GoogleIcon className="h-5 w-5 ltr:mr-3 rtl:ml-3" />
-          {googleBusy ? 'Connecting...' : 'Continue with Google'}
-        </Button>
-        <Button
-          type="button"
-          variant="formSecondary"
-          className="w-full"
-          disabled={isLoading}
-          onClick={() => (onPhoneOtp ? onPhoneOtp('sms') : openModal('OTP_LOGIN', { channel: 'sms' }))}
-        >
-          <Smartphone size={18} className="ltr:mr-3 rtl:ml-3" aria-hidden />
-          Continue with Phone (OTP)
-        </Button>
-
-        <Button
-          type="button"
-          variant="formSecondary"
-          className="w-full"
-          disabled={isLoading}
-          onClick={() => (onPhoneOtp ? onPhoneOtp('whatsapp') : openModal('OTP_LOGIN', { channel: 'whatsapp' }))}
-        >
-          <WhatsAppIcon className="h-5 w-5 text-[#25D366] ltr:mr-3 rtl:ml-3" />
-          Continue with WhatsApp
-        </Button>
-      </div>
-
-      <div className="text-center text-sm text-body sm:text-base">
-        {t('text-already-account')}{' '}
-        <button
-          onClick={onSwitchToLogin ?? (() => openModal('LOGIN_VIEW'))}
-          className="font-semibold text-[#175840] underline transition-colors duration-200 hover:text-[#1B6B50] hover:no-underline focus:text-[#1B6B50] focus:no-underline focus:outline-0 ltr:ml-1 rtl:mr-1"
-        >
-          {t('text-login')}
-        </button>
-      </div>
+      {/* "Already have an account? Login" used to follow. The tab bar above the
+          card does the same switch, so it was a second copy of the same control. */}
     </>
   );
 }
@@ -257,7 +254,7 @@ export default function RegisterView() {
       onRegister={() => {}}
       onClose={closeModal}
       title="Create your account"
-      subtitle="Join PlantAtHome — greener living, happier homes"
+      subtitle="By signing up, you agree to our Terms & Privacy Policy"
     >
       <RegisterForm />
     </AuthShell>

@@ -471,11 +471,15 @@ export function useRegister() {
     onSuccess: (data, variables: any) => {
       if (data?.token && data?.permissions?.length) {
         setToken(data?.token);
-        // Signup collects a mobile number but /register ignores it (it stores only
-        // name/email/password). Save it through the existing PUT /me/contacts the
-        // moment the token cookie is set — fire-and-forget, no backend change.
+        // /register now VALIDATES `contact` (a duplicate phone fails with a field
+        // error before the account exists) but still stores only name/email/password;
+        // the number is saved through PUT /me/contacts once the token cookie is set.
+        // No longer swallowed silently: a failure here used to mean an account with
+        // no phone and no trace of why. The account still exists either way.
         if (variables?.contact) {
-          HttpClient.put(API_ENDPOINTS.CONTACTS, { contact: variables.contact }).catch(() => {});
+          HttpClient.put(API_ENDPOINTS.CONTACTS, { contact: variables.contact }).catch((e: any) => {
+            console.warn('[register] phone was not saved to the new account', e?.response?.data ?? e?.message ?? e);
+          });
         }
         setAuthorized(true);
         closeModal();
