@@ -49,7 +49,11 @@ export function GiftingBand() {
   if (!useBannerEnabled('gifting')) return null;
 
   return (
-    <section className="bg-[#F8F7F2]">
+    // overflow-x-clip: the photo column sits flush with the right edge and
+    // starts at scale 1.04 until it scrolls into view — that 2% overhang made
+    // every desktop homepage scroll sideways by ~12px. `clip` (not `hidden`)
+    // trims only the horizontal overhang and creates no scroll container.
+    <section className="overflow-x-clip bg-[#F8F7F2]">
       {/* top — copy + photo (constrained width so it doesn't run edge-to-edge) */}
       <div className="mx-auto flex max-w-none flex-col lg:min-h-[460px] lg:flex-row lg:items-stretch">
 
