@@ -65,9 +65,11 @@ test.describe('tracking SDK', () => {
     const beacons = captureBeacons(page);
     await page.goto('/plants', { waitUntil: 'domcontentloaded' });
     const link = page.locator('a[href^="/products/"]').first();
-    await expect(link).toBeVisible({ timeout: 20_000 });
-    await link.click();
-    await page.waitForURL(/\/products\//, { timeout: 20_000 });
+    await expect(link).toBeAttached({ timeout: 20_000 });
+    // Navigate to the href rather than click: on a fresh session the city gate
+    // can sit over the grid, and the click would land on it.
+    const href = await link.getAttribute('href');
+    await page.goto(href!, { waitUntil: 'domcontentloaded' });
 
     await expect
       .poll(
