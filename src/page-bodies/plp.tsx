@@ -168,9 +168,11 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
                 </div>
               )}
 
-              {/* Sticky under the header (58px / 68px) so sort + view are always in reach;
-                  the plain toolbar has no backdrop of its own, so the wrapper paints the cream. */}
-              <div className="sticky top-[58px] z-20 -mx-1 bg-cream px-1 lg:top-[68px]">
+              {/* The results strip (owner 2026-10-07: soft sage), sticky under the header
+                  (58px / 68px) so sort + view are always in reach. The plain toolbar has no
+                  backdrop of its own, so this paints it: full-bleed on phones (-mx-5 = the
+                  page gutter), an 8px-radius bar beside the filter rail from md. */}
+              <div className="sticky top-[58px] z-20 -mx-5 mb-4 bg-sage-100 px-5 md:mx-0 md:rounded-lg md:px-4 lg:top-[68px]">
                 <ListingToolbar
                   variant="plain"
                   view={view}

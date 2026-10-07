@@ -1,9 +1,9 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Locator, Page } from '@playwright/test';
 
 /**
  * /tools — the owner's 2026-10-07 mock, on real data.
  *
- * Pins the contract, not the styling: one serif H1, the exact SEO title and
+ * Pins the contract, not the styling: one heading-font H1, the exact SEO title and
  * description, "Tools" lit in the header, BreadcrumbList + CollectionPage +
  * FAQPage structured data (the CollectionPage's ItemList present exactly when
  * the server rendered product cards), six category tiles and the need/task
@@ -60,6 +60,20 @@ const DESCRIPTION =
   'Shop premium gardening tools online at PlantAtHome. Explore pruning tools, watering cans, hand tools, gardening kits and more for easy plant care.';
 /** The old cinematic landing's typed-in claims — none may come back. */
 const FABRICATED = /12,000\+ reviews|Lifetime warranty|Free 2-day/;
+
+/** The H1 must use the site heading font: whatever `font-heading` resolves to
+ *  (admin Design System), never a page-scoped face, at the storefront heading
+ *  weight. Polled, because the admin font vars land after hydration. */
+const SITE_HEADING = 'site heading font @ 500';
+const headingFont = (el: Locator) =>
+  el.evaluate((node) => {
+    const probe = document.body.appendChild(document.createElement('span'));
+    probe.className = 'font-heading';
+    const site = getComputedStyle(probe).fontFamily;
+    probe.remove();
+    const { fontFamily, fontWeight } = getComputedStyle(node);
+    return `${fontFamily === site ? 'site heading font' : fontFamily} @ ${fontWeight}`;
+  });
 
 /** The header chip shows the stored city only after mount (the server can't know
  *  it), so it is the hydration signal: before it, clicks and keys hit dead HTML. */
@@ -124,16 +138,14 @@ test.describe('/tools landing', () => {
     expect(html).not.toMatch(FABRICATED);
   });
 
-  test('one serif H1, exact title and description, Tools lit in the header', async ({ page }) => {
+  test('one H1 in the site heading font, exact title and description, Tools lit in the header', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/tools', { waitUntil: 'domcontentloaded' });
     const h1 = page.getByRole('heading', { level: 1 });
     await expect(h1).toHaveCount(1);
     await expect(h1).toHaveText(H1);
-    // The page-scoped display serif (next/font variable on the route wrapper).
-    await expect
-      .poll(() => h1.evaluate((el) => getComputedStyle(el).fontFamily), { timeout: 15_000 })
-      .toMatch(/Playfair/i);
+    // The same face and weight as the other pages' headings.
+    await expect.poll(() => headingFont(h1), { timeout: 15_000 }).toBe(SITE_HEADING);
     await expect(page).toHaveTitle(TITLE);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', DESCRIPTION);
     const lit = page.locator('#site-header a[aria-current="page"]:visible');

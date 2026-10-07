@@ -8,7 +8,6 @@ import { PageBody as ToolsPageBody } from '@/page-bodies/tools';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 // Plain module (no 'use client'), so the FAQ copy is real data here, not a client reference.
 import { TOOLS_FAQS } from '@/components/tools/tools-content';
-import { plpSerif } from '@/lib/fonts/plp-serif';
 import { SITE_URL } from '@/lib/site-url';
 
 /**
@@ -114,10 +113,7 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
             dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList).replace(/</g, '\\u003c') }}
           />
         )}
-        {/* The PLP's display serif is scoped to this subtree (see lib/fonts/plp-serif). */}
-        <div className={plpSerif.variable}>
-          <PlpPageBody type={vertical} catalogueTotal={productTotal} />
-        </div>
+        <PlpPageBody type={vertical} catalogueTotal={productTotal} />
       </Hydrate>
     );
   }
@@ -164,10 +160,7 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
             dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }}
           />
         ))}
-        {/* The display serif, scoped to this subtree (see lib/fonts/plp-serif). */}
-        <div className={plpSerif.variable}>
-          <ToolsPageBody type={vertical} />
-        </div>
+        <ToolsPageBody type={vertical} />
       </Hydrate>
     );
   }

@@ -7,8 +7,9 @@ import { ArrowRight } from '@/components/ui/icon';
 import { useCategories } from '@/framework/category';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 
-/** Image-box tints, cycled by tile index (the mock's pastel backdrops). */
-const TINTS = ['bg-emerald-50', 'bg-sage-100', 'bg-rose-50', 'bg-amber-50', 'bg-sky-50', 'bg-lime-50'];
+/** Tile backdrops, cycled by index: what shows while a photo loads, or instead of a
+ *  missing/dead one. Forest tones, so the white name reads (≥ 6:1) with no photo at all. */
+const TINTS = ['bg-forest-700', 'bg-forest-600', 'bg-forest-800'];
 const MAX_TILES = 12;
 const SKELETON_TILES = 10;
 
@@ -16,7 +17,8 @@ const SKELETON_TILES = 10;
  * "Shop by Category" — the white card that overlaps the hero's bottom edge
  * (`-mt-14 lg:-mt-[70px]`, so render it directly after the hero inside the
  * page's gutter container): title row + one snap-scrolling `.pah-rail` of
- * category tiles linking to /c/{slug}, 10 per row from `lg`.
+ * full-bleed 4:5 photo tiles linking to /c/{slug}, the category name written
+ * on the photo over a dark scrim (owner 2026-10-07), 10 per row from `lg`.
  *
  * Tiles are the vertical's flagged root categories (`home: 1`, flagged order)
  * — the exact `useCategories` options loadPlpData seeds for SSR, so the first
@@ -47,7 +49,7 @@ export default function CategoryTiles({ type }: { type: string }) {
       className="relative z-10 -mt-14 rounded-2xl bg-white p-5 shadow-box lg:-mt-[70px]"
     >
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 id="plp-categories" className="text-[18px] font-bold leading-none text-forest-900 sm:text-[22px]">
+        <h2 id="plp-categories" className="font-heading text-[18px] font-medium leading-none text-forest-900 sm:text-[22px]">
           Shop by Category
         </h2>
         <Link
@@ -63,40 +65,51 @@ export default function CategoryTiles({ type }: { type: string }) {
 
       {/* From lg the row holds every tile (6–10 slots, the mock's 10 when there are
           that many), so a seven-category vertical fills the card instead of leaving
-          three empty slots; phones and tablets keep the snap rail. */}
+          three empty slots; phones and tablets keep the snap rail. Tiles never go
+          under 120px (lg below ~1410px, phones below ~350px): narrower, "Palms &
+          Tropical Plants" can't fit two lines at 14px — the rail scrolls instead. */}
       <ul
-        className="pah-rail [--rail-w:44%] sm:[--rail-w:30%] lg:[--rail-w:calc((100%_-_(var(--rail-n)_-_1)*12px)/var(--rail-n))] gap-3"
+        className="pah-rail gap-3 [--rail-w:max(120px,44%)] sm:[--rail-w:30%] lg:[--rail-w:max(120px,calc((100%_-_(var(--rail-n)_-_1)*12px)/var(--rail-n)))]"
         style={{ ['--rail-n' as string]: String(Math.min(Math.max(showSkeleton ? SKELETON_TILES : items.length, 6), 10)) } as React.CSSProperties}
       >
         {showSkeleton
           ? Array.from({ length: SKELETON_TILES }, (_, i) => (
-              <li key={`sk-${i}`} className="rounded-lg border border-kraft-200 bg-white p-2" aria-hidden>
-                <div className={cn('aspect-[7/5] animate-pulse rounded-md', TINTS[i % TINTS.length])} />
-                <div className="mx-auto mt-2 h-3 w-2/3 animate-pulse rounded-full bg-sage-100" />
-                <div className="h-[calc(2.5em-0.75rem)] text-[13px]" />
+              <li key={`sk-${i}`} aria-hidden>
+                <div className="aspect-[4/5] animate-pulse rounded-lg bg-sage-100" />
               </li>
             ))
           : items.map((c, i) => (
               <li key={c.id ?? c.slug}>
+                {/* `isolate` keeps Safari clipping the zoomed photo to the radius. */}
                 <Link
                   href={`/c/${c.slug}`}
-                  className="group block rounded-lg border border-kraft-200 bg-white p-2 hover:border-forest-700/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
+                  className={cn(
+                    'group relative isolate block aspect-[4/5] overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2',
+                    TINTS[i % TINTS.length],
+                  )}
                 >
-                  <span className={cn('relative block aspect-[7/5] overflow-hidden rounded-md', TINTS[i % TINTS.length])}>
-                    <SafeImage
-                      src={c.image?.original ?? c.banner_image?.original ?? ''}
-                      alt=""
-                      fill
-                      sizes="(max-width: 640px) 44vw, (max-width: 1024px) 30vw, 10vw"
-                      quality={70}
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                      fallback={null}
-                    />
-                  </span>
-                  {/* Two lines, reserved on every tile so the row stays level:
-                      "Palms & Tropical Plants" / "Climbers & Creepers" don't fit one. */}
-                  <span className="mt-2 line-clamp-2 min-h-[2.5em] text-center text-[13px] font-semibold leading-tight text-forest-900">
-                    {c.name}
+                  <SafeImage
+                    src={c.image?.original ?? c.banner_image?.original ?? ''}
+                    alt=""
+                    fill
+                    // The painted tile: 44% of the phone rail, 30% sm–md, then the
+                    // 120px floor until the exact-fit tenth overtakes it (~1410px).
+                    sizes="(max-width: 639px) 40vw, (max-width: 1023px) 28vw, (max-width: 1439px) 120px, 9vw"
+                    quality={70}
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    fallback={null}
+                  />
+                  {/* ≥ 65% forest ink up to 35% of the height (a two-line name tops
+                      out at ~29% on the shortest tile), so white holds ≥ 4.5:1 even
+                      over a pure-white photo; it fades out by 80%. */}
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-forest-950/90 via-forest-950/65 via-35% to-transparent to-80%"
+                  />
+                  <span className="absolute inset-x-0 bottom-0 p-2">
+                    <span className="line-clamp-2 break-words font-heading text-[14px] font-semibold leading-tight text-white">
+                      {c.name}
+                    </span>
                   </span>
                 </Link>
               </li>

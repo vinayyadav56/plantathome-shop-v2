@@ -327,19 +327,16 @@
     @apply font-body;
   }
 
-  /* Headings use the BODY font sitewide (weight/color carry hierarchy — owner pattern
-     2026-07-27). Expressed here as a plain base rule instead of the old
-     `h1-h5 { font-family: var(--font-body) !important }` override, which (a) silently
-     excluded h6 (it rendered in the display serif), and (b) blocked the font-heading /
-     font-display-serif utility classes on real heading elements. The display serif stays
-     opt-in via .font-display-serif / font-heading for product names + brand moments. */
+  /* Headings use the HEADING font sitewide, the homepage-heading face everywhere (owner
+     2026-10-07; it was the body font from 2026-07-27). A plain base rule, never
+     `!important`, so a font-body / font-sans utility on a heading element still wins. */
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    @apply font-body;
+    @apply font-heading;
   }
 
   a {

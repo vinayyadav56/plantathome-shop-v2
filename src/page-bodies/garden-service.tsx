@@ -12,6 +12,7 @@ import { useGardenTemplates, useSubmitGardenLead, GardenLeadInput } from '@/fram
 import StateCitySelect from '@/components/location/state-city-select';
 import LineIcon from '@/components/icons/line-icons';
 import { GsIcon, GoldStar } from '@/components/garden-service/icons';
+import { Quote } from '@/components/ui/icon';
 import { EXPO } from '@/components/storefront/motion';
 import { useGardenServiceContent, resolveImageUrl } from '@/lib/use-home-config';
 
@@ -72,8 +73,11 @@ const GRAIN = `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http:
 /* Luxury card language shared across the page (matches the product-card bar). */
 const CARD =
   'rounded-2xl border border-kraft-200 bg-white shadow-box';
+/* The lift uses the standalone `translate` property, not `-translate-y-*`:
+   framer-motion leaves an inline `transform: none` on every revealed card,
+   which overrides any transform utility (the lift silently never fired). */
 const CARD_HOVER =
-  'transition-shadow duration-300 hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)]';
+  'transition-[translate,box-shadow] duration-300 hover:[translate:0_-4px] hover:shadow-[0_10px_18px_rgba(0,0,0,0.08),0_30px_60px_rgba(0,0,0,0.12)]';
 
 /* NOTE: reveals never hide content — y-offset only (whileInView opacity is
    unreliable on the deployed build; see src/components/storefront/motion.tsx). */
@@ -114,7 +118,7 @@ function SectionHead({
     <motion.div {...reveal()} className="mx-auto max-w-[720px] text-center">
       <Eyebrow dark={dark}>{eyebrow}</Eyebrow>
       <h2
-        className={`mt-4 text-[28px] font-medium leading-[1.12] tracking-[-0.01em] sm:text-[38px] ${
+        className={`mt-4 font-heading text-[28px] font-medium leading-[1.12] tracking-[-0.01em] sm:text-[38px] ${
           dark ? 'text-white' : 'text-[#16301A]'
         }`}
       >
@@ -226,7 +230,7 @@ function LeadForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-control bg-ds-btn px-6 py-3.5 text-[15.5px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-control bg-ds-btn px-6 py-3.5 text-[15px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? 'Sending…' : 'Get my free garden plan'}
         {!isLoading && <LineIcon name="arrowRight" className="h-4 w-4" />}
@@ -330,7 +334,7 @@ export default function GardenServicePage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16 lg:py-24">
           <div className="text-white">
             <Eyebrow dark>Bespoke home gardens</Eyebrow>
-            <h1 className="mt-6 text-[34px] font-medium leading-[1.1] tracking-[-0.015em] sm:text-[46px] lg:text-[52px]">
+            <h1 className="mt-6 font-heading text-[34px] font-medium leading-[1.1] tracking-[-0.015em] sm:text-[46px] lg:text-[52px]">
               {heroHeadline ?? (
                 <>
                   A thriving garden,
@@ -347,14 +351,14 @@ export default function GardenServicePage() {
             <div className="mt-8 flex flex-wrap items-center gap-3.5">
               <a
                 href="#quote"
-                className="inline-flex items-center gap-2 rounded-control bg-ds-btn px-7 py-3.5 text-[15.5px] font-semibold text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/15 transition hover:bg-ds-btn-hover"
+                className="inline-flex items-center gap-2 rounded-control bg-ds-btn px-7 py-3.5 text-[15px] font-semibold text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/15 transition hover:bg-ds-btn-hover"
               >
                 Get my free garden plan
                 <LineIcon name="arrowRight" className="h-4 w-4" />
               </a>
               <a
                 href={`tel:${PHONE}`}
-                className="inline-flex items-center gap-2 rounded-control border border-white/30 bg-white/[0.08] px-7 py-3.5 text-[15.5px] font-semibold text-white backdrop-blur transition hover:border-white/60 hover:bg-white/[0.16]"
+                className="inline-flex items-center gap-2 rounded-control border border-white/30 bg-white/[0.08] px-7 py-3.5 text-[15px] font-semibold text-white backdrop-blur transition hover:border-white/60 hover:bg-white/[0.16]"
               >
                 <GsIcon name="phone" className="h-4 w-4" />
                 Call an expert
@@ -439,7 +443,7 @@ export default function GardenServicePage() {
               <motion.div
                 key={i}
                 {...reveal(i * 0.06)}
-                className={`${CARD} ${CARD_HOVER} p-7 transition-transform duration-300 hover:-translate-y-1.5`}
+                className={`${CARD} ${CARD_HOVER} p-7`}
               >
                 <span className="grid h-12 w-12 place-items-center rounded-xl bg-[#F3F8EC] text-[#24693E]">
                   <GsIcon name={f.icon} className="h-6 w-6" />
@@ -557,7 +561,7 @@ export default function GardenServicePage() {
                       className={`mt-7 flex w-full items-center justify-center gap-2 rounded-control py-3.5 text-[15px] font-semibold transition ${
                         popular
                           ? 'bg-ds-btn text-white hover:bg-ds-btn-hover'
-                          : 'border border-ds-btn/25 bg-white text-ds-btn hover:border-ds-btn hover:bg-[#F3F8EC]'
+                          : 'border border-forest-700/25 bg-white text-ds-btn hover:border-ds-btn hover:bg-[#F3F8EC]'
                       }`}
                     >
                       Get a custom quote
@@ -578,27 +582,49 @@ export default function GardenServicePage() {
           title="Loved by plant parents"
           sub="Real homes, real gardens — and owners who barely lift a finger."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        {/* flex-wrap, not grid: 1 → 2 → 3 columns, an odd last card centres, and
+            cards in a row share one height — for any number of admin testimonials. */}
+        <div className="mt-12 flex flex-wrap justify-center gap-6">
           {testimonials.map((tm, i) => (
-            <motion.figure key={i} {...reveal(i * 0.07)} className={`${CARD} ${CARD_HOVER} flex h-full flex-col p-7`}>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, s) => <GoldStar key={s} />)}
+            <motion.figure
+              key={i}
+              {...reveal(i * 0.07)}
+              className={`${CARD} ${CARD_HOVER} flex w-full flex-col p-6 sm:w-[calc(50%-12px)] sm:p-7 lg:w-[calc((100%-48px)/3)]`}
+            >
+              <div className="flex items-center justify-between gap-4">
+                <Quote fill="currentColor" strokeWidth={0} className="h-8 w-8 text-goldlight" aria-hidden />
+                <div className="flex items-center gap-0.5" role="img" aria-label="Rated 5 out of 5">
+                  {Array.from({ length: 5 }).map((_, s) => <GoldStar key={s} />)}
+                </div>
               </div>
-              <blockquote className="mt-4 flex-1 text-[15px] leading-[1.7] text-[#5B5B5B]">
-                “{tm.quote}”
-              </blockquote>
-              <figcaption className="mt-6 flex items-center gap-3 border-t border-[#F0EEE8] pt-5">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-sage-100 text-[13px] font-bold text-[#184A31]">
-                  {tm.name.charAt(0)}
-                </span>
-                <span>
-                  <span className="block text-[14px] font-semibold text-[#184A31]">{tm.name}</span>
-                  <span className="mt-0.5 flex items-center gap-1 text-[12px] text-[#8A8A8A]">
-                    <GsIcon name="mapPin" className="h-3 w-3" />
-                    {tm.city}
+              {tm.quote ? (
+                <blockquote className="mt-4 flex-1 text-[15px] leading-[1.7] text-forest-900/80">
+                  {tm.quote}
+                </blockquote>
+              ) : null}
+              {tm.name || tm.city ? (
+                <figcaption className="mt-6 flex items-center gap-3 border-t border-kraft-200 pt-5">
+                  {tm.name ? (
+                    <span
+                      aria-hidden
+                      className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-forest-900 text-[15px] font-semibold uppercase text-white"
+                    >
+                      {tm.name.charAt(0)}
+                    </span>
+                  ) : null}
+                  <span className="min-w-0">
+                    {tm.name ? (
+                      <span className="block text-[14px] font-semibold text-forest-900">{tm.name}</span>
+                    ) : null}
+                    {tm.city ? (
+                      <span className="mt-0.5 flex items-center gap-1 text-[13px] text-stone-600">
+                        <GsIcon name="mapPin" className="h-3.5 w-3.5" />
+                        {tm.city}
+                      </span>
+                    ) : null}
                   </span>
-                </span>
-              </figcaption>
+                </figcaption>
+              ) : null}
             </motion.figure>
           ))}
         </div>
@@ -624,36 +650,30 @@ export default function GardenServicePage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA — dark forest band ── */}
-      <section className="relative overflow-hidden bg-[#1E4023] py-16 text-center lg:py-20">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.05] mix-blend-overlay"
-          style={{ backgroundImage: GRAIN, backgroundSize: '180px 180px' }}
-        />
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-[radial-gradient(ellipse_at_0%_60%,rgba(143,213,111,0.10)_0%,transparent_65%)]" />
-        <div className="pointer-events-none absolute -right-10 -top-10 h-56 w-56 rounded-full bg-[#E3CE97]/[0.08] blur-3xl" />
-
-        <motion.div {...reveal()} className="relative mx-auto max-w-3xl px-5">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-[#8FD56F]/25 bg-[#8FD56F]/10 text-[#8FD56F]">
+      {/* ── FINAL CTA — light sage band (the page ends on light content before
+          the dark footer, like the rest of the site) ── */}
+      <section className="border-t border-kraft-200 bg-sage-50 py-16 text-center lg:py-20">
+        <motion.div {...reveal()} className="mx-auto max-w-3xl px-5">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-xl bg-white text-forest-700 shadow-box">
             <LineIcon name="soil" className="h-7 w-7" />
           </span>
-          <h2 className="mt-6 text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-white sm:text-[36px]">
+          <h2 className="mt-6 font-heading text-[28px] font-medium leading-[1.15] tracking-[-0.01em] text-forest-900 sm:text-[36px]">
             Ready for a garden you’ll actually keep alive?
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-[1.65] text-white/75">
+          <p className="mx-auto mt-3 max-w-xl text-[15px] leading-[1.65] text-stone-600">
             Get a free, no-obligation plan tailored to your space today.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3.5">
             <a
               href="#quote"
-              className="inline-flex items-center gap-2 rounded-control bg-white px-7 py-3.5 text-[15.5px] font-semibold text-ds-btn shadow-[0_12px_30px_rgba(0,0,0,0.3)] transition hover:bg-[#F3F8EC]"
+              className="inline-flex items-center gap-2 rounded-control bg-ds-btn px-7 py-3.5 text-[15px] font-semibold text-white transition hover:bg-ds-btn-hover"
             >
               Get my free garden plan
               <LineIcon name="arrowRight" className="h-4 w-4" />
             </a>
             <a
               href={`tel:${PHONE}`}
-              className="inline-flex items-center gap-2 rounded-control border border-white/30 bg-white/[0.06] px-7 py-3.5 text-[15.5px] font-semibold text-white transition hover:border-white/60 hover:bg-white/[0.14]"
+              className="inline-flex items-center gap-2 rounded-control border border-forest-700/25 bg-white px-7 py-3.5 text-[15px] font-semibold text-ds-btn transition hover:border-ds-btn hover:bg-sage-100"
             >
               <GsIcon name="phone" className="h-4 w-4" />
               Call an expert

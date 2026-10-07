@@ -2,14 +2,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { getStoredCity } from '@/lib/customer-location';
-import { useCityPicker } from '@/components/location/city-switcher';
 import { ArrowRight } from '@/components/ui/icon';
 import PottedPlantIllustration from '@/components/ui/illustration/potted-plant';
 
 /**
  * Branded, city-aware "no products" empty state — replaces the generic Pickbazar
  * "no result" illustration. The empty grid is almost always a city-inventory gap,
- * so we say so and offer a way forward (browse everything / change city).
+ * so we say so and offer a way forward: browse everything, or change city from
+ * the header chip — the one city control (owner 2026-10-07: no in-page pickers).
  */
 export function EmptyProducts({
   categoryName,
@@ -26,10 +26,6 @@ export function EmptyProducts({
   React.useEffect(() => {
     setCity(getStoredCity());
   }, []);
-  // This was a `pah:open-location` CustomEvent that nothing anywhere listened
-  // to — the button had never once opened anything. The shared hook also means
-  // a switch from here re-validates the cart, like every other entry point.
-  const { open: changeCity, dialogs: cityDialogs } = useCityPicker();
 
   const what = categoryName ? categoryName.toLowerCase() : 'plants';
   const heading =
@@ -38,7 +34,7 @@ export function EmptyProducts({
   const sub =
     subtitle ??
     (city
-      ? `We're still growing our collection in ${city}. Explore everything available, or switch to another delivery city.`
+      ? `We're still growing our collection in ${city}. Explore everything available, or change your city from the top bar.`
       : `We couldn't find anything to show here. Explore our full collection of plants and essentials.`);
 
   return (
@@ -53,21 +49,14 @@ export function EmptyProducts({
       </h3>
       <p className="mt-3 max-w-md text-[14px] leading-relaxed text-stone-500 sm:text-[15px]">{sub}</p>
 
-      {/* Three CTAs side-by-side exceed a 768px viewport once "Change delivery city" shows —
-          wrap instead of spilling (this row was the only horizontal overflow on the site). */}
+      {/* Wraps rather than spilling: this row was once the only horizontal overflow on the site. */}
       <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
         <Link href="/plants" className="pa-btn pa-btn-primary">
           Browse all plants
           <ArrowRight size={16} aria-hidden />
         </Link>
         <Link href="/plants" className="pa-btn pa-btn-secondary">Explore categories</Link>
-        {city && (
-          <button type="button" onClick={changeCity} className="pa-btn pa-btn-outline">
-            Change delivery city
-          </button>
-        )}
       </div>
-      {cityDialogs}
     </div>
   );
 }

@@ -1,11 +1,11 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect, Locator, Page } from '@playwright/test';
 
 /**
  * /plants as a Product Listing Page (the 2026-10-07 design).
  *
- * Pins the shopping contract, not the styling: the serif H1, the one city
- * control (the header chip — the PLP's "Change" is a plain button), the bottom
- * nav on phones, product links in the server HTML, a real "N+ plants" trust
+ * Pins the shopping contract, not the styling: the heading-font H1, the one city
+ * control (the header chip — no in-page city selector), the bottom nav on
+ * phones, product links in the server HTML, a real "N+ plants" trust
  * count, category tiles linking /c/, need tiles and sort that round-trip
  * through the URL, "Popular" as the default sort, "Add to cart" on every card
  * opening the size sheet (adding a size bumps the header cart badge — local
@@ -57,25 +57,45 @@ async function hygiene(page: Page) {
 
 const firstProductLink = (page: Page) => page.locator('a[href^="/products/"]').first();
 
+/** The header chip shows the stored city only after mount (the server can't know
+ *  it), so it is the hydration signal: before it, clicks hit dead HTML. */
+const hydrated = (page: Page) =>
+  expect(page.locator('[data-city-chip]:visible').first()).toHaveText(/Delhi/, { timeout: 30_000 });
+
+/** The H1 must use the site heading font: whatever `font-heading` resolves to
+ *  (admin Design System), never a page-scoped face, at the storefront heading
+ *  weight. Polled, because the admin font vars land after hydration. */
+const SITE_HEADING = 'site heading font @ 500';
+const headingFont = (el: Locator) =>
+  el.evaluate((node) => {
+    const probe = document.body.appendChild(document.createElement('span'));
+    probe.className = 'font-heading';
+    const site = getComputedStyle(probe).fontFamily;
+    probe.remove();
+    const { fontFamily, fontWeight } = getComputedStyle(node);
+    return `${fontFamily === site ? 'site heading font' : fontFamily} @ ${fontWeight}`;
+  });
+
 test.describe('/plants PLP', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(SEED_CITY);
   });
 
-  test('server HTML is a listing: serif H1, trust count, products, categories, structured data', async ({ page }) => {
+  test('server HTML is a listing: H1 in the site heading font, trust count, products, categories, structured data', async ({ page }) => {
     const res = await page.goto('/plants', { waitUntil: 'domcontentloaded' });
     expect(res?.status()).toBeLessThan(400);
     const h1 = page.getByRole('heading', { level: 1 });
     await expect(h1).toHaveText(/^Plants$/);
-    // The page-scoped display serif (next/font variable on the route wrapper).
-    await expect
-      .poll(() => h1.evaluate((el) => getComputedStyle(el).fontFamily), { timeout: 15_000 })
-      .toMatch(/Playfair/i);
+    // The same face and weight as the other pages' headings.
+    await expect.poll(() => headingFont(h1), { timeout: 15_000 }).toBe(SITE_HEADING);
     // "N+ plants" is the real catalogue total rounded down — never typed in.
     await expect(page.getByText(/\d[\d,]*\+ plants/).first()).toBeVisible();
     await expect(firstProductLink(page)).toBeAttached();
     await expect(page.getByRole('heading', { name: 'Shop by Category' })).toBeVisible();
-    await expect(page.locator('a[href^="/c/"]').first()).toBeVisible();
+    // Photo tiles linking /c/, the category name written on each (its link text).
+    const tile = page.getByRole('region', { name: 'Shop by Category' }).locator('a[href^="/c/"]').first();
+    await expect(tile).toBeVisible();
+    await expect(tile).toHaveText(/\S/);
     const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(ld.some((t) => t.includes('"ItemList"'))).toBe(true);
     expect(ld.some((t) => t.includes('"BreadcrumbList"'))).toBe(true);
@@ -87,8 +107,10 @@ test.describe('/plants PLP', () => {
       const h = await hygiene(page);
       await page.goto('/plants', { waitUntil: 'domcontentloaded' });
       await expect(page.locator('[data-city-chip]:visible')).toHaveCount(1);
-      // The PLP's own "Change" opens the same picker but is NOT a second chip.
-      await expect(page.getByRole('button', { name: /change delivery city|select delivery city/i })).toBeVisible();
+      // The header chip is the only city control: no in-page "Delivering to … ·
+      // Change" selector. Checked after hydration, when it would have rendered.
+      await hydrated(page);
+      await expect(page.getByRole('button', { name: /change delivery city|select delivery city/i })).toHaveCount(0);
       if (width < 768) {
         await expect(page.locator('nav').filter({ has: page.locator('a[href="/cart"]') }).first()).toBeVisible();
       }
@@ -151,9 +173,8 @@ test.describe('/plants PLP', () => {
     const cards = page.locator('[data-product-card]');
     await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     // The server HTML already has the buttons; a click before React hydrates
-    // does nothing. "Delivering to {city}" is client-only (localStorage), so it
-    // is the hydration signal — then let the city-scoped list settle.
-    await expect(page.getByText(/Delivering to/).first()).toBeVisible({ timeout: 30_000 });
+    // does nothing. Wait for hydration, then let the city-scoped list settle.
+    await hydrated(page);
     await expect(page.locator('[aria-busy="true"]')).toHaveCount(0, { timeout: 20_000 });
 
     const n = await cards.count();

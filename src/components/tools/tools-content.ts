@@ -73,12 +73,13 @@ export const VIEW_ALL_HREF = '/categories#tools';
 export const HERO_PHOTO = '/tools-hero.webp';
 
 /**
- * `sizes` for the hero photo and the kit band's stand-in (same box geometry). It describes the
- * width the photo is DRAWN at, not its box: object-cover scales the 2.81:1 photo to the box's
- * height, so it is drawn ~1350 px wide in the ~490 px desktop band (~1250 px in the lg band and
- * the 420 px kit panel), at least the viewport (and 720 px) in the 256 px tablet strip, and
- * 141vw in the 2:1 phone strip. One string, so the hero's single preload is the file each of
- * them picks (lg+ always resolves to the 1920w file, which the need band's crop asks for too).
+ * `sizes` for the hero photo AND the kit band's stand-in: one string, so the hero's single
+ * preload is the file both of them pick. It describes the width the photo is DRAWN at, not its
+ * box (object-cover scales the 2.81:1 photo to the box's height), the larger of the two at each
+ * width: from lg the 420 px kit panel draws it ~1200 px wide (the 320–340 px hero ~900–1050), so
+ * lg+ always resolves to the 1920w file, which the need band's crop asks for too; on tablets
+ * both strips draw it about viewport-wide (the kit's 256 px one at least 720 px); on phones the
+ * kit's 2:1 strip draws it at 141vw (the hero's 21:9 strip at 120vw, so its preload covers both).
  */
 export const HERO_PHOTO_SIZES = '(min-width: 1280px) 1350px, (min-width: 1024px) 1250px, (min-width: 640px) 100vw, 141vw';
 

@@ -5,9 +5,9 @@ import cn from 'classnames';
 import { ArrowRight } from '@/components/ui/icon';
 
 /**
- * A /tools section's header row: serif H2 (pass `id` to label the section with
- * it) + an optional one-liner on the left, an optional "View All →" link on the
- * right. Spacing below the row is the caller's (`className`).
+ * A /tools section's header row: H2 in the site heading font (pass `id` to
+ * label the section with it) + an optional one-liner on the left, an optional
+ * "View All →" link on the right. Spacing below the row is the caller's (`className`).
  *
  * Sizes are the mock's at lg (34 px H2, 19 px line); `small` is its lighter
  * guides/FAQ head (27 px from xl, 24 px at lg so "Gardening Tools — FAQs" fits
@@ -34,7 +34,7 @@ export function SectionHead({
         <h2
           id={id}
           className={cn(
-            'font-[family-name:var(--font-plp-serif)] text-[26px] font-bold leading-tight text-forest-900',
+            'font-heading text-[26px] font-medium leading-tight tracking-[-0.005em] text-forest-900',
             small ? 'lg:text-[24px] xl:text-[27px]' : 'sm:text-[30px] lg:text-[34px]',
           )}
         >

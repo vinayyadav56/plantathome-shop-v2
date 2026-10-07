@@ -56,9 +56,9 @@ export function FeaturedKit({ type }: { type: string }) {
       aria-labelledby="tools-kit"
       className="mt-4 grid overflow-hidden rounded-lg shadow-box lg:grid-cols-2"
     >
-      {/* The stand-in's box below lg is the hero strip's (2:1 phones, 256 px tablets), so it is
-          drawn exactly as wide as the hero photo and HERO_PHOTO_SIZES picks the file the hero
-          already downloaded, at every width (from lg both resolve to the 1920w file). */}
+      {/* Below lg the stand-in is a 2:1 strip on phones and 256 px tall on tablets, the geometry
+          HERO_PHOTO_SIZES describes. Sharing that string with the hero, it picks the file the
+          hero already preloaded at every width (from lg both resolve to the 1920w file). */}
       <div
         className={cn(
           'relative bg-[#F7F5EF] lg:aspect-auto lg:min-h-[420px]',
@@ -87,7 +87,7 @@ export function FeaturedKit({ type }: { type: string }) {
           id="tools-kit"
           // Balanced lines give the mock's "The PlantAtHome / Essential Garden Kit" break
           // for any kit name, instead of a one-word orphan.
-          className="mt-2 text-balance font-[family-name:var(--font-plp-serif)] text-[28px] font-bold leading-tight text-forest-900 lg:text-[34px]"
+          className="mt-2 text-balance font-heading text-[28px] font-medium leading-tight tracking-[-0.005em] text-forest-900 lg:text-[34px]"
         >
           {kit.name}
         </h2>

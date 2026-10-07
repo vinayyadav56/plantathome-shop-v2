@@ -138,7 +138,7 @@ export default function NeedTiles({ type }: { type: string }) {
 
   return (
     <section aria-labelledby="plp-needs">
-      <h2 id="plp-needs" className="mb-3 text-[18px] font-bold leading-tight text-forest-900">
+      <h2 id="plp-needs" className="mb-3 font-heading text-[18px] font-medium leading-tight text-forest-900">
         Shop by Need
       </h2>
       <div className="pah-chip-row flex gap-3 overflow-x-auto lg:flex-wrap lg:overflow-visible">

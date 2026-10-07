@@ -61,9 +61,9 @@ type Props = {
   hasMore?: boolean;
   /**
    * `card` (default) — the bordered white bar /c and search use today.
-   * `plain` — no chrome, no background of its own (the page's sticky wrapper
-   * supplies the cream backdrop): "Sort by" label + 150px sort + 36px toggles,
-   * the PLP results row.
+   * `plain` — no chrome, no background of its own: the PLP results row, set
+   * for the page's soft-sage strip (sage-100, painted by its sticky wrapper):
+   * "Sort by" label + white 150px sort + 36px toggles on a white/70 pill.
    */
   variant?: 'card' | 'plain';
   /**
@@ -101,7 +101,7 @@ export default function ListingToolbar({
     <div
       className={
         plain
-          ? 'flex flex-wrap items-center justify-between gap-x-4 gap-y-3 py-2'
+          ? 'flex flex-wrap items-center justify-between gap-x-4 gap-y-3 py-2.5'
           : 'shadow-box mb-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 rounded-xl border border-kraft-200 bg-white px-3 py-2.5 sm:px-4'
       }
     >
@@ -128,12 +128,19 @@ export default function ListingToolbar({
       )}
 
       <div className="flex items-center gap-2 sm:gap-3">
-        {plain && <span className="text-[14px] text-stone-600">Sort by</span>}
-        <div className={plain ? 'w-[150px]' : 'w-[190px] sm:w-[215px]'}>
+        {plain && <span className="text-[14px] text-forest-800/80">Sort by</span>}
+        {/* Plain: white from the server HTML on — Select paints a blank placeholder
+            until mount, which would otherwise pop from sage to white. */}
+        <div className={plain ? 'w-[150px] rounded-lg bg-white' : 'w-[190px] sm:w-[215px]'}>
           <Sorting variant="dropdown" defaultOrderBy={sortDefaultOrderBy} compact={sortCompact} />
         </div>
 
-        <div className="flex shrink-0 items-center gap-0.5 rounded-lg border border-kraft-200 p-0.5">
+        <div
+          className={cn(
+            'flex shrink-0 items-center gap-0.5 rounded-lg border p-0.5',
+            plain ? 'border-sage-200 bg-white/70' : 'border-kraft-200',
+          )}
+        >
           {views.map(({ key, label, Glyph }) => (
             <button
               key={key}
@@ -148,7 +155,9 @@ export default function ListingToolbar({
                   ? plain
                     ? 'bg-forest-900 text-white'
                     : 'bg-forest-50 text-forest-700'
-                  : 'text-stone-400 hover:text-forest-700',
+                  : plain
+                    ? 'text-forest-800/60 hover:text-forest-900'
+                    : 'text-stone-400 hover:text-forest-700',
               )}
             >
               <Glyph />

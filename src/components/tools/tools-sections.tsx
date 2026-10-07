@@ -59,8 +59,10 @@ const FOCUS_RING = 'focus-visible:outline-none focus-visible:ring-2 focus-visibl
 
 /**
  * "Not sure what you need?": a full-bleed sage band of four task cards (icon,
- * task, what it takes, →), each linking to the category that serves it. From
- * `lg` a leafy crop of the hero photo bleeds off the right edge behind them.
+ * task, what it takes, →), each linking to the category that serves it. Below
+ * `lg` the cards are one row that scrolls sideways (owner 2026-10-07: they
+ * stacked four deep on phones); from `lg` a four-column grid, with a leafy crop
+ * of the hero photo bleeding off the right edge behind it.
  *
  * Render it inside the page's gutter container (`px-5 lg:px-6 xl:px-8`): the
  * band bleeds out with matching negative margins and re-adds the gutter inside.
@@ -94,11 +96,15 @@ export function NeedBand() {
 
       <SectionHead id="tools-need" className="relative" {...SECTION.need} />
 
-      <ul className="relative mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* The row bleeds to the band's edges (-mx-5 px-5, scroll-px-5), so cards scroll out under
+          them while the first one starts on the heading's line. A scroller clips its children's
+          shadows, so pt-4/pb-6 is room for shadow-box and the hover lift, taken back by mt-1
+          (20 px under the heading, as before) and -mb-6. Scrollbar hidden by .pah-chip-row. */}
+      <ul className="pah-chip-row relative -mx-5 -mb-6 mt-1 flex snap-x snap-mandatory scroll-px-5 gap-3 overflow-x-auto px-5 pb-6 pt-4 lg:mx-0 lg:mb-0 lg:mt-5 lg:grid lg:grid-cols-4 lg:gap-4 lg:overflow-visible lg:p-0">
         {NEED_CARDS.map((card) => {
           const Icon = ICONS[card.icon];
           return (
-            <li key={card.key}>
+            <li key={card.key} className="w-[78%] shrink-0 snap-start sm:w-[46%] lg:w-auto">
               <Link
                 href={card.href}
                 className={cn(
@@ -108,7 +114,9 @@ export function NeedBand() {
               >
                 <Icon size={40} {...SOLID} className={cn('shrink-0', card.tone)} aria-hidden />
                 <div className="min-w-0">
-                  <h3 className="text-[16px] font-bold leading-snug text-forest-900">{card.title}</h3>
+                  <h3 className="font-heading text-[16px] font-semibold leading-snug text-forest-900">
+                    {card.title}
+                  </h3>
                   {/* The mock's two lines: the first items, then the last one on its own. */}
                   <p className="mt-1 text-[14px] leading-5 text-stone-600">
                     {card.items.slice(0, -1).join(SEP)}
@@ -131,16 +139,17 @@ export function NeedBand() {
 }
 
 /**
- * "What are you working on today?": seven task tiles (icon, task, one line),
- * each linking to the category that serves it. Cleaning and Supporting land on
- * Accessories until they have categories of their own. Seven across from `lg`,
- * four on tablets, two on phones.
+ * "What are you working on today?": seven task tiles (icon and task side by side,
+ * one line under them), each linking to the category that serves it. Cleaning
+ * and Supporting land on Accessories until they have categories of their own.
+ * Seven across from `xl`, four from `md`, two below and one under 360 px:
+ * narrower tiles leave no room for "Supporting" (81 px) beside its icon.
  */
 export function TaskTiles() {
   return (
     <section aria-labelledby="tools-tasks" className="mt-10">
       <SectionHead id="tools-tasks" {...SECTION.tasks} />
-      <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7 lg:gap-4 xl:gap-5">
+      <ul className="mt-5 grid grid-cols-2 gap-3 max-[359px]:grid-cols-1 md:grid-cols-4 lg:gap-4 xl:grid-cols-7 xl:gap-5">
         {TASK_TILES.map((tile) => {
           const Icon = ICONS[tile.icon];
           return (
@@ -148,13 +157,19 @@ export function TaskTiles() {
               <Link
                 href={tile.href}
                 className={cn(
-                  'flex h-full min-h-[128px] flex-col rounded-lg bg-white p-4 shadow-box transition hover:-translate-y-0.5 xl:p-5',
+                  'flex h-full flex-col rounded-lg bg-white p-3.5 shadow-box transition hover:-translate-y-0.5',
                   FOCUS_RING,
                 )}
               >
-                <Icon size={40} {...SOLID} className={cn('shrink-0', tile.tone)} aria-hidden />
-                <h3 className="mt-4 text-[15px] font-bold leading-5 text-forest-900">{tile.title}</h3>
-                <p className="mt-1 text-[12.5px] leading-snug text-stone-600">{tile.sub}</p>
+                <div className="flex items-center gap-2.5">
+                  <Icon size={32} {...SOLID} className={cn('shrink-0', tile.tone)} aria-hidden />
+                  {/* Safety net for a wider admin heading font (Georgia's "Supporting" is 87 px; 84 fit
+                      at 360 px): the word hyphenates or breaks instead of spilling out of the tile. */}
+                  <h3 className="min-w-0 hyphens-auto break-words font-heading text-[15px] font-semibold leading-5 text-forest-900">
+                    {tile.title}
+                  </h3>
+                </div>
+                <p className="mt-2 text-[12.5px] leading-snug text-stone-600">{tile.sub}</p>
               </Link>
             </li>
           );
@@ -241,12 +256,14 @@ export function ToolsGuides({ type, className }: { type: string; className?: str
               </div>
               <div className="flex flex-1 flex-col p-4">
                 {/* No clamp: four fixed titles, and at 1024 the longest needs four lines. */}
-                <h3 className="mb-6 text-[14px] font-semibold leading-5 text-forest-900">
+                <h3 className="mb-3 font-heading text-[14px] font-semibold leading-5 text-forest-900">
                   {guide.title}
                 </h3>
+                {/* Bottom right: mt-auto pins it to the foot of the card, which the grid row
+                    stretches to its tallest neighbour, so the four arrows line up. */}
                 <ArrowRight
                   size={16}
-                  className="mt-auto text-forest-900 transition-transform group-hover:translate-x-0.5"
+                  className="mt-auto self-end text-forest-900 transition-transform group-hover:translate-x-0.5"
                   aria-hidden
                 />
               </div>
@@ -279,7 +296,7 @@ export function ToolsFaq({ className }: { className?: string }) {
                 FOCUS_RING,
               )}
             >
-              <h3 className="text-[15px] font-medium leading-snug text-forest-900">{faq.q}</h3>
+              <h3 className="font-heading text-[15px] font-medium leading-snug text-forest-900">{faq.q}</h3>
               <ChevronDown
                 size={16}
                 className="shrink-0 text-stone-600 transition-transform group-open:rotate-180"

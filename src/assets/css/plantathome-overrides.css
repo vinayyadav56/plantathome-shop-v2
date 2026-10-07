@@ -129,7 +129,7 @@ body {
 }
 
 /* Heading metrics only — the FONT comes from the base layer (main.css: h1-h6 use the
-   body font; weight and color carry the hierarchy — user pattern, 2026-07-27). The old
+   heading font, the homepage-heading face — owner 2026-10-07). The old
    `font-family: var(--font-body) !important` here is gone: it excluded h6 and blocked
    the font-heading/font-display-serif utilities on heading elements. h6 now included. */
 h1, h2, h3, h4, h5, h6 {
@@ -847,7 +847,7 @@ select:focus {
   flex-shrink: 0;
 }
 .pa-cart-header-title {
-  font-family: var(--font-sans) !important;
+  font-family: var(--font-heading) !important;
   font-size: 18px;
   font-weight: 700;
   color: #fff;
@@ -1814,7 +1814,7 @@ textarea:focus {
   margin: 0 0 8px;
 }
 .pa-checkout-page-title {
-  font-family: var(--font-sans) !important;
+  font-family: var(--font-heading) !important;
   font-size: clamp(30px, 3.8vw, 42px);
   font-weight: 700;
   line-height: 1.05;

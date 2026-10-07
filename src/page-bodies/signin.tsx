@@ -193,10 +193,16 @@ function SignInPage() {
             {/* Top-anchored, never centred: Sign Up is taller than Login, and a
                 vertically-centred card absorbs that difference from both edges,
                 sliding the tabs up under the pointer that just clicked them.
-                Measured at 38px before this was pinned. */}
+                Measured at 38px before this was pinned.
+
+                The height cap follows the VIEWPORT, not the artwork box: the box
+                is vertically centred, so the room below the card's 5% top is
+                50svh + 45% of the box, less a 16px margin. A 90%-of-box cap gave
+                Sign Up an inner scroll at 1280x800 (annotation: "no scroll on the
+                form"); overflow-y-auto stays as the fallback for shorter screens. */}
             <div
               className="rounded-2xl bg-white px-6 py-7 shadow-box sm:px-8
-                         lg:absolute lg:top-[5%] lg:right-[3%] lg:max-h-[90%] lg:w-[34%] lg:overflow-y-auto
+                         lg:absolute lg:top-[5%] lg:right-[3%] lg:max-h-[calc(50svh_+_45%_-_16px)] lg:w-[34%] lg:overflow-y-auto
                          lg:px-7 lg:py-7 xl:px-9"
             >
               {/* tabs — underline, per the design. A framer `layoutId` slider was
