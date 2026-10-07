@@ -1,7 +1,11 @@
+/** Control height: `compact` (36px, the PLP toolbar) · default 50 · `isMinimal` 0. */
+const controlMinHeight = (selectProps: any) =>
+  selectProps.isMinimal ? 0 : selectProps.compact ? 36 : 50;
+
 export const selectStyles = {
   option: (provided: any, state: any) => ({
     ...provided,
-    fontSize: '0.875rem',
+    fontSize: state.selectProps.compact ? 13 : '0.875rem',
     color: 'rgb(var(--text-heading))',
     paddingLeft: 16,
     paddingRight: 16,
@@ -19,7 +23,7 @@ export const selectStyles = {
     width: state.selectProps.width,
     display: 'flex',
     alignItems: 'center',
-    minHeight: !state.selectProps.isMinimal ? 50 : 0,
+    minHeight: controlMinHeight(state.selectProps),
     backgroundColor: '#ffffff',
     borderRadius: 'var(--radius-control)',
     border: !state.selectProps.isMinimal ? '1px solid #F1F1F1' : 'none',
@@ -68,12 +72,13 @@ export const selectStyles = {
   }),
   valueContainer: (provided: any, state: any) => ({
     ...provided,
-    paddingLeft: state.selectProps.isMinimal ? 0 : state.isRtl ? 4 : 16,
-    paddingRight: state.selectProps.isMinimal ? 0 : state.isRtl ? 16 : 4,
+    paddingLeft: state.selectProps.isMinimal ? 0 : state.isRtl ? 4 : state.selectProps.compact ? 12 : 16,
+    paddingRight: state.selectProps.isMinimal ? 0 : state.isRtl ? (state.selectProps.compact ? 12 : 16) : 4,
+    ...(state.selectProps.compact && { paddingTop: 0, paddingBottom: 0 }),
   }),
-  singleValue: (provided: any, _: any) => ({
+  singleValue: (provided: any, state: any) => ({
     ...provided,
-    fontSize: '0.875rem',
+    fontSize: state.selectProps.compact ? 13 : '0.875rem',
     fontWeight: 600,
     color: 'rgb(var(--text-heading))',
   }),

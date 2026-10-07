@@ -35,6 +35,7 @@ import type {
   OtpLoginInputType,
   OTPResponse,
   PasswordChangeResponse,
+  PlantCollection,
   PopularProductQueryOptions,
   Product,
   ProductPaginator,
@@ -126,6 +127,7 @@ class Client {
       placement,
       growth,
       pet_friendly,
+      air_purifying,
       sizes,
       difficulty,
       terms,
@@ -157,6 +159,7 @@ class Client {
           'plantAttribute.indoor_outdoor': placement,
           'plantAttribute.growth_rate': growth,
           'plantAttribute.pet_friendly': pet_friendly,
+          'plantAttribute.air_purifying': air_purifying,
           'plantAttribute.difficulty_level': difficulty,
           // Admin-defined characteristics (Suitable Spaces, Special Characteristics, and
           // anything an admin adds later). ONE param carries every dynamic facet as a
@@ -216,6 +219,11 @@ class Client {
         },
       );
     },
+  };
+  /** Active plant collections ("Shop by Need"), already in admin `sort` order. */
+  plantCollections = {
+    all: () =>
+      HttpClient.get<PlantCollection[] | { data: PlantCollection[] }>(API_ENDPOINTS.PLANT_COLLECTIONS),
   };
   myQuestions = {
     all: (params: MyQuestionQueryOptions) =>

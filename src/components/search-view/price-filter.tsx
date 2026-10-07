@@ -4,9 +4,8 @@ import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
 import { useFilterFacets } from '@/framework/product';
 
-const defaultPriceRange = [0, 1000];
-
-const PriceFilter = ({ type }: { type?: string } = {}) => {
+/** `simple` = slider + "₹min – ₹max+" readout only (the PLP rail); default keeps the histogram and From/To inputs. */
+const PriceFilter = ({ type, simple = false }: { type?: string; simple?: boolean } = {}) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   // Real catalogue bounds + distribution — the hardcoded 0–2000 slider ceiling
@@ -21,12 +20,14 @@ const PriceFilter = ({ type }: { type?: string } = {}) => {
     () => Math.max(1, ...histogram.map((b) => b.count)),
     [histogram],
   );
+  // No price in the URL = nothing filtered, so the handles sit at the real
+  // bounds (the old [0, 1000] seed showed a ₹1,000 ceiling that wasn't applied).
   const selectedValues = useMemo(
     () =>
       router.query.price
         ? (router.query.price as string).split(',')
-        : defaultPriceRange,
-    [router.query.price]
+        : [sliderMin, sliderMax],
+    [router.query.price, sliderMin, sliderMax]
   );
   const [state, setState] = useState<number[] | string[]>(selectedValues);
   const pushTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -55,7 +56,7 @@ const PriceFilter = ({ type }: { type?: string } = {}) => {
   return (
     <>
       <span className="sr-only">{t('text-sort-by-price')}</span>
-      {histogram.length > 0 && (
+      {!simple && histogram.length > 0 && (
         <div
           className="mb-1 flex h-11 items-end gap-[3px] px-0.5"
           aria-hidden
@@ -89,8 +90,16 @@ const PriceFilter = ({ type }: { type?: string } = {}) => {
         value={state}
         onChange={(value: any) => handleChange(value)}
       />
+      {/* Readout: "₹0 – ₹5,000+" — the "+" says the upper handle is at the
+          catalogue max, i.e. no ceiling is applied. */}
+      <p className="mt-3 text-[13px] font-medium tabular-nums text-forest-900">
+        ₹{Number(state[0] || sliderMin).toLocaleString('en-IN')} – ₹
+        {Number(state[1] || sliderMax).toLocaleString('en-IN')}
+        {Number(state[1] || sliderMax) >= sliderMax ? '+' : ''}
+      </p>
       {/* Reference layout: EDITABLE From/To inputs (the boxes used to be
           display-only). Typing uses the same debounced URL push as dragging. */}
+      {!simple && (
       <div className="mt-4 grid grid-cols-2 gap-3">
         <label className="flex flex-col items-start rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">From</span>
@@ -125,6 +134,7 @@ const PriceFilter = ({ type }: { type?: string } = {}) => {
           </span>
         </label>
       </div>
+      )}
     </>
   );
 };

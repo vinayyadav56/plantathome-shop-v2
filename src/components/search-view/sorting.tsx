@@ -51,16 +51,24 @@ const plans: Plan[] = [
 
 type Props = {
   variant?: 'radio' | 'dropdown';
+  /** The page's own default sort (what the list shows with no `orderBy` in the
+   *  URL) — the PLP lists Popular by default, /c and search New Released. */
+  defaultOrderBy?: string;
+  /** Compact 36px dropdown control (the PLP toolbar). */
+  compact?: boolean;
 };
 
-const Sorting: React.FC<Props> = ({ variant = 'radio' }) => {
+const Sorting: React.FC<Props> = ({ variant = 'radio', defaultOrderBy, compact }) => {
   const router = useRouter();
   const { t } = useTranslation('common');
   const { isRTL } = useIsRTL();
   // Derived from the URL on every render — the URL is the one source of sort
   // state. The old local copy was seeded once (`defaultValue`), so a sort set by
   // a chip, a back-navigation or "Clear all" left the dropdown showing stale text.
-  const selected = plans.find((plan) => plan.orderBy === router.query.orderBy) ?? plans[0];
+  const selected =
+    plans.find((plan) => plan.orderBy === router.query.orderBy) ??
+    plans.find((plan) => plan.orderBy === defaultOrderBy) ??
+    plans[0];
 
   function handleChange(values: Plan) {
     const { orderBy, sortedBy } = values;
@@ -82,6 +90,8 @@ const Sorting: React.FC<Props> = ({ variant = 'radio' }) => {
           isRtl={isRTL}
           options={plans}
           isSearchable={false}
+          // @ts-ignore
+          compact={compact}
           // @ts-ignore
           onChange={handleChange}
         />

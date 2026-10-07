@@ -18,12 +18,12 @@ const Select = forwardRef<Ref, Props>((props, ref) => {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    const isMinimal = (props as any).isMinimal;
-    const width = (props as any).width;
+    const { isMinimal, compact, width } = props as any;
     return (
       <div
         aria-hidden="true"
-        style={{ minHeight: isMinimal ? 0 : 50, width }}
+        // Same heights as select.styles' control, so the swap-in is shift-free.
+        style={{ minHeight: isMinimal ? 0 : compact ? 36 : 50, width }}
       />
     );
   }

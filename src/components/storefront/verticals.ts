@@ -33,6 +33,9 @@ export interface VerticalMeta {
   shopPath?: string;
   /** True while the vertical exists as a type but has no products/categories. */
   comingSoon?: boolean;
+  /** The listing page hero's trust row. `{count}` in a title is filled by the
+   *  hero from the real catalogue total (rounded down to tens) — never typed in. */
+  heroTrust?: PromiseItem[];
 }
 
 const PLANTS_PROMISE: PromiseItem[] = [
@@ -49,6 +52,13 @@ const FARM_PROMISE: PromiseItem[] = [
   { icon: 'truckFast', t: 'Harvested at dawn', d: 'Picked the morning of delivery — never cold-stored for weeks.' },
   { icon: 'leaf', t: '100% certified organic', d: 'No pesticides, no chemicals — just clean, honest produce.' },
   { icon: 'shield', t: 'Freshness promise', d: 'Not fresh? Full refund or a replacement box, no questions.' },
+];
+
+/** /plants hero trust row — the owner's approved copy (the mock, 2026-10-07). */
+const PLANTS_HERO_TRUST: PromiseItem[] = [
+  { icon: 'truck', t: 'Delivery across India', d: 'Same-day in select cities' },
+  { icon: 'shield', t: '30-day plant guarantee', d: 'Healthy plants or free replacement' },
+  { icon: 'leaf', t: '{count}+ plants', d: 'Indoor, outdoor & rare varieties' },
 ];
 
 const PLANTS_SCENES = ['/plants-1.jpg', '/plants-2.jpg', '/plants-3.jpg'];
@@ -76,6 +86,7 @@ const META: Record<string, Omit<VerticalMeta, 'key' | 'path'>> = {
     shopBlurb: 'Find the perfect plant for your home, office or garden.',
     scenes: PLANTS_SCENES,
     promise: PLANTS_PROMISE,
+    heroTrust: PLANTS_HERO_TRUST,
   },
   tools: {
     label: 'Tools',

@@ -109,6 +109,8 @@ import {
   IconSparkles,
   IconWand,
   IconBuilding,
+  IconBed,
+  IconDeviceDesktop,
   IconTrendingUp,
   IconVolumeOff,
   IconMicrophone,
@@ -296,6 +298,8 @@ export const Zap = g(IconBolt);
 export const Sparkles = g(IconSparkles);
 export const WandSparkles = g(IconWand);
 export const Building2 = g(IconBuilding);
+export const Bed = g(IconBed);
+export const DeviceDesktop = g(IconDeviceDesktop);
 export const TrendingUp = g(IconTrendingUp);
 export const VolumeX = g(IconVolumeOff);
 export const Mic = g(IconMicrophone);

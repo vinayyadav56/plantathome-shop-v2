@@ -4,8 +4,8 @@ import { useFilterFacets } from '@/framework/product';
 import Checkbox from '@/components/ui/forms/checkbox/checkbox';
 
 /**
- * Botanical filter sections for the listing rail — Sunlight, Watering, Growth
- * rate, Placement (Indoor|Outdoor), Pet-friendly and Size.
+ * Botanical filter sections for the listing rail — Light, Watering, Growth
+ * rate, Placement (Indoor|Outdoor), Pet-friendly and Plant Size.
  *
  * All state lives in the URL query (the rail's single source of truth), so
  * these compose with the existing shallow same-path routing: a change is one
@@ -193,14 +193,23 @@ export function PetFriendlyFilterView({ type }: { type?: string } = {}) {
 }
 
 /**
- * Size chips — the catalogue's variation axis. A stable vocabulary rather than
- * a facet (every variable product carries it), so the one hardcoded list here.
+ * Plant Size — the catalogue's variation axis. The facets endpoint lists the
+ * Size attribute's values in admin order with their `meta` descriptor
+ * ("0–1 ft", shown as "Small (0–1 ft)" once the admin fills it); no counts, as
+ * every listed plant carries every size. Older APIs send no `sizes` facet, so
+ * the stable vocabulary stays as the fallback.
  */
-const SIZES = ['Small', 'Medium', 'Large'];
+const SIZES: { value: string; meta?: string | null }[] = [
+  { value: 'Small' },
+  { value: 'Medium' },
+  { value: 'Large' },
+];
 
-export function SizeFilterView() {
+export function SizeFilterView({ type }: { type?: string } = {}) {
+  const { data } = useFilterFacets({ type });
   const selected = useParamValues('sizes');
   const push = usePushParam();
+  const options = data?.facets?.sizes?.length ? data.facets.sizes : SIZES;
 
   function toggle(value: string) {
     const next = selected.includes(value)
@@ -210,25 +219,17 @@ export function SizeFilterView() {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {SIZES.map((v) => {
-        const on = selected.includes(v);
-        return (
-          <button
-            key={v}
-            type="button"
-            aria-pressed={on}
-            onClick={() => toggle(v)}
-            className={
-              on
-                ? 'rounded-full bg-[#EAF4EA] px-4 py-2 text-[13px] font-semibold text-[#2E5E2A] ring-1 ring-[#2E5E2A]/30 transition'
-                : 'rounded-full border border-kraft-200 bg-white px-4 py-2 text-[13px] font-semibold text-body transition hover:border-forest-900/25'
-            }
-          >
-            {v}
-          </button>
-        );
-      })}
+    <div className="flex flex-col space-y-3.5">
+      {options.map((o) => (
+        <Checkbox
+          key={o.value}
+          name={`size-${o.value}`}
+          value={o.value}
+          label={o.meta ? `${o.value} (${o.meta})` : o.value}
+          checked={selected.includes(o.value)}
+          onChange={() => toggle(o.value)}
+        />
+      ))}
     </div>
   );
 }
@@ -242,9 +243,10 @@ export function usePlantFilterCounts() {
   const { query } = useRouter();
   const placement = typeof query.placement === 'string' && query.placement ? 1 : 0;
   const pet = query.pet_friendly === 'true' ? 1 : 0;
+  const air = query.air_purifying === 'true' ? 1 : 0;
   const difficulty = useParamValues('difficulty').length;
   const terms = useParamValues('terms');
-  return { sunlight, water, growth, sizes, placement, pet, difficulty, terms };
+  return { sunlight, water, growth, sizes, placement, pet, air, difficulty, terms };
 }
 
 /** How many of THIS dynamic facet's terms are currently selected (header badge). */

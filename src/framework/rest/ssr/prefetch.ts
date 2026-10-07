@@ -220,7 +220,7 @@ export async function loadCategoryData(slug: string, category: any) {
  * Vertical PLP loader (/plants): settings + types + the first product page, the
  * vertical's flagged root categories and the filter facets, each under the EXACT
  * key the client hooks build (plp.tsx), so the server HTML carries the H1, the
- * category tiles, the need chips and 30 product links — not a shell. City-less
+ * category tiles, the need tiles and 30 product links — not a shell. City-less
  * like every SSR prefetch; the client re-scopes to the stored city after mount.
  *
  * Categories go through prefetchInfiniteQuery: useCategories is an infinite
@@ -239,7 +239,8 @@ export async function loadPlpData(typeSlug: string) {
         {
           ...formatProductsArgs({
             limit: PRODUCTS_PER_PAGE,
-            orderBy: 'created_at',
+            // Popular — plp.tsx uses the identical default (the formatter adds the id tie-break).
+            orderBy: 'sold_quantity',
             sortedBy: 'DESC',
             type: typeSlug,
           } as any),
@@ -269,6 +270,13 @@ export async function loadPlpData(typeSlug: string) {
       .prefetchQuery({
         queryKey: [API_ENDPOINTS.PRODUCTS_FILTER_FACETS, { type: typeSlug, hide_unpriced: 1 }],
         queryFn: ({ queryKey }: any) => client.products.filterFacets(queryKey[1]),
+      })
+      .catch(() => {}),
+    // "Shop by Need" tiles: usePlantCollections()'s key.
+    queryClient
+      .prefetchQuery({
+        queryKey: ['plant-collections'],
+        queryFn: () => client.plantCollections.all(),
       })
       .catch(() => {}),
   ]);

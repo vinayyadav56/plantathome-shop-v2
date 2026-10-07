@@ -695,38 +695,46 @@ html[dir='rtl'] .react-tel-input .country-list .flag {
 /*
 * RC Slider
 */
+/* Forest-green range (price filter): kraft rail, green track, white handle
+   with a green ring. Sizes unchanged. */
+.rc-slider .rc-slider-rail {
+  background-color: #e9e3d6;
+}
+
 .rc-slider .rc-slider-track {
-  background-color: rgb(var(--color-gray-700));
+  background-color: #2e5e2a;
 }
 
 .rc-slider .rc-slider-handle {
-  background-color: rgb(var(--color-gray-800));
-  border: 1px solid rgb(var(--color-gray-800));
-  box-shadow: 0px 0px 0px 3px #ffffff inset;
+  background-color: #ffffff;
+  border: 2px solid #2e5e2a;
+  box-shadow: none;
+  opacity: 1;
   height: 20px;
   width: 20px;
   margin-top: -8px;
 }
 
-.rc-slider .rc-slider-handle:hover {
-  background-color: rgb(var(--color-gray-900));
-  border: 1px solid rgb(var(--color-gray-900));
+.rc-slider .rc-slider-handle:hover,
+.rc-slider .rc-slider-handle:active {
+  background-color: #ffffff;
+  border: 2px solid #2e5e2a;
+}
+
+.rc-slider .rc-slider-handle:active {
+  box-shadow: 0 0 0 5px rgba(46, 94, 42, 0.2);
 }
 
 .rc-slider .rc-slider-handle:focus,
 .rc-slider .rc-slider-handle-click-focused:focus {
-  border-color: rgb(var(--color-gray-900));
-  box-shadow:
-    0px 0px 0px 3px #ffffff inset,
-    0 0 0 3px #d1d5db;
+  border-color: #2e5e2a;
+  box-shadow: 0 0 0 3px rgba(46, 94, 42, 0.2);
 }
 
 .rc-slider
   .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
-  border-color: rgb(var(--color-gray-900));
-  box-shadow:
-    0px 0px 0px 3px #ffffff inset,
-    0 0 0 5px #d1d5db;
+  border-color: #2e5e2a;
+  box-shadow: 0 0 0 5px rgba(46, 94, 42, 0.2);
 }
 
 /*

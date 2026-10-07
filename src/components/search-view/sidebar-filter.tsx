@@ -78,6 +78,7 @@ function ClearFiltersButton() {
       placement,
       growth,
       pet_friendly,
+      air_purifying,
       sizes,
       difficulty,
       terms,
@@ -87,7 +88,8 @@ function ClearFiltersButton() {
   }
   return (
     <button
-      className="text-[13px] font-medium text-body transition-colors hover:text-[#175840] focus:text-[#175840] focus:outline-0 lg:m-0"
+      type="button"
+      className="rounded-full border border-kraft-200 px-3 py-1 text-[12px] font-semibold text-forest-900 transition-colors hover:border-forest-900/30 hover:bg-sage-50 focus:outline-0 focus-visible:ring-1 focus-visible:ring-forest-700"
       onClick={clearFilters}
     >
       {t('text-clear-all')}
@@ -109,7 +111,9 @@ const SidebarFilter: React.FC<{
   // rail mode at `md` instead of `lg` so tablets don't show the drawer-only
   // close arrow / "Show Products" button. Drawer usages keep the lg switch.
   inRail?: boolean;
-}> = ({ type, showManufacturers = true, showCategories = true, showSort = true, showSearch = true, className, inRail = false }) => {
+  /** The PLP's Price section is slider + readout only (no histogram, no From/To). */
+  simplePrice?: boolean;
+}> = ({ type, showManufacturers = true, showCategories = true, showSort = true, showSearch = true, className, inRail = false, simplePrice = false }) => {
   const router = useRouter();
   const { isRTL } = useIsRTL();
   const { t } = useTranslation('common');
@@ -120,7 +124,12 @@ const SidebarFilter: React.FC<{
   const priceCount = useParamCount('price') ? 1 : 0;
   const plantCounts = usePlantFilterCounts();
   const { data: facetData } = useFilterFacets({ type });
-  const dynamicFacets = facetData?.facets?.dynamic ?? [];
+  const facets = facetData?.facets;
+  const dynamicFacets = facets?.dynamic ?? [];
+  // A facet section with no catalogue values for this vertical + city is a bare
+  // title over nothing — skip it. Before the facets land there is nothing to
+  // offer either (the PLP hydrates them server-side, so no flash there).
+  const has = (rows: { count: number }[] | undefined) => Boolean(rows?.length);
 
   return (
     <div
@@ -151,9 +160,7 @@ const SidebarFilter: React.FC<{
             <span className="sr-only">{t('text-close')}</span>
           </button>
 
-          <h3 className="text-[15px] font-semibold text-forest-900">
-            {t('text-filter')}
-          </h3>
+          <h3 className="text-[18px] font-semibold text-forest-900">Filters</h3>
         </div>
 
         <ClearFiltersButton />
@@ -162,7 +169,7 @@ const SidebarFilter: React.FC<{
       {/* active filters at a glance — one removable chip per value */}
       <AppliedFilters />
 
-      <div className="flex-1 space-y-2 px-5">
+      <div className="flex-1 space-y-2 px-5 pt-3">
         {showSearch && (
           <FieldWrapper title="text-search">
             <Search variant="minimal" label="search" />
@@ -175,39 +182,54 @@ const SidebarFilter: React.FC<{
           </FieldWrapper>
         )}
 
+        {/* Section titles are plain strings: CustomDisclosure passes them through
+            t() untouched, and the locale keys they'd replace (`text-categories`,
+            `text-sort-by-price`) label other surfaces, so common.json stays as is. */}
         {showCategories && (
-          <FieldWrapper title="text-categories" count={categoryCount}>
+          <FieldWrapper title="Category" count={categoryCount}>
             <CategoryFilter type={type} />
           </FieldWrapper>
         )}
 
-        <FieldWrapper title="text-sort-by-price" count={priceCount}>
-          <PriceFilter type={type} />
+        <FieldWrapper title="Price Range" count={priceCount}>
+          <PriceFilter type={type} simple={simplePrice} />
         </FieldWrapper>
 
         {/* Botanical facets — options + counts from products/filter-facets.
             Sections with no catalogue values render nothing (see the views). */}
-        <FieldWrapper title="text-size" count={plantCounts.sizes}>
-          <SizeFilterView />
+        <FieldWrapper title="Plant Size" count={plantCounts.sizes}>
+          <SizeFilterView type={type} />
         </FieldWrapper>
-        <FieldWrapper title="text-placement" count={plantCounts.placement}>
-          <PlacementFilterView />
-        </FieldWrapper>
-        <FieldWrapper title="text-sunlight" count={plantCounts.sunlight}>
-          <FacetFilterView param="sunlight" facetKey="sunlight" type={type} />
-        </FieldWrapper>
-        <FieldWrapper title="text-watering" count={plantCounts.water}>
-          <FacetFilterView param="water" facetKey="water_requirement" type={type} />
-        </FieldWrapper>
-        <FieldWrapper title="text-growth-rate" count={plantCounts.growth} defaultOpen={false}>
-          <FacetFilterView param="growth" facetKey="growth_rate" type={type} />
-        </FieldWrapper>
-        <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
-          <PetFriendlyFilterView type={type} />
-        </FieldWrapper>
-        <FieldWrapper title="Difficulty" count={plantCounts.difficulty} defaultOpen={false}>
-          <FacetFilterView param="difficulty" facetKey="difficulty_level" type={type} />
-        </FieldWrapper>
+        {has(facets?.sunlight) && (
+          <FieldWrapper title="Light Requirement" count={plantCounts.sunlight}>
+            <FacetFilterView param="sunlight" facetKey="sunlight" type={type} />
+          </FieldWrapper>
+        )}
+        {has(facets?.indoor_outdoor) && (
+          <FieldWrapper title="text-placement" count={plantCounts.placement}>
+            <PlacementFilterView />
+          </FieldWrapper>
+        )}
+        {has(facets?.water_requirement) && (
+          <FieldWrapper title="text-watering" count={plantCounts.water}>
+            <FacetFilterView param="water" facetKey="water_requirement" type={type} />
+          </FieldWrapper>
+        )}
+        {(facets?.pet_friendly?.true ?? 0) > 0 && (
+          <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
+            <PetFriendlyFilterView type={type} />
+          </FieldWrapper>
+        )}
+        {has(facets?.growth_rate) && (
+          <FieldWrapper title="text-growth-rate" count={plantCounts.growth} defaultOpen={false}>
+            <FacetFilterView param="growth" facetKey="growth_rate" type={type} />
+          </FieldWrapper>
+        )}
+        {has(facets?.difficulty_level) && (
+          <FieldWrapper title="Difficulty" count={plantCounts.difficulty} defaultOpen={false}>
+            <FacetFilterView param="difficulty" facetKey="difficulty_level" type={type} />
+          </FieldWrapper>
+        )}
 
         {/* Admin-defined attributes. The server tells us which sections exist and what is
             in them, so a new characteristic appears here without a release. */}
@@ -238,7 +260,8 @@ const SidebarFilter: React.FC<{
         )}
       </div>
       <div className={classNames('sticky bottom-0 z-10 mt-auto flex gap-3 border-t border-kraft-200 bg-white p-5', inRail ? 'md:hidden' : 'lg:hidden')}>
-        <div className="flex h-full items-center justify-center rounded border border-forest-900/15 px-4">
+        {/* The button is its own bordered pill now — no second frame around it. */}
+        <div className="flex h-full items-center justify-center">
           <ClearFiltersButton />
         </div>
         {/* flex-1, NOT w-full: Button carries shrink-0, so a 100%-wide child

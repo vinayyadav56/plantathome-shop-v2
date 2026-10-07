@@ -31,5 +31,14 @@ export const formatProductsArgs = (options?: Partial<ProductQueryOptions>) => {
     ...(searchQuery && { name: searchQuery.toString() }),
     ...(text && { name: text.toString() }),
     ...restOptions,
+    // Popular = sold_quantity, which is 0 for most plants, so the sort alone is
+    // non-deterministic and page 2 repeated page 1's rows. Prettus takes
+    // "col;col" + "dir;dir" (RequestCriteria), so the id tie-break is added
+    // HERE — the one formatter every list (and the SSR prefetch key) runs
+    // through — while URLs keep plain `?orderBy=sold_quantity`.
+    ...(restOptions.orderBy === 'sold_quantity' && {
+      orderBy: 'sold_quantity;id',
+      sortedBy: `${restOptions.sortedBy ?? 'DESC'};DESC`,
+    }),
   };
 };

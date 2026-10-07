@@ -4,6 +4,7 @@ import { Hydrate } from '@/compat/react-query-hydration';
 import { loadGeneralData, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/search';
 import { PageBody as PlpPageBody } from '@/page-bodies/plp';
+import { plpSerif } from '@/lib/fonts/plp-serif';
 
 /** Verticals whose search results render in the listing-page body (see [searchType]/page.tsx). */
 const PLP_VERTICALS = new Set(['plants']);
@@ -38,7 +39,13 @@ export default async function Page({ params }: { params: Promise<{ searchType: s
   const { dehydratedState } = await loadGeneralData();
   return (
     <Hydrate state={dehydratedState}>
-      {PLP_VERTICALS.has(searchType) ? <PlpPageBody type={searchType} mode="search" /> : <PageBody />}
+      {PLP_VERTICALS.has(searchType) ? (
+        <div className={plpSerif.variable}>
+          <PlpPageBody type={searchType} mode="search" />
+        </div>
+      ) : (
+        <PageBody />
+      )}
     </Hydrate>
   );
 }

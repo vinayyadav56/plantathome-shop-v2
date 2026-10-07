@@ -27,6 +27,10 @@ interface Props {
   hasMore?: boolean;
   className?: string;
   categoryName?: string;
+  /** Forwarded to the ONE product card: `plp` = the listing-page layout. */
+  cardVariant?: 'default' | 'plp';
+  /** PLP only: the shopper's pincode ETA, forwarded to every card's delivery line. */
+  deliveryEtaDays?: number | null;
 }
 
 export function Grid({
@@ -41,6 +45,8 @@ export function Grid({
   limit = PRODUCTS_PER_PAGE,
   column = 'auto',
   categoryName,
+  cardVariant,
+  deliveryEtaDays,
 }: Props) {
   const { t } = useTranslation('common');
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -99,17 +105,25 @@ export function Grid({
           ? // The skeleton that matches the card's geometry — the generic
             // content-loader was a different shape, so the grid jumped when
             // the real cards landed (CLS on every listing).
-            rangeMap(Math.min(limit, 12), (i) => <PlantAtHomeCardSkeleton key={i} />)
+            rangeMap(Math.min(limit, 12), (i) =>
+              cardVariant === 'plp' ? (
+                <PlantAtHomeCardSkeleton key={i} variant="plp" />
+              ) : (
+                <PlantAtHomeCardSkeleton key={i} />
+              ),
+            )
           : products?.map((product, index) => (
               <ProductCard
                 product={product}
                 key={product.id}
                 // mark the first row's images as LCP candidates so next/image
                 // preloads them (clears the dev "detected as LCP" hint + helps
-                // Core Web Vitals); the desktop grid is up to 4-up, so cover the
-                // whole first row. Deeper images stay lazy.
-                priority={index < 4}
+                // Core Web Vitals); the desktop grid is up to 4-up (6 on the
+                // PLP), so cover the whole first row. Deeper images stay lazy.
+                priority={index < (cardVariant === 'plp' ? 6 : 4)}
                 layout={column === 'list' ? 'list' : 'grid'}
+                variant={cardVariant}
+                deliveryEtaDays={deliveryEtaDays}
               />
             ))}
       </div>

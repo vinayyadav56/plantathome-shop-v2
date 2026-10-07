@@ -52,6 +52,7 @@ export interface SearchParamOptions {
   'plantAttribute.indoor_outdoor': string;
   'plantAttribute.growth_rate': string;
   'plantAttribute.pet_friendly': string;
+  'plantAttribute.air_purifying': string;
   'plantAttribute.difficulty_level': string;
   /** Admin-defined characteristic terms (one param for every dynamic attribute). */
   'plantTerms.slug': string;
@@ -129,6 +130,7 @@ export interface ProductQueryOptions extends QueryOptions {
   placement: string;
   growth: string;
   pet_friendly: string;
+  air_purifying: string;
   sizes: string;
   difficulty: string;
   /** Comma-joined term slugs across every admin-defined attribute. */
@@ -145,9 +147,14 @@ export interface FilterFacets {
     growth_rate: { value: string; count: number }[];
     difficulty_level: { value: string; count: number }[];
     pet_friendly: { true: number; false: number };
+    air_purifying?: { true: number; false: number };
     price: { min: number; max: number; histogram: { from: number; to: number; count: number }[] };
     /** Admin-defined attributes — rendered generically, never hardcoded here. */
     dynamic?: DynamicFacet[];
+    /** Active categories with ≥ 1 listed product (computed without the category narrowing). */
+    categories?: { id: number; slug: string; name: string; count: number }[];
+    /** The Size axis values in admin order; `meta` is the admin-editable descriptor ("0–1 ft"). */
+    sizes?: { value: string; meta?: string | null }[];
   };
 }
 
@@ -297,7 +304,8 @@ export interface Product {
   sku: string;
   author: Author;
   manufacturer: Manufacturer;
-  tags: Tag[];
+  /** Slim {id,name,slug} rows; present on the list only when eager-loaded. */
+  tags?: Tag[];
   is_digital: boolean;
   is_external: boolean;
   external_product_url: string;
@@ -315,7 +323,8 @@ export interface Product {
   gallery: Attachment[];
   shop: Shop;
   unit: string;
-  categories: Category[];
+  /** Slim {id,name,slug} rows; present on the list only when eager-loaded. */
+  categories?: Pick<Category, 'id' | 'name' | 'slug'>[];
   quantity: number;
   total_reviews: number;
   ratings: number;
@@ -337,6 +346,26 @@ export interface Product {
   bundle_items?: Product[];
   bundle_total_value?: number | null;
   addons?: Product[];
+  /** List payload: server-built plain-text preview of the description. */
+  description_preview?: string | null;
+  /** A vendor in the shopper's city stocks it (rollup `has_local`); null = unknown, never "courier". */
+  city_local?: boolean | null;
+  vendor_count?: number | null;
+  /** All-vendor stock for the city rollup — NOT local stock. */
+  city_stock?: number | null;
+}
+
+/** One sellable size/variant of a variable product (`variation_options[]`). */
+export interface VariationOption {
+  id: number | string;
+  title: string;
+  price: number;
+  sale_price?: number | null;
+  quantity: number;
+  is_disable?: boolean | number;
+  options: { name: string; value: string }[];
+  city_available?: boolean | null;
+  city_stock?: number | null;
 }
 
 export interface PlantAttribute {

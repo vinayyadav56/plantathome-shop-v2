@@ -9,8 +9,10 @@ import { Routes } from '@/config/routes';
 // Still needed for Ask AI — the product quick-view popup is gone (cards link
 // straight to the product page), but this card opens the ASK_AI modal too.
 import { useModalAction } from '@/components/ui/modal/modal.context';
-import { Heart as HeartGlyph, Star } from '@/components/ui/icon';
+import cn from 'classnames';
+import { Droplet, Heart as HeartGlyph, Home, Star, SunHigh, Truck, type IconSize } from '@/components/ui/icon';
 import { LineIcon } from '@/components/icons/line-icons';
+import SafeImage from '@/components/ui/safe-image';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
@@ -18,7 +20,15 @@ import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
-import { compactPrice, getCardBadge, plantFactRows, shortDescription, PRODUCT_LINK_PROPS } from '@/components/products/cards/card-helpers';
+import {
+  compactPrice,
+  getCardBadge,
+  getCardBadges,
+  plantFactRows,
+  shortDescription,
+  PRODUCT_LINK_PROPS,
+  type BadgeTone,
+} from '@/components/products/cards/card-helpers';
 import { PlantMark } from '@/components/storefront/logo-mark';
 import type { Product } from '@/types';
 
@@ -27,9 +37,28 @@ const AddToCart = dynamic(
   { ssr: false },
 );
 
+export type CardVariant = 'default' | 'plp';
+
 /* ─── Loading Skeleton (export kept for callers) — mirrors the real card's
        geometry exactly so swapping in data causes no layout shift ─────── */
-export const PlantAtHomeCardSkeleton: React.FC = () => (
+export const PlantAtHomeCardSkeleton: React.FC<{ variant?: CardVariant }> = ({
+  variant = 'default',
+}) =>
+  variant === 'plp' ? (
+    /* plp geometry: 8/7 image, name / botanical / facts rows, price, 36px CTA */
+    <div className="flex h-full flex-col overflow-hidden rounded-lg border border-kraft-200 bg-white">
+      <div className="aspect-[8/7] w-full animate-pulse bg-[#F7F5EF]" />
+      <div className="flex flex-1 flex-col gap-2 p-2.5">
+        <div className="h-4 w-3/4 animate-pulse rounded bg-stone-200/80" />
+        <div className="h-3 w-1/2 animate-pulse rounded bg-stone-200/60" />
+        <div className="h-3 w-2/3 animate-pulse rounded bg-stone-200/50" />
+        <div className="mt-auto pt-1">
+          <div className="h-5 w-24 animate-pulse rounded bg-stone-200/70" />
+          <div className="mt-2 h-9 w-full animate-pulse rounded-control bg-stone-200/70" />
+        </div>
+      </div>
+    </div>
+  ) : (
   <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
     <div className="aspect-[25/24] w-full animate-pulse bg-[#F7F5EF]" />
     <div className="flex flex-1 flex-col p-6">
@@ -52,12 +81,12 @@ export const PlantAtHomeCardSkeleton: React.FC = () => (
       </div>
     </div>
   </div>
-);
+  );
 
 /* ─── Heart (reference .wishlist: 48px white circle) ─────────────── */
-const Heart = ({ active }: { active: boolean }) => (
+const Heart = ({ active, size = 18 }: { active: boolean; size?: IconSize }) => (
   <HeartGlyph
-    size={18}
+    size={size}
     fill={active ? '#C26B45' : 'none'}
     style={{ color: active ? '#C26B45' : '#555555' }}
     aria-hidden
@@ -77,6 +106,30 @@ type Props = {
   priority?: boolean;
   /** 'list' turns the card on its side: image column left, content right. */
   layout?: 'grid' | 'list';
+  /**
+   * 'plp' — the /plants listing card (plan B3): fixed sizes tuned for 170–230px
+   * cells, up to two coloured badges, 28px wishlist circle, facts rows, price
+   * "onwards", delivery line and a 36px full-width "Add to cart" that opens the
+   * size sheet for variable products. 'default' (omitted) is the canonical card
+   * every other listing renders — its behaviour is untouched by the variant.
+   */
+  variant?: CardVariant;
+  /**
+   * plp only. The shopper's pincode ETA in days (page-level, from the
+   * serviceability lookup). Used when `product.city_local` isn't true:
+   * positive → "Delivery in {n} days"; null/absent/0 → no delivery line.
+   */
+  deliveryEtaDays?: number | null;
+};
+
+/** Badge pill colours for the plp variant (plan B3 tones). */
+const BADGE_TONE_CLASS: Record<BadgeTone, string> = {
+  orange: 'bg-orange-500 text-white',
+  emerald: 'bg-emerald-600 text-white',
+  sky: 'bg-sky-500 text-white',
+  violet: 'bg-violet-500 text-white',
+  clay: 'bg-clay text-white',
+  sage: 'bg-sage-100 text-forest-800',
 };
 
 const PlantAtHomeCard: React.FC<Props> = ({
@@ -84,6 +137,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
   className = '',
   priority = false,
   layout = 'grid',
+  variant = 'default',
+  deliveryEtaDays = null,
 }) => {
   const isList = layout === 'list';
   const [imgError, setImgError] = useState(false);
@@ -130,7 +185,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
   // In a display-only city AddToCart renders an "Out of Stock" pill instead of
   // a CTA, so the qty stepper beside it is dead UI — and worse, it was eating
   // ~120px of a two-up card, which is what pushed the pill out of the box.
-  const { displayOnly } = useCitySupply();
+  const { city, displayOnly } = useCitySupply();
 
   const { data: askAiSettings } = useAskAiEnabled();
   const askAiEnabled = Boolean(askAiSettings?.data?.enabled);
@@ -152,6 +207,231 @@ const PlantAtHomeCard: React.FC<Props> = ({
       return;
     }
     toggleWishlist({ product_id: product.id });
+  }
+
+  /* ═══ PLP variant (plan B3 "Card") — the /plants listing card ═══════════
+     Fixed sizes (no cqw): the PLP grid cells are 170–230px wide. Shares every
+     hook/handler above; the default tree below is untouched. */
+  if (variant === 'plp') {
+    const badges = getCardBadges(product);
+    const placement = facts.find((f) => f.key === 'placement');
+    const water = facts.find((f) => f.key === 'water');
+    const light = facts.find((f) => f.key === 'light');
+    const etaDays = Number(deliveryEtaDays) || 0;
+    // city_local true = a vendor in the city stocks it (owner's PDP rule: local = 1 day).
+    // null = unknown, never "courier" — then only a real pincode ETA earns a line.
+    const delivery = displayOnly
+      ? null
+      : product.city_local === true
+        ? 'Delivery by Tomorrow'
+        : etaDays > 0
+          ? `Delivery in ${etaDays} day${etaDays === 1 ? '' : 's'}`
+          : null;
+
+    const cta = displayOnly ? (
+      <button
+        type="button"
+        disabled
+        className="h-9 w-full cursor-not-allowed truncate rounded-control bg-stone-200 px-2 text-[13px] font-semibold text-stone-500"
+      >
+        {city ? `Out of stock in ${city}` : 'Out of stock'}
+      </button>
+    ) : isVariable ? (
+      /* Every plant carries sizes — the size sheet picks one and adds to cart. */
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openModal('SELECT_PRODUCT_VARIATION', product.slug);
+        }}
+        className="h-9 w-full rounded-control bg-ds-btn text-[13px] font-semibold text-white transition hover:bg-ds-btn-hover"
+      >
+        Add to cart
+      </button>
+    ) : (
+      /* Simple product: the shared AddToCart (quantity 1, no stepper). Its
+         plantathome button is cqw-sized for the default card; the descendant
+         rules pin it to this card's 36px / 13px, and counterClass does the same
+         for the in-cart counter (twMerge'd over the variant's h-12/18px). */
+      <div className="[&_button]:h-9 [&_button]:text-[13px] [&_button]:font-semibold">
+        <AddToCart
+          variant="plantathome"
+          counterVariant="plantathome"
+          counterClass="h-9 text-[13px] sm:text-[13px]"
+          data={product}
+          quantity={1}
+        />
+      </div>
+    );
+
+    return (
+      <motion.article
+        data-product-card
+        whileHover={{ y: -3 }}
+        transition={{ duration: 0.25 }}
+        className={cn(
+          'group flex h-full overflow-hidden rounded-lg border border-kraft-200 bg-white transition-shadow duration-300 hover:shadow-box',
+          isList ? 'flex-row items-stretch' : 'flex-col',
+          className,
+        )}
+      >
+        {/* image box — same-tab PDP link (a shop grid, not the new-tab PRODUCT_LINK_PROPS) */}
+        <div
+          className={cn(
+            'relative shrink-0 bg-[#F7F5EF]',
+            isList ? 'min-h-[140px] w-40 self-stretch' : 'aspect-[8/7] w-full',
+          )}
+        >
+          <Link
+            href={Routes.product(product.slug)}
+            aria-label={`View ${product.name}`}
+            className="absolute inset-0 block overflow-hidden"
+          >
+            <SafeImage
+              src={image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1280px) 25vw, 16vw"
+              quality={70}
+              priority={priority}
+              className="object-cover transition duration-[450ms] ease-out group-hover:scale-[1.04]"
+              fallback={
+                <span className="absolute inset-0 grid place-items-center">
+                  <PlantMark className="h-12 w-12 text-forest-800/30" />
+                </span>
+              }
+            />
+          </Link>
+
+          {badges.length > 0 && (
+            <div className="pointer-events-none absolute left-2 top-2 z-10 flex flex-col items-start gap-1">
+              {badges.map((b) => (
+                <span
+                  key={b.label}
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-[11px] font-semibold leading-[1.4]',
+                    BADGE_TONE_CLASS[b.tone],
+                  )}
+                >
+                  {b.label}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleWishlist}
+            className="absolute right-2 top-2 z-10 grid h-7 w-7 place-items-center rounded-full bg-white shadow-box transition hover:scale-110"
+            aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+          >
+            <Heart active={inWishlist} size={14} />
+          </button>
+
+          {askAiEnabled && (
+            <button
+              type="button"
+              onClick={handleAskAi}
+              aria-label={`Ask AI about ${product.name}`}
+              className="absolute bottom-2 right-2 z-10 inline-flex items-center rounded-full border border-white/25 bg-black/45 px-2 py-1 text-[10.5px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
+            >
+              Ask AI
+            </button>
+          )}
+        </div>
+
+        {/* body */}
+        <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
+          <Link
+            href={Routes.product(product.slug)}
+            title={product.name}
+            className="block truncate text-[14px] font-semibold leading-tight text-forest-900 transition hover:text-forest-700"
+          >
+            {product.name}
+          </Link>
+          {sciName ? (
+            <p title={sciName} className="truncate text-[12px] leading-tight text-stone-500">
+              {sciName}
+            </p>
+          ) : null}
+          {reviewCount > 0 ? (
+            <p className="flex items-center gap-1 text-[12px] leading-none">
+              <Star size={14} fill="#FDBA12" strokeWidth={0} style={{ color: '#FDBA12' }} aria-hidden />
+              <strong className="font-semibold text-forest-900">{ratingVal.toFixed(1)}</strong>
+              <span className="text-stone-500">
+                ({reviewCount.toLocaleString('en-IN')} reviews)
+              </span>
+            </p>
+          ) : null}
+          {placement || water ? (
+            <p className="flex min-w-0 items-center gap-1 text-[11.5px] leading-tight text-stone-600">
+              {placement && (
+                <>
+                  <Home size={12} className="shrink-0" aria-hidden />
+                  <span className="truncate">{placement.value}</span>
+                </>
+              )}
+              {placement && water && <span aria-hidden>·</span>}
+              {water && (
+                <>
+                  <Droplet size={12} className="shrink-0" aria-hidden />
+                  <span className="truncate">{water.chip}</span>
+                </>
+              )}
+            </p>
+          ) : null}
+          {light ? (
+            <p className="flex min-w-0 items-center gap-1 text-[11.5px] leading-tight text-stone-600">
+              <SunHigh size={12} className="shrink-0" aria-hidden />
+              <span className="truncate">{light.value}</span>
+            </p>
+          ) : null}
+
+          <div
+            className={cn(
+              'mt-auto pt-1',
+              isList ? 'flex flex-wrap items-end justify-between gap-2' : 'flex flex-col gap-1.5',
+            )}
+          >
+            <div className="flex min-w-0 flex-col gap-1">
+              <p className="flex flex-wrap items-baseline gap-x-1.5 leading-none">
+                {isVariable ? (
+                  <>
+                    <span className="text-[16px] font-bold text-forest-900">{compactPrice(minPrice)}</span>
+                    <span className="text-[12px] text-stone-500">onwards</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[16px] font-bold text-forest-900">{compactPrice(price)}</span>
+                    {basePrice && (
+                      <del className="text-[12px] text-stone-500">{compactPrice(basePrice)}</del>
+                    )}
+                    {discount && (
+                      <span className="rounded bg-[#FFEAEA] px-1.5 py-0.5 text-[10.5px] font-bold text-[#D73C3C]">
+                        {discount} OFF
+                      </span>
+                    )}
+                  </>
+                )}
+              </p>
+              {delivery ? (
+                <p className="flex items-center gap-1 text-[12px] font-semibold leading-none text-emerald-700">
+                  <Truck size={14} className="shrink-0" aria-hidden />
+                  {delivery}
+                </p>
+              ) : null}
+            </div>
+            <div
+              className={cn('w-full', isList && 'max-w-[200px]')}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {cta}
+            </div>
+          </div>
+        </div>
+      </motion.article>
+    );
   }
 
   /* ── pieces shared by the grid and list bodies ── */

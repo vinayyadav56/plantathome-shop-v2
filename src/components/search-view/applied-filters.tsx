@@ -54,6 +54,9 @@ const AppliedFilters: React.FC = () => {
   if (router.query.pet_friendly === 'true') {
     chips.push({ param: 'pet_friendly', value: 'true', label: 'Pet friendly' });
   }
+  if (router.query.air_purifying === 'true') {
+    chips.push({ param: 'air_purifying', value: 'true', label: 'Air purifying' });
+  }
   if (typeof router.query.price === 'string' && router.query.price.length) {
     const [min, max] = router.query.price.split(',');
     chips.push({
@@ -72,7 +75,7 @@ const AppliedFilters: React.FC = () => {
 
   function removeChip(chip: Chip) {
     const query: Record<string, any> = { ...router.query };
-    if (['price', 'text', 'placement', 'pet_friendly'].includes(chip.param)) {
+    if (['price', 'text', 'placement', 'pet_friendly', 'air_purifying'].includes(chip.param)) {
       delete query[chip.param];
     } else {
       const rest = String(query[chip.param])

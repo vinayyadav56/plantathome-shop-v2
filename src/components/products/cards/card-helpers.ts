@@ -36,6 +36,47 @@ export function getCardBadge(product: Product): string | null {
   return null;
 }
 
+export type BadgeTone = 'orange' | 'emerald' | 'sky' | 'violet' | 'clay' | 'sage';
+export type CardBadge = { label: string; tone: BadgeTone };
+
+/** Label → pill colour for the PLP card. Tag badges not listed fall back to
+ *  orange (the "merchandising" tone); attribute badges are all named here. */
+const BADGE_TONE: Record<string, BadgeTone> = {
+  'New Arrival': 'sage',
+  'Flash Deal': 'clay',
+  'Low Light': 'sky',
+  Succulent: 'violet',
+  'Air Purifying': 'emerald',
+  'Air Purifier': 'emerald',
+  'Easy Care': 'emerald',
+  'Pet Friendly': 'emerald',
+};
+
+/** Up to two badges for the PLP card (plan B3). Primary = the tag/flash badge
+ *  (`getCardBadge`), else the first matching plant attribute in order Low Light
+ *  → Air Purifying → Easy Care → Succulent. Secondary = "Pet Friendly" when
+ *  the attribute is true and the primary isn't already it. Real data only:
+ *  a product with no tags and no attributes yields []. */
+export function getCardBadges(product: Product): CardBadge[] {
+  const pa = product?.plant_attribute;
+  const primary =
+    getCardBadge(product) ??
+    (/low/i.test(String(pa?.sunlight ?? ''))
+      ? 'Low Light'
+      : pa?.air_purifying === true
+        ? 'Air Purifying'
+        : /easy|beginner/i.test(String(pa?.difficulty_level ?? ''))
+          ? 'Easy Care'
+          : product?.categories?.some((c) => c?.slug === 'succulents-cacti')
+            ? 'Succulent'
+            : null);
+  const badges: CardBadge[] = [];
+  if (primary) badges.push({ label: primary, tone: BADGE_TONE[primary] ?? 'orange' });
+  if (pa?.pet_friendly === true && primary !== 'Pet Friendly')
+    badges.push({ label: 'Pet Friendly', tone: 'emerald' });
+  return badges;
+}
+
 export type PlantFact = {
   key: string;
   /** LineIcon name */

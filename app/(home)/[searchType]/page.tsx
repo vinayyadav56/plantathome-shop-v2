@@ -4,6 +4,7 @@ import { Hydrate } from '@/compat/react-query-hydration';
 import { loadHomeData, loadPlpData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import HomeScreen from '@/app-shell/home-screen';
 import { PageBody as PlpPageBody } from '@/page-bodies/plp';
+import { plpSerif } from '@/lib/fonts/plp-serif';
 import { SITE_URL } from '@/lib/site-url';
 
 /**
@@ -74,7 +75,7 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
   if (PLP_VERTICALS.has(vertical)) {
     const slugs = await loadTypeSlugs();
     if (slugs.length && !slugs.includes(vertical)) return notFound();
-    const { dehydratedState, products } = await loadPlpData(vertical);
+    const { dehydratedState, products, productTotal } = await loadPlpData(vertical);
     // The first server-rendered page as an ItemList, so the listing's products
     // are structured data too (the category pages only emit the breadcrumb).
     const itemList = products.length
@@ -102,7 +103,10 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
             dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList).replace(/</g, '\\u003c') }}
           />
         )}
-        <PlpPageBody type={vertical} />
+        {/* The PLP's display serif is scoped to this subtree (see lib/fonts/plp-serif). */}
+        <div className={plpSerif.variable}>
+          <PlpPageBody type={vertical} catalogueTotal={productTotal} />
+        </div>
       </Hydrate>
     );
   }
