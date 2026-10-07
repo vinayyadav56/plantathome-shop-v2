@@ -182,7 +182,7 @@ function SignInPage() {
             Rendered ONCE. A separate desktop and mobile copy would put two
             inputs named "email" and two named "password" in the document at the
             same time, which is what autofill and password managers act on. */}
-        <div className="relative z-10 flex min-h-[100svh] items-start justify-center px-4 py-8 lg:items-center lg:p-0">
+        <div className="relative z-10 flex min-h-[100svh] items-start justify-center px-4 pb-8 pt-16 lg:items-center lg:p-0">
           {/* At lg this box reproduces the artwork's rendered rectangle exactly:
               same 3:2 ratio, same "largest box that fits the viewport" cap that
               object-contain applies. That is what lets the card be positioned
@@ -195,15 +195,16 @@ function SignInPage() {
                 sliding the tabs up under the pointer that just clicked them.
                 Measured at 38px before this was pinned.
 
-                The height cap follows the VIEWPORT, not the artwork box: the box
-                is vertically centred, so the room below the card's 5% top is
-                50svh + 45% of the box, less a 16px margin. A 90%-of-box cap gave
-                Sign Up an inner scroll at 1280x800 (annotation: "no scroll on the
-                form"); overflow-y-auto stays as the fallback for shorter screens. */}
+                The height cap is the SMALLER of two limits: 95% of the box (from
+                the 5% top that is exactly the picture's bottom edge, so the card
+                never hangs off the artwork) and the viewport room below the card
+                (the box is vertically centred: 50svh + 45% of the box, less a 16px
+                margin). lg:py-6 keeps Sign Up scroll-free at 1280x800 (annotation:
+                "no scroll on the form"); overflow-y-auto stays the fallback. */}
             <div
               className="rounded-2xl bg-white px-6 py-7 shadow-box sm:px-8
-                         lg:absolute lg:top-[5%] lg:right-[3%] lg:max-h-[calc(50svh_+_45%_-_16px)] lg:w-[34%] lg:overflow-y-auto
-                         lg:px-7 lg:py-7 xl:px-9"
+                         lg:absolute lg:top-[5%] lg:right-[3%] lg:max-h-[min(calc(50svh_+_45%_-_16px),95%)] lg:w-[34%] lg:overflow-y-auto
+                         lg:px-7 lg:py-6 xl:px-9"
             >
               {/* tabs — underline, per the design. A framer `layoutId` slider was
                   considered and rejected: its parent chain contains a motion.div
@@ -231,7 +232,7 @@ function SignInPage() {
                 </div>
               )}
 
-              <h1 className="text-center text-[24px] font-bold text-forest-900 sm:text-[26px]">
+              <h1 className="text-center font-heading text-[24px] font-medium tracking-[-0.01em] text-forest-900 sm:text-[26px]">
                 {mode === 'login'
                   ? t('signin-welcome')
                   : mode === 'register'

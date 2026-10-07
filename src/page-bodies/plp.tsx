@@ -163,7 +163,7 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
 
             <div className="min-w-0 flex-1">
               {mode === 'browse' && (
-                <div className="mb-5">
+                <div className="mb-5 empty:hidden">
                   <NeedTiles type={type} />
                 </div>
               )}

@@ -111,8 +111,8 @@ export function RegisterForm({ onPhoneOtp }: RegisterFormProps = {}) {
           aria-label="Continue with Google"
           title="Continue with Google"
         >
-          <GoogleIcon className="h-5 w-5 shrink-0 ltr:mr-2 rtl:ml-2" />
-          {googleBusy ? 'Connecting…' : 'Google'}
+          <GoogleIcon className="h-5 w-5 shrink-0 ltr:mr-1.5 rtl:ml-1.5 max-[439px]:h-4 max-[439px]:w-4 lg:max-xl:h-4 lg:max-xl:w-4 max-[359px]:hidden" />
+          <span className="max-[439px]:text-[12px] lg:max-xl:text-[12px]">{googleBusy ? 'Connecting…' : 'Google'}</span>
         </Button>
         <Button
           type="button"
@@ -124,8 +124,8 @@ export function RegisterForm({ onPhoneOtp }: RegisterFormProps = {}) {
           aria-label="Continue with phone OTP"
           title="Continue with phone OTP"
         >
-          <Smartphone size={18} className="shrink-0 ltr:mr-2 rtl:ml-2" aria-hidden />
-          Phone
+          <Smartphone size={18} className="shrink-0 ltr:mr-1.5 rtl:ml-1.5 max-[439px]:h-4 max-[439px]:w-4 lg:max-xl:h-4 lg:max-xl:w-4 max-[359px]:hidden" aria-hidden />
+          <span className="max-[439px]:text-[12px] lg:max-xl:text-[12px]">Phone</span>
         </Button>
         <Button
           type="button"
@@ -137,8 +137,11 @@ export function RegisterForm({ onPhoneOtp }: RegisterFormProps = {}) {
           aria-label="Continue with WhatsApp"
           title="Continue with WhatsApp"
         >
-          <WhatsAppIcon className="h-5 w-5 shrink-0 text-[#25D366] ltr:mr-2 rtl:ml-2" />
-          WhatsApp
+          <WhatsAppIcon className="h-5 w-5 shrink-0 text-[#25D366] ltr:mr-1.5 rtl:ml-1.5 max-[439px]:h-4 max-[439px]:w-4 lg:max-xl:h-4 lg:max-xl:w-4 max-[359px]:hidden" />
+          {/* Icon + "WhatsApp" is ~96px at the default size; the buttons are ~83–87px on
+              phones under 440px and in the lg–xl card, so there the icons drop to 16px and
+              the labels to 12px (~82px), and under 360px the icons hide — never abbreviated. */}
+          <span className="max-[439px]:text-[12px] lg:max-xl:text-[12px]">WhatsApp</span>
         </Button>
       </div>
 

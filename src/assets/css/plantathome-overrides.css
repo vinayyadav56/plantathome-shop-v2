@@ -849,7 +849,7 @@ select:focus {
 .pa-cart-header-title {
   font-family: var(--font-heading) !important;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   color: #fff;
   letter-spacing: 0.005em;
   margin: 0;
@@ -1113,7 +1113,7 @@ select:focus {
 .pa-cart-empty-title {
   font-family: var(--font-heading) !important;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--ds-accent-ink, #1E4023);
   margin: 0 0 8px;
 }
@@ -1816,7 +1816,7 @@ textarea:focus {
 .pa-checkout-page-title {
   font-family: var(--font-heading) !important;
   font-size: clamp(30px, 3.8vw, 42px);
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.01em;
   color: #16301A;
