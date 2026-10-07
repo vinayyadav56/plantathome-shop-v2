@@ -5,7 +5,6 @@ import cn from 'classnames';
 import SafeImage from '@/components/ui/safe-image';
 import { ArrowRight } from '@/components/ui/icon';
 import { useCategories } from '@/framework/category';
-import { useFilterFacets } from '@/framework/product';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 
 /** Image-box tints, cycled by tile index (the mock's pastel backdrops). */
@@ -21,10 +20,11 @@ const SKELETON_TILES = 10;
  *
  * Tiles are the vertical's flagged root categories (`home: 1`, flagged order)
  * — the exact `useCategories` options loadPlpData seeds for SSR, so the first
- * paint is the server HTML; do not change them. Once the city-scoped facets
- * land, categories with no listed product in the city are dropped (matched by
- * slug), which also hides the empty duplicate categories prod has flagged.
- * Capped at 12 tiles. Renders nothing when there is nothing to show.
+ * paint is the server HTML; do not change them. A flagged, active category
+ * shows even while it holds no plant (the owner's call, 2026-10-07): which
+ * tiles appear is curated in the admin (active + "show on homepage" + order),
+ * not derived from stock. Capped at 12 tiles. Renders nothing when there is
+ * nothing to show.
  *
  * @param type the vertical slug (`plants`)
  */
@@ -35,16 +35,7 @@ export default function CategoryTiles({ type }: { type: string }) {
     limit: CATEGORIES_PER_PAGE,
     home: 1,
   });
-  const facetCategories = useFilterFacets({ type }).data?.facets?.categories;
-
-  // Facets absent (loading / 404) → every flagged category; present → only the
-  // ones with a count > 0 in this city.
-  const listed = facetCategories
-    ? new Set(facetCategories.filter((f) => f.count > 0).map((f) => f.slug))
-    : null;
-  const items = (categories ?? [])
-    .filter((c) => c?.slug && c?.name && (!listed || listed.has(c.slug)))
-    .slice(0, MAX_TILES);
+  const items = (categories ?? []).filter((c) => c?.slug && c?.name).slice(0, MAX_TILES);
 
   const showSkeleton = isLoading && !items.length;
   if (!showSkeleton && !items.length) return null;
