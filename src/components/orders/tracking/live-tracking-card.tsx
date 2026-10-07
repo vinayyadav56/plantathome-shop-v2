@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { OPEN_LIVE_TRACKING_EVENT } from './tracking-stepper';
 import { useQuery } from 'react-query';
 import dayjs from 'dayjs';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -234,6 +235,12 @@ export default function LiveTrackingCard({
   // Collapsible now that this card sits in the sidebar rather than the main
   // column — open by default so an active delivery is seen immediately.
   const [expanded, setExpanded] = useState(true);
+  // "Track order" in the Order Details card re-opens this card if it was collapsed.
+  useEffect(() => {
+    const open = () => setExpanded(true);
+    window.addEventListener(OPEN_LIVE_TRACKING_EVENT, open);
+    return () => window.removeEventListener(OPEN_LIVE_TRACKING_EVENT, open);
+  }, []);
 
   // Shipment that carries courier identity (a split order shows the rest in
   // the per-parcel cards below).
@@ -241,6 +248,14 @@ export default function LiveTrackingCard({
     shipments.find((s) => s.awb_number || s.courier_name) ?? shipments[0];
 
   const partnerName = primary?.courier_name ?? data?.courier?.name ?? null;
+  // Who is actually bringing the parcel. A partner booking (Porter …) names its own rider
+  // from the partner API; only an own-fleet delivery uses our delivery partner's name. The
+  // "on the way" line used to print the in-house DP's name ("DP Near") even when a partner
+  // was carrying the order (owner annotation: "should be correct from the partner api").
+  const riderName = primary?.courier_name
+    ? primary?.rider_name ?? null
+    : data?.courier?.name ?? null;
+  const onTheWayName = riderName ?? primary?.courier_name ?? null;
   const awb = primary?.awb_number ?? null;
   const riderMobile = data?.courier?.mobile ?? null;
 
@@ -256,7 +271,7 @@ export default function LiveTrackingCard({
     : null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
+    <div id="live-tracking" className="scroll-mt-24 overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
@@ -338,6 +353,12 @@ export default function LiveTrackingCard({
             <span className="block truncate text-sm font-semibold text-forest-900">
               {partnerName ?? 'To be assigned'}
             </span>
+            {primary?.courier_name && primary?.rider_name ? (
+              <span className="block truncate text-xs text-[#6F6D64]">
+                Rider: {primary.rider_name}
+                {primary.vehicle_number ? ` · ${primary.vehicle_number}` : ''}
+              </span>
+            ) : null}
           </span>
           {primary?.tracking_url ? (
             <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#B8B6AD]" />
@@ -388,9 +409,9 @@ export default function LiveTrackingCard({
         </a>
       </div>
 
-      {data?.courier?.name && live ? (
+      {onTheWayName && live ? (
         <p className="border-t border-[#EDEBE2] px-5 py-3 text-xs text-[#8C8A81] sm:px-6">
-          Your delivery partner <span className="font-semibold text-forest-900">{data.courier.name}</span> is on the way
+          Your delivery partner <span className="font-semibold text-forest-900">{onTheWayName}</span> is on the way
           {data?.courier?.stale ? ' · location updating…' : ''}.
         </p>
       ) : null}

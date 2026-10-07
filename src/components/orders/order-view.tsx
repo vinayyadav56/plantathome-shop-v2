@@ -4,7 +4,6 @@ import SuborderItems from '@/components/orders/suborder-items';
 import ParcelShipments from '@/components/orders/parcel-shipments';
 import TrackingHero from '@/components/orders/tracking/tracking-hero';
 import OrderSummaryCard from '@/components/orders/tracking/order-summary-card';
-import TrackingStepper from '@/components/orders/tracking/tracking-stepper';
 import EstimatedDeliveryBanner from '@/components/orders/tracking/estimated-delivery-banner';
 import LiveTrackingCard from '@/components/orders/tracking/live-tracking-card';
 import OrderDetailsCard from '@/components/orders/tracking/order-details-card';
@@ -68,15 +67,23 @@ function OrderView({ order, settings, loadingStatus }: any) {
           {isTerminal ? (
             <TerminalStatusBanner status={order?.order_status} />
           ) : (
-            <>
-              <TrackingStepper order={order} shipments={shipments} />
-              <EstimatedDeliveryBanner order={order} shipments={shipments} />
-            </>
+            <EstimatedDeliveryBanner order={order} shipments={shipments} />
           )}
 
-          <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
-            {/* Left column */}
-            <div className="space-y-5 lg:col-span-2">
+          {/* The order status (stepper) now lives INSIDE the Order Details card
+              on the right (owner annotation), so that card is the first grid
+              item: on phones it leads the page, where the full-width stepper
+              used to be; from lg it is pinned to column 3, row 1, with the
+              address + help cards under it in row 2, while the main column
+              spans both rows. grid-rows-[auto_1fr] makes row 2 take any extra
+              height so the right column never opens a gap. */}
+          <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3 lg:grid-rows-[auto_1fr]">
+            <div className="lg:col-start-3 lg:row-start-1">
+              <OrderDetailsCard order={order} shipments={shipments} showStatus={!isTerminal} />
+            </div>
+
+            {/* Main column */}
+            <div className="space-y-5 lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-1">
               {!isTerminal ? (
                 <LiveTrackingCard order={order} shipments={shipments} />
               ) : null}
@@ -115,9 +122,8 @@ function OrderView({ order, settings, loadingStatus }: any) {
               ) : null}
             </div>
 
-            {/* Right column */}
-            <div className="space-y-5">
-              <OrderDetailsCard order={order} />
+            {/* Right column, under Order Details */}
+            <div className="space-y-5 lg:col-start-3 lg:row-start-2">
               <DeliveryAddressCard order={order} />
               <NeedHelpCard settings={settings} />
             </div>

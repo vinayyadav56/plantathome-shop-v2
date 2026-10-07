@@ -127,8 +127,11 @@ export function CategoryRow() {
                       <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded bg-[radial-gradient(circle_at_50%_30%,#ffffff_0%,#f2f4ed_70%,#e9ede4_100%)]">
                         <Thumb src={img} fallback={CATEGORY_FALLBACK} />
                       </div>
-                      {/* 56px fits one text row: name + arrow, no "Shop Now" line */}
-                      <h4 className="min-w-0 flex-1 truncate pl-2.5 pr-1 text-[13px] font-normal leading-none text-[#1b2b1e]">
+                      {/* A short name sits on one line; a longer one wraps to a second
+                          rather than being cut to "Flowering Plan…" (owner annotation:
+                          "within 1 line or if larger then only two lines"). Two 15px
+                          lines fit the 56px card beside the 44px photo. */}
+                      <h4 className="min-w-0 flex-1 pl-2.5 pr-1 text-[13px] font-normal leading-[15px] text-[#1b2b1e] line-clamp-2">
                         {c.name}
                       </h4>
                       <ArrowRight size={14} className="mr-1 shrink-0 text-[#39772b] transition-transform duration-200 group-hover:translate-x-1" aria-hidden />

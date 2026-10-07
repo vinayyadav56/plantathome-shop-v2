@@ -7,6 +7,8 @@ import { isPaymentPending } from '@/lib/is-payment-pending';
 import PayNowButton from '@/components/payment/pay-now-button';
 import ChangeGateway from '@/components/payment/gateway-control/change-gateway';
 import { useSettings } from '@/framework/settings';
+import type { OrderShipment } from '@/types';
+import { OrderStatusPanel } from './tracking-stepper';
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -45,7 +47,16 @@ function paymentStatusBadge(status?: string) {
  * when a payment is still due — the Pay Now / change-gateway actions so the
  * redesign keeps the payment flow.
  */
-export default function OrderDetailsCard({ order }: { order: any }) {
+export default function OrderDetailsCard({
+  order,
+  shipments = [],
+  showStatus = false,
+}: {
+  order: any;
+  shipments?: OrderShipment[];
+  /** Order status (stepper) inside this card — off for cancelled/failed/refunded orders. */
+  showStatus?: boolean;
+}) {
   const { settings } = useSettings();
   const { price: subtotal } = usePrice({ amount: order?.amount ?? 0 });
   const { price: shipping } = usePrice({ amount: order?.delivery_fee ?? 0 });
@@ -65,6 +76,8 @@ export default function OrderDetailsCard({ order }: { order: any }) {
   return (
     <div className="rounded-2xl border border-kraft-200 bg-white px-5 py-5 shadow-box sm:px-6">
       <h3 className="mb-3 text-base font-medium text-forest-900">Order Details</h3>
+
+      {showStatus ? <OrderStatusPanel order={order} shipments={shipments} trackable /> : null}
 
       <dl>
         <Row label="Order Number">{order?.tracking_number}</Row>

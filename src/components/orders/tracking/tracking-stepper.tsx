@@ -1,6 +1,8 @@
+'use client';
 import dayjs from 'dayjs';
 import cn from 'classnames';
-import type { ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
+import { ChevronDown } from '@/components/ui/icon';
 import type { OrderShipment } from '@/types';
 import {
   BoxIcon,
@@ -220,5 +222,157 @@ export default function TrackingStepper({
         ))}
       </ol>
     </div>
+  );
+}
+
+/** Opens the Live Tracking card (live-tracking-card.tsx listens for this and
+ *  for #live-tracking) — the card owns its own collapsed state. */
+export const OPEN_LIVE_TRACKING_EVENT = 'pah:open-live-tracking';
+
+/** The blinking "you are here" dot. Bright green, and it only pulses for people
+ *  who have not asked for reduced motion. */
+function LiveDot({ size = 'h-3 w-3' }: { size?: string }) {
+  return (
+    <span className={cn('relative flex shrink-0', size)} aria-hidden="true">
+      <span className="absolute inline-flex h-full w-full rounded-full bg-[#22C55E] opacity-75 motion-safe:animate-ping" />
+      <span className={cn('relative inline-flex rounded-full bg-[#22C55E]', size)} />
+    </span>
+  );
+}
+
+function MiniCircle({ step }: { step: Step }) {
+  if (step.state === 'done') {
+    return (
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--ds-accent,#4E8B31)] text-white">
+        <CheckBoldIcon className="h-3.5 w-3.5" />
+      </span>
+    );
+  }
+  if (step.state === 'current') {
+    return (
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#DCF5D0] ring-2 ring-[#22C55E]">
+        <LiveDot size="h-2.5 w-2.5" />
+      </span>
+    );
+  }
+  const Icon = step.icon;
+  return (
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#E4E2D9] bg-white text-[#BDBBB1]">
+      <Icon className="h-3.5 w-3.5" />
+    </span>
+  );
+}
+
+/**
+ * Order status as a section of the "Order Details" card (owner annotation:
+ * "this should be on the right side inside the order details with tracking
+ * button and collapsible section with bright green color animation with
+ * blinking"). Replaces the full-width stepper that used to sit above the page.
+ * Collapsed, it still says where the order is; the current step blinks green.
+ */
+export function OrderStatusPanel({
+  order,
+  shipments,
+  trackable,
+}: {
+  order: any;
+  shipments: OrderShipment[];
+  /** Show "Track order" — only when the Live Tracking card is on the page. */
+  trackable: boolean;
+}) {
+  const steps = buildSteps(order, shipments);
+  const current = steps.find((s) => s.state === 'current') ?? steps[steps.length - 1];
+  const delivered = steps[steps.length - 1].state !== 'upcoming';
+  const [open, setOpen] = useState(true);
+
+  function track() {
+    window.dispatchEvent(new Event(OPEN_LIVE_TRACKING_EVENT));
+    document.getElementById('live-tracking')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  return (
+    <section aria-label="Order status" className="mb-4 overflow-hidden rounded-xl border border-[#CDEBC0] bg-[#F4FBF0]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#22C55E]"
+      >
+        {delivered ? (
+          <span className="flex h-3 w-3 shrink-0 rounded-full bg-[var(--ds-accent,#4E8B31)]" aria-hidden="true" />
+        ) : (
+          <LiveDot />
+        )}
+        <span className="min-w-0 flex-1">
+          <span className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#3F7A2A]">
+            Order status
+          </span>
+          <span className="block truncate text-sm font-semibold text-forest-900">
+            {current.label}
+            {current.timeLabel ? (
+              <span className="font-normal text-[#6F6D64]"> · {current.timeLabel}</span>
+            ) : null}
+          </span>
+        </span>
+        <ChevronDown
+          className={cn('h-4 w-4 shrink-0 text-[#6F6D64] transition-transform', open && 'rotate-180')}
+          aria-hidden
+        />
+      </button>
+
+      {open ? (
+        <div className="border-t border-[#DCEFD3] bg-white/60 px-4 pb-4 pt-3">
+          <ol className="flex flex-col">
+            {steps.map((step, i) => (
+              <li key={step.key} className="flex gap-3">
+                <div className="flex flex-col items-center">
+                  <MiniCircle step={step} />
+                  {i !== steps.length - 1 ? (
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'min-h-[14px] w-0 flex-1 border-l-2',
+                        steps[i + 1].state !== 'upcoming'
+                          ? 'border-[var(--ds-accent,#4E8B31)]'
+                          : 'border-dashed border-[#DBD9CF]',
+                      )}
+                    />
+                  ) : null}
+                </div>
+                <div className={cn('min-w-0 pb-3 pt-1', i === steps.length - 1 && 'pb-0')}>
+                  <p
+                    className={cn(
+                      'text-[13px] leading-tight',
+                      step.state === 'current'
+                        ? 'font-semibold text-[#15803D]'
+                        : step.state === 'done'
+                          ? 'font-medium text-forest-900'
+                          : 'text-[#9B998F]',
+                    )}
+                  >
+                    {step.label}
+                    {step.state === 'current' ? <span className="sr-only"> (current step)</span> : null}
+                  </p>
+                  {step.timeLabel ? (
+                    <p className="mt-0.5 text-[11.5px] text-[#9B998F]">{step.timeLabel}</p>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          {trackable ? (
+            <button
+              type="button"
+              onClick={track}
+              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-control bg-ds-btn px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-ds-btn-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ds-btn focus-visible:ring-offset-2"
+            >
+              <TruckIcon className="h-4 w-4" />
+              Track order
+            </button>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   );
 }

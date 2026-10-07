@@ -153,7 +153,13 @@ export default function CorporateGiftingPage() {
   const [buyingId, setBuyingId] = useState<number | null>(null);
   const fmt = (n: number) => '₹' + Number(n).toLocaleString('en-IN');
 
-  const heroImg = resolveImageUrl(cms?.heroImage ?? null) || '/images/gifting/hero.jpg';
+  // Default = the owner's hero ARTWORK (painted headline, feature icons and the
+  // "Explore corporate gifts" button the invisible #tiers link below is measured
+  // against). It used to default to a plain gift-box photo, so an environment
+  // without a CMS hero image (production) showed no headline at all on desktop
+  // (the h1 is hidden at md+ because the artwork carries it) and a link over
+  // empty space. An admin-set image still wins.
+  const heroImg = resolveImageUrl(cms?.heroImage ?? null) || '/images/gifting/hero-artwork.jpg';
   const usingDefaultGallery = !(cms?.gallery && cms.gallery.length);
   const gallery = (usingDefaultGallery
     ? DEFAULT_GALLERY

@@ -1331,5 +1331,8 @@ export interface OrderShipment {
   delivered_at: string | null;
   eta_days: number | null;
   expected_delivery_at: string | null;
+  /** The partner's rider for the current booking (from the partner API, e.g. Porter). */
+  rider_name?: string | null;
+  vehicle_number?: string | null;
   items: OrderShipmentItem[];
 }
