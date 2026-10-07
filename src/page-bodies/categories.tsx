@@ -72,7 +72,12 @@ function VerticalSection({ type }: { type: Type }) {
   const total = (paginatorInfo as any)?.total ?? list.length;
 
   return (
-    <section className="border-t border-kraft-200/60 py-9 first:border-t-0 lg:py-11">
+    // id = the /categories#<vertical> anchor (the /tools "View All" links);
+    // scroll-mt clears the sticky header, as plp.tsx's #grid does.
+    <section
+      id={type.slug}
+      className="scroll-mt-[72px] border-t border-kraft-200/60 py-9 first:border-t-0 lg:scroll-mt-[84px] lg:py-11"
+    >
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h2 className="m-0 font-pahserif text-[24px] font-medium tracking-[-0.005em] text-forest-900 sm:text-[30px]">

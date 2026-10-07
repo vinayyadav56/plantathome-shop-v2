@@ -288,6 +288,53 @@ export async function loadPlpData(typeSlug: string) {
   };
 }
 
+/**
+ * /tools loader: settings + types + every list the tools page renders, each under
+ * the EXACT key its client hook builds (components/tools/*), so the server HTML
+ * carries the category tiles, the bestseller cards and the featured kit — not a
+ * shell. City-less like every SSR prefetch; every list is fail-soft (an empty or
+ * failed list just hides its section, and a failed query is never dehydrated).
+ *
+ * Featured kit = the tools product tagged `featured-kit` in admin, else the
+ * best-selling Tool Set. Categories go through prefetchInfiniteQuery for the
+ * reason given on loadPlpData.
+ */
+export async function loadToolsData(typeSlug: string) {
+  const { dehydratedState: general } = await loadGeneralData();
+  const queryClient = new QueryClient();
+  // First page of a useProducts(opts) list — same formatter, same key.
+  const firstPage = (opts: any): Promise<any[]> =>
+    queryClient
+      .fetchInfiniteQuery({
+        queryKey: [API_ENDPOINTS.PRODUCTS, { ...formatProductsArgs(opts), language: LOCALE }],
+        queryFn: ({ queryKey }: any) => client.products.all(queryKey[1]),
+        initialPageParam: undefined,
+      } as any)
+      .then((list: any) => list?.pages?.[0]?.data ?? [])
+      .catch(() => []);
+  const [products, tagged, topSet] = await Promise.all([
+    firstPage({ type: typeSlug, limit: 6, orderBy: 'sold_quantity', sortedBy: 'DESC' }),
+    firstPage({ type: typeSlug, tags: 'featured-kit', limit: 1 }),
+    firstPage({ type: typeSlug, categories: 'tool-sets', limit: 1, orderBy: 'sold_quantity', sortedBy: 'DESC' }),
+    queryClient
+      .prefetchInfiniteQuery({
+        queryKey: [
+          API_ENDPOINTS.CATEGORIES,
+          { type: typeSlug, parent: 'null', limit: CATEGORIES_PER_PAGE, home: 1, language: LOCALE },
+        ],
+        queryFn: ({ queryKey }: any) => client.categories.all(queryKey[1]),
+        initialPageParam: undefined,
+      } as any)
+      .catch(() => {}),
+  ]);
+  const own = JSON.parse(JSON.stringify(dehydrate(queryClient)));
+  return {
+    dehydratedState: { ...general, queries: [...(general?.queries ?? []), ...(own.queries ?? [])] },
+    products,
+    kit: tagged[0] ?? topSet[0] ?? null,
+  };
+}
+
 /** /categories index: every vertical's root categories (first page) under the
  *  key categories.tsx builds — the index of all category links is server HTML. */
 export async function loadCategoriesIndexData() {

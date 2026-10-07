@@ -160,6 +160,13 @@ const Header = ({ layout }: { layout?: string }) => {
     return [...verticals, ...NAV_TAIL];
   }, [types]);
 
+  // The vertical you're on stays lit (owner mock: "Tools" underlined on /tools).
+  // router.pathname is usePathname(): the real path, identical on the server and
+  // the client (no page rewrites; '/index' is normalised), so this SSRs with no
+  // #418, exactly like the bottom nav's active pill. '#…' drawer actions never match.
+  const isActive = (href: string) =>
+    !!href && href !== '/' && (router.pathname === href || router.pathname.startsWith(`${href}/`));
+
   const iconBtn = 'grid h-10 w-10 place-items-center rounded-full text-[#1a2e1f] transition hover:bg-black/[0.06]';
 
   return (
@@ -217,11 +224,17 @@ const Header = ({ layout }: { layout?: string }) => {
               {NAV.map((n, i) => {
                 // Fixed split — deterministic, no measurement loop (see above).
                 const reveal = i < 2 ? '' : i < 4 ? 'hidden lg:block' : 'hidden xl:block';
+                // after:w-[55%] is emitted after NAV_UNDERLINE's after:w-0 (Tailwind
+                // sorts candidates), so the active underline wins without !important.
+                const active = isActive(n.href);
                 return n.menu ? (
                   <div key={n.label} className={`group relative ${reveal}`}>
                     <Link
                       href={n.href}
-                      className={`relative inline-flex items-center gap-[7px] whitespace-nowrap py-2 text-[13.5px] font-medium transition-colors duration-200 hover:text-[#397b2a] min-[1440px]:text-[15px] ${NAV_UNDERLINE} text-[#1d2b20]`}
+                      aria-current={active ? 'page' : undefined}
+                      className={`relative inline-flex items-center gap-[7px] whitespace-nowrap py-2 text-[13.5px] font-medium transition-colors duration-200 hover:text-[#397b2a] min-[1440px]:text-[15px] ${NAV_UNDERLINE} ${
+                        active ? 'text-forest-700 after:w-[55%]' : 'text-[#1d2b20]'
+                      }`}
                     >
                       {n.label}
                       <ChevronDown size={12} className="opacity-60 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
@@ -245,8 +258,9 @@ const Header = ({ layout }: { layout?: string }) => {
                   <Link
                     key={n.label}
                     href={n.href}
+                    aria-current={active ? 'page' : undefined}
                     className={`relative whitespace-nowrap py-2 text-[13.5px] font-medium transition-colors duration-200 hover:text-[#397b2a] min-[1440px]:text-[15px] ${NAV_UNDERLINE} ${reveal} ${
-                      n.href === '/offers' ? 'text-[#397b2a]' : 'text-[#1d2b20]'
+                      active ? 'text-forest-700 after:w-[55%]' : n.href === '/offers' ? 'text-[#397b2a]' : 'text-[#1d2b20]'
                     }`}
                   >
                     {n.label}
@@ -273,7 +287,10 @@ const Header = ({ layout }: { layout?: string }) => {
                         <Link
                           key={n.label}
                           href={n.href}
-                          className={`rounded px-3.5 py-2 text-[13px] font-medium text-neutral-700 transition hover:bg-black/[0.06] hover:text-neutral-900 ${i < 2 ? 'lg:hidden' : ''}`}
+                          aria-current={isActive(n.href) ? 'page' : undefined}
+                          className={`rounded px-3.5 py-2 text-[13px] font-medium transition hover:bg-black/[0.06] ${
+                            isActive(n.href) ? 'bg-black/[0.04] text-forest-700' : 'text-neutral-700 hover:text-neutral-900'
+                          } ${i < 2 ? 'lg:hidden' : ''}`}
                         >
                           {n.label}
                         </Link>
@@ -397,7 +414,10 @@ const Header = ({ layout }: { layout?: string }) => {
                   else if (l.href === '#account') onProfile();
                   else router.push(l.href);
                 }}
-                className="block border-b border-black/10 py-3.5 text-left font-poppins text-lg font-semibold"
+                aria-current={isActive(l.href) ? 'page' : undefined}
+                className={`block border-b border-black/10 py-3.5 text-left font-poppins text-lg font-semibold ${
+                  isActive(l.href) ? 'text-forest-700' : ''
+                }`}
               >
                 {l.label}
               </motion.button>

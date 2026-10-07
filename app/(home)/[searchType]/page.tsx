@@ -1,9 +1,13 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadHomeData, loadPlpData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
+import { loadHomeData, loadPlpData, loadToolsData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
 import HomeScreen from '@/app-shell/home-screen';
 import { PageBody as PlpPageBody } from '@/page-bodies/plp';
+import { PageBody as ToolsPageBody } from '@/page-bodies/tools';
+import { getVerticalMeta } from '@/components/storefront/verticals';
+// Plain module (no 'use client'), so the FAQ copy is real data here, not a client reference.
+import { TOOLS_FAQS } from '@/components/tools/tools-content';
 import { plpSerif } from '@/lib/fonts/plp-serif';
 import { SITE_URL } from '@/lib/site-url';
 
@@ -13,6 +17,9 @@ import { SITE_URL } from '@/lib/site-url';
  * the other verticals keep the hero landing until they get the same treatment.
  */
 const PLP_VERTICALS = new Set(['plants']);
+
+/** Verticals with their own designed landing (the owner's /tools mock). */
+const TOOLS_VERTICALS = new Set(['tools']);
 
 export const revalidate = 30;
 export const dynamicParams = true;
@@ -48,9 +55,13 @@ export async function generateMetadata({
   const slugs: string[] = await loadTypeSlugs();
   if (slugs.length && !slugs.includes(searchType)) notFound();
   const name = (await loadTypeName(searchType)) ?? prettify(searchType);
+  // A vertical's own SEO copy (verticals.ts) wins over the generic lines.
+  const seo = getVerticalMeta(searchType).seo;
   return {
-    title: `${name} Online in India`,
-    description: `Shop ${name.toLowerCase()} online at PlantAtHome — hand-checked quality, delivered across India.`,
+    title: seo?.title ?? `${name} Online in India`,
+    description:
+      seo?.description ??
+      `Shop ${name.toLowerCase()} online at PlantAtHome — hand-checked quality, delivered across India.`,
     alternates: { canonical: `/${searchType}` },
   };
 }
@@ -106,6 +117,56 @@ export default async function VerticalPage({ params }: { params: Promise<{ searc
         {/* The PLP's display serif is scoped to this subtree (see lib/fonts/plp-serif). */}
         <div className={plpSerif.variable}>
           <PlpPageBody type={vertical} catalogueTotal={productTotal} />
+        </div>
+      </Hydrate>
+    );
+  }
+
+  if (TOOLS_VERTICALS.has(vertical)) {
+    const slugs = await loadTypeSlugs();
+    if (slugs.length && !slugs.includes(vertical)) return notFound();
+    const { dehydratedState, products } = await loadToolsData(vertical);
+    const collection = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Gardening Tools',
+      url: `${SITE_URL}/${vertical}`,
+      description: getVerticalMeta(vertical).seo?.description,
+      // The server-rendered best-sellers, when the API lists any — never invented.
+      ...(products.length > 0 && {
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: products.map((p: any, i: number) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: p.name,
+            url: `${SITE_URL}/products/${p.slug}`,
+          })),
+        },
+      }),
+    };
+    // The same TOOLS_FAQS the accordion renders, so the markup matches what is shown.
+    const faq = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: TOOLS_FAQS.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    };
+    return (
+      <Hydrate state={dehydratedState}>
+        {[breadcrumb, collection, faq].map((ld) => (
+          <script
+            key={ld['@type']}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, '\\u003c') }}
+          />
+        ))}
+        {/* The display serif, scoped to this subtree (see lib/fonts/plp-serif). */}
+        <div className={plpSerif.variable}>
+          <ToolsPageBody type={vertical} />
         </div>
       </Hydrate>
     );

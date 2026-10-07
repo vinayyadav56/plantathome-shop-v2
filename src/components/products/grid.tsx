@@ -31,6 +31,9 @@ interface Props {
   cardVariant?: 'default' | 'plp';
   /** PLP only: the shopper's pincode ETA, forwarded to every card's delivery line. */
   deliveryEtaDays?: number | null;
+  /** How many leading cards get `priority` images (default: the first row —
+   *  6 on the PLP, else 4). 0 when the grid sits below the page's LCP image. */
+  priorityCount?: number;
 }
 
 export function Grid({
@@ -47,6 +50,7 @@ export function Grid({
   categoryName,
   cardVariant,
   deliveryEtaDays,
+  priorityCount,
 }: Props) {
   const { t } = useTranslation('common');
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -120,7 +124,7 @@ export function Grid({
                 // preloads them (clears the dev "detected as LCP" hint + helps
                 // Core Web Vitals); the desktop grid is up to 4-up (6 on the
                 // PLP), so cover the whole first row. Deeper images stay lazy.
-                priority={index < (cardVariant === 'plp' ? 6 : 4)}
+                priority={index < (priorityCount ?? (cardVariant === 'plp' ? 6 : 4))}
                 layout={column === 'list' ? 'list' : 'grid'}
                 variant={cardVariant}
                 deliveryEtaDays={deliveryEtaDays}

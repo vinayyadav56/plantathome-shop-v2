@@ -36,6 +36,9 @@ export interface VerticalMeta {
   /** The listing page hero's trust row. `{count}` in a title is filled by the
    *  hero from the real catalogue total (rounded down to tens) — never typed in. */
   heroTrust?: PromiseItem[];
+  /** The vertical page's <title> (the root template appends "| PlantAtHome") and
+   *  meta description, when the generic "{name} Online in India" won't do. */
+  seo?: { title: string; description: string };
 }
 
 const PLANTS_PROMISE: PromiseItem[] = [
@@ -43,10 +46,12 @@ const PLANTS_PROMISE: PromiseItem[] = [
   { icon: 'shield', t: '30-day plant guarantee', d: 'If it doesn’t flourish in the first month, we replace it free.' },
   { icon: 'spark', t: 'Lifetime care support', d: 'Chat with our botanists anytime — watering, light, repotting.' },
 ];
+// Neutral copy from the /tools mock's "Why" band — no warranty or free-shipping
+// promises (the old "Lifetime warranty" / "Free 2-day shipping" lines are gone).
 const TOOLS_PROMISE: PromiseItem[] = [
-  { icon: 'shield', t: 'Lifetime warranty', d: 'Forged brass & FSC wood — built to be handed down, not thrown away.' },
-  { icon: 'spark', t: 'Ergonomic by design', d: 'Balanced, comfortable tools tested by real gardeners.' },
-  { icon: 'truckFast', t: 'Free 2-day shipping', d: 'On every order above ₹999, across India.' },
+  { icon: 'shield', t: 'Quality selected', d: 'Practical tools for home gardening' },
+  { icon: 'spark', t: 'Ergonomic design', d: 'Comfortable for everyday use' },
+  { icon: 'truckFast', t: 'Easy delivery', d: 'Fast delivery across India' },
 ];
 const FARM_PROMISE: PromiseItem[] = [
   { icon: 'truckFast', t: 'Harvested at dawn', d: 'Picked the morning of delivery — never cold-stored for weeks.' },
@@ -95,6 +100,11 @@ const META: Record<string, Omit<VerticalMeta, 'key' | 'path'>> = {
       'Premium, ergonomic gardening tools and planters — brass, copper and FSC wood, built to be loved for years.',
     scenes: TOOLS_SCENES,
     promise: TOOLS_PROMISE,
+    seo: {
+      title: 'Gardening Tools Online | Buy Garden Tools',
+      description:
+        'Shop premium gardening tools online at PlantAtHome. Explore pruning tools, watering cans, hand tools, gardening kits and more for easy plant care.',
+    },
   },
   equipment: {
     label: 'Equipment',

@@ -276,7 +276,7 @@ const ProductVariation = ({ productSlug }: { productSlug: string }) => {
   if (error || !product) {
     return (
       <div className={cn(PANEL, 'text-center')}>
-        <p className="text-[14px] text-forest-900">Couldn&rsquo;t load this plant. Please try again.</p>
+        <p className="text-[14px] text-forest-900">Couldn&rsquo;t load this product. Please try again.</p>
         <Button type="button" variant="formSecondary" size="small" onClick={closeModal} className="mt-4">
           Close
         </Button>
