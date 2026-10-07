@@ -101,8 +101,9 @@ test.describe('/plants PLP', () => {
     await page.setViewportSize({ width: 1536, height: 900 });
     await page.goto('/plants', { waitUntil: 'domcontentloaded' });
     await expect(page.getByText(/\d[\d,]* Plants available/).first()).toBeVisible({ timeout: 20_000 });
-    // No ?orderBy in the URL ⇒ the dropdown reads the page default, Popular.
-    await expect(page.getByText(/^Popular$/).first()).toBeVisible();
+    // No ?orderBy in the URL ⇒ the dropdown reads the page default, Popular
+    // (the select renders a placeholder until it mounts).
+    await expect(page.getByText(/^Popular$/).first()).toBeVisible({ timeout: 20_000 });
     await expect(firstProductLink(page)).toBeAttached({ timeout: 20_000 });
     const tracks = await page
       .locator('[data-product-card]')
@@ -149,7 +150,10 @@ test.describe('/plants PLP', () => {
     await page.goto('/plants', { waitUntil: 'domcontentloaded' });
     const cards = page.locator('[data-product-card]');
     await expect(cards.first()).toBeVisible({ timeout: 20_000 });
-    // Wait for the city-scoped list (the dimmed "Updating for Delhi…" state) to settle.
+    // The server HTML already has the buttons; a click before React hydrates
+    // does nothing. "Delivering to {city}" is client-only (localStorage), so it
+    // is the hydration signal — then let the city-scoped list settle.
+    await expect(page.getByText(/Delivering to/).first()).toBeVisible({ timeout: 30_000 });
     await expect(page.locator('[aria-busy="true"]')).toHaveCount(0, { timeout: 20_000 });
 
     const n = await cards.count();
