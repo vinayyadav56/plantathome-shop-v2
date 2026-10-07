@@ -73,6 +73,7 @@ export default function CategoryTiles({ type }: { type: string }) {
               <li key={`sk-${i}`} className="rounded-lg border border-kraft-200 bg-white p-2" aria-hidden>
                 <div className={cn('aspect-[7/5] animate-pulse rounded-md', TINTS[i % TINTS.length])} />
                 <div className="mx-auto mt-2 h-3 w-2/3 animate-pulse rounded-full bg-sage-100" />
+                <div className="h-[calc(2.5em-0.75rem)] text-[13px]" />
               </li>
             ))
           : items.map((c, i) => (
@@ -92,7 +93,9 @@ export default function CategoryTiles({ type }: { type: string }) {
                       fallback={null}
                     />
                   </span>
-                  <span className="mt-2 block truncate text-center text-[13px] font-semibold leading-tight text-forest-900">
+                  {/* Two lines, reserved on every tile so the row stays level:
+                      "Palms & Tropical Plants" / "Climbers & Creepers" don't fit one. */}
+                  <span className="mt-2 line-clamp-2 min-h-[2.5em] text-center text-[13px] font-semibold leading-tight text-forest-900">
                     {c.name}
                   </span>
                 </Link>
