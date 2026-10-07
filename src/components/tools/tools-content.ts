@@ -8,7 +8,7 @@
  */
 
 export type ToolIconKey =
-  | 'badge'
+  | 'shield'
   | 'truck'
   | 'heart'
   | 'hand'
@@ -18,8 +18,7 @@ export type ToolIconKey =
   | 'droplet'
   | 'seedling'
   | 'shovel'
-  | 'spray'
-  | 'sprout';
+  | 'spray';
 
 export interface ToolsLink {
   label: string;
@@ -36,7 +35,8 @@ export interface IconCopy {
 export interface NeedCard {
   key: string;
   title: string;
-  items: string;
+  /** Shown as "a · b" with the last item on its own line, as in the mock. */
+  items: string[];
   href: string;
   icon: ToolIconKey;
   /** Tailwind text colour for the icon. */
@@ -68,6 +68,20 @@ export interface ToolsFaq {
 /** Where every "View All …" link lands: the Tools block of /categories. */
 export const VIEW_ALL_HREF = '/categories#tools';
 
+/** The owner's potting-table photo (1600×569): the hero, the kit band's stand-in and the
+ *  need band's leafy crop all use it. */
+export const HERO_PHOTO = '/tools-hero.webp';
+
+/**
+ * `sizes` for the hero photo and the kit band's stand-in (same box geometry). It describes the
+ * width the photo is DRAWN at, not its box: object-cover scales the 2.81:1 photo to the box's
+ * height, so it is drawn ~1350 px wide in the ~490 px desktop band (~1250 px in the lg band and
+ * the 420 px kit panel), at least the viewport (and 720 px) in the 256 px tablet strip, and
+ * 141vw in the 2:1 phone strip. One string, so the hero's single preload is the file each of
+ * them picks (lg+ always resolves to the 1920w file, which the need band's crop asks for too).
+ */
+export const HERO_PHOTO_SIZES = '(min-width: 1280px) 1350px, (min-width: 1024px) 1250px, (min-width: 640px) 100vw, 141vw';
+
 export const HERO: {
   eyebrow: string;
   title: string;
@@ -82,9 +96,9 @@ export const HERO: {
   primary: { label: 'Shop Gardening Tools', href: '#categories' },
   secondary: { label: 'Explore Tool Sets', href: '/c/tool-sets' },
   trust: [
-    { icon: 'badge', t: 'Quality Selected', d: 'For home gardeners' },
+    { icon: 'shield', t: 'Quality Selected', d: 'For home gardeners' },
     { icon: 'truck', t: 'Easy Delivery', d: 'Across India' },
-    { icon: 'heart', t: 'Trusted by', d: 'Plant Lovers' },
+    { icon: 'leaf', t: 'Trusted by', d: 'Plant Lovers' },
   ],
 };
 
@@ -131,7 +145,7 @@ export const NEED_CARDS: NeedCard[] = [
   {
     key: 'planting',
     title: "I'm planting",
-    items: 'Trowels · Cultivators · Transplanters',
+    items: ['Trowels', 'Cultivators', 'Transplanters'],
     href: '/c/tool-accessories',
     icon: 'seedling',
     tone: 'text-emerald-600',
@@ -139,7 +153,7 @@ export const NEED_CARDS: NeedCard[] = [
   {
     key: 'pruning',
     title: "I'm pruning",
-    items: 'Secateurs · Shears · Cutters',
+    items: ['Secateurs', 'Shears', 'Cutters'],
     href: '/c/pruning-cutting',
     icon: 'scissors',
     tone: 'text-rose-500',
@@ -147,7 +161,7 @@ export const NEED_CARDS: NeedCard[] = [
   {
     key: 'watering',
     title: "I'm watering",
-    items: 'Watering cans · Sprayers · Misters',
+    items: ['Watering cans', 'Sprayers', 'Misters'],
     href: '/c/watering-tools',
     icon: 'droplet',
     tone: 'text-sky-500',
@@ -155,7 +169,7 @@ export const NEED_CARDS: NeedCard[] = [
   {
     key: 'repotting',
     title: "I'm repotting",
-    items: 'Pots tools · Scoops · Root care tools',
+    items: ['Pots tools', 'Scoops', 'Root care tools'],
     href: '/c/planters-pots',
     icon: 'pot',
     tone: 'text-orange-600',
@@ -170,20 +184,20 @@ export const TASK_TILES: TaskTile[] = [
   { key: 'planting', title: 'Planting', sub: 'Plant seeds & transplants', href: '/c/tool-accessories', icon: 'seedling', tone: 'text-emerald-600' },
   { key: 'soil', title: 'Soil Care', sub: 'Manage soil & nutrition', href: '/c/soil-care', icon: 'shovel', tone: 'text-amber-800' },
   { key: 'cleaning', title: 'Cleaning', sub: 'Clean leaves & remove dust', href: '/c/tool-accessories', icon: 'spray', tone: 'text-sky-600' },
-  { key: 'supporting', title: 'Supporting', sub: 'Stakes, ties & plant support', href: '/c/tool-accessories', icon: 'sprout', tone: 'text-green-700' },
+  { key: 'supporting', title: 'Supporting', sub: 'Stakes, ties & plant support', href: '/c/tool-accessories', icon: 'leaf', tone: 'text-green-700' },
 ];
 
 export const WHY_ITEMS: IconCopy[] = [
-  { icon: 'badge', t: 'Quality selected', d: 'Practical tools for home gardening' },
+  { icon: 'leaf', t: 'Quality selected', d: 'Practical tools for home gardening' },
   { icon: 'hand', t: 'Ergonomic design', d: 'Comfortable for everyday use' },
   { icon: 'truck', t: 'Easy delivery', d: 'Fast delivery across India' },
-  { icon: 'leaf', t: 'Plant care expertise', d: 'Selected by people who understand plants' },
+  { icon: 'heart', t: 'Plant care expertise', d: 'Selected by people who understand plants' },
 ];
 
 /** Navigation into the collections, not articles — there is no content system,
  *  so no article URL is ever invented. */
 export const GUIDE_CARDS: GuideCard[] = [
-  { title: 'Best gardening tools for beginners', slug: 'tool-sets', href: '/c/tool-sets' },
+  { title: 'Best gardening tools for beginners', slug: 'tool-accessories', href: '/c/tool-accessories' },
   { title: 'How to choose the right pruning tool', slug: 'pruning-cutting', href: '/c/pruning-cutting' },
   { title: 'Essential tools for balcony gardening', slug: 'planters-pots', href: '/c/planters-pots' },
   { title: 'Complete guide to gardening tool kits', slug: 'tool-sets', href: '/c/tool-sets' },

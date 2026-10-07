@@ -10,8 +10,10 @@
  * exactly like loadToolsData's SSR prefetch, so the first paint is the server
  * HTML, and each one renders nothing when the API lists no products.
  *
- * Spacing: each section carries its own top margin; only the guides/FAQ row's
- * comes from here, because those two sit side by side in one grid.
+ * Spacing: each section carries its own top margin, measured off the mock (24–40 px
+ * between sections, 16 px between the need band and the kit); only the guides/FAQ
+ * row's comes from here, because those two sit side by side in one grid. From lg
+ * the guides sit on the mock's white panel, which bleeds to the page's left edge.
  *
  * The page is cream, not white: the mock's background samples #FBFAF6, and the
  * white tiles, cards and icon discs are drawn to sit on it (as on /plants).
@@ -42,9 +44,12 @@ function Tools({ type }: Props) {
         <FeaturedKit type={type} />
         <TaskTiles />
         <WhyBand />
-        <div className="mt-14 grid gap-10 lg:mt-20 lg:grid-cols-3">
-          <ToolsGuides type={type} className="lg:col-span-2" />
-          <ToolsFaq />
+        <div className="mt-9 grid gap-10 lg:grid-cols-3">
+          <ToolsGuides
+            type={type}
+            className="lg:col-span-2 lg:-ml-6 lg:rounded-tr-lg lg:bg-white lg:py-7 lg:pl-6 lg:pr-7 xl:-ml-8 xl:pl-8"
+          />
+          <ToolsFaq className="lg:pt-7" />
         </div>
       </div>
     </main>

@@ -751,8 +751,10 @@ select:focus {
 }
 
 /* ── BADGES ─────────────────────────────────────────────────── */
+/* :not(svg) — Tabler's rosette icon carries `tabler-icon-rosette-discount-check`
+   (BadgeCheck), and this rule painted it as a solid green pill. */
 .bg-accent-200, [class*="tag-"],
-.discount-badge, [class*="discount"] {
+.discount-badge, [class*="discount"]:not(svg) {
   background: var(--pa-grad) !important;
   border-radius: var(--pa-radius-pill) !important;
   font-weight: 700 !important;

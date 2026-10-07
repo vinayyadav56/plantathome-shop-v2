@@ -26,7 +26,7 @@ export function ToolsBestsellers({ type }: { type: string }) {
   if (!isLoading && !products.length) return null;
 
   return (
-    <section aria-labelledby="tools-bestsellers" className="mt-14 lg:mt-20">
+    <section aria-labelledby="tools-bestsellers" className="mt-8">
       <SectionHead id="tools-bestsellers" {...SECTION.bestsellers} />
       <Grid
         products={products}
@@ -36,7 +36,7 @@ export function ToolsBestsellers({ type }: { type: string }) {
         priorityCount={0}
         hasMore={false}
         limit={6}
-        gridClassName="mt-6 !grid-cols-2 !gap-x-[15px] !gap-y-5 md:!grid-cols-3 lg:!grid-cols-6"
+        gridClassName="mt-5 !grid-cols-2 !gap-x-[15px] !gap-y-5 md:!grid-cols-3 lg:!grid-cols-6"
       />
     </section>
   );

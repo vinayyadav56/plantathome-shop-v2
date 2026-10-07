@@ -104,7 +104,23 @@ test.describe('/tools landing', () => {
       for (const item of collection.mainEntity.itemListElement) expect(item.url).toMatch(/\/products\/[^/]+$/);
     }
     // The H1 and every category tile are in the HTML itself (crawlers, no-JS).
-    expect(html).toContain('Gardening Tools');
+    expect((html.match(/<h1[\s>]/g) ?? []).length, 'one h1').toBe(1);
+    const h1Text = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? '')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    expect(h1Text).toBe(H1);
+    const tiles = html.match(/<section[^>]*id="categories"[\s\S]*?<\/section>/)?.[0] ?? '';
+    expect((tiles.match(/href="\/c\//g) ?? []).length, 'category tiles in the server HTML').toBe(6);
+    // No city on the server: when it lists tools at all, the kit band (a Tool Set) is there
+    // too, linking to its PDP with a real price. City-less, so this runs in every environment.
+    if (cards > 0) {
+      const kit = html.match(/<section[^>]*aria-labelledby="tools-kit"[\s\S]*?<\/section>/)?.[0];
+      expect(kit, 'kit band in the server HTML').toBeTruthy();
+      expect(kit).toMatch(/href="\/products\/[^"]+"/);
+      expect(kit).toMatch(/₹\s?\d/);
+    }
     expect(html).not.toMatch(FABRICATED);
   });
 
@@ -152,7 +168,10 @@ test.describe('/tools landing', () => {
       test.skip(true, 'the API lists no tools for the seeded city in this environment');
     }
     if (hasSellers) {
-      await expect(sellers.locator('[data-product-card]')).toHaveCount(6);
+      // Up to six: a city may list fewer tools than that.
+      const n = await sellers.locator('[data-product-card]').count();
+      expect(n, 'best-seller cards').toBeGreaterThanOrEqual(1);
+      expect(n, 'best-seller cards').toBeLessThanOrEqual(6);
       await expect(sellers.locator('a[href^="/products/"]').first()).toBeVisible();
     }
     if (hasKit) {

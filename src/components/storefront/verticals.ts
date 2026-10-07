@@ -95,9 +95,10 @@ const META: Record<string, Omit<VerticalMeta, 'key' | 'path'>> = {
   },
   tools: {
     label: 'Tools',
-    tagline: 'Tools that last a lifetime.',
-    blurb:
-      'Premium, ergonomic gardening tools and planters — brass, copper and FSC wood, built to be loved for years.',
+    // No durability or materials claims (no "lifetime", no "brass, copper and FSC wood"): nothing
+    // in the catalogue backs them.
+    tagline: 'Tools for everyday plant care.',
+    blurb: 'Premium, ergonomic gardening tools and planters for everyday plant care.',
     scenes: TOOLS_SCENES,
     promise: TOOLS_PROMISE,
     seo: {

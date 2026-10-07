@@ -19,9 +19,11 @@ type Props = {
     | 'homeMini';
   onClick(event: React.MouseEvent<HTMLButtonElement | MouseEvent>): void;
   disabled?: boolean;
+  /** The 'plantathome' button's text; defaults to "Add To Shopping Cart". */
+  label?: string;
 };
 
-const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
+const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled, label }) => {
   const { t } = useTranslation('common');
 
   switch (variant) {
@@ -98,7 +100,7 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
             // The clamp bounds keep it sane if this ever renders outside a
             // container, where cqw falls back to the viewport.
             // Shares the card action row's baseline — see plantathome.tsx's CTA.
-            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-control bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(10.5px,3.4cqw,14px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0',
+            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-control bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(10.5px,3.4cqw,14px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2',
             {
               'cursor-not-allowed !bg-stone-300 !text-stone-500 hover:!bg-stone-300':
                 disabled,
@@ -106,7 +108,7 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled }) => {
           )}
         >
           <CartIcon className="h-[clamp(13px,4.4cqw,18px)] w-[clamp(13px,4.4cqw,18px)] shrink-0" />
-          <span className="truncate">{t('text-add-cart')}</span>
+          <span className="truncate">{label ?? t('text-add-cart')}</span>
         </button>
       );
     case 'homeMini':

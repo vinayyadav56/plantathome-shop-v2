@@ -5,7 +5,6 @@ import cn from 'classnames';
 import SafeImage from '@/components/ui/safe-image';
 import {
   ArrowRight,
-  BadgeCheck,
   ChevronDown,
   Droplet,
   Hand,
@@ -14,9 +13,9 @@ import {
   PottedPlant,
   Scissors,
   Seedling,
+  ShieldCheck,
   Shovel,
   Spray,
-  Sprout,
   Truck,
   type LucideIcon,
 } from '@/components/ui/icon';
@@ -25,6 +24,7 @@ import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { SectionHead } from './section-head';
 import {
   GUIDE_CARDS,
+  HERO_PHOTO,
   NEED_CARDS,
   SECTION,
   TASK_TILES,
@@ -33,7 +33,7 @@ import {
   type ToolIconKey,
 } from './tools-content';
 
-/** tools-content's icon keys → glyphs. Seedling and Sprout are the same Tabler seedling. */
+/** tools-content's icon keys → glyphs. */
 const ICONS: Record<ToolIconKey, LucideIcon> = {
   scissors: Scissors,
   pot: PottedPlant,
@@ -41,13 +41,19 @@ const ICONS: Record<ToolIconKey, LucideIcon> = {
   seedling: Seedling,
   shovel: Shovel,
   spray: Spray,
-  sprout: Sprout,
-  badge: BadgeCheck,
+  shield: ShieldCheck,
   hand: Hand,
   truck: Truck,
   leaf: Leaf,
   heart: Heart,
 };
+
+/** The need cards and task tiles draw their glyphs solid in the task's colour, as in the mock
+ *  (fill swapped on the same outline paths, the icon set's own rule for solid glyphs). */
+const SOLID = { fill: 'currentColor' } as const;
+
+/** "a · b" keeps the dot with its neighbours, so a wrap never strands it at a line end. */
+const SEP = '\u00A0·\u00A0';
 
 const FOCUS_RING = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700';
 
@@ -63,7 +69,7 @@ export function NeedBand() {
   return (
     <section
       aria-labelledby="tools-need"
-      className="relative -mx-5 mt-14 overflow-hidden bg-sage-100 px-5 py-10 lg:-mx-6 lg:mt-20 lg:px-6 xl:-mx-8 xl:px-8"
+      className="relative -mx-5 mt-8 overflow-hidden bg-sage-100 px-5 pb-9 pt-8 lg:-mx-6 lg:px-6 xl:-mx-8 xl:px-8"
     >
       {/* Absolute ⇒ painted above in-flow content, so the heading and cards below are `relative`.
           The photo is drawn at 190% of the band's height and shifted right by 50.6% of its own
@@ -74,12 +80,12 @@ export function NeedBand() {
         className="absolute inset-y-0 right-0 hidden w-[30%] overflow-hidden lg:block [mask-image:linear-gradient(to_right,transparent,black_45%)]"
       >
         <SafeImage
-          src="/tools-hero.webp"
+          src={HERO_PHOTO}
           alt=""
           width={1600}
           height={569}
           // Drawn about 1,600 CSS px wide at every lg width, so this always picks the 1920w
-          // candidate: the same URL (w=1920, q=70) a retina screen already fetched for the hero.
+          // candidate: the same URL (w=1920, q=70) the hero already fetched from lg up.
           sizes="1600px"
           quality={70}
           className="absolute right-0 top-0 h-[190%] w-auto max-w-none translate-x-[50.6%]"
@@ -88,7 +94,7 @@ export function NeedBand() {
 
       <SectionHead id="tools-need" className="relative" {...SECTION.need} />
 
-      <ul className="relative mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="relative mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {NEED_CARDS.map((card) => {
           const Icon = ICONS[card.icon];
           return (
@@ -96,14 +102,19 @@ export function NeedBand() {
               <Link
                 href={card.href}
                 className={cn(
-                  'group flex h-full items-start gap-4 rounded-lg bg-white p-5 shadow-box transition hover:-translate-y-0.5 lg:p-6',
+                  'group flex h-full items-center gap-4 rounded-lg bg-white p-5 shadow-box transition hover:-translate-y-0.5 lg:gap-3 lg:p-4 xl:gap-4 xl:p-6',
                   FOCUS_RING,
                 )}
               >
-                <Icon size={32} className={cn('shrink-0', card.tone)} aria-hidden />
+                <Icon size={40} {...SOLID} className={cn('shrink-0', card.tone)} aria-hidden />
                 <div className="min-w-0">
                   <h3 className="text-[16px] font-bold leading-snug text-forest-900">{card.title}</h3>
-                  <p className="mt-1 text-[14px] leading-5 text-stone-600">{card.items}</p>
+                  {/* The mock's two lines: the first items, then the last one on its own. */}
+                  <p className="mt-1 text-[14px] leading-5 text-stone-600">
+                    {card.items.slice(0, -1).join(SEP)}
+                    <br />
+                    {card.items[card.items.length - 1]}
+                  </p>
                   <ArrowRight
                     size={16}
                     className="mt-2.5 block text-forest-900 transition-transform group-hover:translate-x-0.5"
@@ -127,9 +138,9 @@ export function NeedBand() {
  */
 export function TaskTiles() {
   return (
-    <section aria-labelledby="tools-tasks" className="mt-14 lg:mt-20">
+    <section aria-labelledby="tools-tasks" className="mt-10">
       <SectionHead id="tools-tasks" {...SECTION.tasks} />
-      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7 lg:gap-4 xl:gap-5">
+      <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7 lg:gap-4 xl:gap-5">
         {TASK_TILES.map((tile) => {
           const Icon = ICONS[tile.icon];
           return (
@@ -137,11 +148,11 @@ export function TaskTiles() {
               <Link
                 href={tile.href}
                 className={cn(
-                  'flex h-full min-h-[128px] flex-col rounded-lg border border-kraft-200 bg-white p-4 transition hover:border-forest-700/40 hover:shadow-box xl:p-5',
+                  'flex h-full min-h-[128px] flex-col rounded-lg bg-white p-4 shadow-box transition hover:-translate-y-0.5 xl:p-5',
                   FOCUS_RING,
                 )}
               >
-                <Icon size={32} className={cn('shrink-0', tile.tone)} aria-hidden />
+                <Icon size={40} {...SOLID} className={cn('shrink-0', tile.tone)} aria-hidden />
                 <h3 className="mt-4 text-[15px] font-bold leading-5 text-forest-900">{tile.title}</h3>
                 <p className="mt-1 text-[12.5px] leading-snug text-stone-600">{tile.sub}</p>
               </Link>
@@ -154,19 +165,21 @@ export function TaskTiles() {
 }
 
 /**
- * "Why shop tools from PlantAtHome?": four promises (icon disc, title, one
- * line) in a band ruled top and bottom. No cards.
+ * "Why shop tools from PlantAtHome?": four promises (white icon disc, title,
+ * one line) straight on the page, no rules and no cards. From xl the row is
+ * spaced like the mock (each item its natural width, justified), so the
+ * longest line never wraps.
  */
 export function WhyBand() {
   return (
-    <section aria-labelledby="tools-why" className="mt-14 border-y border-kraft-200 py-10 lg:mt-20">
+    <section aria-labelledby="tools-why" className="mt-9">
       <SectionHead id="tools-why" {...SECTION.why} />
-      <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:flex xl:justify-between">
         {WHY_ITEMS.map((item) => {
           const Icon = ICONS[item.icon];
           return (
             <li key={item.t} className="flex items-center gap-4">
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-kraft-200 bg-white text-forest-800">
+              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-white text-forest-800 shadow-box">
                 <Icon size={24} aria-hidden />
               </span>
               <div className="min-w-0">
@@ -203,14 +216,14 @@ export function ToolsGuides({ type, className }: { type: string; className?: str
 
   return (
     <section aria-labelledby="tools-guides" className={cn(className)}>
-      <SectionHead id="tools-guides" {...SECTION.guides} />
-      <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-5">
+      <SectionHead id="tools-guides" small {...SECTION.guides} />
+      <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-5">
         {GUIDE_CARDS.map((guide) => (
           <li key={guide.title}>
             <Link
               href={guide.href}
               className={cn(
-                'group flex h-full flex-col overflow-hidden rounded-lg border border-kraft-200 bg-white transition hover:shadow-box',
+                'group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-box transition hover:-translate-y-0.5',
                 FOCUS_RING,
               )}
             >
@@ -220,14 +233,15 @@ export function ToolsGuides({ type, className }: { type: string; className?: str
                   src={imageOf(guide.slug)}
                   alt=""
                   fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 15vw"
+                  sizes="(max-width: 639px) 50vw, (max-width: 1023px) 25vw, 15vw"
                   quality={70}
                   className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   fallback={null}
                 />
               </div>
               <div className="flex flex-1 flex-col p-4">
-                <h3 className="mb-6 line-clamp-3 text-[14px] font-semibold leading-5 text-forest-900">
+                {/* No clamp: four fixed titles, and at 1024 the longest needs four lines. */}
+                <h3 className="mb-6 text-[14px] font-semibold leading-5 text-forest-900">
                   {guide.title}
                 </h3>
                 <ArrowRight
@@ -255,7 +269,7 @@ export function ToolsGuides({ type, className }: { type: string; className?: str
 export function ToolsFaq({ className }: { className?: string }) {
   return (
     <section aria-labelledby="tools-faq" className={cn(className)}>
-      <SectionHead id="tools-faq" {...SECTION.faq} />
+      <SectionHead id="tools-faq" small {...SECTION.faq} />
       <div className="mt-4">
         {TOOLS_FAQS.map((faq) => (
           <details key={faq.q} className="group border-b border-kraft-200">

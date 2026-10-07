@@ -3,23 +3,26 @@
 import Link from 'next/link';
 import Breadcrumb from '@/components/ui/breadcrumb';
 import SafeImage from '@/components/ui/safe-image';
-import { ArrowRight, BadgeCheck, Heart, Truck } from '@/components/ui/icon';
+import { ArrowRight, Leaf, ShieldCheck, Truck } from '@/components/ui/icon';
 import { Routes } from '@/config/routes';
-import { HERO, type ToolIconKey } from './tools-content';
+import { HERO, HERO_PHOTO, HERO_PHOTO_SIZES, type ToolIconKey } from './tools-content';
 
 const TRUST_ICON: Partial<Record<ToolIconKey, typeof Truck>> = {
-  badge: BadgeCheck,
+  shield: ShieldCheck,
   truck: Truck,
-  heart: Heart,
+  leaf: Leaf,
 };
 
-const PHOTO = '/tools-hero.webp';
 const PHOTO_ALT = 'Gardening tools on a potting table — secateurs, trowel, watering can and gloves';
 
 /** The mock's H1 break: "Gardening Tools / for Every Green Space". Greedy wrapping can't produce
  *  it (the second line is the longer one), so sm+ gets an explicit <br> before "for"; the space
  *  kept before the <br> leaves the H1's text exactly HERO.title. */
 const TITLE_LINES = HERO.title.match(/^(.+?) (for .+)$/);
+
+/** Both CTAs: two equal columns on phones (one row down to 320 px), auto width from sm. */
+const CTA =
+  'inline-flex h-11 items-center justify-center gap-2 rounded-control px-2 text-center text-[13px] font-semibold leading-tight transition-colors sm:px-5 sm:text-[14px] lg:h-[52px] lg:px-6 lg:text-[16px]';
 
 /**
  * The /tools hero (owner's mock, 2026-10-07): a full-bleed warm-cream band with the breadcrumb,
@@ -30,33 +33,37 @@ const TITLE_LINES = HERO.title.match(/^(.+?) (for .+)$/);
  *
  * Render it INSIDE the page's gutter container (`px-5 lg:px-6 xl:px-8`): the section bleeds
  * with matching negative margins and the copy re-adds the gutter, so it stays on the page grid.
- * Below lg the copy comes first, then the same photo as a strip (16:9 phones, 5:2 tablets).
  *
- * The desktop photo is the page's only `priority` image. Below lg its `sizes` resolves to 100vw,
- * the same as the strip's, so both pick the same candidate and the photo downloads once.
+ * ONE photo element for every width, and it is the page's only `priority` image: below lg it is
+ * a strip after the copy (`order-last`: 2:1 on phones, 256 px tall on tablets), from lg the
+ * faded right 55%. So the photo on screen is always the eager, preloaded one.
  */
 export function ToolsHero() {
   return (
-    <section className="relative -mx-5 overflow-hidden bg-[#F1E8DA] lg:-mx-6 lg:min-h-[440px] xl:-mx-8 xl:min-h-[480px]">
-      {/* Absolute ⇒ painted above in-flow content, so the copy below is `relative` and later in the DOM. */}
-      <div className="absolute inset-y-0 right-0 hidden w-[55%] lg:block [mask-image:linear-gradient(to_right,transparent,black_30%)]">
+    <section className="relative -mx-5 flex flex-col overflow-hidden bg-[#F1E8DA] lg:-mx-6 lg:block lg:min-h-[440px] xl:-mx-8 xl:min-h-[480px]">
+      {/* Absolute from lg ⇒ painted above in-flow content, so the copy (later in the DOM) is `relative`. */}
+      <div className="relative order-last aspect-[2/1] sm:aspect-auto sm:h-64 lg:absolute lg:inset-y-0 lg:right-0 lg:h-auto lg:w-[55%] lg:[mask-image:linear-gradient(to_right,transparent,black_30%)]">
         <SafeImage
-          src={PHOTO}
+          src={HERO_PHOTO}
           variant="banner"
           fill
           priority
-          sizes="(max-width: 1024px) 100vw, 55vw"
-          className="object-cover object-right"
+          sizes={HERO_PHOTO_SIZES}
+          className="object-cover object-[70%_50%] lg:object-right"
           alt={PHOTO_ALT}
         />
       </div>
 
       {/* 52% (not 48%) so the trust row stays one line at 1024; text that reaches past 45%
           only meets the photo's transparent fade. */}
-      <div className="relative px-5 pb-7 pt-4 lg:max-w-[52%] lg:px-6 lg:py-10 xl:px-8">
-        <Breadcrumb items={[{ label: 'Home', href: Routes.home }, { label: 'Tools' }]} />
+      <div className="relative px-5 pb-7 pt-6 sm:pt-4 lg:max-w-[52%] lg:px-6 lg:py-10 xl:px-8">
+        {/* Phones skip the visible trail to keep the hero short; the route's BreadcrumbList stays. */}
+        <Breadcrumb
+          className="mb-6 hidden sm:block"
+          items={[{ label: 'Home', href: Routes.home }, { label: 'Tools' }]}
+        />
 
-        <p className="mt-6 text-[12px] font-semibold uppercase tracking-[0.18em] text-forest-700">
+        <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-forest-700">
           {HERO.eyebrow}
         </p>
         {/* 42px at lg: the second line is 529px at 52px, wider than the 1024 column. */}
@@ -70,39 +77,37 @@ export function ToolsHero() {
             HERO.title
           )}
         </h1>
-        <p className="mt-4 max-w-[42ch] text-[16px] leading-relaxed text-forest-900/80 lg:text-[17px]">
+        {/* 40ch: the mock's break, "…water and care / for your garden." (490 px of 504 at 20 px). */}
+        <p className="mt-4 max-w-[40ch] text-[16px] leading-relaxed text-forest-900/80 lg:text-[20px]">
           {HERO.sub}
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            href={HERO.primary.href}
-            className="inline-flex h-11 items-center gap-2 rounded-control bg-ds-btn px-5 text-[14px] font-semibold text-white transition-colors hover:bg-ds-btn-hover"
-          >
+        <div className="mt-6 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+          <Link href={HERO.primary.href} className={`${CTA} bg-ds-btn text-white hover:bg-ds-btn-hover`}>
             {HERO.primary.label}
-            <ArrowRight size={16} aria-hidden />
+            <ArrowRight size={16} className="hidden shrink-0 sm:block" aria-hidden />
           </Link>
           <Link
             href={HERO.secondary.href}
-            className="inline-flex h-11 items-center rounded-control border border-forest-900/25 bg-white/70 px-5 text-[14px] font-semibold text-forest-900 transition-colors hover:bg-white"
+            className={`${CTA} border border-forest-900/25 bg-white/70 text-forest-900 hover:bg-white`}
           >
             {HERO.secondary.label}
           </Link>
         </div>
 
-        <ul className="mt-7 flex flex-wrap gap-x-7 gap-y-3">
+        {/* Bare icons, as in the mock. Phones: three compact columns, icon above the two lines. */}
+        <ul className="mt-6 grid grid-cols-3 gap-2 sm:mt-7 sm:flex sm:flex-wrap sm:gap-x-8 sm:gap-y-3 lg:mt-10 xl:gap-x-12">
           {HERO.trust.map((item) => {
             const Icon = TRUST_ICON[item.icon];
             return (
-              <li key={item.t} className="flex items-center gap-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sage-100 text-forest-700">
-                  {Icon && <Icon size={18} aria-hidden />}
-                </span>
+              <li key={item.t} className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                {Icon && <Icon size={24} className="shrink-0 text-forest-800" aria-hidden />}
                 <span>
                   <span className="block text-[13px] font-semibold leading-tight text-forest-900">
                     {item.t}
                   </span>
-                  <span className="mt-0.5 block text-[12px] leading-tight text-stone-500">
+                  {/* /70, not stone-500: 4.96:1 on the band (stone-500 was 2.82:1). */}
+                  <span className="mt-0.5 block text-[12px] leading-tight text-forest-900/70">
                     {item.d}
                   </span>
                 </span>
@@ -110,17 +115,6 @@ export function ToolsHero() {
             );
           })}
         </ul>
-      </div>
-
-      <div className="relative mt-2 aspect-[16/9] sm:aspect-[5/2] lg:hidden">
-        <SafeImage
-          src={PHOTO}
-          variant="banner"
-          fill
-          sizes="100vw"
-          className="object-cover object-[70%_50%]"
-          alt={PHOTO_ALT}
-        />
       </div>
     </section>
   );

@@ -9,14 +9,10 @@ import { useProducts } from '@/framework/product';
 import usePrice from '@/lib/use-price';
 import { Routes } from '@/config/routes';
 import type { Product } from '@/types';
-import { SECTION } from './tools-content';
+import { HERO_PHOTO, HERO_PHOTO_SIZES, SECTION } from './tools-content';
 
 /** List rows carry `is_bundle` (product_type === bundle). The shared Product type doesn't declare it. */
 type KitProduct = Product & { is_bundle?: boolean };
-
-/** The owner's stand-in photo until the kit has its own: the tools hero, cropped
- *  to its watering-can / trowel / gloves side. */
-const HERO_SRC = '/tools-hero.webp';
 
 /**
  * /tools featured kit band: a photo on the left and a cream panel on the right
@@ -58,22 +54,32 @@ export function FeaturedKit({ type }: { type: string }) {
   return (
     <section
       aria-labelledby="tools-kit"
-      className="mt-14 grid overflow-hidden rounded-lg border border-kraft-200 lg:mt-20 lg:grid-cols-2"
+      className="mt-4 grid overflow-hidden rounded-lg shadow-box lg:grid-cols-2"
     >
-      <div className="relative aspect-[4/3] bg-[#F7F5EF] lg:aspect-auto lg:min-h-[420px]">
+      {/* The stand-in's box below lg is the hero strip's (2:1 phones, 256 px tablets), so it is
+          drawn exactly as wide as the hero photo and HERO_PHOTO_SIZES picks the file the hero
+          already downloaded, at every width (from lg both resolve to the 1920w file). */}
+      <div
+        className={cn(
+          'relative bg-[#F7F5EF] lg:aspect-auto lg:min-h-[420px]',
+          hasOwnImage ? 'aspect-[4/3]' : 'aspect-[2/1] sm:aspect-auto sm:h-64 lg:h-auto',
+        )}
+      >
+        {/* Until the kit has its own photo, the owner's stand-in is the hero photo cropped to its
+            watering-can / trowel / gloves side. It is decorative: the H2 names the kit. */}
         <SafeImage
-          src={kit.image?.original || HERO_SRC}
-          fallbackSrc={HERO_SRC}
-          // The stand-in photo isn't the kit, so it stays decorative. The H2 names the kit.
+          src={kit.image?.original || HERO_PHOTO}
+          fallbackSrc={HERO_PHOTO}
           alt={hasOwnImage ? kit.name : ''}
           fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
+          sizes={hasOwnImage ? '(max-width: 1023px) 100vw, 50vw' : HERO_PHOTO_SIZES}
           quality={70}
           className={cn('object-cover', !hasOwnImage && 'object-[78%_50%]')}
         />
       </div>
 
-      <div className="flex flex-col justify-center bg-cream-100 p-6 sm:p-8 lg:px-12 lg:py-10 xl:px-16">
+      {/* The mock's warm off-white, a shade lighter at the top left than toward the bottom right. */}
+      <div className="flex flex-col justify-center bg-gradient-to-br from-[#FAF6EE] to-[#F6F0E4] p-6 sm:p-8 lg:px-12 lg:py-10 xl:px-16">
         <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-forest-700">
           {SECTION.kit.eyebrow}
         </p>
@@ -85,7 +91,7 @@ export function FeaturedKit({ type }: { type: string }) {
         >
           {kit.name}
         </h2>
-        <p className="mt-3 text-[15px] text-stone-600">{SECTION.kit.sub}</p>
+        <p className="mt-3 text-[15px] text-stone-600 lg:text-[19px]">{SECTION.kit.sub}</p>
 
         {included.length > 0 ? (
           <ul className="mt-5 space-y-2.5">
@@ -105,9 +111,10 @@ export function FeaturedKit({ type }: { type: string }) {
           {amount > 0 && (
             <p className="flex flex-wrap items-baseline gap-x-2">
               <span className="text-[30px] font-bold leading-none text-forest-900">{compactPrice(price)}</span>
-              {isVariable && <span className="text-[14px] text-stone-500">onwards</span>}
+              {/* stone-600, not 500: 4.5:1+ on the panel. */}
+              {isVariable && <span className="text-[14px] text-stone-600">onwards</span>}
               {basePrice && (
-                <del className="text-[15px] text-stone-500">
+                <del className="text-[15px] text-stone-600">
                   <span className="sr-only">Was </span>
                   {compactPrice(basePrice)}
                 </del>
@@ -116,7 +123,7 @@ export function FeaturedKit({ type }: { type: string }) {
           )}
           <Link
             href={Routes.product(kit.slug)}
-            className="inline-flex h-11 w-fit items-center gap-2 rounded-control bg-ds-btn px-6 text-[14px] font-semibold text-white hover:bg-ds-btn-hover"
+            className="inline-flex h-11 w-fit items-center gap-2 rounded-control bg-ds-btn px-6 text-[14px] font-semibold text-white hover:bg-ds-btn-hover lg:h-[52px] lg:text-[16px]"
           >
             {SECTION.kit.cta}
             <ArrowRight size={16} aria-hidden />

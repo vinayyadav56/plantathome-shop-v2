@@ -37,16 +37,16 @@ export function ToolsCategories({ type }: { type: string }) {
   if (!showSkeleton && !items.length) return null;
 
   return (
-    <section id="categories" aria-labelledby="tools-categories" className="mt-12 scroll-mt-24 lg:mt-16">
+    <section id="categories" aria-labelledby="tools-categories" className="mt-7 scroll-mt-24">
       <SectionHead id="tools-categories" {...SECTION.categories} />
 
       {/* The gap sits on a wrapper because .pah-rail sets its own negative margins
           to make room for the card shadows, and a margin utility on the rail would fight them. */}
-      <div className="mt-6">
+      <div className="mt-5">
         <ul className="pah-rail [--rail-w:44%] sm:[--rail-w:30%] lg:[--rail-w:calc((100%_-_5*16px)/6)] gap-4">
           {showSkeleton
             ? Array.from({ length: MAX_TILES }, (_, i) => (
-                <li key={i} aria-hidden className="overflow-hidden rounded-lg border border-kraft-200 bg-white">
+                <li key={i} aria-hidden className="overflow-hidden rounded-lg bg-white shadow-box">
                   <div className="aspect-[8/7] animate-pulse bg-sage-50" />
                   {/* Same line boxes as a loaded tile (20 / 4+2×18 / 16+20 px). Real `details` copy
                       wraps to two lines at every width, so the loaded row lands at this height. */}
@@ -71,21 +71,24 @@ export function ToolsCategories({ type }: { type: string }) {
                       Explore below the rest of the row (the mock's "Plant Care" tile). */}
                   <Link
                     href={`/c/${c.slug}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-lg border border-kraft-200 bg-white transition hover:shadow-box focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
+                    className="group flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-box focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
                   >
                     <div className="relative aspect-[8/7] overflow-hidden bg-sage-50">
+                      {/* Decorative: the tile's heading already names the link. */}
                       <SafeImage
                         src={c.image?.original ?? ''}
-                        alt={`${c.name} — gardening tools`}
+                        alt=""
                         fill
-                        sizes="(max-width: 640px) 44vw, (max-width: 1024px) 30vw, 16vw"
+                        sizes="(max-width: 639px) 44vw, (max-width: 1023px) 30vw, 16vw"
                         quality={70}
                         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         fallback={null}
                       />
                     </div>
                     <div className="flex flex-1 flex-col p-3.5">
-                      <h3 className="truncate text-[14px] font-bold leading-5 text-forest-900">{c.name}</h3>
+                      {/* Two lines, never an ellipsis: "Pruning & Cutting" needs 120 px and a six-up
+                          tile at 1024 (or a phone rail tile) has a little less. */}
+                      <h3 className="line-clamp-2 text-[14px] font-bold leading-5 text-forest-900">{c.name}</h3>
                       {c.details ? (
                         <p className="mt-1 line-clamp-2 text-[12px] leading-[18px] text-stone-600">{c.details}</p>
                       ) : null}

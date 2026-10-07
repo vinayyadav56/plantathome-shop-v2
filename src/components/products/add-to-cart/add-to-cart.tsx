@@ -49,6 +49,8 @@ interface Props {
   disabled?: boolean;
   /** Units added per click (a card-level quantity stepper feeds this). */
   quantity?: number;
+  /** Button text for the 'plantathome' variant (AddToCartBtn's default otherwise). */
+  label?: string;
 }
 
 export const AddToCart = ({
@@ -59,6 +61,7 @@ export const AddToCart = ({
   variation,
   disabled,
   quantity = 1,
+  label,
 }: Props) => {
   const { t } = useTranslation('common');
   const {
@@ -159,6 +162,7 @@ export const AddToCart = ({
             disabled={disabledState}
             variant={variant}
             onClick={handleAddClick}
+            label={label}
           />
         ) : (
           <div className="flex w-24 items-center justify-between rounded border border-[#dbdbdb]">

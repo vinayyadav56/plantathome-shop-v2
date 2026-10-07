@@ -188,7 +188,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
   const { city, displayOnly } = useCitySupply();
 
   const { data: askAiSettings } = useAskAiEnabled();
-  const askAiEnabled = Boolean(askAiSettings?.data?.enabled);
+  // Ask AI is the per-plant care chatbot — meaningless on a trowel or a pot, so it
+  // shows on plants only (a row without its type keeps the old behaviour).
+  const typeSlug = (product.type as { slug?: string } | undefined)?.slug;
+  const askAiEnabled = Boolean(askAiSettings?.data?.enabled) && (!typeSlug || typeSlug === 'plants');
 
   function handleAskAi(e: React.MouseEvent) {
     e.stopPropagation();
@@ -253,7 +256,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
       /* Simple product: the shared AddToCart (quantity 1, no stepper). Its
          plantathome button is cqw-sized for the default card; the descendant
          rules pin it to this card's 36px / 13px, and counterClass does the same
-         for the in-cart counter (twMerge'd over the variant's h-12/18px). */
+         for the in-cart counter (twMerge'd over the variant's h-12/18px). The
+         short label fits a 150px six-up card ("Add To Shopping Cart" truncated). */
       <div className="[&_button]:h-9 [&_button]:text-[13px] [&_button]:font-semibold">
         <AddToCart
           variant="plantathome"
@@ -261,6 +265,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           counterClass="h-9 text-[13px] sm:text-[13px]"
           data={product}
           quantity={1}
+          label="Add to Cart"
         />
       </div>
     );
