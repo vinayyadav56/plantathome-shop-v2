@@ -22,6 +22,7 @@ import { useLogout, useUser } from '@/framework/user';
 import { PaymentGateway } from '@/types';
 import { useSettings } from '@/framework/settings';
 import { usePincodeServiceability } from '@/lib/use-pincode-serviceability';
+import { isCityGatedCart } from '@/lib/is-city-based';
 import { track } from '@/lib/analytics/track';
 import {
   deliveryModeAtom,
@@ -105,11 +106,16 @@ export const PlaceOrderAction: React.FC<{
   const courierMode = deliveryMode === 'courier' || isNonServiceable;
   const [confirmCourier, setConfirmCourier] = useState(false);
 
+  // A cart with no city-based line (Tools only) ships nationwide by courier: the
+  // city-stock lock and the local pincode allow-list are Plants' gates (the
+  // server still runs the courier's pincode check).
+  const cityGated = isCityGatedCart(items);
+
   // Display-only city: verify() flagged the whole cart as browse-only.
-  const cityStock = (verified_response as any)?.city_stock ?? null;
+  const cityStock = cityGated ? (verified_response as any)?.city_stock ?? null : null;
 
   const shippingZip = (shipping_address as any)?.address?.zip as string | undefined;
-  const { result: pincodeResult } = usePincodeServiceability(shippingZip);
+  const { result: pincodeResult } = usePincodeServiceability(cityGated ? shippingZip : undefined);
   const pincodeBlocked = pincodeResult?.serviceable === false && !courierMode;
 
   // Delivery coverage, per LINE. verify() has always returned this and the page

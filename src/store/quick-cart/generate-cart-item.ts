@@ -38,6 +38,8 @@ export function generateCartItem(item: Item, variation: Variation) {
     language,
     in_flash_sale,
     shop,
+    // false = nationwide (Tools): checkout skips the shopping-city gates for it.
+    city_based,
   } = item;
   if (!isEmpty(variation)) {
     return {
@@ -56,6 +58,7 @@ export function generateCartItem(item: Item, variation: Variation) {
       language,
       in_flash_sale,
       shop_id: shop.id,
+      city_based,
     };
   }
   return {
@@ -70,5 +73,6 @@ export function generateCartItem(item: Item, variation: Variation) {
     language,
     in_flash_sale,
     shop_id: shop?.id,
+    city_based,
   };
 }

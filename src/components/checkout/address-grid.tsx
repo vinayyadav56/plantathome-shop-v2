@@ -7,6 +7,8 @@ import { AddressHeader } from '@/components/address/address-header';
 import { useTranslation } from 'next-i18next';
 import type { Address } from '@/types';
 import { useCustomerCity } from '@/lib/use-customer-city';
+import { useCart } from '@/store/quick-cart/cart.context';
+import { isCityGatedCart } from '@/lib/is-city-based';
 import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
 import { isAddressComplete } from '@/lib/address-complete';
 import CityMismatchDialog from './city-mismatch-dialog';
@@ -42,7 +44,11 @@ export const AddressGrid: React.FC<AddressesProps> = ({
   const { t } = useTranslation('common');
   const [selectedAddress, setAddress] = useAtom(atom);
   const { openModal } = useModalAction();
-  const { city: shoppingCity } = useCustomerCity();
+  const { city } = useCustomerCity();
+  // A cart with no city-based line (Tools only) ships nationwide: no address is
+  // "other city", so nothing is greyed out and the mismatch dialog never opens.
+  const { items } = useCart();
+  const shoppingCity = isCityGatedCart(items) ? city : null;
   const [mismatch, setMismatch] = useState<Address | null>(null);
 
   const cityKey = normalizeCityClient(shoppingCity);

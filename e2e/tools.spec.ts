@@ -1,4 +1,4 @@
-import { test, expect, Locator, Page } from '@playwright/test';
+import { test, expect, APIRequestContext, Locator, Page } from '@playwright/test';
 
 /**
  * /tools — the owner's 2026-10-07 mock, on real data.
@@ -230,4 +230,137 @@ test.describe('/tools landing', () => {
       await h.assert();
     });
   }
+});
+
+/* ── Tools = one seller, nationwide (plan 2026-10-08) ──────────────────────────
+ * Needs the API that sends `city_based: false` on tools and skips its city gates
+ * for them. The shopper's city never hides or blocks a tool: Delhi (supplied), a
+ * serviceable city with no nursery supply, and no city at all all list tools; a
+ * tool's CTA is never "Out of stock in {city}" (plain "Out of stock" only while
+ * its seller has no rate); the PDP says it ships across India; and a tools-only
+ * guest checkout takes an address in another city without a city mismatch.
+ * Touches only the browser-local cart and runs checkout/verify — never places an order.
+ */
+const API = process.env.E2E_API_BASE || 'https://plantathome-production.up.railway.app/api';
+/** Staging's serviceable cities: the first the API says has no supply is the no-supply city. */
+const CANDIDATE_CITIES = ['Rewari', 'Ambala', 'Indore', 'Jaipur', 'Bengaluru', 'Mumbai', 'Gurugram'];
+
+async function noSupplyCity(request: APIRequestContext): Promise<string | null> {
+  for (const city of CANDIDATE_CITIES) {
+    const r = await request.get(`${API}/city-availability`, { params: { city } });
+    if (r.ok() && (await r.json())?.has_availability === false) return city;
+  }
+  return null;
+}
+
+/** Seeds the shopping city (or none, with the first-visit picker dismissed) before page scripts run. */
+const seedCity = (city: string | null) => {
+  try {
+    localStorage.setItem('pah-agentation', 'off');
+    if (city) localStorage.setItem('pah_customer_city', city);
+    else sessionStorage.setItem('pah-city-gate-dismissed', '1');
+  } catch {
+    /* noop */
+  }
+};
+
+/** Hydrated (the chip shows the stored city) and the city-scoped lists have landed. */
+async function settled(page: Page, city: string | null) {
+  if (city) {
+    await expect(page.locator('[data-city-chip]:visible').first()).toHaveText(new RegExp(city), { timeout: 30_000 });
+  }
+  await page.waitForLoadState('networkidle');
+}
+
+const toolCards = (page: Page) =>
+  page.getByRole('region', { name: 'Tools gardeners love' }).locator('[data-product-card]');
+
+test.describe('Tools are nationwide: never city-gated', () => {
+  for (const kind of ['Delhi', 'a no-supply city', 'no city'] as const) {
+    test(`${kind}: tools are listed, never "Out of stock in {city}", and the PDP ships across India`, async ({ page, request }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      let city: string | null = kind === 'Delhi' ? 'Delhi' : null;
+      if (kind === 'a no-supply city') {
+        city = await noSupplyCity(request);
+        test.skip(!city, 'every candidate city has nursery supply in this environment');
+      }
+      await page.addInitScript(seedCity, city);
+      await page.goto('/tools', { waitUntil: 'domcontentloaded' });
+      await settled(page, city);
+
+      const cards = toolCards(page);
+      await expect(cards.first(), 'tools listed').toBeVisible();
+      await expect(cards.filter({ hasText: /Out of stock in|Not available in/i })).toHaveCount(0);
+      for (let i = 0, n = await cards.count(); i < n; i++) {
+        await expect(cards.nth(i)).toContainText(/Add to cart|Out of stock/i);
+      }
+
+      const href = await cards.first().locator('a[href^="/products/"]').first().getAttribute('href');
+      await page.goto(href!, { waitUntil: 'domcontentloaded' });
+      await settled(page, city);
+      await expect(page.getByText('Ships across India').first()).toBeVisible();
+      await expect(page.getByText(/Out of stock in|Not available in .+ yet|Browse-only in/i)).toHaveCount(0);
+      await expect(page.getByRole('button', { name: /^(Add to Cart|Out of Stock)$/i }).first()).toBeVisible();
+    });
+  }
+
+  test('a tools-only guest checkout takes an address in another city without a mismatch', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.addInitScript(seedCity, 'Delhi');
+    // Contact + a complete Gurugram address, persisted the way the guest form saves them.
+    await page.addInitScript(() => {
+      const address = {
+        title: 'Home',
+        type: 'shipping',
+        address: { country: 'India', state: 'Haryana', city: 'Gurugram', zip: '122001', street_address: '123 QA Street, Sector 45' },
+      };
+      localStorage.setItem(
+        'plantathome-checkout',
+        JSON.stringify({
+          billing_address: address,
+          shipping_address: address,
+          delivery_time: null,
+          payment_gateway: 'CASH_ON_DELIVERY',
+          payment_sub_gateway: '',
+          customer_contact: '+919876543210',
+          customer_name: 'QA Test User',
+          verified_response: null,
+          coupon: null,
+          note: '',
+          payable_amount: 0,
+          use_wallet: false,
+        }),
+      );
+    });
+
+    await page.goto('/tools', { waitUntil: 'domcontentloaded' });
+    await settled(page, 'Delhi');
+    const add = toolCards(page).getByRole('button', { name: 'Add to Cart', exact: true }).first();
+    test.skip(!(await add.isVisible()), 'no tool with a seller rate to add in this environment');
+    await add.click();
+    const cartLines = () =>
+      page.evaluate(() => JSON.parse(localStorage.getItem('plantathome-cart') ?? '{}')?.items ?? []);
+    await expect.poll(async () => (await cartLines()).length).toBe(1);
+    // The line carries the API's flag — without it checkout keeps the city gates.
+    expect((await cartLines())[0].city_based).toBe(false);
+
+    await page.goto('/checkout/guest', { waitUntil: 'domcontentloaded' });
+    await settled(page, 'Delhi');
+    await expect(page.getByText('Gurugram').first()).toBeVisible();
+    await expect(page.getByText(/shopping\s+in Delhi/i)).toHaveCount(0);
+
+    const [verify] = await Promise.all([
+      page.waitForResponse((r) => /\/orders\/checkout\/verify/.test(r.url()) && r.request().method() === 'POST', {
+        timeout: 20_000,
+      }),
+      page.getByRole('button', { name: /Check Availability/i }).first().click(),
+    ]);
+    expect(verify.status(), 'checkout/verify').toBe(200);
+    const body = await verify.json();
+    expect(body.city_mismatch ?? null, 'city_mismatch').toBeNull();
+    expect(body.city_stock ?? null, 'city_stock').toBeNull();
+    expect(body.unavailable_products ?? [], 'unavailable_products').toEqual([]);
+    await expect(page.getByText(/match your shopping city/i)).toHaveCount(0);
+    await expect(page.getByText(/We don.t deliver to/i)).toHaveCount(0);
+  });
 });

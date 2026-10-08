@@ -30,6 +30,7 @@ import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import PotPicker, { type SelectedPot } from './pot-picker';
 import { cartAnimation } from '@/lib/cart-animation';
@@ -200,7 +201,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const availableQty = hasVariations && isSelected ? Number(selectedVariation?.quantity) : Number(quantity);
   // City-inventory model: never out of stock — keep only the intentional
   // variation "disable" toggle. Stock quantity does not gate orderability.
-  const inStock = !(selectedVariation?.is_disable);
+  // A nationwide product (Tools) is the exception: its seller's stock does gate it.
+  const inStock = !(selectedVariation?.is_disable) && !isNationwideOutOfStock(cityProduct ?? product);
   const needsSelection = hasVariations && !isSelected;
 
   /**
@@ -235,7 +237,10 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   /* cart */
   const { addItemToCart, updateCartLanguage, language } = useCart();
   // Display-only city (no nursery supply): browse-only, add-to-cart gated.
-  const { city: shoppingCity, displayOnly } = useCitySupply();
+  // Nationwide products (Tools) skip every city gate below.
+  const { city: shoppingCity, displayOnly: cityDisplayOnly } = useCitySupply();
+  const cityBased = isCityBased(product);
+  const displayOnly = cityBased && cityDisplayOnly;
   // Product-level city scope, from the API (fetchSingleProduct computes it with
   // the same AvailabilityService scope the list and checkout use). In a city
   // with live vendor inventory the list hides what that inventory lacks, but
@@ -243,7 +248,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   // line as "unavailable". Undefined (no city sent / older API) = available.
   // `product` is the SSR payload, fetched with no city (so the API answers
   // available_in_city: true); the city-aware answer lives on cityProduct.
-  const cityUnavailable = ((cityProduct ?? product) as any)?.available_in_city === false;
+  const cityUnavailable = cityBased && ((cityProduct ?? product) as any)?.available_in_city === false;
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (displayOnly || cityUnavailable) return;
     if (!inStock || needsSelection) return;

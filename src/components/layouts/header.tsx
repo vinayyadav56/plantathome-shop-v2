@@ -223,7 +223,10 @@ const Header = ({ layout }: { layout?: string }) => {
             <div className="flex items-center gap-3.5 min-[1440px]:gap-[34px]">
               {NAV.map((n, i) => {
                 // Fixed split — deterministic, no measurement loop (see above).
-                const reveal = i < 2 ? '' : i < 4 ? 'hidden lg:block' : 'hidden xl:block';
+                // Was `i < 2 ? ''` — two items inline from md. Those cost ~160px at exactly the
+                // widths where the action icons ran out of room (iPad portrait, 768–834). Below
+                // lg the nav is now the "More" menu alone, which is still a menu on tablet.
+                const reveal = i < 4 ? 'hidden lg:block' : 'hidden xl:block';
                 // after:w-[55%] is emitted after NAV_UNDERLINE's after:w-0 (Tailwind
                 // sorts candidates), so the active underline wins without !important.
                 const active = isActive(n.href);
@@ -269,9 +272,10 @@ const Header = ({ layout }: { layout?: string }) => {
               })}
 
               {/* Overflow menu — carries whatever the row is hiding at this
-                  width. Entries 2–3 hide themselves from 900px up, where the row
-                  shows them; the whole control disappears at xl. */}
-              {NAV.length > 2 ? (
+                  width. Below lg it carries the WHOLE nav (the inline row is empty
+                  there); from lg the first four move inline and hide here; the
+                  whole control disappears at xl. */}
+              {NAV.length > 0 ? (
                 <div className="group relative xl:hidden">
                   <button
                     type="button"
@@ -283,14 +287,17 @@ const Header = ({ layout }: { layout?: string }) => {
                   </button>
                   <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                     <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-box backdrop-blur-2xl">
-                      {NAV.slice(2).map((n, i) => (
+                      {/* Every item below lg — the inline row is empty there now, so slicing the
+                          first two off would have made them unreachable on iPad. From lg the
+                          first four move inline, so they hide here instead. */}
+                      {NAV.map((n, i) => (
                         <Link
                           key={n.label}
                           href={n.href}
                           aria-current={isActive(n.href) ? 'page' : undefined}
                           className={`rounded px-3.5 py-2 text-[13px] font-medium transition hover:bg-black/[0.06] ${
                             isActive(n.href) ? 'bg-black/[0.04] text-forest-700' : 'text-neutral-700 hover:text-neutral-900'
-                          } ${i < 2 ? 'lg:hidden' : ''}`}
+                          } ${i < 4 ? 'lg:hidden' : ''}`}
                         >
                           {n.label}
                         </Link>
@@ -305,10 +312,14 @@ const Header = ({ layout }: { layout?: string }) => {
           {/* ── actions — right, stacked icon-over-label (per reference).
               Below xl the labels drop away (icons only): they cost ~90px, and
               at 768–1279 that width is what lets the nav row exist at all. ── */}
-          <div className="relative z-[2] ml-auto flex items-center gap-3">
+          {/* shrink-0: the actions must never be the thing that gives way. Without it the nav
+              (flex-1) kept its width and these icons were squeezed off the row — on iPad only
+              the city chip and search survived, which is the "only two are coming" report. The
+              nav degrades by breakpoint instead, which it was already built to do. */}
+          <div className="relative z-[2] ml-auto flex shrink-0 items-center gap-2.5 md:gap-3">
             {/* The ONE city chip, every width (e2e/city-chip.spec.ts). */}
             <CitySwitcher className="max-w-[7rem] md:max-w-[8.5rem] lg:max-w-[9rem] xl:max-w-[11rem] min-[1440px]:max-w-[14rem]" />
-            <div className="hidden items-center gap-4 md:flex">
+            <div className="hidden items-center gap-2.5 md:flex lg:gap-3.5 xl:gap-4">
               {/* Search */}
               <button type="button" onClick={() => setSearchOpen(true)} className="grid h-10 w-10 place-items-center rounded-lg text-[#18271c] transition-all duration-200 hover:-translate-y-0.5 hover:text-[#4d9433]" aria-label={t('text-search') ?? 'Search'}>
                 <SearchIcon className="h-[21px] w-[21px]" />

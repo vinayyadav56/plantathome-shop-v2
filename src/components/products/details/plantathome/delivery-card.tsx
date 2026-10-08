@@ -3,6 +3,8 @@ import React from 'react';
 import VendorAvailabilityNote from '../vendor-availability-note';
 import DeliveryCheck from './delivery-check';
 import { LineIcon } from '@/components/icons/line-icons';
+import { Truck } from '@/components/ui/icon';
+import { isCityBased } from '@/lib/is-city-based';
 
 /**
  * "Delivery & availability" card — one bordered card grouping the ETA line
@@ -41,7 +43,9 @@ export function DeliveryCard(props: {
   // Business rule (owner): local same-city delivery always promises 1 day —
   // vendor-fed eta_days only applies to courier shipments.
   const shownEta = fulfillmentMode === 'local' ? 1 : etaDays;
-  const showEta = shownEta != null && Boolean(city);
+  // Nationwide products (Tools) ship from one seller by courier, whatever the city.
+  const cityBased = isCityBased(product);
+  const showEta = cityBased && shownEta != null && Boolean(city);
   const dayWord = `day${shownEta === 1 ? '' : 's'}`;
 
   return (
@@ -68,8 +72,19 @@ export function DeliveryCard(props: {
         </div>
       )}
 
-      {/* "we'll confirm within 6h" note — self-gates on the location-price API */}
-      <VendorAvailabilityNote productId={product?.id} variationOptionId={variationOptionId} />
+      {!cityBased && (
+        <div className="mt-3 flex items-start gap-2.5 text-[13px] text-[#184A31]">
+          <Truck size={18} className="mt-0.5 shrink-0 text-[#24693E]" aria-hidden />
+          <span>
+            Ships across India by <span className="font-semibold">courier</span>
+          </span>
+        </div>
+      )}
+
+      {/* "we'll confirm within 6h" note (plants' city vendors) — self-gates on the location-price API */}
+      {cityBased && (
+        <VendorAvailabilityNote productId={product?.id} variationOptionId={variationOptionId} />
+      )}
 
       {/* Pincode → every delivery option with its own ETA (local + live courier) */}
       <DeliveryCheck productId={product?.id} />

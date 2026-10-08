@@ -353,6 +353,8 @@ export interface Product {
   vendor_count?: number | null;
   /** All-vendor stock for the city rollup — NOT local stock. */
   city_stock?: number | null;
+  /** false = nationwide single-seller product (Tools): no city gate. See lib/is-city-based. */
+  city_based?: boolean;
 }
 
 /** One sellable size/variant of a variable product (`variation_options[]`). */

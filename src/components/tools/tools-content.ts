@@ -225,6 +225,6 @@ export const TOOLS_FAQS: ToolsFaq[] = [
   },
   {
     q: 'Can I buy gardening tool sets online?',
-    a: 'Yes. The Tool Sets collection on PlantAtHome brings the essentials together in one order, from compact hand-tool sets to kits for bonsai and succulent care. Add a set to your cart like any other product and confirm delivery for your city at checkout.',
+    a: 'Yes. The Tool Sets collection on PlantAtHome brings the essentials together in one order, from compact hand-tool sets to kits for bonsai and succulent care. Every tool ships across India from PlantAtHome, at the same price wherever you are; delivery to your pincode is confirmed at checkout.',
   },
 ];

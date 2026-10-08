@@ -1,6 +1,8 @@
 import { useAtom } from 'jotai';
 import { shippingAddressAtom, verifiedResponseAtom } from '@/store/checkout';
 import { usePincodeServiceability } from '@/lib/use-pincode-serviceability';
+import { useCart } from '@/store/quick-cart/cart.context';
+import { isCityGatedCart } from '@/lib/is-city-based';
 import DeliveryNotifyMe from '@/components/location/delivery-notify-me';
 import { Check, X } from '@/components/ui/icon';
 
@@ -14,7 +16,11 @@ export default function PincodeServiceability() {
   const [shipping] = useAtom(shippingAddressAtom);
   const [verifiedResponse] = useAtom(verifiedResponseAtom);
   const zip = (shipping as any)?.address?.zip as string | undefined;
-  const { result, loading, checked, error, retry } = usePincodeServiceability(zip);
+  // Tools-only cart: the local allow-list doesn't apply (see PlaceOrderAction).
+  const { items } = useCart();
+  const { result, loading, checked, error, retry } = usePincodeServiceability(
+    isCityGatedCart(items) ? zip : undefined,
+  );
   const coverage = (verifiedResponse as any)?.coverage;
 
   if (!zip) return null;

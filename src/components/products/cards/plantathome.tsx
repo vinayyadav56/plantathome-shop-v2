@@ -18,6 +18,7 @@ import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import usePrice from '@/lib/use-price';
 import {
@@ -185,7 +186,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
   // In a display-only city AddToCart renders an "Out of Stock" pill instead of
   // a CTA, so the qty stepper beside it is dead UI — and worse, it was eating
   // ~120px of a two-up card, which is what pushed the pill out of the box.
-  const { city, displayOnly } = useCitySupply();
+  // Nationwide products (Tools) ignore the city's supply: only their own stock gates them.
+  const { city, displayOnly: cityDisplayOnly } = useCitySupply();
+  const cityBased = isCityBased(product);
+  const displayOnly = cityBased ? cityDisplayOnly : isNationwideOutOfStock(product);
 
   const { data: askAiSettings } = useAskAiEnabled();
   // Ask AI is the per-plant care chatbot — meaningless on a trowel or a pot, so it
@@ -237,7 +241,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
         disabled
         className="h-9 w-full cursor-not-allowed truncate rounded-control bg-stone-200 px-2 text-[13px] font-semibold text-stone-500"
       >
-        {city ? `Out of stock in ${city}` : 'Out of stock'}
+        {cityBased && city ? `Out of stock in ${city}` : 'Out of stock'}
       </button>
     ) : isVariable ? (
       /* Every plant carries sizes — the size sheet picks one and adds to cart. */

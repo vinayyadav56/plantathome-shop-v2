@@ -7,6 +7,7 @@ import { MinusIconNew } from '@/components/icons/minus-icon';
 import { useTranslation } from 'next-i18next';
 import classNames from 'classnames';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 import dynamic from 'next/dynamic';
 import {
   CartOff,
@@ -73,8 +74,10 @@ export const AddToCart = ({
     updateCartLanguage,
     language,
   } = useCart();
-  // Display-only city (no nursery supply): everything is browse-only.
-  const { displayOnly } = useCitySupply();
+  // Display-only city (no nursery supply): everything city-based is browse-only.
+  // A nationwide product (Tools) is gated by its own stock instead.
+  const { displayOnly: cityDisplayOnly } = useCitySupply();
+  const displayOnly = isCityBased(data) ? cityDisplayOnly : isNationwideOutOfStock(data);
   const item = generateCartItem(data, variation);
   const addToCart = (
     e: React.MouseEvent<HTMLButtonElement | MouseEvent>,

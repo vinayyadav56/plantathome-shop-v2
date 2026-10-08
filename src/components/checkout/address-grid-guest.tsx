@@ -7,6 +7,8 @@ import { AddressHeader } from '@/components/address/address-header';
 import { useTranslation } from 'next-i18next';
 import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
 import { getStoredCity } from '@/lib/customer-location';
+import { useCart } from '@/store/quick-cart/cart.context';
+import { isCityGatedCart } from '@/lib/is-city-based';
 
 interface AddressesProps {
   addresses: Address[] | undefined;
@@ -28,6 +30,9 @@ export const GuestAddressGrid: React.FC<AddressesProps> = ({
   const { t } = useTranslation('common');
   const [selectedAddress, setAddress] = useAtom(atom);
   const { openModal } = useModalAction();
+  // Tools-only cart: ships nationwide, so no address is an "other city" one.
+  const { items } = useCart();
+  const cityGated = isCityGatedCart(items);
 
   function onAdd() {
     openModal('ADD_OR_UPDATE_GUEST_ADDRESS', { type, atom });
@@ -48,7 +53,7 @@ export const GuestAddressGrid: React.FC<AddressesProps> = ({
               // Guest addresses live only in the atom and have NO id — key off
               // stable content instead of an always-undefined id.
               const key = `${address?.title ?? ''}-${address?.address?.zip ?? ''}-${idx}`;
-              const shoppingCity = getStoredCity();
+              const shoppingCity = cityGated ? getStoredCity() : null;
               const addressCity = addressCityOf(address);
               const cityMismatch =
                 shoppingCity &&

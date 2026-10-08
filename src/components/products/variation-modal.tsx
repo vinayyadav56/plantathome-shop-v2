@@ -9,6 +9,7 @@ import { getVariations } from '@/lib/get-variations';
 import { isVariationSelected } from '@/lib/is-variation-selected';
 import usePrice from '@/lib/use-price';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 // '@/framework/*' maps to src/framework/rest/* (see tsconfig paths).
 import { useCityPrice } from '@/framework/use-city-price';
 import { useProduct } from '@/framework/product';
@@ -100,12 +101,14 @@ const SizeSheet = ({ product }: { product: Product }) => {
   const showRange = hasVariations && !selectedRow;
 
   // Gates, in the order the PDP applies them; the reason doubles as the CTA label.
-  const cityUnavailable = (product as { available_in_city?: boolean }).available_in_city === false;
+  // City gates apply to city-based products only; nationwide ones (Tools) carry their own stock.
+  const cityBased = isCityBased(product);
+  const cityUnavailable = cityBased && (product as { available_in_city?: boolean }).available_in_city === false;
   const blocked = cityUnavailable
     ? `Not available in ${city ?? 'your city'} yet`
-    : displayOnly
+    : cityBased && displayOnly
       ? `Out of stock in ${city}`
-      : selectedRow?.is_disable
+      : selectedRow?.is_disable || isNationwideOutOfStock(product)
         ? 'Out of stock'
         : showRange
           ? 'Select a size'

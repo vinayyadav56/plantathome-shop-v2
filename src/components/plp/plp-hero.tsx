@@ -88,12 +88,20 @@ export default function PlpHero({ type, title, subtitle, total, searchTerm }: Pl
             )}
           </p>
 
+          {/* Trust row, ONE row from md. It was sm:flex-wrap at every width above 640, and the
+              three items do not fit across an iPad portrait at a 28px gap, so the third dropped
+              to a second line. From md the row is forced (flex-nowrap) and the gap tightens to
+              16px to pay for it, widening again at lg where there is room. Phones keep the
+              stacked column, and 640–767 keeps the wrap, since neither fits three across. */}
           {trust.length > 0 && (
-            <ul className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-7 sm:gap-y-3 lg:mt-6">
+            <ul className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-7 sm:gap-y-3 md:flex-nowrap md:gap-x-4 lg:mt-6 lg:gap-x-7">
               {trust.map((item) => {
                 const Icon = TRUST_ICON[item.icon as keyof typeof TRUST_ICON];
+                // min-w-0 on the li: a flex child defaults to min-width:auto and refuses to
+                // shrink below its content, which would push the forced row off the edge
+                // instead of letting the labels wrap.
                 return (
-                  <li key={item.t} className="flex items-center gap-3">
+                  <li key={item.t} className="flex min-w-0 items-center gap-3 md:gap-2.5 lg:gap-3">
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sage-100 text-forest-700">
                       {Icon ? <Icon size={20} aria-hidden /> : null}
                     </span>

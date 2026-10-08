@@ -135,6 +135,14 @@ const StoreBadge = ({
  * column, side by side. That is the owner's call and it re-adds roughly 40px of
  * desktop footer height; h-9 rather than h-10 keeps the row (2 x ~121px + gap,
  * plus the "Soon" pill) inside the column's 300px cap.
+ *
+ * 2026-10-08, third swing: back out of the brand column, to the right side under the
+ * link columns and level with the socials row (owner annotation). Badges stay side by
+ * side. Placed in the FOOTER GRID rather than inside a link column, so it bottom-aligns
+ * with the socials via self-end and still sits in the empty space below the links —
+ * which means it costs no desktop height, satisfying the original complaint too.
+ * ⚠️ If this is asked to move again, read this whole block first: every previous move
+ * was undone by the next annotation.
  */
 const AppBadges = ({ className = '' }: { className?: string }) => (
   <div className={className}>
@@ -285,7 +293,6 @@ const Footer = () => {
             ))}
           </div>
 
-          <AppBadges className="mt-6" />
         </div>
 
         {/* link columns */}
@@ -309,6 +316,14 @@ const Footer = () => {
             </ul>
           </div>
         ))}
+
+        {/* "Get the app", right side, under the links and level with the socials row.
+            col-start-2 + self-end at lg is what puts it there: it spans the four link
+            columns and drops to the bottom of the grid row, which is where the brand
+            column's socials already sit. It also lands in space the link columns were
+            leaving empty, so it costs no extra footer height — the complaint that moved
+            it out of the brand column in the first place. */}
+        <AppBadges className="col-span-2 mt-2 md:col-span-4 lg:col-span-4 lg:col-start-2 lg:mt-0 lg:self-end" />
       </div>
 
       {/* ── Plant Delivery Across India — active city landing pages. Renders
