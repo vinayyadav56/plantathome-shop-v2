@@ -139,10 +139,17 @@ function OtpLogin({ channel, prefillPhone }: { channel: OtpChannel; prefillPhone
         </>
       )}
       {otpState.step === 'RegisterForm' && (
-        <OtpRegisterForm
-          loading={otpLoginLoading}
-          onSubmit={onOtpLoginSubmission}
-        />
+        <>
+          <Alert
+            variant="error"
+            message={optLoginError && t(optLoginError)}
+            className="mb-4"
+          />
+          <OtpRegisterForm
+            loading={otpLoginLoading}
+            onSubmit={onOtpLoginSubmission}
+          />
+        </>
       )}
         </motion.div>
       </AnimatePresence>

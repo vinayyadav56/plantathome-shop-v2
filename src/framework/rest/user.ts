@@ -431,6 +431,13 @@ export function useOtpLogin() {
       // Switch to the register step with the verified code carried along —
       // this replaces the dead is_contact_exist branch the API removed.
       if (error?.response?.status === 422 && (bag?.email || bag?.name)) {
+        // Already on the register step, the 422 is about what they typed
+        // ("email already registered") — show it instead of re-opening the step.
+        if (otpState.step === 'RegisterForm') {
+          setServerError(bag?.email?.[0] ?? bag?.name?.[0] ?? 'text-otp-verify-failed');
+          return;
+        }
+        setServerError(null);
         setOtpState((s: any) => ({
           ...s,
           step: 'RegisterForm',
