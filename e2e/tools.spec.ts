@@ -272,6 +272,37 @@ async function settled(page: Page, city: string | null) {
   await page.waitForLoadState('networkidle');
 }
 
+/** Contact + a complete Gurugram address for the guest checkout. The guest page resets the
+ *  persisted checkout on entry, so this lands after it, as a write from another tab would
+ *  (jotai's atomWithStorage listens for `storage` events). */
+async function seedGuestCheckout(page: Page) {
+  const address = {
+    title: 'Home',
+    type: 'shipping',
+    address: { country: 'India', state: 'Haryana', city: 'Gurugram', zip: '122001', street_address: '123 QA Street, Sector 45' },
+  };
+  const state = {
+    billing_address: address,
+    shipping_address: address,
+    delivery_time: null,
+    payment_gateway: 'CASH_ON_DELIVERY',
+    payment_sub_gateway: '',
+    customer_contact: '+919876543210',
+    customer_name: 'QA Test User',
+    verified_response: null,
+    coupon: null,
+    note: '',
+    payable_amount: 0,
+    use_wallet: false,
+  };
+  await page.evaluate((value) => {
+    const key = 'plantathome-checkout';
+    const json = JSON.stringify(value);
+    localStorage.setItem(key, json);
+    window.dispatchEvent(new StorageEvent('storage', { key, newValue: json, storageArea: localStorage }));
+  }, state);
+}
+
 const toolCards = (page: Page) =>
   page.getByRole('region', { name: 'Tools gardeners love' }).locator('[data-product-card]');
 
@@ -307,31 +338,6 @@ test.describe('Tools are nationwide: never city-gated', () => {
   test('a tools-only guest checkout takes an address in another city without a mismatch', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.addInitScript(seedCity, 'Delhi');
-    // Contact + a complete Gurugram address, persisted the way the guest form saves them.
-    await page.addInitScript(() => {
-      const address = {
-        title: 'Home',
-        type: 'shipping',
-        address: { country: 'India', state: 'Haryana', city: 'Gurugram', zip: '122001', street_address: '123 QA Street, Sector 45' },
-      };
-      localStorage.setItem(
-        'plantathome-checkout',
-        JSON.stringify({
-          billing_address: address,
-          shipping_address: address,
-          delivery_time: null,
-          payment_gateway: 'CASH_ON_DELIVERY',
-          payment_sub_gateway: '',
-          customer_contact: '+919876543210',
-          customer_name: 'QA Test User',
-          verified_response: null,
-          coupon: null,
-          note: '',
-          payable_amount: 0,
-          use_wallet: false,
-        }),
-      );
-    });
 
     await page.goto('/tools', { waitUntil: 'domcontentloaded' });
     await settled(page, 'Delhi');
@@ -346,6 +352,7 @@ test.describe('Tools are nationwide: never city-gated', () => {
 
     await page.goto('/checkout/guest', { waitUntil: 'domcontentloaded' });
     await settled(page, 'Delhi');
+    await seedGuestCheckout(page);
     await expect(page.getByText('Gurugram').first()).toBeVisible();
     await expect(page.getByText(/shopping\s+in Delhi/i)).toHaveCount(0);
 
