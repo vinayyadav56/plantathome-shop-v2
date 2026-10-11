@@ -136,7 +136,7 @@ function SectionHead({
 /* ─── Refined inquiry form (same fields, hooks and submission as before) ─── */
 
 const FIELD =
-  'w-full rounded-control border border-[#E6E3DA] bg-[#FAF9F6] px-4 py-3 text-[15px] text-[#1F2E1F] placeholder:text-[#A6A29A] transition focus:border-ds-btn focus:bg-white focus:outline-none focus:ring-4 focus:ring-ds-accent/10';
+  'w-full rounded-control border border-[#E6E3DA] bg-page px-4 py-3 text-[15px] text-[#1F2E1F] placeholder:text-[#A6A29A] transition focus:border-ds-btn focus:bg-white focus:outline-none focus:ring-4 focus:ring-ds-accent/10';
 const LABEL = 'mb-1.5 block text-[13px] font-semibold text-[#184A31]';
 
 function LeadForm() {
@@ -310,7 +310,7 @@ export default function GardenServicePage() {
   const faqs = faqCfg.length ? faqCfg : FAQS;
 
   return (
-    <div className="bg-[#FAF9F6]">
+    <div className="bg-page">
       <Seo
         title="Garden Service — bespoke home gardens, planted & maintained"
         description="Get a free, no-obligation garden plan tailored to your balcony, terrace or backyard. Hand-picked plants, premium soil, tools and scheduled gardener visits — all tracked in your account."
@@ -406,7 +406,7 @@ export default function GardenServicePage() {
         <div className="mt-12 grid gap-7 md:grid-cols-3">
           {steps.map((s, i) => (
             <motion.div key={i} {...reveal(i * 0.08)} className={`group overflow-hidden ${CARD} ${CARD_HOVER}`}>
-              <div className="relative h-48 overflow-hidden bg-[#F7F5EF]">
+              <div className="relative h-48 overflow-hidden bg-white">
                 <img
                   src={s.img}
                   alt={s.title}

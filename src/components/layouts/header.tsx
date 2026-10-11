@@ -399,7 +399,7 @@ const Header = ({ layout }: { layout?: string }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] flex flex-col overflow-y-auto overscroll-contain bg-cream-50 p-6 text-forest-900"
+            className="fixed inset-0 z-[70] flex flex-col overflow-y-auto overscroll-contain bg-page p-6 text-forest-900"
           >
             <div className="mb-10 flex items-center justify-between">
               <BrandLogo />

@@ -343,7 +343,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const quickChips = plantQuickFacts(product as any);
 
   return (
-    <article className="bg-cream-100">
+    <article className="bg-page">
       {/* The listing pages' width (owner annotation 2026-10-10: "not utilizing the full
           space of the page"): up to 1920px, the same gutters as /plants from sm up. */}
       <div className="mx-auto w-full max-w-[1920px] px-4 pb-36 pt-3 sm:px-6 lg:pb-12 xl:px-8">
@@ -617,7 +617,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                       type="button"
                       aria-label="Decrease quantity"
                       onClick={() => setQty((q) => Math.max(1, q - 1))}
-                      className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-cream-100 disabled:opacity-40"
+                      className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-page disabled:opacity-40"
                       disabled={qty <= 1}
                     >
                       <Minus size={16} aria-hidden />
@@ -629,7 +629,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                       type="button"
                       aria-label="Increase quantity"
                       onClick={() => setQty((q) => (availableQty ? Math.min(availableQty, q + 1) : q + 1))}
-                      className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-cream-100"
+                      className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-page"
                     >
                       <Plus size={16} aria-hidden />
                     </button>

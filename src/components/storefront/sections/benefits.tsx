@@ -31,7 +31,7 @@ const BENEFITS = [
 
 export function Benefits() {
   return (
-    <section id="benefits" className="bg-cream-50">
+    <section id="benefits" className="bg-page">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
         {/* centered editorial intro */}
         <div className="mx-auto mb-12 max-w-2xl text-center sm:mb-14">

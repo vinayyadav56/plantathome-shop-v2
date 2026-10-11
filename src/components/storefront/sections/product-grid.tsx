@@ -32,7 +32,7 @@ export function ProductGrid({
   if (!isLoading && (!products || products.length === 0)) return null;
 
   return (
-    <section id="products" className={tint ? 'bg-cream-100' : ''}>
+    <section id="products" className={tint ? 'bg-page' : ''}>
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16 lg:py-20">
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
           <div>

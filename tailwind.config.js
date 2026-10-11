@@ -144,8 +144,13 @@ module.exports = {
           300: '#E0A989',
           100: '#F3E2D8',
         },
+        // Page surface ("Cool Mist", owner pick 2026-10-11): bg-page. The value lives in the
+        // --page-bg CSS variable (plantathome-overrides.css) so one line re-themes the site.
+        page: 'var(--page-bg)',
+        // Form field fill (inputs, text areas): --field-bg, white since the same pick.
+        field: 'var(--field-bg)',
         cream: {
-          DEFAULT: '#FAF9F6', // page background
+          DEFAULT: '#FAF9F6', // legacy warm tint — light text on dark bands; surfaces use bg-page
           50: '#FAF9F6',
           100: '#F4F1EA',
         },

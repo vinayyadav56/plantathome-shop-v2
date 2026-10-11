@@ -16,9 +16,9 @@ export interface Props extends InputHTMLAttributes<HTMLInputElement> {
 
 const variantClasses = {
   normal:
-    'bg-gray-100 border border-border-base rounded focus:shadow focus:bg-light focus:border-accent',
+    'bg-field border border-border-base rounded focus:shadow focus:bg-light focus:border-accent',
   solid:
-    'bg-gray-100 border border-border-100 rounded focus:bg-light focus:border-accent',
+    'bg-field border border-border-100 rounded focus:bg-light focus:border-accent',
   outline: 'border border-border-base rounded focus:border-accent',
   line: 'ltr:pl-0 rtl:pr-0 border-b border-border-base rounded-none focus:border-accent',
 };

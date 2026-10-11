@@ -13,7 +13,7 @@ export default function GeneralLayout({
   layout,
 }: React.PropsWithChildren<{ layout?: string }>) {
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100 transition-colors duration-150">
+    <div className="flex min-h-screen flex-col bg-page transition-colors duration-150">
       <Header layout={layout} />
       {children}
       <Footer />

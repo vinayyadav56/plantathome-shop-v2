@@ -134,7 +134,7 @@ function SignInPage() {
       {/* The page ground is sampled from the artwork's own edge, so the
           letterbox bands either side of it at wide aspect ratios read as part
           of the picture rather than as empty margin. */}
-      <div className="relative min-h-[100svh] bg-[#eef1ea]">
+      <div className="relative min-h-[100svh] bg-page">
         {/* ── the artwork, untouched ──────────────────────────────────────────
             `fixed`, not absolute: inside normal flow a `fill` image stretches to
             the whole SCROLLED page height, so the crop goes wrong and

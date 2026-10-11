@@ -28,7 +28,7 @@ type Props = {
 
 function Farmbox({ type }: Props) {
   return (
-    <main id="main-content" className="bg-cream pb-16 sm:pb-20 lg:pb-24">
+    <main id="main-content" className="bg-page pb-16 sm:pb-20 lg:pb-24">
       {/* 20px gutters on phones: the category rail (.pah-rail) bleeds 20px into its parent's
           padding, and the full-bleed hero cancels exactly this padding. */}
       <div className="mx-auto max-w-[1920px] px-5 lg:px-6 xl:px-8">

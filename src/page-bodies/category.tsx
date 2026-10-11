@@ -82,7 +82,7 @@ export default function CategoryPage() {
   const productCount = (products ?? []).length;
 
   return (
-    <div className="bg-cream-100">
+    <div className="bg-page">
       <Seo
         title={category?.name ? `${category.name} — PlantAtHome` : 'Category — PlantAtHome'}
         description={category?.details || category?.description || `Shop ${category?.name ?? 'our'} collection at PlantAtHome.`}

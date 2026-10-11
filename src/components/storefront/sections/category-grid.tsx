@@ -22,7 +22,7 @@ export function CategoryGrid({
   if (!isLoading && (!categories || categories.length === 0)) return null;
 
   return (
-    <section id="categories" className={tone === 'soft' ? 'bg-mintsoft' : ''}>
+    <section id="categories" className={tone === 'soft' ? 'bg-page' : ''}>
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-20">
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-12 sm:flex-row sm:items-end">
           <div>

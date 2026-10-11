@@ -13,7 +13,7 @@ export default function CareGuide({ pa }: { pa?: PlantAttribute | null }) {
   ];
 
   return (
-    <section className="bg-[#FAF8F2]">
+    <section className="bg-page">
       <div className="mx-auto max-w-7xl px-5 py-10 sm:px-8">
         <h2 className="font-poppins mb-5 text-[15px] font-medium uppercase tracking-[0.08em] text-forest-700">Care Guide</h2>
         <div className="grid grid-cols-2 gap-3 rounded-2xl bg-white p-4 shadow-box sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">

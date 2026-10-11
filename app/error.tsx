@@ -78,7 +78,7 @@ export default function RouteError({
   }, [error]);
 
   return (
-    <div className="grid min-h-[70vh] place-items-center bg-cream px-6 py-16">
+    <div className="grid min-h-[70vh] place-items-center bg-page px-6 py-16">
       <div className="w-full max-w-md text-center">
         <div className="mb-8 flex justify-center opacity-40">
           <PlantLoader size="lg" />

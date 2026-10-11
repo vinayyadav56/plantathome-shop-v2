@@ -140,7 +140,7 @@ export function WhyPlants() {
             >
               {/* image — inset with its own radius, so it reads as a framed
                   photograph instead of a bleed fighting the card's corners */}
-              <div className="relative h-[150px] overflow-hidden rounded bg-cream-100 sm:h-[160px] md:h-[130px] lg:h-[160px]">
+              <div className="relative h-[150px] overflow-hidden rounded bg-page sm:h-[160px] md:h-[130px] lg:h-[160px]">
                 <SafeImage
                   src={b.img}
                   alt={b.title}

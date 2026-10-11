@@ -129,7 +129,7 @@ export function DeliveryCheck({
             {result.options.map((o) => (
               <div
                 key={o.type}
-                className="flex items-start gap-2.5 rounded border border-kraft-200 bg-[#FAFAF7] px-3 py-2.5"
+                className="flex items-start gap-2.5 rounded border border-kraft-200 bg-white px-3 py-2.5"
               >
                 <LineIcon
                   name={o.type === 'instant' ? 'bike' : 'truck'}

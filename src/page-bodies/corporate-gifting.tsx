@@ -101,7 +101,7 @@ function EnquiryForm({ onDark = false }: { onDark?: boolean }) {
     );
   }
 
-  // bg-white/70, not bg-cream-50: on a translucent sheet the cream read as a
+  // bg-white/70, not bg-page: on a translucent sheet the cream read as a
   // smudge of whatever sat behind it. Everything else survives the frost.
   const inputCls = onDark
     ? 'w-full rounded-lg border border-white/25 bg-white/10 px-4 py-3 text-sm text-white placeholder:text-white/55 focus:border-ds-cta focus:bg-white/15 focus:outline-0 focus:ring-2 focus:ring-ds-cta/40'
@@ -187,7 +187,7 @@ export default function CorporateGiftingPage() {
   };
 
   return (
-    <div className="bg-cream-50">
+    <div className="bg-page">
       <Seo
         title="Corporate Plant Gifting — festive hampers & employee kits"
         description="Memorable, sustainable plant gifts for employees, clients and festive occasions. Ready-to-buy hampers and kits, or enquire for bespoke bulk gifting tailored to your brand."
@@ -356,7 +356,7 @@ export default function CorporateGiftingPage() {
           <h2 className="font-cormorant text-center text-4xl font-medium text-forest-900 sm:text-5xl">Why plant gifts work</h2>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {WHY.map((f) => (
-              <div key={f.title} className="shadow-box rounded-2xl border border-kraft-200 bg-cream-50 p-6">
+              <div key={f.title} className="shadow-box rounded-2xl border border-kraft-200 bg-page p-6">
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-sage-100 text-xl">{f.icon}</div>
                 <h3 className="mt-3.5 font-cormorant text-xl font-medium text-forest-900">{f.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-stone-600">{f.text}</p>
@@ -367,7 +367,7 @@ export default function CorporateGiftingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="bg-cream-50 py-16 lg:py-20">
+      <section className="bg-page py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
           <h2 className="font-cormorant text-center text-4xl font-medium text-forest-900 sm:text-5xl">Questions, answered</h2>
           <div className="mt-8 space-y-3">

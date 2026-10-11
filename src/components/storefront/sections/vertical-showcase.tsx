@@ -16,7 +16,7 @@ export function VerticalShowcase() {
     list.find((t) => t?.settings?.isHome)?.slug ?? list[0]?.slug;
 
   return (
-    <section className="bg-cream">
+    <section className="bg-page">
       <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20 lg:py-24">
         <div className="mb-8 text-center sm:mb-12">
           <FadeUp>

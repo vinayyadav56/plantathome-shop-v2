@@ -31,7 +31,7 @@ const CTA =
  * annotation: "make this in a strip and reduce the fonts size"; ~320–340 px tall from lg) with
  * the breadcrumb, eyebrow, H1 (site heading font), one-line pitch, two CTAs and the three-item
  * trust row; from lg up the potting-table photo fills the right 55% and fades in under the copy.
- * The band is the mock's own beige (#F1E8DA), not `bg-cream`: that token is near-white, so the
+ * The band is the mock's own beige (#F1E8DA), not `bg-page`: that token is near-white, so the
  * band vanished against the page and the photo's fade read as a white haze.
  *
  * Render it INSIDE the page's gutter container (`px-5 lg:px-6 xl:px-8`): the section bleeds

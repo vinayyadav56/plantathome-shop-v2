@@ -139,7 +139,7 @@ const SizeSheet = ({ product }: { product: Product }) => {
 
   const botanical = product.scientific_name ?? product.plant_attribute?.scientific_name;
   const stepperBtn =
-    'grid h-9 w-9 place-items-center rounded-full text-forest-900 transition hover:bg-cream-100 disabled:opacity-40';
+    'grid h-9 w-9 place-items-center rounded-full text-forest-900 transition hover:bg-page disabled:opacity-40';
 
   return (
     <div className={PANEL}>

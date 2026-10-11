@@ -121,7 +121,7 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
     );
 
   return (
-    <main id="main-content" className="bg-cream pb-12 sm:pb-16">
+    <main id="main-content" className="bg-page pb-12 sm:pb-16">
       {/* 20px gutters on phones, not 16: the category rail (.pah-rail) bleeds 20px
           into its parent's padding by design and overflowed the viewport by 4px. */}
       <div className="mx-auto max-w-[1920px] px-5 lg:px-6 xl:px-8">

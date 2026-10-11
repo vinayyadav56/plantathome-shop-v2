@@ -65,7 +65,7 @@ export default function DeliveryEstimate() {
   if (withEta.length === 0) return null;
 
   return (
-    <div className="mt-4 rounded-md border border-emerald-100 bg-emerald-50/60 p-4">
+    <div className="mt-4 rounded-md border border-emerald-100 bg-white p-4">
       <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-heading">
         <Truck size={16} className="shrink-0" aria-hidden />
         <span>Estimated delivery</span>

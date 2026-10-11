@@ -117,7 +117,7 @@ function NoteArrow({ className }: { className?: string }) {
 export function FarmboxHero() {
   return (
     <section aria-labelledby="farmbox-hero-title" className="-mx-5 lg:-mx-6 xl:-mx-8">
-      <div className="relative flex flex-col overflow-hidden bg-cream-100 lg:block">
+      <div className="relative flex flex-col overflow-hidden bg-page lg:block">
         <div className="relative aspect-[16/9] sm:aspect-[21/9] lg:absolute lg:inset-0 lg:aspect-auto">
           <SafeImage
             src={HERO.photo}
@@ -191,7 +191,7 @@ export function FarmboxHero() {
         </div>
       </div>
 
-      <div className={cn(HERO_WRAP, 'relative z-10 bg-cream-100 pb-7 lg:-mt-16 lg:bg-transparent lg:pb-0')}>
+      <div className={cn(HERO_WRAP, 'relative z-10 bg-page pb-7 lg:-mt-16 lg:bg-transparent lg:pb-0')}>
         <ul
           aria-label="Why FarmBox"
           // Centred under the hero, each promise centred in its column (owner annotation 2026-10-09).
@@ -432,7 +432,7 @@ export function TrustStrip() {
     <div className={cn(WRAP, 'mt-12 sm:mt-16 lg:mt-20')}>
       <ul
         aria-label="The FarmBox promise"
-        className="grid grid-cols-2 gap-x-4 gap-y-6 rounded-lg bg-cream-100 px-5 py-6 sm:px-8 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-forest-900/10 lg:px-2 lg:py-7"
+        className="grid grid-cols-2 gap-x-4 gap-y-6 rounded-lg bg-page px-5 py-6 sm:px-8 lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-forest-900/10 lg:px-2 lg:py-7"
       >
         {TRUST.map((item) => (
           <IconLine key={item.t} item={item} className="lg:justify-center lg:px-5" />

@@ -21,7 +21,7 @@ export default function AboutIncluded({ product, content }: { product: Product; 
     .trim();
 
   return (
-    <section className="bg-[#FAF8F2]">
+    <section className="bg-page">
       <div className="mx-auto grid max-w-7xl gap-5 px-5 py-8 sm:px-8 lg:grid-cols-3">
         {/* About */}
         <div className="rounded-2xl bg-white p-6 shadow-box">

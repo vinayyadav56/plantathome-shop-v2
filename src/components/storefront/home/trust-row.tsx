@@ -35,7 +35,7 @@ export function TrustRow() {
         whileInView={{ y: 0 }}
         viewport={{ once: true, margin: '-60px' }}
         transition={{ duration: 0.6, ease: EXPO }}
-        className="relative border-t border-kraft-300/70 bg-[#F0EDE4] py-5 lg:py-6"
+        className="relative border-t border-kraft-300/70 bg-page py-5 lg:py-6"
       >
         <div className="relative mx-auto grid max-w-none grid-cols-2 gap-6 px-5 sm:px-8 lg:grid-cols-4 lg:gap-0 lg:px-16">
           {ITEMS.map((it, i) => (

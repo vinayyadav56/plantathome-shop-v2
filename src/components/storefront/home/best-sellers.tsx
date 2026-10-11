@@ -53,7 +53,7 @@ export function BestSellers({
   return (
     <section
       style={{
-        background: '#FAF9F4',
+        background: 'var(--page-bg)', // the page surface token (was beige #FAF9F4)
         borderTop: '1px solid #E9E3D6',
         borderBottom: '1px solid #E9E3D6',
         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.5)',

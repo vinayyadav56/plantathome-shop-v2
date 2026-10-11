@@ -124,13 +124,13 @@ export default function PlantCareDetails({
       {(a.benefits || a.medicinal_uses) && (
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {a.benefits && a.benefits.toLowerCase() !== 'none' && (
-            <div className="rounded-2xl bg-mintsoft p-5">
+            <div className="rounded-2xl bg-page p-5">
               <h3 className="font-heading text-sm font-medium text-forest">Benefits</h3>
               <p className="mt-1.5 text-sm leading-6 text-body">{a.benefits}</p>
             </div>
           )}
           {a.medicinal_uses && a.medicinal_uses.toLowerCase() !== 'none' && (
-            <div className="rounded-2xl bg-mintsoft p-5">
+            <div className="rounded-2xl bg-page p-5">
               <h3 className="font-heading text-sm font-medium text-forest">
                 Medicinal uses
               </h3>

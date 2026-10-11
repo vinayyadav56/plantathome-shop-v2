@@ -52,10 +52,10 @@ export default function PahHome(_props: { variables?: any }) {
     (types ?? []).find((t: any) => t?.slug === slug)?.name;
 
   return (
-    <div className="min-h-screen w-full bg-cream-100 font-hanken text-forest-900 antialiased">
-      <div className="mx-auto min-h-screen max-w-[440px] overflow-hidden bg-cream-50 shadow-[0_0_60px_-30px_rgba(34,48,26,0.3)]">
+    <div className="min-h-screen w-full bg-page font-hanken text-forest-900 antialiased">
+      <div className="mx-auto min-h-screen max-w-[440px] overflow-hidden bg-page shadow-[0_0_60px_-30px_rgba(34,48,26,0.3)]">
         <Hero />
-        <div className="relative rounded-t-2xl bg-cream-50 pt-[34px]">
+        <div className="relative rounded-t-2xl bg-page pt-[34px]">
                 <CategoryCircles />
           <SpecialOffer />
           <VerticalsRail />

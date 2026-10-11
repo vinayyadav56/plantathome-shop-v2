@@ -53,7 +53,7 @@ export default function PlpHero({ type, title, subtitle, total, searchTerm }: Pl
     }));
 
   return (
-    <section className="relative -mx-5 overflow-hidden bg-[#FAF7F2] lg:-mx-6 lg:min-h-[290px] xl:-mx-8">
+    <section className="relative -mx-5 overflow-hidden bg-page lg:-mx-6 lg:min-h-[290px] xl:-mx-8">
       {/* The photo sits behind the copy (lg+): absolute → painted above in-flow
           content, so the copy wrapper below is `relative` and later in the DOM. */}
       <div

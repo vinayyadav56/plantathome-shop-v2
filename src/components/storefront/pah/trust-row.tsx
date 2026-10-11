@@ -17,7 +17,7 @@ const TRUST = [
  */
 export function TrustRow() {
   return (
-    <div className="border-t border-kraft-300/70 bg-[#F0EDE4] px-5 py-5">
+    <div className="border-t border-kraft-300/70 bg-page px-5 py-5">
       <div className="grid grid-cols-2 gap-x-4 gap-y-4">
         {TRUST.map((t) => (
           <div key={t.label} className="flex items-center gap-2.5">

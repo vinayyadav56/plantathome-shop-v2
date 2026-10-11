@@ -78,7 +78,7 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
   const isMaintenance = reason === 'city_maintenance';
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-cream-50 px-6 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-page px-6 text-center">
       {isMaintenance && m.image ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

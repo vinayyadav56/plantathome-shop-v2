@@ -86,7 +86,7 @@ const NotFound: React.FC<NotFoundProps> = ({
   const isDefault = title === '404-heading';
 
   return (
-    <div className="grid min-h-[75vh] place-items-center bg-cream px-4 py-14 sm:px-8">
+    <div className="grid min-h-[75vh] place-items-center bg-page px-4 py-14 sm:px-8">
       <div className="w-full max-w-2xl text-center">
         <PlantGlyph />
 

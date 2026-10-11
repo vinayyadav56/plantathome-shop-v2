@@ -82,7 +82,7 @@ const ProductPage = ({ product }: any) => {
         {/* overflow-x-CLIP (not hidden): hidden creates a scroll container and
             silently disables position:sticky for every descendant — the
             sticky gallery depends on this. */}
-        <div className="min-h-screen overflow-x-clip bg-[#FAF8F2]">
+        <div className="min-h-screen overflow-x-clip bg-page">
           {product.type?.slug === 'books' ? (
             <BookDetails product={product} />
           ) : (
@@ -90,7 +90,7 @@ const ProductPage = ({ product }: any) => {
               <PlantAtHomeProductDetails product={product} />
 
               {/* Frequently Bought Together — REAL addons/related data */}
-              <section className="bg-[#FAF8F2]">
+              <section className="bg-page">
                 <div className={`${CONTAINER} pb-2 pt-6`}>
                   <FrequentlyBoughtTogether product={product} />
                 </div>
@@ -106,7 +106,7 @@ const ProductPage = ({ product }: any) => {
               {/* Size guide — below the fold (owner request); the size picker
                   also opens the same content in a popup */}
               {hasSizeGuide && (
-                <section className="bg-[#FAF8F2]">
+                <section className="bg-page">
                   <div className={`${CONTAINER} py-10`} id="size-guide">
                     <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
                       Size guide

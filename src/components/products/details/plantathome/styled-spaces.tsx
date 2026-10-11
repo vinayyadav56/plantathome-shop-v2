@@ -40,7 +40,7 @@ export default function StyledSpaces() {
   };
 
   return (
-    <section className="bg-[#FAF8F2]">
+    <section className="bg-page">
       {/* The product page's container (page-bodies/product.tsx CONTAINER), so its edges
           line up with the sections above and below. */}
       <div className="mx-auto w-full max-w-[1920px] px-4 py-8 sm:px-6 xl:px-8">

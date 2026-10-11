@@ -10,8 +10,16 @@
   --pa-secondary: var(--ds-accent, #2E5E2A);
   --pa-accent:    #81C784;
   --pa-accent-lt: #C8E6C9;
-  --pa-bg:        #FAFAF8;
-  --pa-bg-alt:    #F4F7F4;
+  /* Page surface, form fields and text size — "Cool Mist" + Comfortable, picked by the owner
+     from the colour preview board (2026-10-11). One place to change the whole site:
+     every page background, input box and font size reads these. --fs-scale is applied at
+     build time to every absolute font-size/line-height (postcss-font-scale.js). */
+  --page-bg:      #F5F6F8;
+  --field-bg:     #FFFFFF;
+  --field-border: #C9CFD6;
+  --fs-scale:     1.06;
+  --pa-bg:        var(--page-bg);
+  --pa-bg-alt:    var(--page-bg);
   --pa-dark:      #111827;
   --pa-dark-80:   rgba(17,24,39,0.8);
   /* Semantic states. Success is deliberately teal-leaning so it never reads
@@ -663,7 +671,7 @@ input[class*="search"],
 [class*="search"] input[type="text"],
 [class*="search"] input[type="search"] {
   border-radius: var(--pa-radius-pill) !important;
-  border-color: rgba(129,199,132,0.3) !important;
+  border-color: var(--field-border) !important;
   font-family: var(--font-body) !important;
   transition: var(--pa-t-fast) !important;
 }
@@ -739,7 +747,7 @@ select {
      field look half-focused). Focus below keeps the botanical-green border+ring. */
   border-radius: var(--radius-control) !important;
   font-family: var(--font-body) !important;
-  border-color: #E4E5E1 !important;
+  border-color: var(--field-border) !important;
   transition: var(--pa-t-fast) !important;
 }
 input:focus:not([type="checkbox"]):not([type="radio"]),
@@ -810,7 +818,7 @@ select:focus {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #F4F7F1;
+  background: var(--page-bg);
   position: relative;
   /* One typeface through the whole drawer — item names used the heading serif
      at 13.5px next to body-font prices and read as a different UI. */
@@ -1147,7 +1155,7 @@ select:focus {
   z-index: 10;
   width: 100%;
   max-width: 28rem;
-  background: #F4F7F1;
+  background: var(--page-bg);
   border-top: 1px solid rgba(46,107,74,0.12);
   padding: 14px 16px 20px;
 }
@@ -1311,7 +1319,7 @@ select:focus {
 /* ── Checkout page wrapper ───────────────────────────────────── */
 /* ── Clean / minimal checkout (neutral canvas, green only as accent) ── */
 .pa-checkout-page {
-  background: #F7F8F5;
+  background: var(--page-bg);
   min-height: 100vh;
   padding: 32px 16px 64px;
 }
@@ -1598,9 +1606,9 @@ textarea:focus {
 .pa-payment-grid {
   margin-top: 20px;
   padding: 20px;
-  background: #F4F7F1;
+  background: var(--field-bg);
   border-radius: var(--pa-radius-sm);
-  border: 1px solid rgba(46,107,74,0.10);
+  border: 1px solid #E3E6EA;
 }
 .pa-payment-grid .text-heading { color: var(--ds-accent-ink, #1E4023); }
 
@@ -1615,7 +1623,7 @@ textarea:focus {
 .shadow-600 { box-shadow: 0 0 0 2px rgba(44,95,46,0.25) !important; }
 
 /* ── Empty address / no items inline state ───────────────────── */
-.bg-gray-100.rounded.border { background: #F4F7F1 !important; border-color: rgba(46,107,74,0.15) !important; }
+.bg-gray-100.rounded.border { background: var(--field-bg) !important; border-color: var(--field-border) !important; }
 
 
 /* ── Address card ─────────────────────────────────────────────── */
@@ -1624,7 +1632,7 @@ textarea:focus {
   cursor: pointer;
   border-radius: var(--radius-control);
   border: 1.5px solid rgba(46,107,74,0.12);
-  background: #F4F7F1;
+  background: var(--field-bg);
   padding: 16px;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   /* Fill the grid cell rather than hugging the text. A bare min-height left every card a
@@ -1707,7 +1715,7 @@ textarea:focus {
   cursor: pointer;
   border-radius: var(--radius-control);
   border: 1.5px solid rgba(46,107,74,0.12);
-  background: #F4F7F1;
+  background: var(--field-bg);
   padding: 16px 14px;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
@@ -1773,8 +1781,8 @@ textarea:focus {
 /* ── Phone input override ─────────────────────────────────────── */
 .react-tel-input .form-control {
   border-radius: var(--radius-control) !important;
-  border-color: rgba(46,107,74,0.2) !important;
-  background: #F4F7F1 !important;
+  border-color: var(--field-border) !important;
+  background: var(--field-bg) !important;
 }
 .react-tel-input .form-control:focus {
   border-color: var(--ds-accent, #2E5E2A) !important;
@@ -1782,8 +1790,8 @@ textarea:focus {
 }
 .react-tel-input .flag-dropdown {
   border-radius: var(--radius-control) 0 0 var(--radius-control) !important;
-  border-color: rgba(46,107,74,0.2) !important;
-  background: #F4F7F1 !important;
+  border-color: var(--field-border) !important;
+  background: transparent !important;
 }
 /* The bootstrap stylesheet react-phone-input-2 ships gives the flag dropdown its own right-hand
    border, which lands 1px inside the field's rounded edge and reads as a broken/doubled box.
@@ -1941,7 +1949,7 @@ textarea:focus {
 
 /* ── Order summary: free-delivery progress ───────────────────── */
 .pa-od-ship {
-  background: #F7F8F5;
+  background: var(--page-bg);
   border: 1px solid #ECEEEA;
   border-radius: var(--radius-box);
   padding: 10px 12px;
@@ -2356,7 +2364,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
    the table fell through to the global grey Pickbazar rc-table skin. Scoped
    here so the account area's item lists read like the rest of the site. */
 .orderDetailsTable .rc-table-thead th {
-  background: #F8F7F2 !important;
+  background: var(--page-bg) !important;
   border-color: #E9E3D6 !important;
   font-size: 11px !important;
   font-weight: 600 !important;
@@ -2370,5 +2378,5 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
   color: #16301A !important; /* forest-900 */
 }
 .orderDetailsTable .rc-table-cell-row-hover {
-  background: #FAFAF8 !important;
+  background: var(--page-bg) !important;
 }

@@ -14,7 +14,7 @@ export default function SiteLayout({ children }: React.PropsWithChildren<{}>) {
   const { layout } = useLayout();
   const router = useRouter();
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100 transition-colors duration-150">
+    <div className="flex min-h-screen flex-col bg-page transition-colors duration-150">
       {router.query.slug && <NoticeHighlightedBar />}
 
       {['minimal', 'compact'].includes(layout) ? (

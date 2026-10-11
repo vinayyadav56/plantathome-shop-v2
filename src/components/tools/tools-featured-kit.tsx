@@ -61,7 +61,7 @@ export function FeaturedKit({ type }: { type: string }) {
           hero already preloaded at every width (from lg both resolve to the 1920w file). */}
       <div
         className={cn(
-          'relative bg-[#F7F5EF] lg:aspect-auto lg:min-h-[420px]',
+          'relative bg-white lg:aspect-auto lg:min-h-[420px]',
           hasOwnImage ? 'aspect-[4/3]' : 'aspect-[2/1] sm:aspect-auto sm:h-64 lg:h-auto',
         )}
       >

@@ -33,7 +33,7 @@ type Props = {
 
 function Tools({ type }: Props) {
   return (
-    <main id="main-content" className="bg-cream pb-14 sm:pb-20">
+    <main id="main-content" className="bg-page pb-14 sm:pb-20">
       {/* 20px gutters on phones: the category rail (.pah-rail) bleeds 20px into
           its parent's padding, and the full-bleed bands cancel exactly this padding. */}
       <div className="mx-auto max-w-[1920px] px-5 lg:px-6 xl:px-8">

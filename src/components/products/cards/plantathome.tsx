@@ -39,7 +39,7 @@ const AddToCart = dynamic(
        geometry exactly so swapping in data causes no layout shift ─────── */
 export const PlantAtHomeCardSkeleton: React.FC = () => (
   <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
-    <div className="aspect-[25/24] w-full animate-pulse bg-[#F7F5EF]" />
+    <div className="aspect-[25/24] w-full animate-pulse bg-white" />
     <div className="flex flex-1 flex-col p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -382,7 +382,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
         {...linkProps}
         href={Routes.product(product.slug)}
         aria-label={`View ${product.name}`}
-        className={`relative block w-full overflow-hidden bg-[#F7F5EF] text-left ${
+        className={`relative block w-full overflow-hidden bg-white text-left ${
           isList ? 'h-full min-h-[170px]' : 'aspect-[25/24]'
         }`}
       >

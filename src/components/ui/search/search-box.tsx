@@ -18,7 +18,7 @@ const classes = {
   normal:
     'bg-light ltr:pl-6 rtl:pr-6 ltr:pr-14 rtl:pl-14 ltr:rounded-tr-none rtl:rounded-tl-none ltr:rounded-br-none rtl:rounded-bl-none  border ltr:border-r-0 rtl:border-l-0 border-transparent focus:border-accent',
   minimal:
-    'search-minimal bg-gray-100 ltr:pl-10 rtl:pr-10 ltr:pr-4 rtl:pl-4 ltr:md:pl-14 rtl:md:pr-14 border border-transparent focus:border-accent focus:bg-light',
+    'search-minimal bg-field ltr:pl-10 rtl:pr-10 ltr:pr-4 rtl:pl-4 ltr:md:pl-14 rtl:md:pr-14 border border-transparent focus:border-accent focus:bg-light',
   flat: 'bg-white ltr:pl-10 rtl:pr-10 ltr:pr-4 rtl:pl-4 ltr:md:pl-14 rtl:md:pr-14 border-0',
   'with-shadow':
     'search-with-shadow bg-light ltr:pl-10 rtl:pr-10 ltr:pr-12 rtl:pl-12 ltr:md:pl-14 rtl:md:pr-14 focus:bg-light border-0',

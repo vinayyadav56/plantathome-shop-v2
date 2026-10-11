@@ -812,7 +812,7 @@ export default function PlantDoctorPage() {
         : '';
 
   return (
-    <div className="bg-[#FAF9F6] md:px-6 md:pb-6">
+    <div className="bg-page md:px-6 md:pb-6">
       <div className="mx-auto hidden h-11 w-full max-w-6xl items-center md:flex">
         <Breadcrumb items={[{ label: 'Home', href: Routes.home }, { label: 'Plant Doctor' }]} />
       </div>
