@@ -34,7 +34,14 @@ const API = process.env.NEXT_PUBLIC_REST_API_ENDPOINT ?? '';
  * reached the row still renders with a range, because "we can courier this, the
  * exact date is pending" is true and useful, while an error is neither.
  */
-export function DeliveryCheck({ productId }: { productId?: number }) {
+export function DeliveryCheck({
+  productId,
+  hint,
+}: {
+  productId?: number;
+  /** Helper text under the field (the ETA line), above any results. */
+  hint?: React.ReactNode;
+}) {
   const [pincode, setPincode] = React.useState('');
   const [state, setState] = React.useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [result, setResult] = React.useState<DeliveryCheckResult | null>(null);
@@ -60,15 +67,19 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
   }
 
   return (
-    <div className="mt-4 border-t border-kraft-200 pt-4">
+    <div>
+      {/* Same label treatment as "SELECT SIZE" beside it, so the two read as one row of
+          form fields (owner annotation 2026-10-11: "like a form input box with label"). */}
       <label
         htmlFor="delivery-pincode"
-        className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]"
+        className="block text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900 sm:text-[12px]"
       >
         Check delivery
       </label>
 
-      <form onSubmit={check} className="mt-2 flex gap-2">
+      {/* One field with the button inside it: a single 44px control instead of an input and
+          a separate button side by side. */}
+      <form onSubmit={check} className="relative mt-2">
         <input
           id="delivery-pincode"
           inputMode="numeric"
@@ -81,16 +92,18 @@ export function DeliveryCheck({ productId }: { productId?: number }) {
           }}
           placeholder="Enter pincode"
           aria-describedby="delivery-check-result"
-          className="h-11 w-full rounded border border-[#DCDCDC] px-3 text-[14px] text-[#184A31] outline-none placeholder:text-[#9A9A9A] focus:border-[#24693E]"
+          className="h-11 w-full rounded border border-[#DCDCDC] bg-white pl-3 pr-[88px] text-[14px] text-[#184A31] outline-none placeholder:text-[#9A9A9A] focus:border-[#24693E]"
         />
         <button
           type="submit"
           disabled={!valid || state === 'loading'}
-          className="h-11 shrink-0 rounded-control bg-ds-btn hover:bg-ds-btn-hover px-5 text-[14px] font-semibold text-white transition-opacity disabled:opacity-40"
+          className="absolute right-1 top-1 h-9 rounded-control bg-ds-btn px-4 text-[13px] font-semibold text-white transition-opacity hover:bg-ds-btn-hover disabled:opacity-40"
         >
           {state === 'loading' ? 'Checking…' : 'Check'}
         </button>
       </form>
+
+      {hint}
 
       <div id="delivery-check-result" aria-live="polite">
         {state === 'error' && (

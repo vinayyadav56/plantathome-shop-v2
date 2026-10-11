@@ -119,7 +119,8 @@ export default function GuestCheckoutPage() {
             />
             <OrderNote count={sameAsShipping ? 5 : 6} label={t('Order Note')} />
           </div>
-          <div className="mt-10 mb-10 w-full sm:mb-12 lg:mb-0 lg:w-96">
+          {/* Sticky as one column (summary + delivery estimate), below the 68px header. */}
+          <div className="mt-10 mb-10 w-full sm:mb-12 lg:sticky lg:top-[84px] lg:mb-0 lg:w-96 lg:self-start">
             <RightSideView />
           </div>
         </div>

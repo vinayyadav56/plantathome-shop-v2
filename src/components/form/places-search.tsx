@@ -39,6 +39,7 @@ export default function PlacesSearch({
   className?: string;
 }) {
   const hostRef = useRef<HTMLDivElement | null>(null);
+  const elRef = useRef<(HTMLElement & { value?: string }) | null>(null);
   const onPickRef = useRef(onPick);
   onPickRef.current = onPick;
   const onErrorRef = useRef(onError);
@@ -111,13 +112,27 @@ export default function PlacesSearch({
       }
     };
 
+    // Typed characters stop at the host. The staging annotation toolbar reads H, C, X, P and L
+    // as shortcuts from a document-level keydown listener and preventDefault()s them; it skips
+    // INPUTs, but this element's real <input> is in its shadow DOM, so at document level the
+    // target is the host and "H" never reached the box (owner annotation 2026-10-11). Only
+    // single characters are stopped: Tab, Enter, Escape and arrows still bubble (focus trap,
+    // dialogs). Production never mounts the toolbar.
+    const keepTyping = (e: KeyboardEvent) => {
+      if (e.key.length === 1) e.stopPropagation();
+    };
+    host.addEventListener('keydown', keepTyping);
+
     // GA event is `gmp-select`; older builds emitted `gmp-placeselect`.
     el.addEventListener('gmp-select', handler);
     el.addEventListener('gmp-placeselect', handler);
     host.appendChild(el);
+    elRef.current = el;
     setReady(true);
 
     return () => {
+      host.removeEventListener('keydown', keepTyping);
+      elRef.current = null;
       el.removeEventListener('gmp-select', handler);
       el.removeEventListener('gmp-placeselect', handler);
       try {
@@ -130,6 +145,18 @@ export default function PlacesSearch({
     // whatever the shopper had entered.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [placeholder, disabled]);
+
+  // Keep the box's text in step with the address the form holds: a "current location" fix, or a
+  // saved address opened for editing (that one loads after the element is created, so the
+  // create-time defaultValue above was always still empty).
+  useEffect(() => {
+    if (!elRef.current || !defaultValue) return;
+    try {
+      elRef.current.value = defaultValue;
+    } catch {
+      /* not settable on every build */
+    }
+  }, [defaultValue]);
 
   return <div ref={hostRef} className={className} data-ready={ready || undefined} />;
 }

@@ -37,6 +37,11 @@ export const CheckAvailabilityAction: React.FC<{
     Boolean(contact) &&
     Boolean(readyCandidate?.address) &&
     isAddressComplete(readyCandidate);
+  // Owner annotation 2026-10-11: "this button should not enable until the last step got
+  // completed". On the stepped /checkout that is Review (the wizard can only reach it once the
+  // earlier steps are valid). Guest and digital checkout have no steps (wizard is null) and keep
+  // the field rule above — the e2e guest flows rely on it.
+  const atLastStep = !wizard || wizard.step >= wizard.last;
 
   function handleVerifyCheckout() {
     // Stepped checkout: a verify fired before contact + address exist lands on
@@ -87,25 +92,35 @@ export const CheckAvailabilityAction: React.FC<{
   }
 
   return (
-    <button
-      className="pa-place-order-btn"
-      onClick={handleVerifyCheckout}
-      disabled={isEmpty || loading || !ready}
-      title={
-        ready
-          ? undefined
-          : !contact
-            ? 'Add your contact number first'
-            : 'Choose your delivery address first'
-      }
-      style={{ marginTop: 20 }}
-    >
-      {loading ? (
-        <BrandSpinner className="h-[18px] w-[18px]" />
-      ) : (
-        <CircleCheck size={18} aria-hidden />
+    <>
+      <button
+        className="pa-place-order-btn"
+        onClick={handleVerifyCheckout}
+        disabled={isEmpty || loading || !ready || !atLastStep}
+        title={
+          !ready
+            ? !contact
+              ? 'Add your contact number first'
+              : 'Choose your delivery address first'
+            : !atLastStep
+              ? 'Complete all steps to check availability'
+              : undefined
+        }
+        style={{ marginTop: 20 }}
+      >
+        {loading ? (
+          <BrandSpinner className="h-[18px] w-[18px]" />
+        ) : (
+          <CircleCheck size={18} aria-hidden />
+        )}
+        {props.children}
+      </button>
+      {/* Say why it is off — a greyed button with no reason reads as broken. */}
+      {!atLastStep && (
+        <p className="mt-2 text-center text-[12px] leading-snug text-stone-500">
+          Complete all steps to check availability.
+        </p>
       )}
-      {props.children}
-    </button>
+    </>
   );
 };

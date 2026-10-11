@@ -43,7 +43,16 @@ export default function GooglePlacesAutocomplete({
     getCurrentLocation,
     isLoaded,
     loadError,
-  ] = useLocation({ onChange, onChangeCurrentLocation, setInputValue });
+  ] = useLocation({
+    onChange,
+    // A GPS fix fills the form the same way a picked suggestion does, and shows its address
+    // in the search box too.
+    onChangeCurrentLocation: (loc?: GoogleMapLocation) => {
+      (onChangeCurrentLocation as ((l?: GoogleMapLocation) => void) | undefined)?.(loc);
+      if (loc?.formattedAddress) setInputValue(loc.formattedAddress);
+    },
+    setInputValue,
+  });
   const [location] = useAtom(locationAtom);
 
   useEffect(() => {
@@ -57,29 +66,44 @@ export default function GooglePlacesAutocomplete({
   if (isLoaded && !legacyFallback) {
     return (
       <div className="relative">
-        <PlacesSearch
-          className="[&>*]:h-12 [&>*]:w-full"
-          placeholder={t('common:placeholder-search-location') ?? ''}
-          defaultValue={inputValue}
-          disabled={disabled}
-          biasTo={biasTo}
-          onUnavailable={() => setLegacyFallback(true)}
-          onError={setSearchError}
-          onPick={(location, raw) => {
-            setSearchError(null);
-            onChange?.(location as any);
-            const label = raw?.formatted_address ?? '';
-            const name = raw?.name ?? '';
-            setInputValue(
-              name && !label.toLowerCase().startsWith(name.toLowerCase())
-                ? `${name}, ${label}`
-                : label,
-            );
-          }}
-        />
-        {/* The crosshair overlay is gone (annotation 2026-10-03): it sat on top of the
-            autocomplete's own clear-x. The labelled "Use current location" chip rendered
-            directly below by AddressMapPicker is the one GPS control. */}
+        <div className="flex items-start gap-2">
+          <PlacesSearch
+            className="min-w-0 flex-1 [&>*]:h-12 [&>*]:w-full"
+            placeholder={t('common:placeholder-search-location') ?? ''}
+            defaultValue={inputValue}
+            disabled={disabled}
+            biasTo={biasTo}
+            onUnavailable={() => setLegacyFallback(true)}
+            onError={setSearchError}
+            onPick={(location, raw) => {
+              setSearchError(null);
+              onChange?.(location as any);
+              const label = raw?.formatted_address ?? '';
+              const name = raw?.name ?? '';
+              setInputValue(
+                name && !label.toLowerCase().startsWith(name.toLowerCase())
+                  ? `${name}, ${label}`
+                  : label,
+              );
+            }}
+          />
+          {/* "Use my current location", back by request (annotation 2026-10-11: "current location
+              mark is not here"). BESIDE the box, not over it: the old overlay sat on the
+              element's own clear-x, which is why it was removed on 2026-10-03. */}
+          <button
+            type="button"
+            onClick={() => {
+              setSearchError(null);
+              getCurrentLocation();
+            }}
+            disabled={disabled}
+            aria-label="Use my current location"
+            title="Use my current location"
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-control border border-border-base bg-white text-accent transition hover:border-accent focus:outline-0 focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <CurrentLocation className="h-5 w-5" />
+          </button>
+        </div>
         {searchError && (
           <p className="mt-1 text-xs text-red-500" role="alert">
             {searchError}

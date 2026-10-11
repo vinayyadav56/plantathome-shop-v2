@@ -3,17 +3,14 @@ import React from 'react';
 import VendorAvailabilityNote from '../vendor-availability-note';
 import DeliveryCheck from './delivery-check';
 import { LineIcon } from '@/components/icons/line-icons';
-import { Truck } from '@/components/ui/icon';
 import { isCityBased } from '@/lib/is-city-based';
 
 /**
- * "Delivery & availability" card — one bordered card grouping the ETA line
- * (local vs courier), the vendor-availability note (self-gating), the
- * vertical-blocked amber notice and the browse-only stone notice.
- *
- * Renders null when no city is known AND nothing is blocked/display-only —
- * the VendorAvailabilityNote inside self-gates, so the card shell only mounts
- * when at least the city/blocked/displayOnly context exists.
+ * Delivery on the product page — a compact labelled pincode field, not a card (owner annotation
+ * 2026-10-11: "make it compact like a form input box with label and fit it beside the select
+ * size"). The ETA line (local vs courier) is the field's helper text; the vendor-availability
+ * note (self-gating), the vertical-blocked and the browse-only notices follow underneath.
+ * ~90px tall instead of the old ~190px card, so it sits level with the size picker from xl.
  */
 export function DeliveryCard(props: {
   city?: string | null;
@@ -38,7 +35,7 @@ export function DeliveryCard(props: {
   } = props;
 
   // The pincode checker is useful with or without a chosen city — it is often
-  // the FIRST thing a customer reaches for — so the card now mounts always.
+  // the FIRST thing a customer reaches for — so it always mounts.
 
   // Business rule (owner): local same-city delivery always promises 1 day —
   // vendor-fed eta_days only applies to courier shipments.
@@ -48,62 +45,52 @@ export function DeliveryCard(props: {
   const showEta = cityBased && shownEta != null && Boolean(city);
   const dayWord = `day${shownEta === 1 ? '' : 's'}`;
 
+  // ETA — local same-city vs courier (never names the vendor).
+  const hint =
+    showEta || !cityBased ? (
+      <p className="mt-1.5 flex items-start gap-1.5 text-[12px] leading-snug text-[#184A31]">
+        <LineIcon name="truck" className="mt-px h-4 w-4 shrink-0 text-[#24693E]" />
+        <span>
+          {!cityBased ? (
+            <>
+              Ships across India by <span className="font-semibold">courier</span>
+            </>
+          ) : fulfillmentMode === 'local' ? (
+            <>
+              <span className="font-semibold">Local delivery</span> to {city} in 1 day
+            </>
+          ) : (
+            <>
+              Ships to {city} by <span className="font-semibold">courier</span> in ~{shownEta} {dayWord}
+            </>
+          )}
+        </span>
+      </p>
+    ) : null;
+
   return (
-    <div className="shadow-box rounded-2xl border border-kraft-200 bg-white p-4">
-      <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
-        Delivery &amp; availability
-      </h3>
-
-      {/* ETA — local same-city vs courier (never names the vendor) */}
-      {showEta && (
-        <div className="mt-3 flex items-start gap-2.5 text-[13px] text-[#184A31]">
-          <LineIcon name="truck" className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#24693E]" />
-          <span>
-            {fulfillmentMode === 'local' ? (
-              <>
-                <span className="font-semibold">Local delivery</span> to {city} in 1 day
-              </>
-            ) : (
-              <>
-                Ships to {city} by <span className="font-semibold">courier</span> in ~{shownEta} {dayWord}
-              </>
-            )}
-          </span>
-        </div>
-      )}
-
-      {!cityBased && (
-        <div className="mt-3 flex items-start gap-2.5 text-[13px] text-[#184A31]">
-          <Truck size={18} className="mt-0.5 shrink-0 text-[#24693E]" aria-hidden />
-          <span>
-            Ships across India by <span className="font-semibold">courier</span>
-          </span>
-        </div>
-      )}
+    <div>
+      {/* Pincode → every delivery option with its own ETA (local + live courier) */}
+      <DeliveryCheck productId={product?.id} hint={hint} />
 
       {/* "we'll confirm within 6h" note (plants' city vendors) — self-gates on the location-price API */}
       {cityBased && (
         <VendorAvailabilityNote productId={product?.id} variationOptionId={variationOptionId} />
       )}
 
-      {/* Pincode → every delivery option with its own ETA (local + live courier) */}
-      <DeliveryCheck productId={product?.id} />
-
       {/* Operations Control Center — vertical paused/unavailable in city */}
       {verticalBlocked && (
-        <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <LineIcon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
+        <div className="mt-2 flex items-start gap-2 rounded border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+          <LineIcon name="alert" className="mt-px h-4 w-4 shrink-0" />
           <span>{verticalMessage || 'Currently unavailable in your city'}</span>
         </div>
       )}
 
       {/* Display-only city (no nursery supply): browse-only */}
       {displayOnly && (
-        <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600">
-          <LineIcon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
-          <span>
-            Browse-only in {city ?? 'your city'} — ordering opens soon
-          </span>
+        <div className="mt-2 flex items-start gap-2 rounded border border-stone-200 bg-stone-50 px-3 py-2 text-[12px] text-stone-600">
+          <LineIcon name="alert" className="mt-px h-4 w-4 shrink-0" />
+          <span>Browse-only in {city ?? 'your city'} — ordering opens soon</span>
         </div>
       )}
     </div>

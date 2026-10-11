@@ -64,7 +64,7 @@ const PaymentGroupOption: React.FC<PaymentGroupOptionProps> = ({
       {({ checked }) => (
         <div
           className={cn(
-            'relative flex h-full w-full cursor-pointer items-center justify-center rounded border border-gray-200 bg-light p-3 pl-9 text-center',
+            'relative flex h-full min-h-[52px] w-full cursor-pointer items-center justify-start gap-2 rounded border border-gray-200 bg-light p-3 pl-10 text-left',
             checked && '!border-accent bg-light shadow-600',
             {
               '!border-accent bg-light shadow-600': theme === 'bw' && checked,
@@ -290,7 +290,10 @@ const PaymentGrid: React.FC<{ className?: string; theme?: 'bw' }> = ({
           {t('text-choose-payment')}
         </RadioGroup.Label>
 
-        <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-3">
+        {/* One option per row (owner annotation 2026-10-11, "proper placement of these
+            options"): this grid lives in the ~340px order summary, where the old 2/3-column
+            grid squeezed each option to ~88px and left an empty third column. */}
+        <div className="mb-6 grid grid-cols-1 gap-3">
           {/* {settings?.paymentGateway && (
             <PaymentGroupOption
               theme={theme}

@@ -1365,8 +1365,9 @@ select:focus {
   padding: 22px;
   border: 1px solid #ECEEEA;
   box-shadow: var(--shadow-box);
-  position: sticky;
-  top: 24px;
+  /* Not sticky on its own any more: the checkout's right COLUMN is (page-bodies/checkout*.tsx),
+     so the delivery-estimate box below stays with it instead of scrolling under it (owner
+     annotation 2026-10-11), and it clears the 68px sticky header (top 24px sat under it). */
 }
 .pa-order-summary-title {
   font-family: var(--font-heading) !important;

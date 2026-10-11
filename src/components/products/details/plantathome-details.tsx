@@ -670,20 +670,28 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             </div>
 
             {/* trust strip — modern convention: guarantees directly under the
-                CTA. Single-line rows: the 3-column tiles wrapped every label
-                onto two lines (owner feedback). */}
+                CTA. ONE line when the strip has the room (owner annotation 2026-10-11);
+                stacked single-line rows when it doesn't — the old 3-column tiles wrapped
+                every label onto two lines. The three need ~625px side by side (measured),
+                so the switch reads the strip's own width: one line on desktop from 1280
+                and on iPad portrait, rows on phones and in iPad landscape's narrow column. */}
             {!isModal && (
-              <div className="shadow-box mt-5 divide-y divide-[#ECECEC] rounded-2xl border border-kraft-200 bg-white px-4">
-                {[
-                  { icon: 'shield', label: '30-day healthy-arrival guarantee' },
-                  { icon: 'box', label: 'Secure eco-friendly packaging' },
-                  { icon: 'leaf', label: 'Expert plant support' },
-                ].map((t) => (
-                  <div key={t.label} className="flex items-center gap-2.5 py-2.5">
-                    <LineIcon name={t.icon} className="h-[18px] w-[18px] shrink-0 text-[#24693E]" />
-                    <span className="whitespace-nowrap text-[12px] font-medium text-stone-600">{t.label}</span>
-                  </div>
-                ))}
+              <div className="mt-5 [container-type:inline-size]">
+                <div className="shadow-box flex flex-col divide-y divide-[#ECECEC] rounded-2xl border border-kraft-200 bg-white px-4 [@container(min-width:39.5rem)]:flex-row [@container(min-width:39.5rem)]:divide-x [@container(min-width:39.5rem)]:divide-y-0 [@container(min-width:39.5rem)]:px-0">
+                  {[
+                    { icon: 'shield', label: '30-day healthy-arrival guarantee' },
+                    { icon: 'box', label: 'Secure eco-friendly packaging' },
+                    { icon: 'leaf', label: 'Expert plant support' },
+                  ].map((t) => (
+                    <div
+                      key={t.label}
+                      className="flex items-center gap-2 py-2.5 [@container(min-width:39.5rem)]:flex-1 [@container(min-width:39.5rem)]:justify-center [@container(min-width:39.5rem)]:px-3"
+                    >
+                      <LineIcon name={t.icon} className="h-[18px] w-[18px] shrink-0 text-[#24693E]" />
+                      <span className="whitespace-nowrap text-[12px] font-medium text-stone-600">{t.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

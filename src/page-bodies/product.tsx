@@ -132,7 +132,7 @@ const ProductPage = ({ product }: any) => {
               <div
                 className={`${CONTAINER} ${
                   related.length > 0
-                    ? 'xl:grid xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:items-start xl:gap-x-10'
+                    ? 'xl:grid xl:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] xl:items-start xl:gap-x-10'
                     : ''
                 }`}
               >
@@ -160,7 +160,9 @@ const ProductPage = ({ product }: any) => {
                       </Link>
                     </div>
                     {/* Four cards: 2×2 on a phone, one row of four on a tablet, and two
-                        side by side in the desktop column. */}
+                        side by side in the desktop column — a fixed ~27rem column, so the
+                        cards stay ~210px (owner: "these card size is too big" at ~270px)
+                        and reviews + Q&A take the extra width. */}
                     <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-2 xl:gap-4">
                       {related.slice(0, 4).map((r: any) => (
                         <ProductCard key={r.id} product={r} cardType={r?.type?.slug} />

@@ -299,7 +299,9 @@ export default function CheckoutPage() {
               panels={panels}
             />
           </div>
-          <div className="mt-10 mb-10 w-full sm:mb-12 lg:mt-0 lg:mb-0 lg:w-96">
+          {/* The whole column sticks (summary + delivery estimate together), below the 68px
+              header — when only the summary was sticky, the estimate scrolled under it. */}
+          <div className="mt-10 mb-10 w-full sm:mb-12 lg:sticky lg:top-[84px] lg:mt-0 lg:mb-0 lg:w-96 lg:self-start">
             <RightSideView />
           </div>
         </div>
