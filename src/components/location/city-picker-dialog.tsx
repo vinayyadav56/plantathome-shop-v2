@@ -5,7 +5,7 @@ import { useAllCities } from '@/framework/location';
 import { getBrowserCoords, reverseGeocode } from '@/lib/geocode';
 import { track } from '@/lib/analytics/track';
 import { getRecentCities, pushRecentCity } from '@/lib/recent-cities';
-import { MapPin, X } from '@/components/ui/icon';
+import { ChevronDown, MapPin, X } from '@/components/ui/icon';
 
 interface Props {
   open: boolean;
@@ -28,6 +28,9 @@ interface Props {
  * "Select City" action of the non-serviceable popup, and (blocking mode) the
  * mandatory first-visit Shopping-City selection. Includes a one-tap
  * "Detect my location" (GPS → reverse-geocode) that SUGGESTS the city. Fail-safe.
+ *
+ * Compact, Blinkit-style (owner annotation 2026-10-12): detect | or | search on one row,
+ * the city list as a dropdown that opens from the search box, no "Popular cities" block.
  */
 export default function CityPickerDialog({
   open,
@@ -40,12 +43,19 @@ export default function CityPickerDialog({
 }: Props) {
   const { data: cities, isLoading, isError, refetch } = useAllCities();
   const [q, setQ] = useState('');
+  // The city list is a DROPDOWN under the search box (owner annotation 2026-10-12: "provide
+  // the list in dropdown", "make small size of this popup just like blinkit"): closed until
+  // the shopper taps or types in the box, so the popup opens as one compact row.
+  const [listOpen, setListOpen] = useState(false);
   const [detecting, setDetecting] = useState(false);
   const [recent, setRecent] = useState<string[]>([]);
 
-  // Read recents from localStorage each time the dialog opens (SSR-safe).
+  // Read recents from localStorage each time the dialog opens (SSR-safe); start closed.
   useEffect(() => {
-    if (open) setRecent(getRecentCities());
+    if (open) {
+      setRecent(getRecentCities());
+      setListOpen(false);
+    }
   }, [open]);
 
   const list = useMemo(() => {
@@ -62,13 +72,6 @@ export default function CityPickerDialog({
     const names = new Set((cities ?? []).map((c) => c.name?.toLowerCase()));
     return recent.filter((r) => names.has(r.toLowerCase())).slice(0, 5);
   }, [recent, cities]);
-
-  // Popular chips: the highest-priority serviceable cities (API returns them in
-  // display_order). Skipped while the user is actively searching.
-  const popularChips = useMemo(
-    () => (cities ?? []).slice(0, 8).map((c) => c.name).filter(Boolean),
-    [cities],
-  );
 
   // Single place every selection flows through, so recents stay accurate.
   function choose(name: string) {
@@ -191,65 +194,70 @@ export default function CityPickerDialog({
                 </button>
               ) : null}
 
-              <input
-                autoFocus
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search city…"
-                className="mt-4 w-full rounded-lg border border-border-base px-3.5 py-2.5 text-sm outline-none focus:border-accent"
-              />
+              {/* One compact row, Blinkit-style: detect, or search. Stacks on a phone. */}
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                <button
+                  type="button"
+                  onClick={detect}
+                  disabled={detecting}
+                  className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-ds-btn px-4 text-sm font-semibold text-white transition hover:bg-ds-btn-hover disabled:opacity-60"
+                >
+                  <MapPin size={16} aria-hidden />
+                  {detecting ? 'Detecting…' : 'Detect my location'}
+                </button>
+                <span aria-hidden className="text-center text-xs font-semibold uppercase tracking-wide text-stone-400">
+                  or
+                </span>
+                <div className="relative min-w-0 flex-1">
+                  <input
+                    value={q}
+                    onFocus={() => setListOpen(true)}
+                    onChange={(e) => {
+                      setQ(e.target.value);
+                      setListOpen(true);
+                    }}
+                    placeholder="Search your city"
+                    aria-label="Search your city"
+                    aria-expanded={listOpen}
+                    aria-controls="city-picker-list"
+                    className="h-11 w-full rounded-lg border border-border-base pe-9 ps-3.5 text-sm outline-none focus:border-accent"
+                  />
+                  <ChevronDown
+                    size={16}
+                    aria-hidden
+                    className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 text-stone-400"
+                  />
+                </div>
+              </div>
 
-              <button
-                type="button"
-                onClick={detect}
-                disabled={detecting}
-                className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-accent disabled:opacity-50"
+              {/* GPS found a city we do not deliver to: say so instead of doing nothing. */}
+              {gpsSuggestion && !suggestion ? (
+                <p className="mt-2 text-xs text-stone-500">
+                  We don&rsquo;t deliver to {gpsSuggestion} yet. Choose a city from the list.
+                </p>
+              ) : null}
+
+              {!listOpen && recentChips.length ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-stone-400">Recent</span>
+                  {recentChips.map((name) => (
+                    <button
+                      key={`recent-${name}`}
+                      type="button"
+                      onClick={() => choose(name)}
+                      className="rounded-full border border-accent/30 bg-accent/5 px-3 py-1 text-sm font-medium text-accent hover:bg-accent/10"
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
+              {listOpen ? (
+              <ul
+                id="city-picker-list"
+                className="mt-2 max-h-[min(16rem,40dvh)] shrink-0 divide-y divide-gray-100 overflow-auto overscroll-contain rounded-lg border border-gray-200 bg-white shadow-box"
               >
-                <MapPin size={16} aria-hidden />
-                {detecting ? 'Detecting…' : 'Detect my location'}
-              </button>
-
-              {!q.trim() && recentChips.length ? (
-                <div className="mt-4">
-                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-stone-400">
-                    Recent
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {recentChips.map((name) => (
-                      <button
-                        key={`recent-${name}`}
-                        type="button"
-                        onClick={() => choose(name)}
-                        className="rounded-full border border-accent/30 bg-accent/5 px-3 py-1 text-sm font-medium text-accent hover:bg-accent/10"
-                      >
-                        {name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {!q.trim() && popularChips.length ? (
-                <div className="mt-3">
-                  <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-stone-400">
-                    Popular cities
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {popularChips.map((name) => (
-                      <button
-                        key={`popular-${name}`}
-                        type="button"
-                        onClick={() => choose(name)}
-                        className="rounded-full border border-gray-200 px-3 py-1 text-sm font-medium text-heading hover:border-accent hover:text-accent"
-                      >
-                        {name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              <ul className="mt-3 max-h-[min(24rem,45dvh)] shrink-0 divide-y divide-gray-100 overflow-auto overscroll-contain rounded-lg border border-gray-100">
                 {list.map((c) => (
                   <li key={c.id}>
                     <button
@@ -291,6 +299,7 @@ export default function CityPickerDialog({
                   </li>
                 ) : null}
               </ul>
+              ) : null}
             </Dialog.Panel>
           </Transition.Child>
         </div>

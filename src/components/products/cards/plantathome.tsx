@@ -307,7 +307,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
      cards. Kept in lockstep with the qty stepper below and add-to-cart-btn/add-to-cart, which
      share this baseline — changing one alone breaks the action row's alignment. */
   const ctaBox =
-    'flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control px-2 text-[clamp(11px,3.6cqw,14px)] font-medium';
+    'flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control px-2 text-[clamp(11px,3.6cqw,14px)] font-semibold';
   const cta = displayOnly ? (
     /* The city can't supply it (or a nationwide product is out of stock): say so, for simple
        AND sized products — "Select Options" on an unbuyable plant was a dead end. */

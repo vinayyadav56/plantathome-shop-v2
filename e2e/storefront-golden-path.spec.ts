@@ -56,7 +56,12 @@ test.describe('Storefront golden path', () => {
     // dialog wrapper — the role=dialog element is a zero-height positioning
     // container (its fixed-position children paint the overlay), so Playwright
     // reports it "hidden" even while the dialog is on screen.
-    const delhiChip = page.getByRole('button', { name: 'Delhi', exact: true }).first();
+    // The city list is a dropdown that opens from the search box (2026-10-12); each row
+    // shows the city then its state, so match the name as a prefix.
+    const citySearch = page.getByPlaceholder(/search your city/i);
+    await expect(citySearch).toBeVisible({ timeout: 20_000 });
+    await citySearch.click();
+    const delhiChip = page.locator('#city-picker-list').getByRole('button', { name: /^Delhi\b/ }).first();
     await expect(delhiChip).toBeVisible({ timeout: 20_000 });
     await delhiChip.click();
     await expect(page.getByText(/Select your shopping city/i)).toBeHidden({ timeout: 10_000 });
