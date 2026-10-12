@@ -58,12 +58,16 @@ export default function CityOpsGate({ children }: { children: React.ReactNode })
 
   const reason: string | null = data?.reason ?? null;
   // ONLY whole-city blocks take the screen over. A vertical-level block
-  // (city_vertical_*) keeps the storefront browsable — other verticals work.
+  // (city_vertical_*) keeps the storefront browsable — other verticals work —
+  // and so does city_active: an active city with no partner nursery, which every
+  // city picker offers since 2026-10-12. Tools ship there; plant listings and
+  // product pages say plants don't.
   const cityBlocked =
     data?.available === false &&
     typeof reason === 'string' &&
     reason.startsWith('city_') &&
-    !reason.startsWith('city_vertical');
+    !reason.startsWith('city_vertical') &&
+    reason !== 'city_active';
 
   if (!cityBlocked || isAdmin) return <>{children}</>;
 

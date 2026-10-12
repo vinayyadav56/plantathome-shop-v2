@@ -253,6 +253,18 @@ test.describe('/plants PLP', () => {
     expect(context.pages().length).toBe(pagesBefore);
   });
 
+  test('the search box beside Shop by Need searches plants', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/plants', { waitUntil: 'domcontentloaded' });
+    await hydrated(page);
+    const box = page.getByRole('textbox', { name: 'Search Plants' });
+    await box.fill('snake');
+    await box.press('Enter');
+    await expect(page).toHaveURL(/\/plants\/search\?text=snake$/);
+    await expect(page.getByText(/Results for/).first()).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Search Plants' })).toHaveValue('snake');
+  });
+
   test('/plants/search renders the same body with the term', async ({ page }) => {
     const h = await hygiene(page);
     await page.goto('/plants/search?text=plant', { waitUntil: 'domcontentloaded' });

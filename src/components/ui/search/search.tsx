@@ -11,6 +11,8 @@ interface Props {
   variant?: 'minimal' | 'normal' | 'with-shadow' | 'flat';
   /** Called after a search is submitted — the header uses it to close its overlay. */
   onSubmitted?: () => void;
+  /** Search this vertical (/{searchType}/search) wherever the box is, instead of guessing from the URL. */
+  searchType?: string;
   [key: string]: unknown;
 }
 
@@ -20,6 +22,7 @@ const Search: React.FC<Props> = ({
   className,
   inputClassName,
   onSubmitted,
+  searchType,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -46,7 +49,7 @@ const Search: React.FC<Props> = ({
     e.preventDefault();
     if (!searchTerm) return;
     const { pathname, query } = router;
-    const target = listingPathFor(pathname);
+    const target = searchType ? `/${searchType}/search` : listingPathFor(pathname);
     const { text: _stale, ...rest } = (query ?? {}) as Record<string, unknown>;
     router.push(
       {

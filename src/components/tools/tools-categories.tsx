@@ -7,6 +7,7 @@ import { useCategories } from '@/framework/category';
 import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { SectionHead } from './section-head';
 import { SECTION } from './tools-content';
+import VerticalSearch from '@/components/ui/search/vertical-search';
 
 const MAX_TILES = 6;
 
@@ -38,7 +39,11 @@ export function ToolsCategories({ type }: { type: string }) {
 
   return (
     <section id="categories" aria-labelledby="tools-categories" className="mt-7 scroll-mt-24">
-      <SectionHead id="tools-categories" {...SECTION.categories} />
+      {/* The vertical's search box in the first row's right corner, as on /plants (owner 2026-10-12). */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6">
+        <SectionHead id="tools-categories" className="min-w-0 lg:flex-1" {...SECTION.categories} />
+        <VerticalSearch type={type} className="lg:w-[340px] lg:shrink-0" />
+      </div>
 
       {/* The gap sits on a wrapper because .pah-rail sets its own negative margins
           to make room for the card shadows, and a margin utility on the rail would fight them. */}

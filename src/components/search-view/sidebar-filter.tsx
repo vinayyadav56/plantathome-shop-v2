@@ -172,7 +172,7 @@ const SidebarFilter: React.FC<{
       <div className="flex-1 space-y-2 px-5 pt-3">
         {showSearch && (
           <FieldWrapper title="text-search">
-            <Search variant="minimal" label="search" />
+            <Search variant="minimal" label="search" searchType={type} />
           </FieldWrapper>
         )}
 

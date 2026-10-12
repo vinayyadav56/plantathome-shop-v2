@@ -165,6 +165,16 @@ test.describe('/tools landing', () => {
     await expect(page.getByRole('region', { name: 'Gardening Tools Guide' }).locator('a[href^="/c/"]')).toHaveCount(4);
   });
 
+  test('the search box beside Shop by Category searches tools only', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/tools', { waitUntil: 'domcontentloaded' });
+    await hydrated(page);
+    const box = page.getByRole('textbox', { name: 'Search Tools' });
+    await box.fill('prun');
+    await box.press('Enter');
+    await expect(page).toHaveURL(/\/tools\/search\?text=prun$/);
+  });
+
   test('best-sellers and the kit band: absent, or real cards, a PDP link and a ₹ price', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/tools', { waitUntil: 'domcontentloaded' });

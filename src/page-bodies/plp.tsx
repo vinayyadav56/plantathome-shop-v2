@@ -28,6 +28,7 @@ import { FilterIcon } from '@/components/icons/filter-icon';
 import PlpHero from '@/components/plp/plp-hero';
 import CategoryTiles from '@/components/plp/category-tiles';
 import NeedTiles from '@/components/plp/need-tiles';
+import VerticalSearch from '@/components/ui/search/vertical-search';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import { useFilterFacets, useProducts } from '@/framework/product';
 import { PRODUCTS_PER_PAGE } from '@/framework/client/variables';
@@ -146,11 +147,18 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
             </div>
 
             <div className="min-w-0 flex-1">
-              {mode === 'browse' && (
-                <div className="mb-5 empty:hidden">
-                  <NeedTiles type={type} />
-                </div>
-              )}
+              {/* Shop by Need with the vertical's search box in the row's right corner (owner
+                  annotation 2026-10-12); below lg it sits under the tiles. The box is outside
+                  the tiles' section, so it stays when they have nothing to show, and on
+                  /plants/search (holding the term). lg:mb-2 centres it on the 64px tiles. */}
+              <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:gap-6">
+                {mode === 'browse' && (
+                  <div className="min-w-0 empty:hidden lg:flex-1">
+                    <NeedTiles type={type} />
+                  </div>
+                )}
+                <VerticalSearch type={type} className="lg:mb-2 lg:ml-auto lg:w-[260px] lg:shrink-0 xl:w-[360px]" />
+              </div>
 
               {/* The results strip (owner 2026-10-07: soft sage), sticky under the header
                   (58px / 68px) so sort + view are always in reach. The plain toolbar has no

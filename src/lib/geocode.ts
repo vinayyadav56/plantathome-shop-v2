@@ -1,4 +1,4 @@
-import { extractAddress, type ExtractedAddress } from '@/lib/extract-address';
+import type { ExtractedAddress } from '@/lib/extract-address';
 
 /**
  * Lightweight location helpers for the storefront location gate. Everything is
@@ -33,45 +33,47 @@ export async function getCityFromIP(): Promise<ExtractedAddress | null> {
   }
 }
 
-/**
- * Reverse-geocode precise GPS coords via the Google Geocoding REST API (uses the
- * same public Maps key, no SDK load). Returns the strict-priority address parts.
- * Fail-safe → null.
+/*
+ * (Removed 2026-10-12: reverseGeocode(), which called Google's Geocoding REST API from the
+ * browser with the public Maps key. Google refuses referrer-restricted keys on that API —
+ * every call came back REQUEST_DENIED, so "Detect my location" never found a city. Reverse
+ * geocoding is server-side: reverseGeocodePin() in lib/shopping-city.ts → GET geo/reverse,
+ * which also maps Google's names onto ours ("Gurgaon" → Gurugram) and returns our city_id.)
  */
-export async function reverseGeocode(
-  lat: number,
-  lng: number,
-): Promise<ExtractedAddress | null> {
-  const key = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY;
-  if (!key || lat == null || lng == null) return null;
-  try {
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${key}`;
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const j: any = await res.json();
-    const components = j?.results?.[0]?.address_components;
-    if (!components) return null;
-    return extractAddress(components);
-  } catch {
-    return null;
-  }
-}
 
-/** Prompt the browser for GPS coords (one-shot, fail-safe → null). */
-export function getBrowserCoords(): Promise<{ lat: number; lng: number } | null> {
+export type CoordsResult =
+  | { ok: true; lat: number; lng: number }
+  | { ok: false; reason: 'unsupported' | 'denied' | 'unavailable' | 'timeout' };
+
+/**
+ * Ask the browser where the shopper is (one-shot) and say WHY when it can't — the city picker
+ * shows a different message for "blocked" than for "couldn't find you". City-level is all we
+ * need, so low accuracy (Wi-Fi/IP based: fast, and works on desktops with no GPS) and a
+ * 5-minute cache.
+ */
+export function getBrowserCoords(): Promise<CoordsResult> {
   return new Promise((resolve) => {
-    if (typeof navigator === 'undefined' || !navigator.geolocation) {
-      resolve(null);
+    if (
+      typeof navigator === 'undefined' ||
+      !navigator.geolocation ||
+      (typeof window !== 'undefined' && window.isSecureContext === false)
+    ) {
+      resolve({ ok: false, reason: 'unsupported' });
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (pos) =>
         resolve({
+          ok: true,
           lat: +pos.coords.latitude.toFixed(7),
           lng: +pos.coords.longitude.toFixed(7),
         }),
-      () => resolve(null),
-      { enableHighAccuracy: true, timeout: 10_000 },
+      (err) =>
+        resolve({
+          ok: false,
+          reason: err.code === err.PERMISSION_DENIED ? 'denied' : err.code === err.TIMEOUT ? 'timeout' : 'unavailable',
+        }),
+      { enableHighAccuracy: false, timeout: 12_000, maximumAge: 300_000 },
     );
   });
 }

@@ -7,6 +7,7 @@ import { useQueryClient } from 'react-query';
 import SafeImage from '@/components/ui/safe-image';
 import { Grid } from '@/components/products/grid';
 import { SectionHead } from '@/components/tools/section-head';
+import VerticalSearch from '@/components/ui/search/vertical-search';
 import {
   ArrowDown,
   ArrowRight,
@@ -224,12 +225,17 @@ export function FarmboxCategories({ type }: { type: string }) {
 
   return (
     <section id="categories" aria-labelledby="farmbox-categories" className={cn(WRAP, 'mt-12 scroll-mt-24 sm:mt-16 lg:mt-20')}>
-      <SectionHead
-        id="farmbox-categories"
-        title={SECTION.categories.title}
-        sub={SECTION.categories.sub}
-        link={{ label: SECTION.categories.viewAll, href: `/categories/${type}` }}
-      />
+      {/* The vertical's search box in the first row's right corner, as on /plants (owner 2026-10-12). */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6">
+        <SectionHead
+          id="farmbox-categories"
+          className="min-w-0 lg:flex-1"
+          title={SECTION.categories.title}
+          sub={SECTION.categories.sub}
+          link={{ label: SECTION.categories.viewAll, href: `/categories/${type}` }}
+        />
+        <VerticalSearch type={type} className="lg:w-[340px] lg:shrink-0" />
+      </div>
 
       {/* The gap sits on a wrapper: .pah-rail sets its own negative margins for the shadow room. */}
       <div className="mt-6 lg:mt-8">

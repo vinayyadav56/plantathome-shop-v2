@@ -12,6 +12,8 @@ export interface Props extends InputHTMLAttributes<HTMLInputElement> {
   variant?: 'minimal' | 'normal' | 'with-shadow' | 'flat';
   onSubmit: (e: any) => void;
   onClearSearch: (e: any) => void;
+  /** Show the voice mic (default). */
+  voice?: boolean;
 }
 
 const classes = {
@@ -32,6 +34,7 @@ const SearchBox: React.FC<Props> = ({
   onClearSearch,
   variant = 'normal',
   value,
+  voice = true,
   ...rest
 }) => {
   const { t } = useTranslation();
@@ -76,7 +79,8 @@ const SearchBox: React.FC<Props> = ({
               {
                 // sit to the left of the voice mic so they don't overlap
                 'ltr:right-[185px] rtl:left-[185px]': variant === 'normal',
-                'ltr:right-10 rtl:left-10': variant !== 'normal',
+                'ltr:right-10 rtl:left-10': variant !== 'normal' && voice,
+                'ltr:right-0 rtl:left-0': variant !== 'normal' && !voice,
               }
             )}
           >
@@ -95,7 +99,7 @@ const SearchBox: React.FC<Props> = ({
           </>
         ) : (
           <>
-            <VoiceMic className="absolute top-0 z-10 h-full ltr:right-1 rtl:left-1" />
+            {voice && <VoiceMic className="absolute top-0 z-10 h-full ltr:right-1 rtl:left-1" />}
             <button className="absolute flex h-full w-10 items-center justify-center text-body transition-colors duration-200 hover:text-accent-hover focus:text-accent-hover focus:outline-0 ltr:left-0 rtl:right-0 md:w-14">
               <span className="sr-only">{t('common:text-search')}</span>
               <SearchIcon className="h-4 w-4" />

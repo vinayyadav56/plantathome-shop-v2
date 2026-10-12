@@ -136,12 +136,17 @@ const SUBDIVISION_PREFIXES = [
 const SUBDIVISION_SUFFIXES = ['city', 'suburban', 'urban', 'rural'];
 
 /** Historical renames — genuinely different names for the same place, not districts. */
-const CITY_ALIASES: Record<string, string> = {
+export const CITY_ALIASES: Record<string, string> = {
   gurgaon: 'gurugram',
   bangalore: 'bengaluru',
   bombay: 'mumbai',
   calcutta: 'kolkata',
   madras: 'chennai',
+  // Not renames, but the server aliases them too. normalizeCityClient's prefix rule already
+  // covers "New Delhi"; listed here so the city picker's search finds Delhi as you type "New D…".
+  'new delhi': 'delhi',
+  // The one Delhi NCT district with no compass prefix.
+  shahdara: 'delhi',
 };
 
 /**
@@ -174,6 +179,17 @@ export function normalizeCityClient(city?: string | null): string {
   return CITY_ALIASES[key] ?? key;
 }
 
+/**
+ * Which city a name is, for the city picker only: normalizeCityClient once a bracketed old name is
+ * set aside, so "Belagavi (Belgaum)" and "Bengaluru (Bangalore) Urban" are Belagavi and Bengaluru.
+ * A Rural district is a different place from its city and keeps a key of its own.
+ */
+export function pickerCityKey(name?: string | null): string {
+  const raw = String(name ?? '');
+  const key = normalizeCityClient(raw.replace(/\([^)]*\)/g, ' '));
+  return /\brural\b/i.test(raw) ? `rural:${key}` : key; // "Warangal (Rural)" too
+}
+
 /** The city an address belongs to, preferring the server-reverse-geocoded one. */
 export function addressCityOf(address: any): string | null {
   const a = address ?? {};
@@ -187,6 +203,6 @@ export async function saveShoppingCityToProfile(city: string): Promise<void> {
   try {
     await HttpClient.put('me/shopping-city', { city });
   } catch {
-    /* guest / non-serviceable / offline — localStorage remains the source */
+    /* guest / a city ops switched off / offline — localStorage remains the source */
   }
 }

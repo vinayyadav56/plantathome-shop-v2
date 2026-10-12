@@ -1,8 +1,9 @@
 'use client';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { useAllCities } from '@/framework/location';
-import { getBrowserCoords, reverseGeocode } from '@/lib/geocode';
+import { useAllCities, type LookupCity } from '@/framework/location';
+import { getBrowserCoords } from '@/lib/geocode';
+import { CITY_ALIASES, pickerCityKey, reverseGeocodePin } from '@/lib/shopping-city';
 import { track } from '@/lib/analytics/track';
 import { getRecentCities, pushRecentCity } from '@/lib/recent-cities';
 import { ChevronDown, MapPin, X } from '@/components/ui/icon';
@@ -13,8 +14,8 @@ interface Props {
   onPick: (cityName: string, area?: string | null) => void;
   /**
    * Mandatory mode (first visit): the dialog cannot be dismissed — no overlay
-   * close, no Esc — until a city is picked. GPS/IP stay HELPERS that only
-   * suggest; the shopper always confirms by tapping a city.
+   * close, no Esc — until a city is picked. The IP guess only suggests; the
+   * shopper confirms by tapping it or a city (or by tapping "Detect my location").
    */
   blocking?: boolean;
   title?: string;
@@ -23,11 +24,61 @@ interface Props {
   suggestedCity?: string | null;
 }
 
+const DETECT_MSG = {
+  unsupported: 'This browser can’t share your location. Search for your city instead.',
+  denied: 'Location is blocked for this site. Allow it in your browser or phone settings, or search for your city.',
+  unavailable: 'We couldn’t find your location. Check that location is turned on, or search for your city.',
+  timeout: 'Finding your location took too long. Try again, or search for your city.',
+  lookup: 'We couldn’t look up your city just now. Try again, or search for your city.',
+  nocity: 'We couldn’t match your location to a city. Search for your city instead.',
+} as const;
+
+/** Rows in the dropdown at once; typing narrows the rest. */
+const LIMIT = 60;
+
 /**
- * Searchable serviceable-city picker. Used by the header city switcher, the
- * "Select City" action of the non-serviceable popup, and (blocking mode) the
- * mandatory first-visit Shopping-City selection. Includes a one-tap
- * "Detect my location" (GPS → reverse-geocode) that SUGGESTS the city. Fail-safe.
+ * Our row for a place the geocoder or the IP lookup named: the API's city_id, else the same
+ * name, else the same city by pickerCityKey (Gurgaon → Gurugram, South Delhi → Delhi, Mysuru →
+ * "Mysuru (Mysore)"), else a row that has the name as whole words among its twins and old names
+ * (Belgaum → Belagavi). The list is nursery-first, so a name several rows share lands on the
+ * nursery city.
+ */
+function findCity(cities: LookupCity[] | undefined, name?: string | null, id?: number | null) {
+  const all = cities ?? [];
+  const lower = name?.trim().toLowerCase();
+  const key = pickerCityKey(name);
+  const asWords = `${words(name ?? '')} `;
+  return (
+    all.find((c) => id != null && c.id === id) ??
+    all.find((c) => c.name.toLowerCase() === lower) ??
+    (key ? all.find((c) => pickerCityKey(c.name) === key) : undefined) ??
+    (asWords.trim() ? all.find((c) => `${haystack(c)} `.includes(asWords)) : undefined)
+  );
+}
+
+/**
+ * The geocoder's area, when it names a neighbourhood. The server falls back to a road or a
+ * premise, so "Sector 57" and "Kasba Peth" stay but "488", "B-12" and "Unnamed Road" don't.
+ */
+function neighbourhood(area?: string | null) {
+  return area && /\p{L}{3}/u.test(area) && !/^unnamed\b/i.test(area) ? area : null;
+}
+
+/** " word word": lower-case words with a leading space, so ` ${needle}` matches a word start. */
+const words = (s: string) => ` ${s.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim()}`;
+
+/** A row's search text: its name, its unlisted twins' names (aka) and any old name, so
+ *  "bangalore" finds Bengaluru and "belgaum" finds Belagavi. */
+function haystack(c: LookupCity) {
+  const key = pickerCityKey(c.name);
+  const old = Object.keys(CITY_ALIASES).filter((k) => CITY_ALIASES[k] === key);
+  return words([c.name, ...(c.aka ?? []), ...old].join(' '));
+}
+
+/**
+ * Searchable shopping-city picker over every city we list (useAllCities: nursery cities first,
+ * the rest tagged "No plants yet"). Used by the header city switcher, the city-blocked screen,
+ * checkout's city-mismatch prompt and the first-visit Shopping-City selection. Fail-safe.
  *
  * Compact, Blinkit-style (owner annotation 2026-10-12): detect | or | search on one row,
  * the city list as a dropdown that opens from the search box, no "Popular cities" block.
@@ -41,86 +92,128 @@ export default function CityPickerDialog({
   subtitle,
   suggestedCity,
 }: Props) {
-  const { data: cities, isLoading, isError, refetch } = useAllCities();
+  // ~1,600 cities, and a picker is mounted on every page: load the list only while open.
+  const { data: cities, isLoading, isError, refetch } = useAllCities(open);
   const [q, setQ] = useState('');
   // The city list is a DROPDOWN under the search box (owner annotation 2026-10-12: "provide
   // the list in dropdown", "make small size of this popup just like blinkit"): closed until
   // the shopper taps or types in the box, so the popup opens as one compact row.
   const [listOpen, setListOpen] = useState(false);
   const [detecting, setDetecting] = useState(false);
+  // Why "Detect my location" found no city (DETECT_MSG), shown under the row.
+  const [detectMsg, setDetectMsg] = useState<string | null>(null);
   const [recent, setRecent] = useState<string[]>([]);
+  // Bumped by every open, close, unmount, pick and detect: a detect() still waiting on the
+  // browser or the server when the shopper picks a city or leaves must not pick one after that.
+  const detectRun = useRef(0);
+  // detect() awaits the browser and the server: it reads the list as it is when they answer.
+  const citiesRef = useRef(cities);
+  useEffect(() => {
+    citiesRef.current = cities;
+  }, [cities]);
 
   // Read recents from localStorage each time the dialog opens (SSR-safe); start closed.
   useEffect(() => {
+    setDetecting(false);
     if (open) {
       setRecent(getRecentCities());
       setListOpen(false);
+      setDetectMsg(null);
     }
+    const runs = detectRun;
+    return () => {
+      runs.current += 1;
+    };
   }, [open]);
 
-  const list = useMemo(() => {
-    const all = cities ?? [];
-    const needle = q.trim().toLowerCase();
-    const filtered = needle
-      ? all.filter((c) => c.name?.toLowerCase().includes(needle))
-      : all;
-    return filtered.slice(0, 60);
-  }, [cities, q]);
+  const indexed = useMemo(
+    () =>
+      (cities ?? []).map((c) => ({ c, name: words(c.name).trim(), hay: haystack(c), key: pickerCityKey(c.name) })),
+    [cities],
+  );
 
-  // Recent chips: only cities that are still serviceable (present in the list).
+  // An empty box lists the nursery cities (the list is nursery-first). Typing searches every
+  // city, old names included: the exact name, then the same city by another name ("New Delhi",
+  // "Mumbai Suburban"), then names starting with the text, then any word starting with it, then
+  // the rest; nursery cities first within each.
+  const needle = words(q).trim();
+  const qKey = pickerCityKey(q);
+  const { list, more } = useMemo(() => {
+    const at = (r: (typeof indexed)[number]) =>
+      r.name === needle ? 0
+        : r.key === qKey ? 1
+        : r.hay.startsWith(` ${needle}`) ? 2
+        : r.hay.includes(` ${needle}`) ? 3
+        : 4;
+    const hits = needle
+      ? indexed
+          .filter((r) => r.key === qKey || r.hay.includes(needle))
+          .map((r) => ({ c: r.c, rank: at(r) * 2 + (r.c.is_serviceable ? 0 : 1) }))
+          .sort((a, b) => a.rank - b.rank)
+          .map((r) => r.c)
+      : indexed.map((r) => r.c).filter((c) => c.is_serviceable);
+    return { list: hits.slice(0, LIMIT), more: hits.length > LIMIT };
+  }, [indexed, needle, qKey]);
+
+  // Recent chips: only cities that are still in the list.
   const recentChips = useMemo(() => {
     const names = new Set((cities ?? []).map((c) => c.name?.toLowerCase()));
     return recent.filter((r) => names.has(r.toLowerCase())).slice(0, 5);
   }, [recent, cities]);
 
-  // Single place every selection flows through, so recents stay accurate.
-  function choose(name: string) {
+  // Single place every selection flows through, so recents stay accurate. The neighbourhood
+  // only ever comes from detect(), with the city it was found in, so the header can never
+  // read "Rohini, Mumbai".
+  function choose(name: string, area: string | null = null) {
+    detectRun.current += 1;
     pushRecentCity(name);
-    // The neighbourhood only travels with the city it was resolved IN. Pick a
-    // different city and it is dropped, so the header can never read
-    // "Rohini, Mumbai".
-    const area =
-      gpsCity && name.toLowerCase() === gpsCity.toLowerCase() ? gpsArea : null;
     onPick(name, area);
     onClose();
   }
 
-  const [gpsSuggestion, setGpsSuggestion] = useState<string | null>(null);
-  const [gpsCity, setGpsCity] = useState<string | null>(null);
-  const [gpsArea, setGpsArea] = useState<string | null>(null);
+  function detectFailed(reason: keyof typeof DETECT_MSG) {
+    track('location_denied', { meta: { source: 'gps', reason } });
+    setDetectMsg(DETECT_MSG[reason]);
+    setListOpen(true);
+  }
 
+  // The shopper's own tap, so the city it finds is picked straight away (Blinkit-style); a
+  // failure says why and opens the list. The reverse geocode is server-side (GET geo/reverse):
+  // the browser's Google key is referrer-restricted, which Google's Geocoding API refuses, so
+  // this never found a city before 2026-10-12.
   async function detect() {
+    const run = ++detectRun.current;
+    const stale = () => run !== detectRun.current;
     setDetecting(true);
+    setDetectMsg(null);
     try {
-      const coords = await getBrowserCoords();
-      if (coords) {
-        const addr = await reverseGeocode(coords.lat, coords.lng);
-        if (addr?.city) {
-          track('location_detected', { label: addr.city, meta: { source: 'gps' } });
-          // GPS never DECIDES the city — it only suggests; the shopper confirms.
-          setGpsSuggestion(addr.city);
-          setGpsCity(addr.city);
-          setGpsArea(addr.area ?? null);
-          setQ(addr.city);
-          return;
-        }
-      }
-      track('location_denied', { meta: { source: 'gps' } });
+      const pos = await getBrowserCoords();
+      if (stale()) return;
+      if (!pos.ok) return detectFailed(pos.reason);
+      const g = await reverseGeocodePin(pos.lat, pos.lng);
+      if (stale()) return;
+      if (!g) return detectFailed('lookup');
+      if (!g.city) return detectFailed('nocity');
+      track('location_detected', { label: g.city, meta: { source: 'gps', geo: g.source } });
+      // The list loads when the picker opens; a cached lookup can answer first, so wait for it.
+      const all = citiesRef.current ?? (await refetch()).data;
+      if (stale()) return;
+      if (!all?.length) return detectFailed('lookup');
+      const match = findCity(all, g.city, g.city_id);
+      if (match) return choose(match.name, neighbourhood(g.area));
+      setDetectMsg(`We couldn’t find ${g.city} in our list. Search for your city below.`);
+      setListOpen(true);
     } finally {
-      setDetecting(false);
+      if (!stale()) setDetecting(false);
     }
   }
 
-  // Only surface a suggestion that is actually a serviceable city — the
-  // banner's one tap must never select a city we can't deliver to.
-  const rawSuggestion = gpsSuggestion ?? suggestedCity ?? null;
+  // The IP guess (LocationGate) only SUGGESTS: the shopper asked for nothing, and IP locations are
+  // rough, so the one-tap banner offers nursery cities only.
   const suggestion = useMemo(() => {
-    if (!rawSuggestion) return null;
-    const match = (cities ?? []).find(
-      (c) => c.name?.toLowerCase() === rawSuggestion.toLowerCase(),
-    );
-    return match?.name ?? null;
-  }, [rawSuggestion, cities]);
+    const c = findCity(cities, suggestedCity);
+    return c?.is_serviceable ? c.name : null;
+  }, [cities, suggestedCity]);
 
   return (
     <Transition show={open} as={Fragment}>
@@ -230,12 +323,10 @@ export default function CityPickerDialog({
                 </div>
               </div>
 
-              {/* GPS found a city we do not deliver to: say so instead of doing nothing. */}
-              {gpsSuggestion && !suggestion ? (
-                <p className="mt-2 text-xs text-stone-500">
-                  We don&rsquo;t deliver to {gpsSuggestion} yet. Choose a city from the list.
-                </p>
-              ) : null}
+              {/* Why detection found no city. Always rendered, so screen readers announce it. */}
+              <p role="status" className={detectMsg ? 'mt-2 text-xs text-amber-700' : 'sr-only'}>
+                {detectMsg ?? ''}
+              </p>
 
               {!listOpen && recentChips.length ? (
                 <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -263,16 +354,34 @@ export default function CityPickerDialog({
                     <button
                       type="button"
                       onClick={() => choose(c.name)}
-                      className="flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm hover:bg-gray-50"
+                      className="flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-sm hover:bg-gray-50"
                     >
-                      <span className="font-medium text-heading">{c.name}</span>
+                      <span className="min-w-0">
+                        <span className="font-medium text-heading">{c.name}</span>
+                        {/* No partner nursery here: Tools ship, plants don't yet. */}
+                        {!c.is_serviceable ? (
+                          <>
+                            {' '}
+                            <span className="ms-1 whitespace-nowrap rounded-full bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600">
+                              No plants yet
+                            </span>
+                          </>
+                        ) : null}
+                      </span>
                       {c.state_name ? (
-                        <span className="text-xs text-stone-400">{c.state_name}</span>
+                        <span className="shrink-0 text-xs text-stone-400">{c.state_name}</span>
                       ) : null}
                     </button>
                   </li>
                 ))}
-                {/* While the serviceable-city list is in flight this dialog is
+                {!isLoading && list.length > 0 && (!needle || more) ? (
+                  <li className="px-3.5 py-2.5 text-xs text-stone-600">
+                    {needle
+                      ? 'Keep typing to see more cities.'
+                      : `Type to search all ${(cities?.length ?? 0).toLocaleString('en-IN')} cities across India.`}
+                  </li>
+                ) : null}
+                {/* While the city list is in flight this dialog is
                     the ONLY thing a first-time visitor can see (blocking mode),
                     so it must never flash the empty-state — "No matching
                     cities." reads as "we deliver nowhere". */}

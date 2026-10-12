@@ -16,8 +16,7 @@ import {
   detectedCityAtom,
   serviceableCityAtom,
 } from '@/store/serviceability';
-import { saveShoppingCityToProfile, normalizeCityClient } from '@/lib/shopping-city';
-import { useAllCities } from '@/framework/location';
+import { saveShoppingCityToProfile } from '@/lib/shopping-city';
 import CityPickerDialog from './city-picker-dialog';
 
 /**
@@ -89,22 +88,6 @@ export default function LocationGate() {
     window.addEventListener('pah-location-changed', onChange);
     return () => window.removeEventListener('pah-location-changed', onChange);
   }, []);
-
-  // Migration guard: pre-redesign builds auto-set the city from IP, so a
-  // returning shopper may carry a NON-SERVICEABLE stored city (e.g. Noida) —
-  // which would silently scope the catalog to an empty list. Once the
-  // serviceable list is known, a stored city outside it re-opens the blocking
-  // picker. Fail-open: an empty/failed cities fetch never blocks anyone.
-  const { data: serviceableCities } = useAllCities();
-  useEffect(() => {
-    if (!serviceableCities?.length) return;
-    const stored = getStoredCity();
-    if (!stored) return;
-    const ok = serviceableCities.some(
-      (c) => normalizeCityClient(c.name) === normalizeCityClient(stored),
-    );
-    if (!ok && !wasDismissed()) setMustPick(true);
-  }, [serviceableCities]);
 
   function dismiss() {
     rememberDismissed();
