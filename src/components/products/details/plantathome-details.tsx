@@ -1,4 +1,5 @@
 'use client';
+import { hindiNames } from '@/lib/plant-names';
 import React, { useMemo, useState } from 'react';
 import { goToSignin } from '@/lib/go-to-signin';
 import Link from 'next/link';
@@ -434,11 +435,11 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             </div>
 
             {/* botanical subline */}
-            {(pa?.scientific_name || pa?.hindi_name) && (
+            {(pa?.scientific_name || hindiNames(pa)) && (
               <p className="mt-1 text-[13px] text-[#8A8A8A]">
                 {pa?.scientific_name}
-                {pa?.scientific_name && pa?.hindi_name ? ' · ' : ''}
-                {pa?.hindi_name}
+                {pa?.scientific_name && hindiNames(pa) ? ' · ' : ''}
+                {hindiNames(pa)}
               </p>
             )}
 

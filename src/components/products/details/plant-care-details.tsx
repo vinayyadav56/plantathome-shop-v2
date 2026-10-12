@@ -1,8 +1,10 @@
+import { hindiNames } from '@/lib/plant-names';
 import { Icon } from '@/components/storefront/icons';
 
 interface PlantAttribute {
   scientific_name?: string | null;
   hindi_name?: string | null;
+  hinglish_name?: string | null;
   indoor_outdoor?: string | null;
   temperature_range?: string | null;
   height_range?: string | null;
@@ -71,7 +73,7 @@ export default function PlantCareDetails({
         {a.scientific_name && (
           <span className="text-sm italic text-body md:text-base">
             {a.scientific_name}
-            {a.hindi_name ? ` · ${a.hindi_name}` : ''}
+            {hindiNames(a) ? ` · ${hindiNames(a)}` : ''}
           </span>
         )}
       </div>

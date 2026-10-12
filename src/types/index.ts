@@ -373,6 +373,7 @@ export interface VariationOption {
 export interface PlantAttribute {
   scientific_name?: string | null;
   hindi_name?: string | null;
+  hinglish_name?: string | null;
   indoor_outdoor?: string | null;
   temperature_range?: string | null;
   height_range?: string | null;

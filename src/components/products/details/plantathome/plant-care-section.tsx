@@ -1,4 +1,5 @@
 'use client';
+import { hindiNames } from '@/lib/plant-names';
 import React, { useState } from 'react';
 import { LineIcon } from '@/components/icons/line-icons';
 import { Check } from '@/components/ui/icon';
@@ -107,7 +108,7 @@ export function PlantCareSection({
       { label: 'Growth rate', value: real(pa.growth_rate) },
       { label: 'Flowering season', value: real(pa.flowering_season) },
       { label: 'Native region', value: real(pa.native_region) },
-      { label: 'Hindi name', value: real(pa.hindi_name) },
+      { label: 'Hindi name', value: real(hindiNames(pa)) },
       {
         label: 'Scientific name',
         value: real(pa.scientific_name ?? product?.scientific_name),
