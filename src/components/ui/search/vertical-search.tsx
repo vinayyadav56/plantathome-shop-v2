@@ -19,8 +19,9 @@ export default function VerticalSearch({ type, className }: { type: string; clas
       searchType={type}
       voice={false}
       className={className}
-      // 16px below md: iPhone Safari zooms into a smaller field on focus.
-      inputClassName="text-base md:text-sm"
+      // 16px below md: iPhone Safari zooms into a smaller field on focus. Important, because
+      // SearchBox's own text-sm comes later in the stylesheet and would win.
+      inputClassName="!text-base md:!text-sm"
     />
   );
 }

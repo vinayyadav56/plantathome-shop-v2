@@ -153,6 +153,8 @@ export default function SearchPage() {
 
 const GetLayout = (page: React.ReactElement) => {
   const { t } = useTranslation('common');
+  // The vertical this search is in (/tools/search…): its rail filters by that vertical's facets.
+  const { searchType } = useRouter().query;
   const [drawerState, setDrawerView] = useAtom(drawerAtom);
   return (
     <GeneralLayout>
@@ -169,7 +171,7 @@ const GetLayout = (page: React.ReactElement) => {
                 floating filter button opens the same filters in a drawer. */}
             <div className="hidden w-72 shrink-0 lg:block lg:w-80">
               <StickyBox offsetTop={102} offsetBottom={30}>
-                <SidebarFilter inRail />
+                <SidebarFilter inRail type={typeof searchType === 'string' ? searchType : undefined} />
               </StickyBox>
             </div>
             {/* min-w-0 is load-bearing, not defensive. A flex item defaults to

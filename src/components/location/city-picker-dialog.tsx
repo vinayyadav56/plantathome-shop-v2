@@ -313,7 +313,8 @@ export default function CityPickerDialog({
                     aria-label="Search your city"
                     aria-expanded={listOpen}
                     aria-controls="city-picker-list"
-                    className="h-11 w-full rounded-lg border border-border-base pe-9 ps-3.5 text-sm outline-none focus:border-accent"
+                    // 16px on phones: iPhone Safari zooms into a smaller field on focus.
+                    className="h-11 w-full rounded-lg border border-border-base pe-9 ps-3.5 text-base outline-none focus:border-accent sm:text-sm"
                   />
                   <ChevronDown
                     size={16}

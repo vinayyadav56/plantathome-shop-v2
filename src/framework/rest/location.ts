@@ -41,7 +41,8 @@ export function useLookupStates() {
  * (paused/disabled), and rows that are an old name or a district of a nursery city ("Gurgaon",
  * "Shahdara", "Belagavi (Belgaum)", "Bengaluru (Bangalore) Urban"), which would sit next to the
  * real city as a plant-less twin; their names stay searchable through `aka`. ~1,600 rows (about
- * 29 KB gzipped, edge-cached), so pickers load it only while open. Fail-safe.
+ * 30 KB gzipped; Cloudflare doesn't cache this JSON, the browser keeps it 60 s and react-query
+ * 10 min), so pickers load it only while open. Fail-safe.
  */
 export function useAllCities(enabled = true) {
   return useQuery<LookupCity[], Error>(

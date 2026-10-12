@@ -2,6 +2,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { getStoredCity } from '@/lib/customer-location';
+import { useRouter } from '@/compat/next-router';
+import { getVerticalMeta } from '@/components/storefront/verticals';
 import { ArrowRight } from '@/components/ui/icon';
 import PottedPlantIllustration from '@/components/ui/illustration/potted-plant';
 
@@ -26,6 +28,36 @@ export function EmptyProducts({
   React.useEffect(() => {
     setCity(getStoredCity());
   }, []);
+
+  // A search with no matches is not an inventory gap: say what was searched and send the shopper
+  // back to the vertical they searched (the per-vertical boxes land here for Tools and FarmBox too,
+  // which used to read "No plants in Delhi yet · Browse all plants").
+  const { query } = useRouter();
+  const text = typeof query.text === 'string' ? query.text.trim() : '';
+  if (text) {
+    const vertical = typeof query.searchType === 'string' ? query.searchType : 'plants';
+    const label = getVerticalMeta(vertical).label;
+    return (
+      <div className={`flex w-full flex-col items-center px-5 py-14 text-center sm:py-20 ${className}`}>
+        <div className="relative grid h-36 w-36 place-items-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#EAF4E6,#F6FAF7)] sm:h-44 sm:w-44">
+          <PottedPlantIllustration />
+        </div>
+        <h3 className="font-heading mt-6 text-[1.6rem] font-medium not-italic leading-tight text-forest-900 sm:text-[2rem]">
+          No results for “{text}”
+        </h3>
+        <p className="mt-3 max-w-md text-[14px] leading-relaxed text-stone-500 sm:text-[15px]">
+          Try another word, or browse everything{city ? ` available in ${city}` : ''}.
+        </p>
+        <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+          <Link href={`/${vertical}`} className="pa-btn pa-btn-primary">
+            Browse {label}
+            <ArrowRight size={16} aria-hidden />
+          </Link>
+          <Link href={`/categories/${vertical}`} className="pa-btn pa-btn-secondary">Explore categories</Link>
+        </div>
+      </div>
+    );
+  }
 
   const what = categoryName ? categoryName.toLowerCase() : 'plants';
   const heading =
