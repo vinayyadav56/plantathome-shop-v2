@@ -35,7 +35,10 @@ export function EmptyProducts({
   const { query } = useRouter();
   const text = typeof query.text === 'string' ? query.text.trim() : '';
   if (text) {
-    const vertical = typeof query.searchType === 'string' ? query.searchType : 'plants';
+    // Slug-shaped only: on /c/[slug] `searchType` is a plain query param, and "/evil.example"
+    // would make the button below a protocol-relative link off the site.
+    const vertical =
+      typeof query.searchType === 'string' && /^[a-z0-9-]+$/.test(query.searchType) ? query.searchType : 'plants';
     const label = getVerticalMeta(vertical).label;
     return (
       <div className={`flex w-full flex-col items-center px-5 py-14 text-center sm:py-20 ${className}`}>

@@ -206,6 +206,8 @@ const GetLayout = (page: React.ReactElement) => {
                 setDrawerView({
                   display: true,
                   view: 'SEARCH_FILTER',
+                  // The vertical's facets, as the lg rail gets (else the whole catalogue's).
+                  data: { type: typeof searchType === 'string' ? searchType : undefined },
                 })
               }
               className="fixed bottom-24 z-40 flex h-12 items-center justify-center gap-2 rounded-full bg-ds-btn px-4 text-[13px] font-semibold text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white lg:hidden"
