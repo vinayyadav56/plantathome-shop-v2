@@ -24,6 +24,9 @@ export type PlpHeroProps = {
   total: number | null;
   /** Set on /plants/search: the subtitle becomes `Results for “term”`. */
   searchTerm?: string;
+  /** The category card follows and overlaps the band's foot (browse mode). Without it the
+   *  88/100px of bottom padding kept for that overlap was an empty band (search mode). */
+  tiles?: boolean;
 };
 
 /**
@@ -37,7 +40,7 @@ export type PlpHeroProps = {
  * No city line: the header chip is the one city control, on every page and
  * width (owner 2026-10-07 — the "Delivering to … · Change" line is gone).
  */
-export default function PlpHero({ type, title, subtitle, total, searchTerm }: PlpHeroProps) {
+export default function PlpHero({ type, title, subtitle, total, searchTerm, tiles = true }: PlpHeroProps) {
   const { verticalsBand } = useHomeConfig();
 
   const tile = verticalsBand?.tiles?.find((t) => t?.typeSlug === type);
@@ -71,7 +74,7 @@ export default function PlpHero({ type, title, subtitle, total, searchTerm }: Pl
         />
       </div>
 
-      <div className="relative px-5 pb-[88px] pt-5 lg:px-6 lg:pb-[100px] lg:pt-6 xl:px-8">
+      <div className={`relative px-5 pt-5 lg:px-6 lg:pt-6 xl:px-8 ${tiles ? 'pb-[88px] lg:pb-[100px]' : 'pb-2 lg:pb-4'}`}>
         <Breadcrumb items={[{ label: 'Home', href: Routes.home }, { label: title }]} />
 
         <div className="mt-4 lg:mt-5 lg:max-w-[58%]">
@@ -88,28 +91,31 @@ export default function PlpHero({ type, title, subtitle, total, searchTerm }: Pl
             )}
           </p>
 
-          {/* Trust row, ONE row from md. It was sm:flex-wrap at every width above 640, and the
-              three items do not fit across an iPad portrait at a 28px gap, so the third dropped
-              to a second line. From md the row is forced (flex-nowrap) and the gap tightens to
-              16px to pay for it, widening again at lg where there is room. Phones keep the
-              stacked column, and 640–767 keeps the wrap, since neither fits three across. */}
+          {/* Trust row, ONE row at every width (owner 2026-10-13: "Delivery across India and the
+              other text should come in a single row"). Icon-left items need ~740px for three
+              across and a phone has 320-390, so below md the items are equal grid columns with
+              the icon above centred, balanced text; from md it is the icon-left row, forced
+              onto one line (flex-nowrap) with the gap tightened to 16px until lg. */}
           {trust.length > 0 && (
-            <ul className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-7 sm:gap-y-3 md:flex-nowrap md:gap-x-4 lg:mt-6 lg:gap-x-7">
+            <ul className="mt-5 grid auto-cols-fr grid-flow-col gap-3 md:flex md:flex-nowrap md:gap-x-4 lg:mt-6 lg:gap-x-7">
               {trust.map((item) => {
                 const Icon = TRUST_ICON[item.icon as keyof typeof TRUST_ICON];
                 // min-w-0 on the li: a flex child defaults to min-width:auto and refuses to
                 // shrink below its content, which would push the forced row off the edge
                 // instead of letting the labels wrap.
                 return (
-                  <li key={item.t} className="flex min-w-0 items-center gap-3 md:gap-2.5 lg:gap-3">
+                  <li
+                    key={item.t}
+                    className="flex min-w-0 flex-col items-center gap-1.5 text-center md:flex-row md:gap-2.5 md:text-left lg:gap-3"
+                  >
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sage-100 text-forest-700">
                       {Icon ? <Icon size={20} aria-hidden /> : null}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-[15px] font-semibold leading-tight text-forest-900">
+                      <span className="block text-balance text-[13px] font-semibold leading-tight text-forest-900 md:text-[15px]">
                         {item.t}
                       </span>
-                      <span className="mt-0.5 block text-[12px] leading-tight text-stone-500">
+                      <span className="mt-0.5 block text-balance text-[11px] leading-tight text-stone-500 md:text-[12px]">
                         {item.d}
                       </span>
                     </span>

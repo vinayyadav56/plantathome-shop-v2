@@ -38,8 +38,8 @@ const AddToCart = dynamic(
 /* ─── Loading Skeleton (export kept for callers) — mirrors the real card's
        geometry exactly so swapping in data causes no layout shift ─────── */
 export const PlantAtHomeCardSkeleton: React.FC = () => (
-  <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box">
-    <div className="aspect-[25/24] w-full animate-pulse bg-white" />
+  <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box [container-type:inline-size]">
+    <div className="h-[calc(96cqw_-_10px)] w-full animate-pulse bg-white" />
     <div className="flex flex-1 flex-col p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -382,8 +382,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
         {...linkProps}
         href={Routes.product(product.slug)}
         aria-label={`View ${product.name}`}
+        // Grid image: 25:24 less 10px (owner 2026-10-13: "card height should be reduced up to
+        // 10px, image is too long"). 100cqw is the card's inner width, so it is exactly 10px
+        // shorter at every grid density.
         className={`relative block w-full overflow-hidden bg-white text-left ${
-          isList ? 'h-full min-h-[170px]' : 'aspect-[25/24]'
+          isList ? 'h-full min-h-[170px]' : 'h-[calc(96cqw_-_10px)]'
         }`}
       >
         {!noImage ? (

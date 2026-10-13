@@ -132,6 +132,7 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
           subtitle={meta.shopBlurb ?? meta.blurb}
           total={heroTotal}
           searchTerm={mode === 'search' ? text : undefined}
+          tiles={mode === 'browse'}
         />
 
         {mode === 'browse' && <CategoryTiles type={type} />}
