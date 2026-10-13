@@ -68,7 +68,7 @@ function ItemRow({
         >
           {record?.name}
         </Link>
-        {subline ? <p className="mt-0.5 truncate text-[12px] text-[#9B998F]">{subline}</p> : null}
+        {subline ? <p className="mt-0.5 truncate text-[12px] text-[#6F6D64]">{subline}</p> : null}
         {canReview ? (
           <button
             type="button"
@@ -82,7 +82,7 @@ function ItemRow({
       </div>
 
       <div className="flex shrink-0 items-center gap-4 text-right sm:gap-10">
-        <p className="text-[13px] text-[#8C8A81]">Qty: {record?.pivot?.order_quantity ?? 1}</p>
+        <p className="text-[13px] text-[#6F6D64]">Qty: {record?.pivot?.order_quantity ?? 1}</p>
         <p className="min-w-[72px] text-sm font-semibold text-forest-900">{price}</p>
       </div>
     </li>

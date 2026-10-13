@@ -18,6 +18,7 @@
   --field-bg:     #FFFFFF;
   --field-border: #C9CFD6;
   --fs-scale:     1.06;
+  --fs-offset:    2px;   /* subtracted from every absolute font-size; MUST carry a unit */
   --pa-bg:        var(--page-bg);
   --pa-bg-alt:    var(--page-bg);
   --pa-dark:      #111827;
@@ -31,7 +32,7 @@
 
   /* Text */
   --pa-text:      #374151;
-  --pa-text-muted:#6B7280;
+  --pa-text-muted:#4B5563;
   --pa-text-light:#9CA3AF;
 
   /* Gradients */
@@ -129,6 +130,7 @@ html { scrollbar-gutter: stable; }
 
 body {
   font-family: var(--font-body) !important;
+  font-size: 1rem; /* explicit, so unsized text gets the site-wide scale/offset too */
   background-color: var(--pa-bg) !important;
   color: var(--pa-text) !important;
   -webkit-font-smoothing: antialiased;
@@ -972,7 +974,7 @@ select:focus {
 }
 .pa-cart-item-unit {
   font-size: 11px;
-  color: #6B8C6B;
+  color: #4A6A4A;
   margin: 0 0 8px;
 }
 .pa-cart-item-bottom {
@@ -1004,7 +1006,7 @@ select:focus {
 .pa-cart-actions button {
   font-size: 12.5px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--pa-text-muted);
   background: none;
   border: none;
   padding: 2px 0;
@@ -1127,7 +1129,7 @@ select:focus {
 }
 .pa-cart-empty-sub {
   font-size: 13.5px;
-  color: #6B8C6B;
+  color: #4A6A4A;
   margin: 0 0 24px;
   line-height: 1.6;
 }
@@ -1197,7 +1199,7 @@ select:focus {
 .pa-cart-secure {
   text-align: center;
   font-size: 11px;
-  color: #6B8C6B;
+  color: #4A6A4A;
   margin-top: 8px;
   display: flex;
   align-items: center;
@@ -1257,7 +1259,7 @@ select:focus {
   margin: 0 0 10px;
   font-size: 12px;
   font-weight: 500;
-  color: #6B8C6B;
+  color: #4A6A4A;
 }
 .pa-cart-page .pa-cart-item-bottom { order: 3; }
 .pa-cart-page .pa-cart-item-total { font-size: 16px; }
@@ -1397,7 +1399,7 @@ select:focus {
   font-size: 13.5px;
 }
 .pa-order-item-name { color: #1A1A1A; font-weight: 500; }
-.pa-order-item-qty { color: #8A8F86; font-size: 12px; }
+.pa-order-item-qty { color: #656A62; font-size: 12px; }
 .pa-order-item-price { color: #1A1A1A; font-weight: 600; }
 .pa-order-row {
   display: flex;
@@ -1519,7 +1521,7 @@ select:focus {
 }
 .pa-empty-state-sub {
   font-size: 14px;
-  color: #6B8C6B;
+  color: #4A6A4A;
   max-width: 320px;
   line-height: 1.6;
 }
@@ -1544,7 +1546,7 @@ select:focus {
   align-items: center;
   justify-content: center;
   padding: 8px 0 10px;
-  color: #6B8C6B;
+  color: #4A6A4A;
   text-decoration: none;
   font-size: 10px;
   gap: 3px;
@@ -1819,7 +1821,7 @@ textarea:focus {
   letter-spacing: 0.22em;
   font-size: 11px;
   font-weight: 600;
-  color: #7A8A72;
+  color: #5A6853;
   margin: 0 0 8px;
 }
 .pa-checkout-page-title {
@@ -1833,7 +1835,7 @@ textarea:focus {
 }
 .pa-checkout-page-sub {
   font-size: 12.5px;
-  color: #8A8F86;
+  color: #656A62;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1894,14 +1896,14 @@ textarea:focus {
   font-size: 13px;
   font-weight: 700;
   background: #fff;
-  color: #9AA096;
+  color: #656B61;
   border: 2px solid #E4E5E1;
   transition: all 0.3s ease;
 }
 .pa-step-label {
   font-size: 11.5px;
   font-weight: 600;
-  color: #9AA096;
+  color: #656B61;
   white-space: nowrap;
 }
 .pa-step--active .pa-step-dot {
@@ -1991,7 +1993,7 @@ textarea:focus {
   gap: 5px;
   font-size: 11.5px;
   font-weight: 600;
-  color: #8A8F86;
+  color: #656A62;
 }
 .pa-od-trust-item svg { color: var(--ds-accent, #2E5E2A); }
 
@@ -2013,7 +2015,7 @@ textarea:focus {
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
 }
 .pa-mcbar-info { display: flex; flex-direction: column; line-height: 1.15; }
-.pa-mcbar-count { font-size: 11.5px; color: #8A8F86; font-weight: 500; }
+.pa-mcbar-count { font-size: 11.5px; color: #656A62; font-weight: 500; }
 .pa-mcbar-total { font-size: 18px; font-weight: 800; color: #1A1A1A; }
 .pa-mcbar-cta {
   display: inline-flex;
@@ -2370,7 +2372,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 500; }
   font-weight: 600 !important;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #78716C !important; /* stone-500 */
+  color: #6B665D !important; /* stone-500 */
 }
 .orderDetailsTable .rc-table-tbody td {
   border-color: #F1EDE3 !important;

@@ -35,7 +35,7 @@ function VideoBlock({ url }: { url: string }) {
       >
         <LineIcon name="play" className="h-4 w-4 text-[#24693E]" />
         Watch the plant video
-        <LineIcon name="external" className="h-4 w-4 text-[#8A8A8A]" />
+        <LineIcon name="external" className="h-4 w-4 text-[#6B6B6B]" />
       </a>
     );
   }
@@ -227,7 +227,7 @@ export function PlantCareSection({
                       key={s.label}
                       className="flex items-baseline justify-between gap-4 border-b border-kraft-200 py-2.5 first:pt-0 last:border-0 last:pb-0"
                     >
-                      <dt className="shrink-0 text-[13.5px] text-[#8A8A8A]">
+                      <dt className="shrink-0 text-[13.5px] text-[#6B6B6B]">
                         {s.label}
                       </dt>
                       <dd className="text-right text-[14px] font-semibold text-[#184A31]">

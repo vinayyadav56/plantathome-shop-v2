@@ -159,7 +159,8 @@ module.exports = {
           200: '#E9E3D6',
           300: '#DBD4C4',
         },
-        stone: { 400: '#B6B0A4', 500: '#908A7E', 600: '#6F6A60' },
+        // Darkened 2026-10-14 (owner: "fonts too light on the bright background"): 5.2:1 / 6.9:1 on Cool Mist.
+        stone: { 400: '#908A7E', 500: '#6B665D', 600: '#57534B' },
         ink: { DEFAULT: '#16301A', 900: '#26261F' },
         // back-compat aliases (older storefront usage)
         leaf: '#4E8244',

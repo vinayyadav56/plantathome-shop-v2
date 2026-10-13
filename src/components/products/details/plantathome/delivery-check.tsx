@@ -92,7 +92,7 @@ export function DeliveryCheck({
           }}
           placeholder="Enter pincode"
           aria-describedby="delivery-check-result"
-          className="h-11 w-full rounded border border-[#DCDCDC] bg-white pl-3 pr-[88px] text-[14px] text-[#184A31] outline-none placeholder:text-[#9A9A9A] focus:border-[#24693E]"
+          className="h-11 w-full rounded border border-[#DCDCDC] bg-white pl-3 pr-[88px] text-[14px] text-[#184A31] outline-none placeholder:text-[#6B6B6B] focus:border-[#24693E]"
         />
         <button
           type="submit"

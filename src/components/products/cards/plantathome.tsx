@@ -39,7 +39,7 @@ const AddToCart = dynamic(
        geometry exactly so swapping in data causes no layout shift ─────── */
 export const PlantAtHomeCardSkeleton: React.FC = () => (
   <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-kraft-200 bg-white shadow-box [container-type:inline-size]">
-    <div className="h-[calc(96cqw_-_10px)] w-full animate-pulse bg-white" />
+    <div className="h-[calc(96cqw_-_22px)] w-full animate-pulse bg-white" />
     <div className="flex flex-1 flex-col p-6">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
@@ -202,9 +202,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
         >
           {product.name}
         </Link>
-        {/* Botanical name — Inter 400, up to 16px, #8A8A8A */}
+        {/* Botanical name — Inter 400, up to 16px, #6B6B6B */}
         {sciName ? (
-          <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] leading-[1.4] text-[#8A8A8A]">{sciName}</p>
+          <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] leading-[1.4] text-[#6B6B6B]">{sciName}</p>
         ) : null}
       </div>
       {/* Rating only. The "New" chip that used to be the else-branch here
@@ -221,7 +221,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
               {ratingVal.toFixed(1)}
             </strong>
           </span>
-          <span className="mt-[6px] block text-[clamp(9.5px,3.2cqw,11px)] leading-none text-[#888888]">
+          <span className="mt-[6px] block text-[clamp(9.5px,3.2cqw,11px)] leading-none text-[#6B6B6B]">
             ({reviewCount.toLocaleString('en-IN')})
           </span>
         </div>
@@ -255,7 +255,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
       </div>
     ) : null;
 
-  /* price row — 34px (28px mobile) var(--ds-btn, #2E5E2A) · struck 18px #A0A0A0 ·
+  /* price row — 34px (28px mobile) var(--ds-btn, #2E5E2A) · struck 18px #767676 ·
      chip #FFEAEA / #D73C3C. Sits directly on top of the CTA.
 
      Price and struck price group on the LEFT, discount chip pinned RIGHT.
@@ -289,7 +289,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             : compactPrice(price)}
         </span>
         {!isVariable && basePrice && (
-          <del className="whitespace-nowrap text-[clamp(11px,4.4cqw,18px)] leading-none text-[#A0A0A0]">
+          <del className="whitespace-nowrap text-[clamp(11px,4.4cqw,18px)] leading-none text-[#767676]">
             {compactPrice(basePrice)}
           </del>
         )}
@@ -382,11 +382,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
         {...linkProps}
         href={Routes.product(product.slug)}
         aria-label={`View ${product.name}`}
-        // Grid image: 25:24 less 10px (owner 2026-10-13: "card height should be reduced up to
-        // 10px, image is too long"). 100cqw is the card's inner width, so it is exactly 10px
-        // shorter at every grid density.
+        // Grid image: 25:24 less 22px (owner 2026-10-13 "reduce up to 10px", then 2026-10-14
+        // "at least 10px" more). 100cqw is the card's inner width, so the cut is the same at
+        // every grid density.
         className={`relative block w-full overflow-hidden bg-white text-left ${
-          isList ? 'h-full min-h-[170px]' : 'h-[calc(96cqw_-_10px)]'
+          isList ? 'h-full min-h-[170px]' : 'h-[calc(96cqw_-_22px)]'
         }`}
       >
         {!noImage ? (

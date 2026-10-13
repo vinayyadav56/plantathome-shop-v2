@@ -82,7 +82,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
                   <span className="mt-1.5 line-clamp-2 text-[10.5px] font-semibold leading-tight text-[#184A31]">
                     {it?.name}
                   </span>
-                  <span className="text-[10.5px] text-[#8A8A8A]">
+                  <span className="text-[10.5px] text-[#6B6B6B]">
                     {formatINR(unitPrice(it))}
                   </span>
                 </div>

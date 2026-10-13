@@ -38,7 +38,7 @@ function pt(o: any) {
 // Muted, paper-toned map so the live view sits inside the page's palette.
 const MAP_STYLES: any[] = [
   { elementType: 'geometry', stylers: [{ color: '#f4f1e8' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#8c8a81' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#6F6D64' }] },
   { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
@@ -72,12 +72,12 @@ function LocationChip({
 }) {
   return (
     <div className={`pointer-events-none rounded-xl bg-white/95 px-3.5 py-2.5 shadow-md ring-1 ring-black/5 ${className ?? ''}`}>
-      <p className="text-[11px] font-medium uppercase tracking-wide text-[#9B998F]">{title}</p>
+      <p className="text-[11px] font-medium uppercase tracking-wide text-[#6F6D64]">{title}</p>
       <p className="mt-0.5 flex items-center gap-1.5 text-[13px] font-semibold text-forest-900">
         <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-[var(--ds-accent,#4E8B31)]" />
         {name}
       </p>
-      {city ? <p className="ml-5 text-[11px] text-[#8C8A81]">{city}</p> : null}
+      {city ? <p className="ml-5 text-[11px] text-[#6F6D64]">{city}</p> : null}
     </div>
   );
 }
@@ -290,7 +290,7 @@ export default function LiveTrackingCard({
             </span>
           )}
         </span>
-        <span className="flex items-center gap-2 text-xs text-[#9B998F]">
+        <span className="flex items-center gap-2 text-xs text-[#6F6D64]">
           {expanded && updatedLabel ? <span>Last updated: {updatedLabel}</span> : null}
           {expanded && (
             <span
@@ -302,7 +302,7 @@ export default function LiveTrackingCard({
                 refetch();
               }}
               onKeyDown={(e) => e.key === 'Enter' && refetch()}
-              className="rounded-full p-1 text-[#8C8A81] transition-colors hover:bg-[#F3F1EA] hover:text-forest-900"
+              className="rounded-full p-1 text-[#6F6D64] transition-colors hover:bg-[#F3F1EA] hover:text-forest-900"
             >
               <RefreshIcon className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
             </span>
@@ -347,7 +347,7 @@ export default function LiveTrackingCard({
             {(partnerName ?? 'P').charAt(0).toUpperCase()}
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[11px] font-medium uppercase tracking-wide text-[#9B998F]">
+            <span className="block text-[11px] font-medium uppercase tracking-wide text-[#6F6D64]">
               Delivery Partner
             </span>
             <span className="block truncate text-sm font-semibold text-forest-900">
@@ -368,7 +368,7 @@ export default function LiveTrackingCard({
         {/* Tracking ID */}
         <div className="flex items-center gap-3 px-5 py-4 sm:px-6">
           <span className="min-w-0 flex-1">
-            <span className="block text-[11px] font-medium uppercase tracking-wide text-[#9B998F]">
+            <span className="block text-[11px] font-medium uppercase tracking-wide text-[#6F6D64]">
               Tracking ID
             </span>
             <span className="block truncate text-sm font-semibold text-forest-900">
@@ -396,7 +396,7 @@ export default function LiveTrackingCard({
           }`}
         >
           <span className="min-w-0 flex-1">
-            <span className="block text-[11px] font-medium uppercase tracking-wide text-[#9B998F]">
+            <span className="block text-[11px] font-medium uppercase tracking-wide text-[#6F6D64]">
               Contact Rider
             </span>
             <span className="block truncate text-sm font-semibold text-forest-900">
@@ -410,7 +410,7 @@ export default function LiveTrackingCard({
       </div>
 
       {onTheWayName && live ? (
-        <p className="border-t border-[#EDEBE2] px-5 py-3 text-xs text-[#8C8A81] sm:px-6">
+        <p className="border-t border-[#EDEBE2] px-5 py-3 text-xs text-[#6F6D64] sm:px-6">
           Your delivery partner <span className="font-semibold text-forest-900">{onTheWayName}</span> is on the way
           {data?.courier?.stale ? ' · location updating…' : ''}.
         </p>

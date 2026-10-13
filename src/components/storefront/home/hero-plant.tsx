@@ -245,7 +245,7 @@ function PincodeChecker() {
         }}
         className="flex items-center gap-2 rounded-xl bg-white py-[5px] pl-4 pr-[5px] shadow-[0_10px_26px_rgba(0,0,0,0.24)]"
       >
-        <MapPin size={18} className="shrink-0" style={{ color: '#908A7E' }} aria-hidden />
+        <MapPin size={18} className="shrink-0" style={{ color: '#6B665D' }} aria-hidden />
         <input
           value={pincode}
           inputMode="numeric"

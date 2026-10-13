@@ -98,14 +98,14 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
             </p>
             <h2 className="mt-2.5 text-[24px] font-medium leading-tight text-[#184A31] sm:text-[28px]">
               {t('text-question-answers')}{' '}
-              <span className="font-semibold text-[#8A8A8A]">
+              <span className="font-semibold text-[#6B6B6B]">
                 ({total.toLocaleString('en-IN')})
               </span>
             </h2>
           </div>
           <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center [@container(min-width:58rem)]:w-auto [@container(min-width:58rem)]:justify-end">
             <div className="relative w-full sm:max-w-[360px]">
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#8A8A8A]">
+              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#6B6B6B]">
                 <Search size={18} aria-hidden />
               </span>
               <input
@@ -114,7 +114,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder={t('text-question-search-placeholder')}
                 aria-label={t('text-search-label')}
-                className="h-12 w-full rounded-control border border-kraft-200 bg-white pl-11 pr-4 text-[15px] text-[#333333] outline-none transition placeholder:text-[#A0A0A0] focus:border-ds-btn focus:ring-2 focus:ring-ds-accent/15"
+                className="h-12 w-full rounded-control border border-kraft-200 bg-white pl-11 pr-4 text-[15px] text-[#333333] outline-none transition placeholder:text-[#767676] focus:border-ds-btn focus:ring-2 focus:ring-ds-accent/15"
               />
             </div>
             <button
@@ -141,7 +141,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
             {/* Pagination */}
             {paginatorInfo && (
               <div className="flex items-center justify-between border-t border-kraft-200 py-4">
-                <div className="text-[13px] text-[#8A8A8A]">
+                <div className="text-[13px] text-[#6B6B6B]">
                   {t('text-page')}{' '}
                   {
                     //@ts-ignore
@@ -182,7 +182,7 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
             <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-question-found')}
             </h3>
-            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#8A8A8A]">
+            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#6B6B6B]">
               {debouncedSearch
                 ? 'No questions match your search — try a different word.'
                 : 'Have a doubt about this plant? Ask away and our team will answer.'}

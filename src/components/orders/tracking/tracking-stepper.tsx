@@ -148,7 +148,7 @@ function TimeLabel({ step }: { step: Step }) {
     );
   }
   return (
-    <span className="mt-1 block text-xs text-[#9B998F]">{step.timeLabel ?? '—'}</span>
+    <span className="mt-1 block text-xs text-[#6F6D64]">{step.timeLabel ?? '—'}</span>
   );
 }
 
@@ -184,7 +184,7 @@ export default function TrackingStepper({
               className={cn(
                 'mt-3 text-center text-sm',
                 step.state === 'upcoming'
-                  ? 'font-medium text-[#9B998F]'
+                  ? 'font-medium text-[#6F6D64]'
                   : 'font-semibold text-forest-900',
               )}
             >
@@ -210,7 +210,7 @@ export default function TrackingStepper({
                 className={cn(
                   'pt-2.5 text-sm',
                   step.state === 'upcoming'
-                    ? 'font-medium text-[#9B998F]'
+                    ? 'font-medium text-[#6F6D64]'
                     : 'font-semibold text-forest-900',
                 )}
               >
@@ -347,14 +347,14 @@ export function OrderStatusPanel({
                         ? 'font-semibold text-[#15803D]'
                         : step.state === 'done'
                           ? 'font-medium text-forest-900'
-                          : 'text-[#9B998F]',
+                          : 'text-[#6F6D64]',
                     )}
                   >
                     {step.label}
                     {step.state === 'current' ? <span className="sr-only"> (current step)</span> : null}
                   </p>
                   {step.timeLabel ? (
-                    <p className="mt-0.5 text-[11.5px] text-[#9B998F]">{step.timeLabel}</p>
+                    <p className="mt-0.5 text-[11.5px] text-[#6F6D64]">{step.timeLabel}</p>
                   ) : null}
                 </div>
               </li>

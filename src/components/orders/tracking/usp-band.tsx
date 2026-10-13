@@ -35,7 +35,7 @@ export default function UspBand() {
             </span>
             <div>
               <h4 className="text-sm font-medium text-forest-900">{title}</h4>
-              <p className="mt-1 text-[13px] leading-relaxed text-[#8C8A81]">{text}</p>
+              <p className="mt-1 text-[13px] leading-relaxed text-[#6F6D64]">{text}</p>
             </div>
           </div>
         ))}

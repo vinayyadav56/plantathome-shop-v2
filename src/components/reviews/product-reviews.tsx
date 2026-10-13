@@ -108,7 +108,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             </p>
             <h2 className="mt-2 text-[15px] font-medium uppercase leading-tight tracking-[0.08em] text-[#184A31]">
               {t('text-product-reviews')}{' '}
-              <span className="font-semibold text-[#8A8A8A]">
+              <span className="font-semibold text-[#6B6B6B]">
                 ({total.toLocaleString('en-IN')})
               </span>
             </h2>
@@ -159,7 +159,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             {/* Pagination */}
             {paginatorInfo && (
               <div className="flex items-center justify-between border-t border-kraft-200 py-4">
-                <div className="text-[13px] text-[#8A8A8A]">
+                <div className="text-[13px] text-[#6B6B6B]">
                   {t('text-page')}{' '}
                   {
                     //@ts-ignore
@@ -200,7 +200,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
               {t('text-no-reviews-found')}
             </h3>
-            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#8A8A8A]">
+            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#6B6B6B]">
               Be the first to share how this plant settled into your home.
             </p>
           </div>

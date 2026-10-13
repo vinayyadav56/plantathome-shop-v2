@@ -54,7 +54,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
           <span className="text-[44px] font-bold leading-none text-[#184A31]">
             {ratingVal.toFixed(1)}
           </span>
-          <span className="pb-1 text-[15px] font-semibold text-[#8A8A8A]">
+          <span className="pb-1 text-[15px] font-semibold text-[#6B6B6B]">
             / 5
           </span>
         </div>
@@ -63,7 +63,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
             <GoldStar key={star} filled={index < Math.round(ratingVal)} />
           ))}
         </div>
-        <p className="mt-2 text-[14px] leading-none text-[#8A8A8A]">
+        <p className="mt-2 text-[14px] leading-none text-[#6B6B6B]">
           {totalReviews.toLocaleString('en-IN')}{' '}
           {totalReviews === 1 ? 'rating' : 'ratings'}
         </p>
@@ -89,7 +89,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
                 }}
               />
             </div>
-            <span className="w-9 shrink-0 text-right text-[13px] leading-none text-[#8A8A8A]">
+            <span className="w-9 shrink-0 text-right text-[13px] leading-none text-[#6B6B6B]">
               {total.toLocaleString('en-IN')}
             </span>
           </div>

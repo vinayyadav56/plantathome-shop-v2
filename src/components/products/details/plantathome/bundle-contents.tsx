@@ -69,7 +69,7 @@ export function BundleContents({
                 <p className="truncate text-[14px] font-semibold leading-tight text-[#184A31]">
                   {p.name}
                 </p>
-                <p className="mt-0.5 text-[12px] text-[#8A8A8A]">
+                <p className="mt-0.5 text-[12px] text-[#6B6B6B]">
                   {qty} × {fmtINR(unit)}
                 </p>
               </div>
@@ -90,7 +90,7 @@ export function BundleContents({
       ) : (
         <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-kraft-200 pt-4">
           {totalValue > 0 && (
-            <span className="text-[13.5px] text-[#8A8A8A]">
+            <span className="text-[13.5px] text-[#6B6B6B]">
               Total value <del>{fmtINR(totalValue)}</del>
             </span>
           )}

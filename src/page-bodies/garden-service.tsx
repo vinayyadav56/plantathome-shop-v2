@@ -175,7 +175,7 @@ function LeadForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={`${CARD} p-6 sm:p-7`}>
       <h3 className="text-[21px] font-medium leading-tight text-[#184A31]">Get your free garden plan</h3>
-      <p className="mt-1.5 text-[13.5px] text-[#8A8A8A]">No cost, no obligation. We’ll call you within a day.</p>
+      <p className="mt-1.5 text-[13.5px] text-[#6B6B6B]">No cost, no obligation. We’ll call you within a day.</p>
 
       <div className="mt-6 space-y-4">
         <div>
@@ -222,7 +222,7 @@ function LeadForm() {
         </div>
 
         <div>
-          <label htmlFor="gs-message" className={LABEL}>About your space <span className="font-normal text-[#8A8A8A]">(optional)</span></label>
+          <label htmlFor="gs-message" className={LABEL}>About your space <span className="font-normal text-[#6B6B6B]">(optional)</span></label>
           <textarea id="gs-message" {...register('message')} placeholder="e.g. 6×4 ft balcony, gets morning sun" rows={2} className={FIELD} />
         </div>
       </div>
@@ -236,7 +236,7 @@ function LeadForm() {
         {!isLoading && <LineIcon name="arrowRight" className="h-4 w-4" />}
       </button>
 
-      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-[#8A8A8A]">
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-[#6B6B6B]">
         <GsIcon name="lock" className="h-3.5 w-3.5" />
         We never share your details. Trusted by 2,000+ plant parents.
       </p>
@@ -390,7 +390,7 @@ export default function GardenServicePage() {
           {stats.map(([a, b], i) => (
             <div key={i} className="px-4">
               <div className="text-[26px] font-bold leading-none tracking-[-0.01em] text-[#184A31] sm:text-[30px]">{a}</div>
-              <div className="mt-2 text-[13px] text-[#8A8A8A]">{b}</div>
+              <div className="mt-2 text-[13px] text-[#6B6B6B]">{b}</div>
             </div>
           ))}
         </div>
@@ -520,10 +520,10 @@ export default function GardenServicePage() {
                     )}
 
                     <h3 className="text-[21px] font-medium leading-tight text-[#184A31]">{t.name}</h3>
-                    {t.tagline ? <p className="mt-1.5 text-[13.5px] text-[#8A8A8A]">{t.tagline}</p> : null}
+                    {t.tagline ? <p className="mt-1.5 text-[13.5px] text-[#6B6B6B]">{t.tagline}</p> : null}
 
                     <div className="mt-5 flex items-baseline gap-2">
-                      <span className="text-[13px] font-medium text-[#8A8A8A]">From</span>
+                      <span className="text-[13px] font-medium text-[#6B6B6B]">From</span>
                       <span className="text-[32px] font-bold leading-none tracking-[-0.01em] text-ds-btn">
                         {fmt(t.suggested_price)}
                       </span>

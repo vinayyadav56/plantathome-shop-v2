@@ -33,7 +33,7 @@ export default function OrderSummaryCard({ order, loading }: { order: any; loadi
           </CopyToClipboard>
         </div>
         {placed ? (
-          <p className="mt-1 text-[13px] text-[#8C8A81]">
+          <p className="mt-1 text-[13px] text-[#6F6D64]">
             Placed on {placed.format('D MMM, YYYY')}
             <span className="mx-2 text-[#D8D6CC]">|</span>
             {placed.format('h:mm A')}

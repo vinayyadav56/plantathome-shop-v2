@@ -26,7 +26,7 @@ export default function DeliveryAddressCard({ order }: { order: any }) {
           {addr?.country ? <p>{addr.country}</p> : null}
           {order?.customer_contact ? <p>Phone: {order.customer_contact}</p> : null}
           {order?.delivery_time ? (
-            <p className="mt-1 text-[12px] text-[#9B998F]">Preferred slot: {order.delivery_time}</p>
+            <p className="mt-1 text-[12px] text-[#6F6D64]">Preferred slot: {order.delivery_time}</p>
           ) : null}
         </div>
       </div>

@@ -300,7 +300,7 @@ function HealthGauge({ score }: { score: number }) {
       </div>
       <div>
         <p className="text-[14px] font-semibold text-[#184A31]">Overall health</p>
-        <p className="text-[12.5px] text-[#8A8A8A]">
+        <p className="text-[12.5px] text-[#6B6B6B]">
           {pct >= 70 ? 'Looking good — minor care needed.' : pct >= 40 ? 'Needs attention soon.' : 'Urgent care recommended.'}
         </p>
       </div>
@@ -313,7 +313,7 @@ function CareList({ title, items, accent }: { title: string; items?: string[]; a
   const Glyph = accent ? Check : Flower2;
   return (
     <div>
-      <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#8A8A8A]">{title}</p>
+      <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#6B6B6B]">{title}</p>
       <ul className="mt-2 space-y-1.5">
         {items.map((it, i) => (
           <li key={i} className={`flex gap-2.5 text-[13.5px] leading-relaxed ${accent ? 'text-[#184A31]' : 'text-[#5B5B5B]'}`}>
@@ -364,7 +364,7 @@ function TypingBubble({ hasPhoto }: { hasPhoto: boolean }) {
           />
         ))}
       </span>
-      <span className="text-[13px] text-[#667781]">{ANALYZE_PHASES[phase]}</span>
+      <span className="text-[13px] text-[#4F5E67]">{ANALYZE_PHASES[phase]}</span>
     </div>
   );
 }
@@ -384,7 +384,7 @@ function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; updat
               {id?.common_name || result.plant_name || 'Your plant'}
             </h2>
             {(id?.scientific_name || (id?.confidence ?? 0) > 0) && (
-              <p className="mt-0.5 text-[12.5px] italic text-[#8A8A8A]">
+              <p className="mt-0.5 text-[12.5px] italic text-[#6B6B6B]">
                 {id?.scientific_name}
                 {typeof id?.confidence === 'number' && id.confidence > 0
                   ? `${id?.scientific_name ? ' · ' : ''}${Math.round(id.confidence * 100)}% match`
@@ -408,7 +408,7 @@ function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; updat
                 {sev.label}
               </span>
               {typeof d.confidence === 'number' && (
-                <span className="text-[11.5px] text-[#8A8A8A]">{Math.round(d.confidence * 100)}% confidence</span>
+                <span className="text-[11.5px] text-[#6B6B6B]">{Math.round(d.confidence * 100)}% confidence</span>
               )}
             </div>
             {d.description && <p className="mt-1.5 text-[#5B5B5B]">{d.description}</p>}
@@ -436,7 +436,7 @@ function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; updat
 
             {d.products_recommended && d.products_recommended.length > 0 && (
               <div className="mt-3 border-t border-[#EFECE3] pt-3">
-                <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#8A8A8A]">
+                <p className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#6B6B6B]">
                   Recommended remedies
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -476,12 +476,12 @@ function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; updat
       )}
       {result.long_term_care && (
         <div className={BOT_WIDE}>
-          <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#8A8A8A]">Long-term care</p>
+          <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#6B6B6B]">Long-term care</p>
           <p className="mt-1.5 text-[#5B5B5B]">{result.long_term_care}</p>
         </div>
       )}
 
-      <p className="max-w-[560px] px-1 text-[11.5px] leading-relaxed text-[#667781]">
+      <p className="max-w-[560px] px-1 text-[11.5px] leading-relaxed text-[#4F5E67]">
         Dr. Planty is AI-powered and can be wrong. For valuable or severely affected plants, consult a
         horticulturist.{' '}
         <Link href="/garden-service" className="font-semibold text-[#24693E] underline underline-offset-2">
@@ -838,7 +838,7 @@ export default function PlantDoctorPage() {
               <h1 className="truncate text-[15px] font-semibold leading-tight text-[#184A31] lg:text-[16px]">
                 AI Plant Doctor
               </h1>
-              <p className="truncate text-[12px] leading-tight text-[#667781]">
+              <p className="truncate text-[12px] leading-tight text-[#4F5E67]">
                 {isLoading
                   ? 'examining your plant…'
                   : viewing
@@ -944,7 +944,7 @@ export default function PlantDoctorPage() {
                         Use camera
                       </button>
                     </div>
-                    <p className="mt-3 text-[12px] leading-relaxed text-[#667781]">
+                    <p className="mt-3 text-[12px] leading-relaxed text-[#4F5E67]">
                       Photo tips: use natural light and avoid flash, focus on the affected leaves, and
                       include the whole plant if you can. Results are AI-generated guidance.
                     </p>
@@ -971,7 +971,7 @@ export default function PlantDoctorPage() {
                           />
                         )}
                         {m.text && <p className="whitespace-pre-wrap">{m.text}</p>}
-                        <span className="mt-1 flex items-center justify-end gap-1 text-[10.5px] leading-none text-[#667781]">
+                        <span className="mt-1 flex items-center justify-end gap-1 text-[10.5px] leading-none text-[#4F5E67]">
                           {time}
                           <Checks className={`h-4 w-4 ${answered ? 'text-[#53BDEB]' : 'text-[#8696A0]'}`} aria-hidden />
                         </span>
@@ -984,7 +984,7 @@ export default function PlantDoctorPage() {
                   return (
                     <li key={m.id} ref={isLast ? lastRef : undefined} className={`${ITEM} items-start`}>
                       <DiagnosisBubbles result={m.result} update={m.update} />
-                      {time && <span className="px-1 text-[10.5px] leading-none text-[#667781]">{time}</span>}
+                      {time && <span className="px-1 text-[10.5px] leading-none text-[#4F5E67]">{time}</span>}
                     </li>
                   );
                 }
@@ -1013,7 +1013,7 @@ export default function PlantDoctorPage() {
                           {m.hadPhoto ? 'Try another photo' : 'Add a photo'}
                         </button>
                       </div>
-                      <span className="px-1 text-[10.5px] leading-none text-[#667781]">{time}</span>
+                      <span className="px-1 text-[10.5px] leading-none text-[#4F5E67]">{time}</span>
                     </li>
                   );
                 }
@@ -1038,7 +1038,7 @@ export default function PlantDoctorPage() {
                         </button>
                       )}
                     </div>
-                    <span className="px-1 text-[10.5px] leading-none text-[#667781]">{time}</span>
+                    <span className="px-1 text-[10.5px] leading-none text-[#4F5E67]">{time}</span>
                   </li>
                 );
               })}
@@ -1219,7 +1219,7 @@ export default function PlantDoctorPage() {
           {mounted && (
             <>
               {entries.length === 0 ? (
-                <p className="flex-1 px-4 py-6 text-[13px] leading-relaxed text-[#667781]">
+                <p className="flex-1 px-4 py-6 text-[13px] leading-relaxed text-[#4F5E67]">
                   {isAuthorized && historyLoading
                     ? 'Loading your check-ups…'
                     : 'Your past check-ups will appear here after your first diagnosis.'}
@@ -1251,7 +1251,7 @@ export default function PlantDoctorPage() {
                               <span className={`shrink-0 rounded-full border px-2 py-[2px] text-[10px] font-bold uppercase leading-none tracking-wide ${sev.cls}`}>
                                 {sev.label}
                               </span>
-                              <span className="truncate text-[12px] text-[#667781]">
+                              <span className="truncate text-[12px] text-[#4F5E67]">
                                 Health {pct} · {formatDate(e.at)}
                               </span>
                             </span>
@@ -1270,7 +1270,7 @@ export default function PlantDoctorPage() {
                   })}
                 </ul>
               )}
-              <p className="shrink-0 border-t border-kraft-200/70 px-4 py-3 text-[11.5px] leading-relaxed text-[#667781]">
+              <p className="shrink-0 border-t border-kraft-200/70 px-4 py-3 text-[11.5px] leading-relaxed text-[#4F5E67]">
                 {isAuthorized ? (
                   'Check-ups are saved privately to your account.'
                 ) : (

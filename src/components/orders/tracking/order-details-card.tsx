@@ -13,7 +13,7 @@ import { OrderStatusPanel } from './tracking-stepper';
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4 py-[7px]">
-      <dt className="text-[13px] text-[#8C8A81]">{label}</dt>
+      <dt className="text-[13px] text-[#6F6D64]">{label}</dt>
       <dd className="text-right text-[13px] font-medium text-forest-900">{children}</dd>
     </div>
   );

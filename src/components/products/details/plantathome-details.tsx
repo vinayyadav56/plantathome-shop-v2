@@ -225,7 +225,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     <>
       <span className="whitespace-nowrap text-[17px] font-bold leading-none text-ds-btn sm:text-[19px] lg:text-[22px]">{displayPrice}</span>
       {displayBasePrice && (
-        <del className="text-[13.5px] font-medium leading-none text-[#A0A0A0]">{displayBasePrice}</del>
+        <del className="text-[13.5px] font-medium leading-none text-[#767676]">{displayBasePrice}</del>
       )}
       {!hasVendorPrice && discount && (
         <span className="rounded bg-[#FFEAEA] px-2 py-1 text-[11.5px] font-bold leading-none text-[#D73C3C]">
@@ -436,7 +436,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* botanical subline */}
             {(pa?.scientific_name || hindiNames(pa)) && (
-              <p className="mt-1 text-[13px] text-[#8A8A8A]">
+              <p className="mt-1 text-[13px] text-[#6B6B6B]">
                 {pa?.scientific_name}
                 {pa?.scientific_name && hindiNames(pa) ? ' · ' : ''}
                 {hindiNames(pa)}

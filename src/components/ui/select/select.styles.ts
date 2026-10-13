@@ -1,3 +1,5 @@
+// Inline styles bypass postcss-font-scale.js, so this mirrors it: 106% minus 2px, never below 9px.
+const fs = (v: string) => `max(min(9px, ${v} * var(--fs-scale, 1)), ${v} * var(--fs-scale, 1) - var(--fs-offset, 0px))`;
 /** Control height: `compact` (36px, the PLP toolbar) · default 50 · `isMinimal` 0. */
 const controlMinHeight = (selectProps: any) =>
   selectProps.isMinimal ? 0 : selectProps.compact ? 36 : 50;
@@ -5,7 +7,7 @@ const controlMinHeight = (selectProps: any) =>
 export const selectStyles = {
   option: (provided: any, state: any) => ({
     ...provided,
-    fontSize: state.selectProps.compact ? 13 : '0.875rem',
+    fontSize: state.selectProps.compact ? fs('13px') : fs('0.875rem'),
     color: 'rgb(var(--text-heading))',
     paddingLeft: 16,
     paddingRight: 16,
@@ -78,7 +80,7 @@ export const selectStyles = {
   }),
   singleValue: (provided: any, state: any) => ({
     ...provided,
-    fontSize: state.selectProps.compact ? 13 : '0.875rem',
+    fontSize: state.selectProps.compact ? fs('13px') : fs('0.875rem'),
     fontWeight: 600,
     color: 'rgb(var(--text-heading))',
   }),
@@ -93,7 +95,7 @@ export const selectStyles = {
   multiValueLabel: (provided: any, _: any) => ({
     ...provided,
     paddingLeft: 10,
-    fontSize: '0.875rem',
+    fontSize: fs('0.875rem'),
     color: '#ffffff',
   }),
   multiValueRemove: (provided: any, _: any) => ({
@@ -110,12 +112,12 @@ export const selectStyles = {
   }),
   placeholder: (provided: any, _: any) => ({
     ...provided,
-    fontSize: '0.875rem',
+    fontSize: fs('0.875rem'),
     color: 'rgba(107, 114, 128, 0.7)',
   }),
   noOptionsMessage: (provided: any, _: any) => ({
     ...provided,
-    fontSize: '0.875rem',
+    fontSize: fs('0.875rem'),
     color: 'rgba(107, 114, 128, 0.7)',
   }),
 };
