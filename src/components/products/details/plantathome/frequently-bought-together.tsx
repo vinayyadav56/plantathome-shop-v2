@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import type { Product } from '@/types';
 import { formatINR } from '@/components/storefront/verticals';
-import { productPlaceholder } from '@/lib/placeholders';
+import { PLACEHOLDER } from '@/components/storefront/pah/_img';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import { LineIcon } from '@/components/icons/line-icons';
@@ -30,11 +30,15 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
   const [added, setAdded] = useState(false);
   const p: any = product;
 
-  const companions: any[] = (
-    p?.addons?.length
-      ? p.addons
-      : ((p?.related_products ?? []) as any[]).filter((r) => r?.id !== p?.id)
-  ).slice(0, 3);
+  // Related products arrive from the API already buyable (published, listed, in stock, priced),
+  // same categories, nearest in price first. Owner 2026-10-14: keep the price range too — half to
+  // 2.5× this product's price; if fewer than two sit in that band, the closest ones stand in.
+  const anchor = unitPrice(p);
+  const related = ((p?.related_products ?? []) as any[]).filter((r) => r?.id !== p?.id);
+  const inBand = anchor > 0
+    ? related.filter((r) => { const v = unitPrice(r); return v >= anchor * 0.5 && v <= anchor * 2.5; })
+    : related;
+  const companions: any[] = (p?.addons?.length ? p.addons : inBand.length >= 2 ? inBand : related).slice(0, 3);
 
   if (companions.length === 0) return null;
 
@@ -73,7 +77,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
                   <div className="h-[72px] w-[72px] overflow-hidden rounded-xl border border-kraft-200 bg-white">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={img || productPlaceholder}
+                      src={img || PLACEHOLDER}
                       alt={it?.name}
                       loading="lazy"
                       className="h-full w-full object-cover"

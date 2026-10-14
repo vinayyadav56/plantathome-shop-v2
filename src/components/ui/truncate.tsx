@@ -33,34 +33,30 @@ const Truncate: React.FC<TruncateProps> = ({
   }
   if (!children) return null;
   // Sanitize vendor/admin-supplied HTML (shop & author descriptions) before it
-  // reaches dangerouslySetInnerHTML — stored-XSS defense. Sanitizing AFTER the
-  // substring also repairs any tag cut mid-way by the truncation.
+  // reaches dangerouslySetInnerHTML — stored-XSS defense.
+  const html = sanitizeContent(children);
   const isCharacterLimitExceeded = children?.length > character;
   if (!isCharacterLimitExceeded) {
-    return <div dangerouslySetInnerHTML={{ __html: sanitizeContent(children) }} />;
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
   }
+  // Collapsed: the whole text clamped to three lines, so every line is used (owner
+  // 2026-10-14: a blank line sat above "Read more" — it was a <br /> here, and a
+  // character cut that counted markup). Empty editor paragraphs would each cost a
+  // clamped line, so they go.
+  const collapsed = html.replace(/<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>/gi, '');
   return (
     <>
-      {!expanded ? (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: sanitizeContent(children?.substring(0, character) + '...'),
-          }}
-        />
-      ) : (
-        <div dangerouslySetInnerHTML={{ __html: sanitizeContent(children) }} />
-      )}
-      <br />
-      <span>
-        <button
-          onClick={handleClick}
-          className={`mt-1 inline-block font-bold text-accent ${
-            btnClassName ? btnClassName : ''
-          }`}
-        >
-          {t(!expanded ? compressText : expandedText)}
-        </button>
-      </span>
+      <div
+        className={expanded ? undefined : 'line-clamp-3'}
+        dangerouslySetInnerHTML={{ __html: expanded ? html : collapsed }}
+      />
+      <button
+        type="button"
+        onClick={handleClick}
+        className={`mt-1 inline-block font-bold text-accent ${btnClassName ? btnClassName : ''}`}
+      >
+        {t(!expanded ? compressText : expandedText)}
+      </button>
     </>
   );
 };

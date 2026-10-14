@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { productPlaceholder } from '@/lib/placeholders';
+import { PLACEHOLDER } from '@/components/storefront/pah/_img';
 import { LineIcon } from '@/components/icons/line-icons';
 
 /** ₹ with en-IN grouping, no decimals (matches the card design). */
@@ -60,7 +60,7 @@ export function BundleContents({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={p?.image?.thumbnail || p?.image?.original || productPlaceholder}
+                src={p?.image?.thumbnail || p?.image?.original || PLACEHOLDER}
                 alt={p?.name}
                 loading="lazy"
                 className="h-11 w-11 shrink-0 rounded border border-kraft-200 object-cover"

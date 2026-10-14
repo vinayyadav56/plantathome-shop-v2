@@ -2397,3 +2397,10 @@ button:not(.font-extrabold):not(.font-black), button *:not(.font-extrabold):not(
 .orderDetailsTable .rc-table-cell-row-hover {
   background: var(--page-bg) !important;
 }
+
+/* ── Card chips on one row (owner 2026-10-14) ─────────────────────────────
+   The card is an inline-size container. Narrow cards drop the chip qualifier
+   (" water", " care"); the narrowest drop the icon too, so "Bright Indirect"
+   and "Moderate" still share a row on a 165px phone card. */
+@container (max-width: 230px) { .pah-chip-suffix { display: none; } }
+@container (max-width: 200px) { .pah-chip-icon { display: none; } }

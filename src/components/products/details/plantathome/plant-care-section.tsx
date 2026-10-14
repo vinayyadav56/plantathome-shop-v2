@@ -3,6 +3,7 @@ import { hindiNames } from '@/lib/plant-names';
 import React, { useState } from 'react';
 import { LineIcon } from '@/components/icons/line-icons';
 import { Check } from '@/components/ui/icon';
+import SizeGuideContent from '@/components/products/details/size-guide-content';
 
 /** Extract a YouTube video id from watch/embed/shorts/youtu.be URLs. */
 function youtubeId(url: string): string | null {
@@ -86,11 +87,16 @@ function VideoBlock({ url }: { url: string }) {
 export function PlantCareSection({
   product,
   contentHtml,
+  sizeGuide = null,
 }: {
   product: any;
   contentHtml: string | null;
+  /** The size guide (uploaded chart or the size options), shown as a card under the specs
+   *  (owner 2026-10-14: "the size guide can be adjusted under the plant care and details"). */
+  sizeGuide?: { sizeGuide?: any; sizes: any[]; name?: string } | null;
 }) {
   const pa = product?.plant_attribute ?? {};
+  const hasSizeGuide = Boolean(sizeGuide && (sizeGuide.sizeGuide?.original || sizeGuide.sizes?.length));
 
   const specs: { label: string; value: string }[] = (
     [
@@ -160,7 +166,7 @@ export function PlantCareSection({
   const hasLeft = Boolean(contentHtml || benefits || medicinal || careTips.length);
   const hasRight = specs.length > 0 || airPurifying || petFriendly;
 
-  if (!hasLeft && !hasRight && !videoUrl) return null;
+  if (!hasLeft && !hasRight && !hasSizeGuide && !videoUrl) return null;
 
   return (
     <div>
@@ -216,9 +222,10 @@ export function PlantCareSection({
           </div>
         )}
 
-        {/* RIGHT — spec rows + badges */}
-        {hasRight && (
+        {/* RIGHT — spec rows + badges, then the size guide */}
+        {(hasRight || hasSizeGuide) && (
           <div className="min-w-0">
+            {hasRight && (
             <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
               {specs.length > 0 && (
                 <dl>
@@ -254,6 +261,15 @@ export function PlantCareSection({
                 </div>
               )}
             </div>
+            )}
+            {hasSizeGuide && (
+              <div id="size-guide" className={`scroll-mt-24 rounded-2xl border border-kraft-200 bg-white p-5 shadow-box ${hasRight ? 'mt-6' : ''}`}>
+                <h3 className="text-sm font-medium text-[#184A31]">Size guide</h3>
+                <div className="mt-3">
+                  <SizeGuideContent sizeGuide={sizeGuide!.sizeGuide} sizes={sizeGuide!.sizes} name={sizeGuide!.name} />
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

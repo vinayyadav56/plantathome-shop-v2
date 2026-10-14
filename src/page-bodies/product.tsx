@@ -32,7 +32,6 @@ import ProductCard from '@/components/products/cards/card';
 import StyledSpaces from '@/components/products/details/plantathome/styled-spaces';
 import FrequentlyBoughtTogether from '@/components/products/details/plantathome/frequently-bought-together';
 import PlantCareSection from '@/components/products/details/plantathome/plant-care-section';
-import SizeGuideContent from '@/components/products/details/size-guide-content';
 import { getVariations } from '@/lib/get-variations';
 import { useEffect } from 'react';
 import { track } from '@/lib/analytics/track';
@@ -63,8 +62,8 @@ const ProductPage = ({ product }: any) => {
   // Same sanitizer the details panel uses — PlantCareSection receives
   // ready-to-render HTML.
   const contentHtml = useSanitizeContent({ description: product?.description ?? '' });
-  // Below-the-fold size guide (owner request) — the popup version lives on the
-  // size picker; this is the full-width section after Plant care & details.
+  // Size guide — the popup version lives on the size picker; the page copy sits
+  // inside Plant care & details (owner 2026-10-14).
   const sizeOptions: any[] =
     product?.product_type?.toLowerCase() === 'variable'
       ? ((getVariations(product?.variations) as any)?.size ?? [])
@@ -99,28 +98,13 @@ const ProductPage = ({ product }: any) => {
               {/* Plant care & details — merged description/specs/badges/video */}
               <section className="bg-white">
                 <div className={`${CONTAINER} py-10`} id="care">
-                  <PlantCareSection product={product} contentHtml={contentHtml || null} />
+                  <PlantCareSection
+                    product={product}
+                    contentHtml={contentHtml || null}
+                    sizeGuide={hasSizeGuide ? { sizeGuide: product?.size_guide, sizes: sizeOptions, name: product?.name } : null}
+                  />
                 </div>
               </section>
-
-              {/* Size guide — below the fold (owner request); the size picker
-                  also opens the same content in a popup */}
-              {hasSizeGuide && (
-                <section className="bg-page">
-                  <div className={`${CONTAINER} py-10`} id="size-guide">
-                    <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
-                      Size guide
-                    </h2>
-                    <div className="mt-6 max-w-2xl rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
-                      <SizeGuideContent
-                        sizeGuide={product?.size_guide}
-                        sizes={sizeOptions}
-                        name={product?.name}
-                      />
-                    </div>
-                  </div>
-                </section>
-              )}
 
               {/* Styled in Real Spaces — admin-configurable (Product Page Sections) */}
               <StyledSpaces />

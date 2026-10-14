@@ -402,6 +402,22 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               />
             </button>
 
+
+            {/* What's included, under the gallery from lg (owner 2026-10-14: "unutilised
+                space under the image section"). Phones keep the copy in the buy box. */}
+            {!isModal && includedItems.length > 0 && (
+              <div className="shadow-box mt-6 hidden rounded-2xl border border-kraft-200 bg-white p-4 lg:block">
+                <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
+                <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
+                  {includedItems.map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-[13px] text-stone-600">
+                      <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* info panel — min-w-0 is load-bearing: as a grid item its default
@@ -696,9 +712,10 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
               </div>
             )}
 
-            {/* What's included — admin-configured list (Product Page Sections) */}
+            {/* What's included — admin-configured list (Product Page Sections). Below lg
+                only; from lg it sits under the gallery. */}
             {!isModal && includedItems.length > 0 && (
-              <div className="shadow-box mt-4 rounded-2xl border border-kraft-200 bg-white p-4">
+              <div className="shadow-box mt-4 rounded-2xl border border-kraft-200 bg-white p-4 lg:hidden">
                 <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (

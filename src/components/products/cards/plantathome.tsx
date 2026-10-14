@@ -230,28 +230,36 @@ const PlantAtHomeCard: React.FC<Props> = ({
   );
 
   /* Plant facts as chips — the first two only (owner 2026-10-14: "don't keep
-     more than 2", e.g. Bright Indirect + Moderate water; plantFactRows puts
-     light and water first). Whole chips only: flex-wrap + a two-row max-height
-     hides anything that does not fit. Chips are a fixed 20px tall. */
+     more than 2"; plantFactRows puts light and water first), always on ONE row
+     (owner: "Bright Indirect and Moderate water should come in one line"). The
+     chips shrink together and truncate as a last resort; on narrow cards the
+     qualifier (" water") is hidden and on the narrowest the icon too — container
+     rules .pah-chip-suffix / .pah-chip-icon in plantathome-overrides.css. */
   const chips =
     facts.length > 0 ? (
       <div
-        className={`flex max-h-[46px] flex-wrap items-center gap-1.5 overflow-hidden ${
+        className={`flex flex-nowrap items-center gap-1.5 overflow-hidden ${
           isList ? 'pah-list-chips mt-2.5' : 'mb-[clamp(7px,2.8cqw,11px)]'
         }`}
       >
-        {facts.slice(0, 2).map((f) => (
-          <span
-            key={f.key}
-            className={`inline-flex h-5 max-w-full items-center gap-1 whitespace-nowrap rounded-full bg-[#F3F8EC] font-medium leading-none text-[#24693E] ${
-              isList ? 'px-2 text-[10.5px]' : 'px-[clamp(6px,2.4cqw,9px)] text-[clamp(9px,2.9cqw,11px)]'
-            }`}
-          >
-            {/* icon shrink-0 so truncation only ever eats the label */}
-            <LineIcon name={f.icon} className="h-3 w-3 shrink-0" aria-hidden />
-            <span className="min-w-0 truncate">{f.chip}</span>
-          </span>
-        ))}
+        {facts.slice(0, 2).map((f) => {
+          const suffix = f.chip.startsWith(f.value) ? f.chip.slice(f.value.length) : '';
+          return (
+            <span
+              key={f.key}
+              className={`inline-flex h-5 min-w-0 max-w-full items-center gap-[3px] whitespace-nowrap rounded-full bg-[#F3F8EC] font-medium leading-none text-[#24693E] ${
+                isList ? 'px-2 text-[10.5px]' : 'px-[clamp(5px,2.4cqw,9px)] text-[clamp(9px,2.9cqw,11px)]'
+              }`}
+            >
+              {/* icon shrink-0 so truncation only ever eats the label */}
+              <LineIcon name={f.icon} className="pah-chip-icon h-3 w-3 shrink-0" aria-hidden />
+              <span className="min-w-0 truncate">
+                {suffix ? f.value : f.chip}
+                {suffix && <span className="pah-chip-suffix">{suffix}</span>}
+              </span>
+            </span>
+          );
+        })}
       </div>
     ) : null;
 
