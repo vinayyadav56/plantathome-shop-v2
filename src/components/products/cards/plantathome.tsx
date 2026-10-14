@@ -176,8 +176,8 @@ const PlantAtHomeCard: React.FC<Props> = ({
   const titleRow = (
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        {/* Product name — same family as the body text, bold (user note:
-            weight alone distinguishes the name), #184A31 */}
+        {/* Product name — same family as the body text, semibold and near-black
+            (owner 2026-10-14: "plant name should be in black … a little more weight"). */}
         {/* Type spec given exactly: weight 500, 0.9rem, line-height 1. Fixed, not a clamp —
             the previous clamp scaled the name from 15.5px to 23px with card width, which is
             what made it read as oversized in the grid. A list row has the room for a
@@ -194,7 +194,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           // nearest positioned ancestor. Controls that must not navigate sit above it on z-10
           // (wishlist, Ask AI, the qty stepper + Add to Cart). The focus ring is drawn on the
           // overlay, so a keyboard user sees the whole card outlined.
-          className={`block w-full text-left font-medium text-[#184A31] transition after:absolute after:inset-0 after:rounded-2xl hover:text-forest-700 focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-forest-700 ${
+          className={`block w-full text-left font-semibold text-[#141414] transition after:absolute after:inset-0 after:rounded-2xl hover:text-forest-700 focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-forest-700 ${
             isList
               ? 'text-[14px] leading-snug line-clamp-2 sm:text-[16px]'
               : 'truncate text-[12.5px] leading-tight sm:text-[0.9rem]'
@@ -202,9 +202,9 @@ const PlantAtHomeCard: React.FC<Props> = ({
         >
           {product.name}
         </Link>
-        {/* Botanical name — Inter 400, up to 16px, #6B6B6B */}
+        {/* Botanical name — near-black, medium (owner 2026-10-14: all card text black, a little heavier) */}
         {sciName ? (
-          <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] leading-[1.4] text-[#6B6B6B]">{sciName}</p>
+          <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] font-medium leading-[1.4] text-[#1F1F1F]">{sciName}</p>
         ) : null}
       </div>
       {/* Rating only. The "New" chip that used to be the else-branch here
@@ -221,7 +221,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
               {ratingVal.toFixed(1)}
             </strong>
           </span>
-          <span className="mt-[6px] block text-[clamp(9.5px,3.2cqw,11px)] leading-none text-[#6B6B6B]">
+          <span className="mt-[6px] block text-[clamp(9.5px,3.2cqw,11px)] leading-none text-[#333333]">
             ({reviewCount.toLocaleString('en-IN')})
           </span>
         </div>
@@ -229,10 +229,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
     </div>
   );
 
-  /* Plant facts as chips — whole chips only, on at most two lines.
-     flex-wrap + a two-row max-height shows as many complete chips as fit and
-     hides the rest cleanly, with no JS measuring. Chips are a fixed 20px tall
-     so the cap (2 x 20 + 6 gap) is exact. */
+  /* Plant facts as chips — the first two only (owner 2026-10-14: "don't keep
+     more than 2", e.g. Bright Indirect + Moderate water; plantFactRows puts
+     light and water first). Whole chips only: flex-wrap + a two-row max-height
+     hides anything that does not fit. Chips are a fixed 20px tall. */
   const chips =
     facts.length > 0 ? (
       <div
@@ -240,7 +240,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
           isList ? 'pah-list-chips mt-2.5' : 'mb-[clamp(7px,2.8cqw,11px)]'
         }`}
       >
-        {facts.slice(0, 4).map((f) => (
+        {facts.slice(0, 2).map((f) => (
           <span
             key={f.key}
             className={`inline-flex h-5 max-w-full items-center gap-1 whitespace-nowrap rounded-full bg-[#F3F8EC] font-medium leading-none text-[#24693E] ${
@@ -491,7 +491,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <div className="flex min-w-0 flex-1 flex-col">
               {titleRow}
               {desc ? (
-                <p className="mt-1.5 text-[12.5px] leading-[1.45] text-[#5B5B5B] line-clamp-2">{desc}</p>
+                <p title={desc || undefined} className="mt-1.5 text-[12.5px] font-medium leading-[1.45] text-[#1F1F1F] line-clamp-2">{desc}</p>
               ) : null}
               {/* A phone-width row can't seat a label/value grid (values cut to
                   "Brig…"), so it gets the same whole-chip row as the grid card;
@@ -528,11 +528,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
           <>
             {titleRow}
 
-            {/* description — Inter 17px (15px mobile), #5B5B5B, lh 1.6; 2-line
-                clamp with fixed min-height so grid rows stay aligned. Vertical
-                margins are tighter than the reference's standalone card — inside a
-                grid the full 18/22px rhythm made cards run too long. */}
-            <p className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(10.5px,3.4cqw,12.5px)] leading-[1.3] text-[#5B5B5B] line-clamp-2">
+            {/* description — near-black, medium; 2-line clamp with fixed min-height
+                so grid rows stay aligned. `title` shows the full text on hover
+                (owner 2026-10-14), the same tooltip the name and botanical name use. */}
+            <p title={desc || undefined} className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(10.5px,3.4cqw,12.5px)] font-medium leading-[1.3] text-[#1F1F1F] line-clamp-2">
               {desc}
             </p>
 

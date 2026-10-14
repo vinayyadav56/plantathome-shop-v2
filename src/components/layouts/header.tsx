@@ -202,7 +202,7 @@ const Header = ({ layout }: { layout?: string }) => {
             <span className="inline-block max-w-[118px] md:hidden [&_img]:h-8 [&_img]:w-auto [&_img]:object-contain">
               <BrandLogo />
             </span>
-            <span className="hidden md:inline-block [&_img]:h-11 [&_img]:w-auto [&_img]:max-w-[160px] [&_img]:object-contain">
+            <span className="hidden md:inline-block [&_img]:h-12 [&_img]:w-auto [&_img]:max-w-[176px] [&_img]:object-contain">
               <BrandLogo />
             </span>
           </Link>
