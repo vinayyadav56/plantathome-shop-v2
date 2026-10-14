@@ -74,6 +74,8 @@ type Props = {
    * stays one flex item.
    */
   countLabel?: React.ReactNode;
+  /** What is being counted ("plant" by default; a Tools page counts products). */
+  noun?: string;
   /** Sort shown when the URL has no `orderBy` (the PLP passes 'sold_quantity' = Popular). */
   sortDefaultOrderBy?: string;
   /** 36px compact sort control. */
@@ -88,6 +90,7 @@ export default function ListingToolbar({
   hasMore,
   variant = 'card',
   countLabel,
+  noun = 'plant',
   sortDefaultOrderBy,
   sortCompact,
 }: Props) {
@@ -121,7 +124,7 @@ export default function ListingToolbar({
             {count}
             {hasMore ? '+' : ''}
           </strong>{' '}
-          plant{count === 1 && !hasMore ? '' : 's'}
+          {noun}{count === 1 && !hasMore ? '' : 's'}
         </span>
       ) : (
         <span />

@@ -219,6 +219,7 @@ export default function CategoryPage() {
               onViewChange={setView}
               count={productCount}
               hasMore={hasMore}
+              noun={!typeSlug || typeSlug === 'plants' ? 'plant' : 'product'}
             />
             <Grid
               products={products as Product[] | undefined}

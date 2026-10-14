@@ -415,7 +415,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
               No Image Available
             </span>
             <span className="max-w-[200px] text-[clamp(10.5px,3.8cqw,12px)] leading-snug text-stone-500">
-              We&rsquo;re working on adding a beautiful image for this plant.
+              We&rsquo;re working on adding a beautiful image for this {!typeSlug || typeSlug === 'plants' ? 'plant' : 'product'}.
             </span>
           </span>
         )}
