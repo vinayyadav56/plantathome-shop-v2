@@ -121,9 +121,8 @@ export default function CategoryPage() {
               items={[
                 { label: 'Home', href: Routes.home },
                 { label: 'Categories', href: Routes.categories },
-                ...((category as any)?.parent?.slug
-                  ? [{ label: (category as any).parent.name, href: `/c/${(category as any).parent.slug}` }]
-                  : []),
+                // The whole primary path (Pruning and Cutting Tools › Secateurs and Pruners › …).
+                ...(category?.ancestors ?? []).map((a) => ({ label: a.name, href: `/c/${a.slug}` })),
                 { label: category?.name ?? '' },
               ]}
             />
@@ -178,6 +177,9 @@ export default function CategoryPage() {
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-forest-500" />
                   {child.name}
+                  {(child.products_count ?? 0) > 0 && (
+                    <span className="text-stone-500">· {child.products_count}</span>
+                  )}
                 </Link>
               ))}
             </div>
@@ -227,6 +229,7 @@ export default function CategoryPage() {
               error={productsError}
               column={view === 'list' ? 'list' : 'five'}
               categoryName={category?.name}
+              vertical={typeSlug}
             />
           </div>
         </div>

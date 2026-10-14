@@ -211,6 +211,19 @@ h1, h2, h3, h4, h5, h6 {
   width: var(--rail-w, 42%);
   scroll-snap-align: start;
 }
+/* A rail that wraps into a 6-column grid from lg, for lists too long for one row (the /tools
+   category tiles: 16 roots). Two classes beat `.pah-rail`'s single-class !important; the
+   rail's padding (shadow room) is kept, so the grid lines up exactly where the row did. */
+@media (min-width: 1024px) {
+  .pah-rail.pah-rail-wrap-lg {
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    overflow: visible;
+  }
+  .pah-rail.pah-rail-wrap-lg > * {
+    width: auto;
+  }
+}
 /* An escape hatch for full-width children of a rail. `.pah-rail` is `display:flex !important`, so
    Tailwind's `col-span-full` is inert inside it and `.pah-rail > *` pins every child to one card's
    width — which is why a section's empty-state sentence wrapped onto two lines at every breakpoint

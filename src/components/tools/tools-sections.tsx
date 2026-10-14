@@ -225,7 +225,7 @@ export function ToolsGuides({ type, className }: { type: string; className?: str
     type,
     parent: 'null',
     limit: CATEGORIES_PER_PAGE,
-    home: 1,
+    active: 1,
   });
   const imageOf = (slug: string) => categories.find((c) => c?.slug === slug)?.image?.original ?? '';
 

@@ -39,6 +39,9 @@ export interface VerticalMeta {
   /** The vertical page's <title> (the root template appends "| PlantAtHome") and
    *  meta description, when the generic "{name} Online in India" won't do. */
   seo?: { title: string; description: string };
+  /** Extra params for this vertical's /categories index (client hook AND SSR prefetch read it,
+   *  so the two query keys stay identical). */
+  categoryQuery?: { active?: number };
 }
 
 const PLANTS_PROMISE: PromiseItem[] = [
@@ -107,6 +110,9 @@ const META: Record<string, Omit<VerticalMeta, 'key' | 'path'>> = {
     blurb: 'Premium, ergonomic gardening tools and planters for everyday plant care.',
     scenes: TOOLS_SCENES,
     promise: TOOLS_PROMISE,
+    // The Gardening Tools taxonomy: only switched-on roots, in the admin's display order
+    // (retired categories keep resolving by URL, they are just not listed).
+    categoryQuery: { active: 1 },
     seo: {
       title: 'Gardening Tools Online | Buy Garden Tools',
       description:

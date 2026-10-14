@@ -147,7 +147,7 @@ export const NEED_CARDS: NeedCard[] = [
     key: 'planting',
     title: "I'm planting",
     items: ['Trowels', 'Cultivators', 'Transplanters'],
-    href: '/c/tool-accessories',
+    href: '/c/hand-gardening-tools',
     icon: 'seedling',
     tone: 'text-emerald-600',
   },
@@ -177,15 +177,16 @@ export const NEED_CARDS: NeedCard[] = [
   },
 ];
 
-// Cleaning and Supporting have no category of their own yet — they land on Accessories.
+// Each task lands on its Gardening Tools category (Accessories was retired when the taxonomy
+// arrived, 2026-10-14).
 export const TASK_TILES: TaskTile[] = [
   { key: 'pruning', title: 'Pruning', sub: 'Cut, shape & maintain plants', href: '/c/pruning-cutting', icon: 'scissors', tone: 'text-rose-500' },
   { key: 'repotting', title: 'Repotting', sub: 'Move plants & refresh soil', href: '/c/planters-pots', icon: 'pot', tone: 'text-orange-600' },
   { key: 'watering', title: 'Watering', sub: 'Keep plants hydrated', href: '/c/watering-tools', icon: 'droplet', tone: 'text-sky-500' },
-  { key: 'planting', title: 'Planting', sub: 'Plant seeds & transplants', href: '/c/tool-accessories', icon: 'seedling', tone: 'text-emerald-600' },
+  { key: 'planting', title: 'Planting', sub: 'Plant seeds & transplants', href: '/c/hand-gardening-tools', icon: 'seedling', tone: 'text-emerald-600' },
   { key: 'soil', title: 'Soil Care', sub: 'Manage soil & nutrition', href: '/c/soil-care', icon: 'shovel', tone: 'text-amber-800' },
-  { key: 'cleaning', title: 'Cleaning', sub: 'Clean leaves & remove dust', href: '/c/tool-accessories', icon: 'spray', tone: 'text-sky-600' },
-  { key: 'supporting', title: 'Supporting', sub: 'Stakes, ties & plant support', href: '/c/tool-accessories', icon: 'leaf', tone: 'text-green-700' },
+  { key: 'cleaning', title: 'Cleaning', sub: 'Clean leaves & remove dust', href: '/c/indoor-plant-care-tools', icon: 'spray', tone: 'text-sky-600' },
+  { key: 'supporting', title: 'Supporting', sub: 'Stakes, ties & plant support', href: '/c/plant-support-and-training-tools', icon: 'leaf', tone: 'text-green-700' },
 ];
 
 export const WHY_ITEMS: IconCopy[] = [
@@ -198,7 +199,8 @@ export const WHY_ITEMS: IconCopy[] = [
 /** Navigation into the collections, not articles — there is no content system,
  *  so no article URL is ever invented. */
 export const GUIDE_CARDS: GuideCard[] = [
-  { title: 'Best gardening tools for beginners', slug: 'tool-accessories', href: '/c/tool-accessories' },
+  // `slug` picks the photo (a root's image); the link goes to the beginner sets themselves.
+  { title: 'Best gardening tools for beginners', slug: 'tool-sets', href: '/c/beginner-tool-sets' },
   { title: 'How to choose the right pruning tool', slug: 'pruning-cutting', href: '/c/pruning-cutting' },
   { title: 'Essential tools for balcony gardening', slug: 'planters-pots', href: '/c/planters-pots' },
   { title: 'Complete guide to gardening tool kits', slug: 'tool-sets', href: '/c/tool-sets' },

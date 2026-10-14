@@ -71,10 +71,13 @@ export async function generateMetadata({
   // twins of indoor/outdoor/flowering): keep it out of the index, keep links followed.
   const { productTotal } = category ? await loadCategory(slug, category) : { productTotal: null };
   const noindex = Boolean(category?.noindex) || productTotal === 0;
+  const typeSlug = category?.type?.slug;
   const description =
     category?.seo_description ||
     stripTags(category?.details).slice(0, 160) ||
-    `Shop ${name} at PlantAtHome — healthy, hand-checked plants and plant care delivered across 500+ Indian cities.`;
+    (typeSlug && typeSlug !== 'plants'
+      ? `Shop ${name} online at PlantAtHome — ${typeSlug === 'tools' ? 'gardening tools' : String(category?.type?.name ?? 'garden essentials').toLowerCase()} delivered across India.`
+      : `Shop ${name} at PlantAtHome — healthy, hand-checked plants and plant care delivered across 500+ Indian cities.`);
   const image = category?.image?.original || category?.banner_image?.original;
   const url = `${BASE}/c/${slug}`;
   return {
@@ -99,20 +102,20 @@ export default async function Page({
   if (category === false) notFound();
   const { dehydratedState } = await loadCategory(slug, category);
   const name = category?.name ?? prettify(slug);
-  const parent = category?.parent?.slug ? category.parent : null;
+  // The whole primary path, root first (matches the visible breadcrumb).
+  const ancestors: { name: string; slug: string }[] = Array.isArray(category?.ancestors) ? category.ancestors : [];
   // BreadcrumbList emitted server-side (the client-side BreadcrumbJsonLd from
   // next-seo is shimmed to null in this app).
+  const trail = [
+    { name: 'Home', item: BASE },
+    { name: 'Categories', item: `${BASE}/categories` },
+    ...ancestors.map((a) => ({ name: a.name, item: `${BASE}/c/${a.slug}` })),
+    { name, item: `${BASE}/c/${slug}` },
+  ];
   const breadcrumb = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: BASE },
-      { '@type': 'ListItem', position: 2, name: 'Categories', item: `${BASE}/categories` },
-      ...(parent
-        ? [{ '@type': 'ListItem', position: 3, name: parent.name, item: `${BASE}/c/${parent.slug}` }]
-        : []),
-      { '@type': 'ListItem', position: parent ? 4 : 3, name, item: `${BASE}/c/${slug}` },
-    ],
+    itemListElement: trail.map((t, i) => ({ '@type': 'ListItem', position: i + 1, ...t })),
   };
   return (
     <Hydrate state={dehydratedState}>

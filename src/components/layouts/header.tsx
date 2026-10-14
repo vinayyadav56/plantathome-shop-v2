@@ -18,14 +18,15 @@ import { useModalAction } from '@/components/ui/modal/modal.context';
 import { Routes } from '@/config/routes';
 import CitySwitcher from '@/components/location/city-switcher';
 import { useTypes } from '@/framework/type';
-import { TYPES_PER_PAGE } from '@/framework/client/variables';
+import { useCategories } from '@/framework/category';
+import { CATEGORIES_PER_PAGE, TYPES_PER_PAGE } from '@/framework/client/variables';
 import { POPULAR_PLANT_CATEGORIES, getVerticalMeta } from '@/components/storefront/verticals';
 import Search from '@/components/ui/search/search';
 import { ChevronDown, Heart, Truck } from '@/components/ui/icon';
 
 
 
-type NavItem = { label: string; href: string; menu?: { label: string; href: string }[] };
+type NavItem = { label: string; href: string; vertical?: string; menu?: { label: string; href: string }[] };
 
 // Vertical nav entries are built at render time from the API types (city-aware,
 // works on any catalogue — staging's 6 verticals AND production's 3, whose slugs
@@ -42,12 +43,13 @@ const CATEGORY_MENUS: Record<string, { label: string; href: string }[]> = {
     { label: 'Climbers & Vines', href: '/c/climbers-vines' },
     { label: 'All Categories', href: '/categories/plants' },
   ],
+  // Tools: shown only until the live list (DYNAMIC_MENUS) loads on first hover, or if it fails.
   tools: [
-    { label: 'Pruning & Cutting', href: '/c/pruning-cutting' },
-    { label: 'Watering', href: '/c/watering-tools' },
+    { label: 'Hand Gardening Tools', href: '/c/hand-gardening-tools' },
+    { label: 'Watering and Irrigation', href: '/c/watering-tools' },
+    { label: 'Pruning and Cutting Tools', href: '/c/pruning-cutting' },
+    { label: 'Gardening Tool Sets and Kits', href: '/c/tool-sets' },
     { label: 'Soil & Care', href: '/c/soil-care' },
-    { label: 'Tool Sets', href: '/c/tool-sets' },
-    { label: 'Accessories', href: '/c/tool-accessories' },
     { label: 'All Categories', href: '/categories/tools' },
   ],
   farmbox: [
@@ -149,17 +151,32 @@ const Header = ({ layout }: { layout?: string }) => {
   // Vertical nav items from the live catalogue (SSR-prefetched with the same
   // query key, so no flash). Ops city kill-switches hide a vertical here too.
   const { types } = useTypes({ limit: TYPES_PER_PAGE } as any);
+  // Verticals whose dropdown is the live list of their root categories (admin-managed, in the
+  // admin's order) instead of a curated one. Loaded on the first hover or focus only, so a page
+  // view costs nothing extra; same query key as the /tools tiles.
+  const [menuWanted, setMenuWanted] = React.useState(false);
+  const { categories: toolRoots } = useCategories(
+    { type: 'tools', parent: 'null', limit: CATEGORIES_PER_PAGE, active: 1 } as any,
+    { enabled: menuWanted },
+  );
   const NAV: NavItem[] = React.useMemo(() => {
     const verticals: NavItem[] = (types ?? []).map((ty: any) => {
       const meta = getVerticalMeta(ty.slug, ty.name);
+      const live = ty.slug === 'tools' && toolRoots.length
+        ? [
+            ...toolRoots.map((c: any) => ({ label: c.name, href: `/c/${c.slug}` })),
+            { label: 'All Categories', href: '/categories/tools' },
+          ]
+        : null;
       return {
         label: ty.name ?? meta.label,
         href: meta.shopPath ?? meta.path,
-        menu: CATEGORY_MENUS[ty.slug],
+        vertical: ty.slug,
+        menu: live ?? CATEGORY_MENUS[ty.slug],
       };
     });
     return [...verticals, ...NAV_TAIL];
-  }, [types]);
+  }, [types, toolRoots]);
 
   // The vertical you're on stays lit (owner mock: "Tools" underlined on /tools).
   // router.pathname is usePathname(): the real path, identical on the server and
@@ -231,8 +248,15 @@ const Header = ({ layout }: { layout?: string }) => {
                 // after:w-[55%] is emitted after NAV_UNDERLINE's after:w-0 (Tailwind
                 // sorts candidates), so the active underline wins without !important.
                 const active = isActive(n.href);
+                // A long menu (the Tools taxonomy's parents) gets a two-column panel.
+                const wide = (n.menu?.length ?? 0) > 8;
                 return n.menu ? (
-                  <div key={n.label} className={`group relative ${reveal}`}>
+                  <div
+                    key={n.label}
+                    className={`group relative ${reveal}`}
+                    onMouseEnter={n.vertical === 'tools' ? () => setMenuWanted(true) : undefined}
+                    onFocus={n.vertical === 'tools' ? () => setMenuWanted(true) : undefined}
+                  >
                     <Link
                       href={n.href}
                       aria-current={active ? 'page' : undefined}
@@ -244,8 +268,8 @@ const Header = ({ layout }: { layout?: string }) => {
                       <ChevronDown size={12} className="opacity-60 transition-transform duration-200 group-hover:rotate-180" aria-hidden />
                     </Link>
                     {/* dropdown — glass panel */}
-                    <div className="invisible absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                      <div className="grid grid-cols-1 gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-box backdrop-blur-2xl">
+                    <div className={`invisible absolute left-1/2 top-full z-50 ${wide ? 'w-[460px]' : 'w-52'} -translate-x-1/2 translate-y-2 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100`}>
+                      <div className={`grid ${wide ? 'grid-cols-2' : 'grid-cols-1'} gap-0.5 rounded-2xl border border-white/[0.18] bg-white/[0.88] p-1.5 shadow-box backdrop-blur-2xl`}>
                         {n.menu.map((m) => (
                           <Link
                             key={m.label}

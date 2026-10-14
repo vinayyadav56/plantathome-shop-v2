@@ -60,6 +60,7 @@ function VerticalSection({ type }: { type: Type }) {
       type: type.slug,
       parent: 'null',
       limit: 100,
+      ...meta.categoryQuery,
     } as any);
   const list = categories ?? [];
 

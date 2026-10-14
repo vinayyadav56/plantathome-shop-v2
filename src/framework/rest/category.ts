@@ -21,7 +21,11 @@ export function useCategory({ slug }: { slug: string }) {
   };
 }
 
-export function useCategories(options?: Partial<CategoryQueryOptions>) {
+export function useCategories(
+  options?: Partial<CategoryQueryOptions>,
+  /** `enabled: false` defers the request (e.g. a menu that loads on first open). */
+  config: { enabled?: boolean } = {},
+) {
   const { locale } = useRouter();
 
   const formattedOptions = {
@@ -44,6 +48,7 @@ export function useCategories(options?: Partial<CategoryQueryOptions>) {
     {
       getNextPageParam: ({ current_page, last_page }) =>
         last_page > current_page && { page: current_page + 1 },
+      enabled: config.enabled ?? true,
     },
   );
 

@@ -126,13 +126,41 @@ async function categoriesWithProducts(slugs: string[]): Promise<string[]> {
   return checks.filter((s): s is string => Boolean(s));
 }
 
+/**
+ * Every listable category from ONE call to the hierarchy endpoint: switched on, not noindex,
+ * with at least one listable product counting its whole sub-tree. The per-category probe below
+ * would cost ~520 requests an hour once the Tools taxonomy exists. Placement entries are the
+ * same page as their canonical entry, so they are skipped. Null when the endpoint is missing
+ * (an API older than this shop): the caller falls back to the probe.
+ */
+async function listableCategorySlugs(): Promise<string[] | null> {
+  if (!API) return [];
+  try {
+    const res = await fetch(`${API}/categories/tree`, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    const out = new Set<string>();
+    const walk = (nodes: any[]) => {
+      for (const n of nodes ?? []) {
+        if (!n?.placement && n?.is_active !== false && n?.noindex !== true && Number(n?.products_count) > 0 && typeof n?.slug === 'string') {
+          out.add(n.slug);
+        }
+        walk(n?.children);
+      }
+    };
+    walk((await res.json())?.data);
+    return [...out];
+  } catch {
+    return null;
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Staging/previews advertise nothing (robots disallows everything there too).
   if (!IS_INDEXABLE_SITE) return [];
 
-  const [productSlugs, categorySlugs, typeSlugs, policySlugs, locationPages] = await Promise.all([
+  const [productSlugs, treeCategorySlugs, typeSlugs, policySlugs, locationPages] = await Promise.all([
     fetchAllSlugs('products', PRODUCT_FILTERS),
-    fetchAllSlugs('categories'),
+    listableCategorySlugs(),
     // Vertical roots (/plants, /tools, …) — unpaginated, tiny.
     fetchSlugs('types?limit=100'),
     // Governed public policies (/policies/{slug}) — live versions only.
@@ -150,7 +178,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const slug of productSlugs) {
     entries.push({ url: `${BASE}/products/${slug}`, changeFrequency: 'daily', priority: 0.8 });
   }
-  for (const slug of await categoriesWithProducts(categorySlugs)) {
+  const categorySlugs = treeCategorySlugs ?? (await categoriesWithProducts(await fetchAllSlugs('categories')));
+  for (const slug of categorySlugs) {
     entries.push({ url: `${BASE}/c/${slug}`, changeFrequency: 'weekly', priority: 0.6 });
   }
   // Coming-soon verticals (seeds, fertilizers) are empty shells — not yet.

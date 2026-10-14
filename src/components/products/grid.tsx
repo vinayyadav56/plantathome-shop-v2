@@ -27,6 +27,8 @@ interface Props {
   hasMore?: boolean;
   className?: string;
   categoryName?: string;
+  /** The vertical being listed: the empty state words itself for it (Tools are nationwide). */
+  vertical?: string;
   /** How many leading cards get `priority` images (default: the first row, 4).
    *  0 when the grid sits below the page's LCP image. */
   priorityCount?: number;
@@ -44,6 +46,7 @@ export function Grid({
   limit = PRODUCTS_PER_PAGE,
   column = 'auto',
   categoryName,
+  vertical,
   priorityCount,
 }: Props) {
   const { t } = useTranslation('common');
@@ -71,7 +74,7 @@ export function Grid({
   if (!isLoading && !products?.length) {
     return (
       <div className="w-full min-h-full px-4 pt-6 pb-8 lg:p-8">
-        <EmptyProducts categoryName={categoryName} />
+        <EmptyProducts categoryName={categoryName} vertical={vertical} />
       </div>
     );
   }

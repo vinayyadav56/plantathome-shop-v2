@@ -15,11 +15,14 @@ import PottedPlantIllustration from '@/components/ui/illustration/potted-plant';
  */
 export function EmptyProducts({
   categoryName,
+  vertical,
   title,
   subtitle,
   className = '',
 }: {
   categoryName?: string;
+  /** Non-plant verticals (Tools…) are not city inventory: they get their own wording and links. */
+  vertical?: string;
   title?: string;
   subtitle?: string;
   className?: string;
@@ -50,6 +53,32 @@ export function EmptyProducts({
         </h3>
         <p className="mt-3 max-w-md text-[14px] leading-relaxed text-stone-500 sm:text-[15px]">
           Try another word, or browse everything{city ? ` available in ${city}` : ''}.
+        </p>
+        <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+          <Link href={`/${vertical}`} className="pa-btn pa-btn-primary">
+            Browse {label}
+            <ArrowRight size={16} aria-hidden />
+          </Link>
+          <Link href={`/categories/${vertical}`} className="pa-btn pa-btn-secondary">Explore categories</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // A category of a non-plant vertical with nothing listed yet: not a city gap (Tools ship
+  // nationwide), so no city wording, and the way out leads back into that vertical.
+  if (vertical && vertical !== 'plants' && !title) {
+    const label = getVerticalMeta(vertical).label;
+    return (
+      <div className={`flex w-full flex-col items-center px-5 py-14 text-center sm:py-20 ${className}`}>
+        <div className="relative grid h-36 w-36 place-items-center rounded-full bg-[radial-gradient(circle_at_50%_35%,#EAF4E6,#F6FAF7)] sm:h-44 sm:w-44">
+          <PottedPlantIllustration />
+        </div>
+        <h3 className="font-heading mt-6 text-[1.6rem] font-medium not-italic leading-tight text-forest-900 sm:text-[2rem]">
+          {categoryName ? `Nothing in ${categoryName} yet` : 'Nothing here yet'}
+        </h3>
+        <p className="mt-3 max-w-md text-[14px] leading-relaxed text-stone-500 sm:text-[15px]">
+          {`We're adding ${label.toLowerCase()} here soon. Explore what's available now.`}
         </p>
         <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
           <Link href={`/${vertical}`} className="pa-btn pa-btn-primary">

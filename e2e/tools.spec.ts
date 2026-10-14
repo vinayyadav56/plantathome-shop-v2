@@ -6,7 +6,7 @@ import { test, expect, APIRequestContext, Locator, Page } from '@playwright/test
  * Pins the contract, not the styling: one heading-font H1, the exact SEO title and
  * description, "Tools" lit in the header, BreadcrumbList + CollectionPage +
  * FAQPage structured data (the CollectionPage's ItemList present exactly when
- * the server rendered product cards), six category tiles and the need/task
+ * the server rendered product cards), a tile per live Tools root and the need/task
  * links into /c/, the product sections either absent or correct (the API
  * decides what is listed for a city — never placeholders), a keyboard-operable
  * FAQ, one city control, the bottom nav on phones, none of the old landing's
@@ -15,6 +15,17 @@ import { test, expect, APIRequestContext, Locator, Page } from '@playwright/test
  *
  * Read only: never switches city, never touches the cart, never places an order.
  */
+
+const API = process.env.E2E_API_BASE || 'https://plantathome-production.up.railway.app/api';
+
+/** How many tiles "Shop by Category" must show: every switched-on Tools root (the Gardening
+ *  Tools taxonomy's parents plus Soil & Care and Planters & Pots), straight from the API. */
+async function liveToolRoots(request: APIRequestContext): Promise<number> {
+  const r = await request.get(`${API}/categories`, {
+    params: { type: 'tools', parent: 'null', active: 1, limit: 100, language: 'en' },
+  });
+  return ((await r.json())?.data ?? []).length;
+}
 
 const SEED_CITY = () => {
   try {
@@ -126,7 +137,7 @@ test.describe('/tools landing', () => {
       .trim();
     expect(h1Text).toBe(H1);
     const tiles = html.match(/<section[^>]*id="categories"[\s\S]*?<\/section>/)?.[0] ?? '';
-    expect((tiles.match(/href="\/c\//g) ?? []).length, 'category tiles in the server HTML').toBe(6);
+    expect((tiles.match(/href="\/c\//g) ?? []).length, 'category tiles in the server HTML').toBe(await liveToolRoots(request));
     // No city on the server: when it lists tools at all, the kit band (a Tool Set) is there
     // too, linking to its PDP with a real price. City-less, so this runs in every environment.
     if (cards > 0) {
@@ -154,12 +165,12 @@ test.describe('/tools landing', () => {
     expect(await page.locator('body').innerText()).not.toMatch(FABRICATED);
   });
 
-  test('six category tiles, four need cards and seven task tiles link into /c/', async ({ page }) => {
+  test('a tile per live Tools root, four need cards and seven task tiles link into /c/', async ({ page, request }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/tools', { waitUntil: 'domcontentloaded' });
     // The hero's primary CTA scrolls here.
     await expect(page.locator('section#categories')).toBeAttached();
-    await expect(page.getByRole('region', { name: 'Shop by Category' }).locator('a[href^="/c/"]')).toHaveCount(6);
+    await expect(page.getByRole('region', { name: 'Shop by Category' }).locator('a[href^="/c/"]')).toHaveCount(await liveToolRoots(request));
     await expect(page.getByRole('region', { name: 'Not sure what you need?' }).locator('a[href^="/c/"]')).toHaveCount(4);
     await expect(page.getByRole('region', { name: 'What are you working on today?' }).locator('a[href^="/c/"]')).toHaveCount(7);
     await expect(page.getByRole('region', { name: 'Gardening Tools Guide' }).locator('a[href^="/c/"]')).toHaveCount(4);
@@ -251,7 +262,6 @@ test.describe('/tools landing', () => {
  * guest checkout takes an address in another city without a city mismatch.
  * Touches only the browser-local cart and runs checkout/verify — never places an order.
  */
-const API = process.env.E2E_API_BASE || 'https://plantathome-production.up.railway.app/api';
 /** Staging's serviceable cities: the first the API says has no supply is the no-supply city. */
 const CANDIDATE_CITIES = ['Rewari', 'Ambala', 'Indore', 'Jaipur', 'Bengaluru', 'Mumbai', 'Gurugram'];
 

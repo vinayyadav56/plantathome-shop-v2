@@ -196,6 +196,8 @@ export interface CategoryQueryOptions extends QueryOptions {
   type: string;
   /** 1 = only categories flagged Show-on-homepage AND active, ordered server-side. */
   home?: number;
+  /** 1 = only switched-on categories, in the admin's display order. */
+  active?: number;
 }
 
 export interface RefundQueryOptions extends QueryOptions {
@@ -420,6 +422,18 @@ export interface Category {
   icon?: string;
   type?: Type;
   parent_id?: number | null;
+  /** The primary parent; a root keeps an object with null fields. */
+  parent?: { id: number | null; slug: string | null; name: string | null } | null;
+  /** Primary-parent chain, root first, the category itself excluded. */
+  ancestors?: { id: number; slug: string; name: string }[];
+  depth?: number;
+  display_order?: number;
+  is_active?: boolean;
+  /** A child listed here as well as under its own parent (one page, every branch). */
+  placement?: boolean;
+  noindex?: boolean;
+  seo_title?: string | null;
+  seo_description?: string | null;
   children?: Category[];
   products_count?: number;
 }

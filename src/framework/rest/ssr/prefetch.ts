@@ -21,6 +21,7 @@ import {
 import { formatProductsArgs } from '@/framework/utils/format-products-args';
 // Plain module: the /farmbox hooks' own option objects, so the SSR keys can't drift from them.
 import { categoriesQuery, combosQuery } from '@/components/farmbox/farmbox-content';
+import { getVerticalMeta } from '@/components/storefront/verticals';
 import type { Product } from '@/types';
 
 const LOCALE = 'en';
@@ -323,7 +324,7 @@ export async function loadToolsData(typeSlug: string) {
       .prefetchInfiniteQuery({
         queryKey: [
           API_ENDPOINTS.CATEGORIES,
-          { type: typeSlug, parent: 'null', limit: CATEGORIES_PER_PAGE, home: 1, language: LOCALE },
+          { type: typeSlug, parent: 'null', limit: CATEGORIES_PER_PAGE, active: 1, language: LOCALE },
         ],
         queryFn: ({ queryKey }: any) => client.categories.all(queryKey[1]),
         initialPageParam: undefined,
@@ -390,7 +391,7 @@ export async function loadCategoriesIndexData(only?: string) {
     await Promise.all(
       (types ?? []).filter((t) => !only || t.slug === only).map((t: any) =>
         queryClient.prefetchInfiniteQuery({
-          queryKey: [API_ENDPOINTS.CATEGORIES, { type: t.slug, parent: 'null', limit: 100, language: LOCALE }],
+          queryKey: [API_ENDPOINTS.CATEGORIES, { type: t.slug, parent: 'null', limit: 100, ...getVerticalMeta(t.slug).categoryQuery, language: LOCALE }],
           queryFn: ({ queryKey }: any) => client.categories.all(queryKey[1]),
           initialPageParam: undefined,
         } as any),

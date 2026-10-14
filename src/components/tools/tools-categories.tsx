@@ -8,14 +8,18 @@ import { CATEGORIES_PER_PAGE } from '@/framework/client/variables';
 import { SectionHead } from './section-head';
 import { SECTION } from './tools-content';
 import VerticalSearch from '@/components/ui/search/vertical-search';
+import { PlantMark } from '@/components/storefront/logo-mark';
 
-const MAX_TILES = 6;
+/** Skeleton tiles while loading (one desktop row). */
+const SKELETON_TILES = 6;
 
 /**
- * /tools "Shop by Category": the vertical's flagged root categories as image
- * tiles linking to /c/{slug}. The row holds 6 tiles from `lg` and becomes a
- * snap rail below that. Each tile shows the category's real image and its
- * `details` line from the admin.
+ * /tools "Shop by Category": every switched-on root category of the vertical (the
+ * Gardening Tools taxonomy's parents, then Soil & Care and Planters & Pots), in the
+ * admin's display order, as image tiles linking to /c/{slug}. A snap rail below `lg`,
+ * a 6-column grid from `lg` (`pah-rail-wrap-lg`), so no tile hides behind a scroll.
+ * Each tile shows the category's real image (the brand mark until the admin uploads
+ * one) and its `details` line from the admin.
  *
  * The useCategories options are the exact key loadToolsData prefetches, so the
  * tiles arrive as server HTML. Change both or neither.
@@ -30,9 +34,9 @@ export function ToolsCategories({ type }: { type: string }) {
     type,
     parent: 'null',
     limit: CATEGORIES_PER_PAGE,
-    home: 1,
+    active: 1,
   });
-  const items = categories.filter((c) => c?.slug && c?.name).slice(0, MAX_TILES);
+  const items = categories.filter((c) => c?.slug && c?.name);
 
   const showSkeleton = isLoading && !items.length;
   if (!showSkeleton && !items.length) return null;
@@ -48,9 +52,9 @@ export function ToolsCategories({ type }: { type: string }) {
       {/* The gap sits on a wrapper because .pah-rail sets its own negative margins
           to make room for the card shadows, and a margin utility on the rail would fight them. */}
       <div className="mt-5">
-        <ul className="pah-rail [--rail-w:44%] sm:[--rail-w:30%] lg:[--rail-w:calc((100%_-_5*16px)/6)] gap-4">
+        <ul className="pah-rail pah-rail-wrap-lg [--rail-w:44%] sm:[--rail-w:30%] gap-4">
           {showSkeleton
-            ? Array.from({ length: MAX_TILES }, (_, i) => (
+            ? Array.from({ length: SKELETON_TILES }, (_, i) => (
                 <li key={i} aria-hidden className="overflow-hidden rounded-lg bg-white shadow-box">
                   <div className="aspect-[8/7] animate-pulse bg-sage-50" />
                   {/* Same line boxes as a loaded tile (20 / 4+2×18 / 16+20 px). Real `details` copy
@@ -87,7 +91,11 @@ export function ToolsCategories({ type }: { type: string }) {
                         sizes="(max-width: 639px) 44vw, (max-width: 1023px) 30vw, 16vw"
                         quality={70}
                         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                        fallback={null}
+                        fallback={
+                          <div className="grid h-full w-full place-items-center text-forest-300">
+                            <PlantMark className="h-8 w-8" />
+                          </div>
+                        }
                       />
                     </div>
                     <div className="flex flex-1 flex-col p-3.5">
