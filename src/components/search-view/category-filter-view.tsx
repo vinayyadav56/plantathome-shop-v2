@@ -153,8 +153,8 @@ const IndexCategoryFilter = ({ type }: { type?: any }) => {
   );
 };
 
-const CategoryFilter: React.FC<{ type?: any }> = ({ type }) => {
-  const { data, isLoading } = useFilterFacets({ type });
+const CategoryFilter: React.FC<{ type?: any; category?: string }> = ({ type, category }) => {
+  const { data, isLoading } = useFilterFacets({ type, categories: category });
   const rows = data?.facets?.categories;
   // Settle the facets first so the legacy list isn't fetched only to be replaced.
   if (isLoading)

@@ -82,6 +82,7 @@ function ClearFiltersButton() {
       sizes,
       difficulty,
       terms,
+      attr,
       ...rest
     } = router.query;
     router.push({ pathname: router.pathname, query: { ...rest } });
@@ -113,7 +114,10 @@ const SidebarFilter: React.FC<{
   inRail?: boolean;
   /** The PLP's Price section is slider + readout only (no histogram, no From/To). */
   simplePrice?: boolean;
-}> = ({ type, showManufacturers = true, showCategories = true, showSort = true, showSearch = true, className, inRail = false, simplePrice = false }) => {
+  /** Category pages: the pinned category's slug, so every section (counts, price
+   *  bounds, attributes) describes that category's products, not the whole vertical's. */
+  category?: string;
+}> = ({ type, category, showManufacturers = true, showCategories = true, showSort = true, showSearch = true, className, inRail = false, simplePrice = false }) => {
   const router = useRouter();
   const { isRTL } = useIsRTL();
   const { t } = useTranslation('common');
@@ -123,13 +127,18 @@ const SidebarFilter: React.FC<{
   const manufacturerCount = useParamCount('manufacturer');
   const priceCount = useParamCount('price') ? 1 : 0;
   const plantCounts = usePlantFilterCounts();
-  const { data: facetData } = useFilterFacets({ type });
+  // The sections below each read the facets under this same scope: one request per page.
+  const { data: facetData } = useFilterFacets({ type, categories: category });
   const facets = facetData?.facets;
-  const dynamicFacets = facets?.dynamic ?? [];
+  // A yes/no attribute no listed product says yes to would be a switch that empties the grid.
+  const dynamicFacets = (facets?.dynamic ?? []).filter((f) => !f.options || f.options.true > 0);
   // A facet section with no catalogue values for this vertical + city is a bare
   // title over nothing — skip it. Before the facets land there is nothing to
   // offer either (the PLP hydrates them server-side, so no flash there).
   const has = (rows: { count: number }[] | undefined) => Boolean(rows?.length);
+  // The botanical sections and the Size ladder are the plants' own; another vertical's
+  // rail is search, price, categories and its attributes. No type = the old all-catalogue rail.
+  const plants = !type || type === 'plants';
 
   return (
     <div
@@ -167,7 +176,7 @@ const SidebarFilter: React.FC<{
       </div>
 
       {/* active filters at a glance — one removable chip per value */}
-      <AppliedFilters />
+      <AppliedFilters facets={dynamicFacets} />
 
       <div className="flex-1 space-y-2 px-5 pt-3">
         {showSearch && (
@@ -187,48 +196,52 @@ const SidebarFilter: React.FC<{
             `text-sort-by-price`) label other surfaces, so common.json stays as is. */}
         {showCategories && (
           <FieldWrapper title="Category" count={categoryCount}>
-            <CategoryFilter type={type} />
+            <CategoryFilter type={type} category={category} />
           </FieldWrapper>
         )}
 
         <FieldWrapper title="Price Range" count={priceCount}>
-          <PriceFilter type={type} simple={simplePrice} />
+          <PriceFilter type={type} category={category} simple={simplePrice} />
         </FieldWrapper>
 
         {/* Botanical facets — options + counts from products/filter-facets.
             Sections with no catalogue values render nothing (see the views). */}
-        <FieldWrapper title="Plant Size" count={plantCounts.sizes}>
-          <SizeFilterView type={type} />
-        </FieldWrapper>
-        {has(facets?.sunlight) && (
-          <FieldWrapper title="Light Requirement" count={plantCounts.sunlight}>
-            <FacetFilterView param="sunlight" facetKey="sunlight" type={type} />
-          </FieldWrapper>
-        )}
-        {has(facets?.indoor_outdoor) && (
-          <FieldWrapper title="text-placement" count={plantCounts.placement}>
-            <PlacementFilterView />
-          </FieldWrapper>
-        )}
-        {has(facets?.water_requirement) && (
-          <FieldWrapper title="text-watering" count={plantCounts.water}>
-            <FacetFilterView param="water" facetKey="water_requirement" type={type} />
-          </FieldWrapper>
-        )}
-        {(facets?.pet_friendly?.true ?? 0) > 0 && (
-          <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
-            <PetFriendlyFilterView type={type} />
-          </FieldWrapper>
-        )}
-        {has(facets?.growth_rate) && (
-          <FieldWrapper title="text-growth-rate" count={plantCounts.growth} defaultOpen={false}>
-            <FacetFilterView param="growth" facetKey="growth_rate" type={type} />
-          </FieldWrapper>
-        )}
-        {has(facets?.difficulty_level) && (
-          <FieldWrapper title="Difficulty" count={plantCounts.difficulty} defaultOpen={false}>
-            <FacetFilterView param="difficulty" facetKey="difficulty_level" type={type} />
-          </FieldWrapper>
+        {plants && (
+          <>
+            <FieldWrapper title="Plant Size" count={plantCounts.sizes}>
+              <SizeFilterView type={type} category={category} />
+            </FieldWrapper>
+            {has(facets?.sunlight) && (
+              <FieldWrapper title="Light Requirement" count={plantCounts.sunlight}>
+                <FacetFilterView param="sunlight" facetKey="sunlight" type={type} category={category} />
+              </FieldWrapper>
+            )}
+            {has(facets?.indoor_outdoor) && (
+              <FieldWrapper title="text-placement" count={plantCounts.placement}>
+                <PlacementFilterView />
+              </FieldWrapper>
+            )}
+            {has(facets?.water_requirement) && (
+              <FieldWrapper title="text-watering" count={plantCounts.water}>
+                <FacetFilterView param="water" facetKey="water_requirement" type={type} category={category} />
+              </FieldWrapper>
+            )}
+            {(facets?.pet_friendly?.true ?? 0) > 0 && (
+              <FieldWrapper title="text-pet-friendly" count={plantCounts.pet}>
+                <PetFriendlyFilterView type={type} category={category} />
+              </FieldWrapper>
+            )}
+            {has(facets?.growth_rate) && (
+              <FieldWrapper title="text-growth-rate" count={plantCounts.growth} defaultOpen={false}>
+                <FacetFilterView param="growth" facetKey="growth_rate" type={type} category={category} />
+              </FieldWrapper>
+            )}
+            {has(facets?.difficulty_level) && (
+              <FieldWrapper title="Difficulty" count={plantCounts.difficulty} defaultOpen={false}>
+                <FacetFilterView param="difficulty" facetKey="difficulty_level" type={type} category={category} />
+              </FieldWrapper>
+            )}
+          </>
         )}
 
         {/* Admin-defined attributes. The server tells us which sections exist and what is

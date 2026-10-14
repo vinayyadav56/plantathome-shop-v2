@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { LineIcon } from '@/components/icons/line-icons';
 import { Check } from '@/components/ui/icon';
 import SizeGuideContent from '@/components/products/details/size-guide-content';
+import type { ProductSpecification } from '@/types';
 
 /** Extract a YouTube video id from watch/embed/shorts/youtu.be URLs. */
 function youtubeId(url: string): string | null {
@@ -77,10 +78,32 @@ function VideoBlock({ url }: { url: string }) {
   );
 }
 
+/** Label/value spec rows — the plants' care card and other verticals' Specifications. */
+function SpecRows({ rows }: { rows: { label: string; value: string }[] }) {
+  return (
+    <dl>
+      {rows.map((s) => (
+        <div
+          key={s.label}
+          className="flex items-baseline justify-between gap-4 border-b border-kraft-200 py-2.5 first:pt-0 last:border-0 last:pb-0"
+        >
+          <dt className="shrink-0 text-[13.5px] text-[#6B6B6B]">
+            {s.label}
+          </dt>
+          <dd className="text-right text-[14px] font-semibold text-[#184A31]">
+            {s.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 /**
  * "Plant care & details" — full-width section (parent provides the container):
  * LEFT = sanitized description html + benefits/medicinal paragraphs,
- * RIGHT = spec label/value rows + air-purifying/pet-friendly chips,
+ * RIGHT = spec label/value rows + air-purifying/pet-friendly chips (another
+ * vertical: "Product details" with its Specifications card there instead),
  * BELOW = click-to-play product video. Null when there is nothing to show.
  * `contentHtml` MUST already be sanitized by the caller (useSanitizeContent).
  */
@@ -97,6 +120,14 @@ export function PlantCareSection({
 }) {
   const pa = product?.plant_attribute ?? {};
   const hasSizeGuide = Boolean(sizeGuide && (sizeGuide.sizeGuide?.original || sizeGuide.sizes?.length));
+  const isPlant = !product?.type?.slug || product.type.slug === 'plants';
+  // Every other vertical describes itself through its product attributes: one row per
+  // attribute, values already display-ready (units included). Plants keep their botanical rows.
+  const specifications: { label: string; value: string }[] = isPlant
+    ? []
+    : ((product?.specifications ?? []) as ProductSpecification[])
+        .map((s) => ({ label: s.name, value: s.values.join(', ') }))
+        .filter((s) => s.value);
 
   const specs: { label: string; value: string }[] = (
     [
@@ -165,13 +196,14 @@ export function PlantCareSection({
 
   const hasLeft = Boolean(contentHtml || benefits || medicinal || careTips.length);
   const hasRight = specs.length > 0 || airPurifying || petFriendly;
+  const hasSpecifications = specifications.length > 0;
 
-  if (!hasLeft && !hasRight && !hasSizeGuide && !videoUrl) return null;
+  if (!hasLeft && !hasRight && !hasSpecifications && !hasSizeGuide && !videoUrl) return null;
 
   return (
     <div>
       <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
-        Plant care &amp; details
+        {isPlant ? 'Plant care & details' : 'Product details'}
       </h2>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2 lg:gap-10">
@@ -222,28 +254,12 @@ export function PlantCareSection({
           </div>
         )}
 
-        {/* RIGHT — spec rows + badges, then the size guide */}
-        {(hasRight || hasSizeGuide) && (
+        {/* RIGHT — spec rows + badges (or another vertical's Specifications), then the size guide */}
+        {(hasRight || hasSpecifications || hasSizeGuide) && (
           <div className="min-w-0">
             {hasRight && (
             <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
-              {specs.length > 0 && (
-                <dl>
-                  {specs.map((s) => (
-                    <div
-                      key={s.label}
-                      className="flex items-baseline justify-between gap-4 border-b border-kraft-200 py-2.5 first:pt-0 last:border-0 last:pb-0"
-                    >
-                      <dt className="shrink-0 text-[13.5px] text-[#6B6B6B]">
-                        {s.label}
-                      </dt>
-                      <dd className="text-right text-[14px] font-semibold text-[#184A31]">
-                        {s.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
+              {specs.length > 0 && <SpecRows rows={specs} />}
               {(airPurifying || petFriendly) && (
                 <div
                   className={`flex flex-wrap gap-2 ${specs.length > 0 ? 'mt-4' : ''}`}
@@ -262,8 +278,16 @@ export function PlantCareSection({
               )}
             </div>
             )}
+            {hasSpecifications && (
+              <div className={`rounded-2xl border border-kraft-200 bg-white p-5 shadow-box ${hasRight ? 'mt-6' : ''}`}>
+                <h3 className="text-sm font-medium text-[#184A31]">Specifications</h3>
+                <div className="mt-3">
+                  <SpecRows rows={specifications} />
+                </div>
+              </div>
+            )}
             {hasSizeGuide && (
-              <div id="size-guide" className={`scroll-mt-24 rounded-2xl border border-kraft-200 bg-white p-5 shadow-box ${hasRight ? 'mt-6' : ''}`}>
+              <div id="size-guide" className={`scroll-mt-24 rounded-2xl border border-kraft-200 bg-white p-5 shadow-box ${hasRight || hasSpecifications ? 'mt-6' : ''}`}>
                 <h3 className="text-sm font-medium text-[#184A31]">Size guide</h3>
                 <div className="mt-3">
                   <SizeGuideContent sizeGuide={sizeGuide!.sizeGuide} sizes={sizeGuide!.sizes} name={sizeGuide!.name} />

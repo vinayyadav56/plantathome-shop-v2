@@ -42,6 +42,8 @@ export default function CategoryPage() {
 
   const typeSlug = (category?.type as any)?.slug;
   const typeName = (category?.type as any)?.name;
+  // Category-scoped filter facets outside Plants only: plant pages keep their vertical-wide ones.
+  const facetCategory = typeSlug && typeSlug !== 'plants' ? slug : undefined;
   const {
     products,
     isLoading,
@@ -209,8 +211,11 @@ export default function CategoryPage() {
             <StickyBox offsetTop={102} offsetBottom={30}>
               {/* showSort={false}: sorting lives in the toolbar above the grid
                   now, where shoppers expect it. Two sort controls on one page
-                  that write the same URL params is a way to confuse people. */}
-              <SidebarFilter inRail showCategories={false} showSort={false} type={typeSlug} />
+                  that write the same URL params is a way to confuse people.
+                  category: outside Plants the facets (counts, price bounds,
+                  attributes) describe this category's products, not the whole
+                  vertical's. Plant pages keep the vertical-wide facets they had. */}
+              <SidebarFilter inRail showCategories={false} showSort={false} type={typeSlug} category={facetCategory} />
             </StickyBox>
           </div>
           <div className="min-w-0 flex-1">
@@ -235,10 +240,12 @@ export default function CategoryPage() {
           </div>
         </div>
 
-        {/* Floating filter button (sub-md) — same drawer as the search page */}
+        {/* Floating filter button (sub-md) — same drawer as the search page, with
+            the rail's scope (unscoped, a phone got every vertical's facets: plant
+            sections on a tools category) */}
         <button
           type="button"
-          onClick={() => setDrawerView({ display: true, view: 'SEARCH_FILTER' })}
+          onClick={() => setDrawerView({ display: true, view: 'SEARCH_FILTER', data: { type: typeSlug, category: facetCategory } })}
           className="fixed bottom-24 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-ds-btn text-white shadow-lg ltr:right-4 rtl:left-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-white md:hidden"
         >
           <span className="sr-only">Filters</span>

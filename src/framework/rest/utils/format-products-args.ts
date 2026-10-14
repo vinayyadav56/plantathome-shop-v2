@@ -10,6 +10,7 @@ export const formatProductsArgs = (options?: Partial<ProductQueryOptions>) => {
     searchType,
     searchQuery,
     text,
+    attr,
     ...restOptions
   } = options || {};
 
@@ -29,7 +30,12 @@ export const formatProductsArgs = (options?: Partial<ProductQueryOptions>) => {
     ...(categories && { categories: categories.toString() }),
     ...(searchType && { type: searchType.toString() }),
     ...(searchQuery && { name: searchQuery.toString() }),
-    ...(text && { name: text.toString() }),
+    // `text` is the API's own search (name, exact SKU, variety and botanical names, matching
+    // categories); as a `name` search term it only ever matched names. It and `attr` stay
+    // top-level params (client.products.all keeps them out of `search`). toString: a
+    // repeated URL param arrives as an array, which the API cannot read.
+    ...(text && { text: text.toString() }),
+    ...(attr && { attr: attr.toString() }),
     ...restOptions,
     // Popular = sold_quantity, which is 0 for most plants, so the sort alone is
     // non-deterministic and page 2 repeated page 1's rows. Prettus takes

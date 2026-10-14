@@ -1,12 +1,15 @@
 import { useRouter } from '@/compat/next-router';
 import { useTranslation } from 'next-i18next';
 import { X } from '@/components/ui/icon';
+import type { DynamicFacet } from '@/types';
+import { formatAttr, parseAttr } from '@/components/search-view/plant-filter-views';
 
 /** One removable chip per active filter value, derived straight from the URL
  *  query (the single source of filter state). Removing a chip strips just that
  *  value from its param; the empty param is dropped entirely. */
 
-type Chip = { param: string; value: string; label: string };
+/** `next`: attr chips carry what the `attr` param becomes without them. */
+type Chip = { param: string; value: string; label: string; next?: string };
 
 const prettify = (slug: string) =>
   slug
@@ -14,7 +17,15 @@ const prettify = (slug: string) =>
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
     .join(' ');
 
-const AppliedFilters: React.FC = () => {
+/** "2-5" → "2–5 L", "2-" → "≥ 2 L", "-5" → "≤ 5 L". */
+const windowLabel = (raw: string, unit?: string | null) => {
+  const [lo, hi] = raw.split('-');
+  const u = unit ? ` ${unit}` : '';
+  return lo && hi ? `${lo}–${hi}${u}` : lo ? `≥ ${lo}${u}` : `≤ ${hi}${u}`;
+};
+
+/** `facets`: the rail's attribute facets, which name the `attr` chips ("Material: Steel"). */
+const AppliedFilters: React.FC<{ facets?: DynamicFacet[] }> = ({ facets = [] }) => {
   const { t } = useTranslation('common');
   const router = useRouter();
 
@@ -48,6 +59,31 @@ const AppliedFilters: React.FC = () => {
       .filter(Boolean)
       .forEach((value) => chips.push({ param: 'terms', value, label: prettify(value) }));
   }
+  // Every other attribute rides in `attr`: a chip per picked option ("Material: Steel"),
+  // one per number window ("Capacity: 2–5 L") or switch ("Foldable"). An attribute the
+  // facets do not list (not loaded yet, or an old link) still gets a removable chip.
+  const attr = parseAttr(router.query.attr);
+  Object.entries(attr).forEach(([code, raw]) => {
+    const facet = facets.find((f) => f.code === code);
+    const name = facet?.name ?? prettify(code);
+    const without = (value: string) => formatAttr({ ...attr, [code]: value });
+    if (facet?.terms.length) {
+      const picked = raw.split(',').filter(Boolean);
+      picked.forEach((slug) =>
+        chips.push({
+          param: 'attr',
+          value: `${code}:${slug}`,
+          label: `${name}: ${facet.terms.find((term) => term.slug === slug)?.value ?? prettify(slug)}`,
+          next: without(picked.filter((s) => s !== slug).join(',')),
+        }),
+      );
+      return;
+    }
+    let label = `${name}: ${raw}`;
+    if (facet?.range) label = `${name}: ${windowLabel(raw, facet.unit)}`;
+    else if (facet?.options) label = raw === 'true' ? name : `${name}: No`;
+    chips.push({ param: 'attr', value: code, label, next: without('') });
+  });
   if (typeof router.query.placement === 'string' && router.query.placement) {
     chips.push({ param: 'placement', value: router.query.placement, label: router.query.placement });
   }
@@ -75,7 +111,10 @@ const AppliedFilters: React.FC = () => {
 
   function removeChip(chip: Chip) {
     const query: Record<string, any> = { ...router.query };
-    if (['price', 'text', 'placement', 'pet_friendly', 'air_purifying'].includes(chip.param)) {
+    if (chip.param === 'attr') {
+      if (chip.next) query.attr = chip.next;
+      else delete query.attr;
+    } else if (['price', 'text', 'placement', 'pet_friendly', 'air_purifying'].includes(chip.param)) {
       delete query[chip.param];
     } else {
       const rest = String(query[chip.param])

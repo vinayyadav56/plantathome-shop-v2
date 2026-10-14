@@ -139,6 +139,8 @@ class Client {
         // Never show unpriced catalogue entries (imported names awaiting vendor
         // rates) as buyable ₹0 cards on any customer surface incl. search.
         hide_unpriced: 1,
+        // `text` and `attr` ride here, as top-level params: the API reads them itself, and
+        // inside `search` the Prettus grammar would mangle them (attr's `code:value|…`).
         ...params,
         search: HttpClient.formatSearchParams({
           type,

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRouter } from '@/compat/next-router';
 import type { DynamicFacet } from '@/types';
 import { useFilterFacets } from '@/framework/product';
@@ -5,7 +6,8 @@ import Checkbox from '@/components/ui/forms/checkbox/checkbox';
 
 /**
  * Botanical filter sections for the listing rail — Light, Watering, Growth
- * rate, Placement (Indoor|Outdoor), Pet-friendly and Plant Size.
+ * rate, Placement (Indoor|Outdoor), Pet-friendly and Plant Size — and the
+ * admin-defined attribute sections every vertical gets (DynamicFacetView).
  *
  * All state lives in the URL query (the rail's single source of truth), so
  * these compose with the existing shallow same-path routing: a change is one
@@ -35,29 +37,76 @@ export const usePushParam = () => {
 };
 
 /**
- * Admin-defined attribute section (Suitable Spaces, Special Characteristics, and whatever
- * an admin adds next). Every dynamic facet shares ONE url param — `terms` — holding term
- * slugs, so adding an attribute in the admin makes a new filter section appear here with
- * no client change. That is the point of the taxonomy work: no hardcoded filter lists.
+ * The `attr` param: every attribute filter outside the plants' `terms`, one group per
+ * attribute code in the API's grammar — `code:slug1,slug2|code2:min-max|code3:true`
+ * (OR within an attribute, AND across them; a window may be open at either end).
+ */
+export function parseAttr(raw: unknown): Record<string, string> {
+  const groups: Record<string, string> = {};
+  if (typeof raw !== 'string') return groups;
+  for (const part of raw.split('|')) {
+    const at = part.indexOf(':');
+    if (at > 0 && at < part.length - 1) groups[part.slice(0, at)] = part.slice(at + 1);
+  }
+  return groups;
+}
+
+/** Groups back to the param; a code left empty is dropped ('' when none remain). */
+export const formatAttr = (groups: Record<string, string>) =>
+  Object.entries(groups)
+    .filter(([, value]) => value)
+    .map(([code, value]) => `${code}:${value}`)
+    .join('|');
+
+/** Numbers and yes/no can only be filtered through `attr`, whatever vertical sent them. */
+const usesAttr = (facet: DynamicFacet) =>
+  facet.param === 'attr' || Boolean(facet.range || facet.options);
+
+/**
+ * Admin-defined attribute section (Suitable Spaces, Material, Capacity, and whatever an
+ * admin adds next), so a new attribute in the admin is a new filter section here with no
+ * client change. That is the point of the taxonomy work: no hardcoded filter lists.
+ * The plants' attributes share ONE url param — `terms` — holding term slugs; every other
+ * vertical's go in `attr` (see parseAttr): options as checkboxes, numbers as a from–to
+ * window, yes/no as a switch.
  */
 export function DynamicFacetView({ facet }: { facet: DynamicFacet }) {
-  const selected = useParamValues('terms');
+  const { query } = useRouter();
+  const selectedTerms = useParamValues('terms');
   const push = usePushParam();
+  const attr = usesAttr(facet);
+  const groups = parseAttr(query.attr);
+  const value = groups[facet.code] ?? '';
+  const setValue = (next: string) => push('attr', formatAttr({ ...groups, [facet.code]: next }));
 
+  if (attr && facet.range) return <AttrRangeView facet={facet} value={value} onChange={setValue} />;
+  if (attr && facet.options) {
+    const on = value === 'true';
+    const n = facet.options.true;
+    return (
+      <ToggleRow
+        title={`${facet.name} only`}
+        hint={`${n} product${n === 1 ? '' : 's'}`}
+        on={on}
+        onToggle={() => setValue(on ? '' : 'true')}
+      />
+    );
+  }
   if (!facet.terms.length) return null;
 
-  const toggle = (slug: string) =>
-    push(
-      'terms',
-      selected.includes(slug) ? selected.filter((v) => v !== slug) : [...selected, slug],
-    );
+  const selected = attr ? value.split(',').filter(Boolean) : selectedTerms;
+  const toggle = (slug: string) => {
+    const next = selected.includes(slug) ? selected.filter((v) => v !== slug) : [...selected, slug];
+    if (attr) setValue(next.join(','));
+    else push('terms', next);
+  };
 
   return (
     <div className="flex flex-col space-y-3.5">
       {facet.terms.map((t) => (
         <div key={t.slug} className="flex items-center justify-between gap-2">
           <Checkbox
-            name={`term-${t.slug}`}
+            name={attr ? `attr-${facet.code}-${t.slug}` : `term-${t.slug}`}
             value={t.slug}
             label={t.value}
             checked={selected.includes(t.slug)}
@@ -70,18 +119,97 @@ export function DynamicFacetView({ facet }: { facet: DynamicFacet }) {
   );
 }
 
+/**
+ * Number / range attribute (Capacity, Blade length …): a from–to window in the attribute's
+ * unit, clamped to the listed products' span; an empty end stays open. Applied on Enter or
+ * on leaving a field, so typing "120" does not refetch at "1" and "12".
+ */
+function AttrRangeView({
+  facet,
+  value,
+  onChange,
+}: {
+  facet: DynamicFacet;
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const { min, max } = facet.range!;
+  const [lo = '', hi = ''] = value.split('-');
+  const [from, setFrom] = useState(lo);
+  const [to, setTo] = useState(hi);
+  // The URL wins whenever it changes (a removed chip, Clear all): reset while rendering,
+  // React's pattern for state that follows a prop (no effect, no extra paint).
+  const [shown, setShown] = useState(value);
+  if (shown !== value) {
+    setShown(value);
+    setFrom(lo);
+    setTo(hi);
+  }
+
+  const clamp = (v: string) =>
+    v.trim() === '' || !Number.isFinite(Number(v)) ? null : Math.min(max, Math.max(min, Number(v)));
+  function apply() {
+    let a = clamp(from);
+    let b = clamp(to);
+    if (a !== null && b !== null && a > b) [a, b] = [b, a];
+    // Show what is applied (clamped, in order) even when the URL does not change.
+    setFrom(a === null ? '' : String(a));
+    setTo(b === null ? '' : String(b));
+    const next = a === null && b === null ? '' : `${a ?? ''}-${b ?? ''}`;
+    if (next !== value) onChange(next);
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {(
+        [
+          ['From', from, setFrom, min],
+          ['To', to, setTo, max],
+        ] as const
+      ).map(([label, v, set, bound]) => (
+        <label
+          key={label}
+          className="flex flex-col items-start rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30"
+        >
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">{label}</span>
+          <span className="flex w-full items-center gap-1 text-[13px] font-bold text-forest-900">
+            <input
+              type="number"
+              inputMode="decimal"
+              step="any"
+              min={min}
+              max={max}
+              placeholder={String(bound)}
+              value={v}
+              onChange={(e) => set(e.target.value)}
+              onBlur={apply}
+              onKeyDown={(e) => e.key === 'Enter' && apply()}
+              aria-label={`${facet.name} ${label.toLowerCase()}`}
+              className="w-full min-w-0 border-0 bg-transparent p-0 text-[13px] font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            {facet.unit && <span className="shrink-0 font-semibold text-stone-400">{facet.unit}</span>}
+          </span>
+        </label>
+      ))}
+    </div>
+  );
+}
+
 /** Generic facet-driven checkbox section (Sunlight / Watering / Growth / Difficulty). */
 export function FacetFilterView({
   param,
   facetKey,
   type,
+  category,
 }: {
   param: 'sunlight' | 'water' | 'growth' | 'difficulty';
   facetKey: 'sunlight' | 'water_requirement' | 'growth_rate' | 'difficulty_level';
   /** The vertical the list is scoped to — keeps counts in step with the results. */
   type?: string;
+  /** Category pages: the pinned category (the rail's one facet scope). */
+  category?: string;
 }) {
-  const { data } = useFilterFacets({ type });
+  const { data } = useFilterFacets({ type, categories: category });
   const selected = useParamValues(param);
   const push = usePushParam();
   const options = data?.facets?.[facetKey] ?? [];
@@ -148,26 +276,46 @@ export function PlacementFilterView() {
 }
 
 /** Pet-friendly toggle (server coerces the boolean; unparseable is dropped). */
-export function PetFriendlyFilterView({ type }: { type?: string } = {}) {
+export function PetFriendlyFilterView({ type, category }: { type?: string; category?: string } = {}) {
   const { query } = useRouter();
   const push = usePushParam();
-  const { data } = useFilterFacets({ type });
+  const { data } = useFilterFacets({ type, categories: category });
   const on = query.pet_friendly === 'true';
   const count = data?.facets?.pet_friendly?.true;
 
   return (
+    <ToggleRow
+      title="Pet friendly only"
+      hint={`Safe around cats and dogs${typeof count === 'number' ? ` · ${count} plants` : ''}`}
+      on={on}
+      onToggle={() => push('pet_friendly', on ? undefined : 'true')}
+    />
+  );
+}
+
+/** A labelled on/off switch row: Pet friendly, and yes/no attributes (Foldable …). */
+function ToggleRow({
+  title,
+  hint,
+  on,
+  onToggle,
+}: {
+  title: string;
+  hint: string;
+  on: boolean;
+  onToggle: () => void;
+}) {
+  return (
     <label className="flex cursor-pointer items-center justify-between gap-3">
       <span className="flex flex-col">
-        <span className="text-[13px] font-medium text-heading">Pet friendly only</span>
-        <span className="text-xs text-body">
-          Safe around cats and dogs{typeof count === 'number' ? ` · ${count} plants` : ''}
-        </span>
+        <span className="text-[13px] font-medium text-heading">{title}</span>
+        <span className="text-xs text-body">{hint}</span>
       </span>
       <button
         type="button"
         role="switch"
         aria-checked={on}
-        onClick={() => push('pet_friendly', on ? undefined : 'true')}
+        onClick={onToggle}
         className={
           on
             ? 'relative h-6 w-11 shrink-0 rounded-full bg-[#2E5E2A] transition-colors'
@@ -205,8 +353,8 @@ const SIZES: { value: string; meta?: string | null }[] = [
   { value: 'Large' },
 ];
 
-export function SizeFilterView({ type }: { type?: string } = {}) {
-  const { data } = useFilterFacets({ type });
+export function SizeFilterView({ type, category }: { type?: string; category?: string } = {}) {
+  const { data } = useFilterFacets({ type, categories: category });
   const selected = useParamValues('sizes');
   const push = usePushParam();
   const options = data?.facets?.sizes?.length ? data.facets.sizes : SIZES;
@@ -249,8 +397,12 @@ export function usePlantFilterCounts() {
   return { sunlight, water, growth, sizes, placement, pet, air, difficulty, terms };
 }
 
-/** How many of THIS dynamic facet's terms are currently selected (header badge). */
+/** How many of THIS dynamic facet's values are currently selected (header badge). */
 export function useDynamicFacetCount(facet: DynamicFacet): number {
   const selected = useParamValues('terms');
-  return facet.terms.filter((t) => selected.includes(t.slug)).length;
+  const { query } = useRouter();
+  if (!usesAttr(facet)) return facet.terms.filter((t) => selected.includes(t.slug)).length;
+  const value = parseAttr(query.attr)[facet.code] ?? '';
+  // Options count one each; a window or a switch is one filter.
+  return facet.terms.length ? value.split(',').filter(Boolean).length : value ? 1 : 0;
 }

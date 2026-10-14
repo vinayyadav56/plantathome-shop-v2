@@ -5,13 +5,14 @@ import { useTranslation } from 'next-i18next';
 import { useFilterFacets } from '@/framework/product';
 
 /** `simple` = slider + "₹min – ₹max+" readout only (the PLP rail); default keeps the histogram and From/To inputs. */
-const PriceFilter = ({ type, simple = false }: { type?: string; simple?: boolean } = {}) => {
+const PriceFilter = ({ type, category, simple = false }: { type?: string; category?: string; simple?: boolean } = {}) => {
   const { t } = useTranslation('common');
   const router = useRouter();
   // Real catalogue bounds + distribution — the hardcoded 0–2000 slider ceiling
   // hid every product above ₹2,000 from price filtering. Scoped to the vertical
-  // so the histogram is the one the results beside it came from.
-  const { data: facets } = useFilterFacets({ type });
+  // (and a category page's category) so the histogram is the one the results
+  // beside it came from.
+  const { data: facets } = useFilterFacets({ type, categories: category });
   const bounds = facets?.facets?.price;
   const sliderMin = Math.floor(bounds?.min ?? 0);
   const sliderMax = Math.ceil(bounds?.max ?? 2000);

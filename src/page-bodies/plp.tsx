@@ -184,7 +184,7 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
 
               {/* The rail's chips, surfaced above the grid too: on a phone the rail is a drawer. */}
               <div className="-mx-5 mb-2 md:hidden">
-                <AppliedFilters />
+                <AppliedFilters facets={facetData?.facets?.dynamic} />
               </div>
 
               <div

@@ -135,6 +135,9 @@ export interface ProductQueryOptions extends QueryOptions {
   difficulty: string;
   /** Comma-joined term slugs across every admin-defined attribute. */
   terms: string;
+  /** Product-attribute filter, `code:slug1,slug2|code2:min-max|code3:true` (OR within an
+   *  attribute, AND across). A top-level query param, never part of `search`. */
+  attr: string;
 }
 
 /** GET products/filter-facets — the server's filter-rail option source. */
@@ -160,9 +163,20 @@ export interface FilterFacets {
 
 export interface DynamicFacet {
   slug: string;
+  /** The key in the `attr` param. */
+  code: string;
   name: string;
+  /** single | multi | boolean | number | range */
   type: string;
+  unit?: string | null;
+  /** The URL param that filters it: `terms` (the plants' attributes) or `attr` (every
+   *  other vertical's). Older APIs send none, which means `terms`. */
+  param?: 'terms' | 'attr';
   terms: { slug: string; value: string; count: number }[];
+  /** number / range attributes: the span of the listed products' values. */
+  range?: { min: number; max: number; count: number };
+  /** boolean attributes: how many listed products say yes / no. */
+  options?: { true: number; false: number };
 }
 
 export interface PlantCollection {
@@ -357,6 +371,17 @@ export interface Product {
   city_stock?: number | null;
   /** false = nationwide single-seller product (Tools): no city gate. See lib/is-city-based. */
   city_based?: boolean;
+  /** PDP only: the product's attribute values, display-ready. */
+  specifications?: ProductSpecification[];
+}
+
+/** One attribute on the PDP. `values` are ready to print, units included ("22.5 mm", "40 – 60 cm", "Yes"). */
+export interface ProductSpecification {
+  code: string;
+  name: string;
+  type: string;
+  unit?: string | null;
+  values: string[];
 }
 
 /** One sellable size/variant of a variable product (`variation_options[]`). */
