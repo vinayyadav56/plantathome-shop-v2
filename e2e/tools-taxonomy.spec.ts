@@ -11,6 +11,18 @@ import { test, expect } from '@playwright/test';
  */
 
 test.describe('Gardening Tools category pages', () => {
+  // A first visit opens the city picker over the page; seed a city as the /tools specs do.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.setItem('pah_customer_city', 'Delhi');
+        localStorage.setItem('pah-agentation', 'off');
+      } catch {
+        /* noop */
+      }
+    });
+  });
+
   test('a tool type carries its whole path in the BreadcrumbList', async ({ request }) => {
     const res = await request.get('/c/bypass-pruners');
     expect(res.status()).toBe(200);
