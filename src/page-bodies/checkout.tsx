@@ -13,7 +13,7 @@ import {
   verifiedResponseAtom,
 } from "@/store/checkout";
 import { useCart } from "@/store/quick-cart/cart.context";
-import { cartFingerprint, asIdList } from "@/lib/checkout-totals";
+import { cartFingerprint, asIdList, invalidLineKeys, lineKey } from "@/lib/checkout-totals";
 import { formatOrderedProduct } from "@/lib/format-ordered-product";
 import isEmpty from "lodash/isEmpty";
 import dynamic from "next/dynamic";
@@ -180,11 +180,13 @@ export default function CheckoutPage() {
     const vr: any = verifiedResponse ?? {};
     const gone = new Set(asIdList(vr.unavailable_products).map(String));
     const ghost = new Set(asIdList(vr.invalid_option_lines).map(String));
+    const badVariant = invalidLineKeys(vr.invalid_variant_lines);
     return (cartItems ?? []).some((item: any) => {
       const pid = String(item?.productId ?? item?.id ?? '');
       const id = String(item?.id ?? '');
       if (gone.has(id) || gone.has(pid)) return false;
       if (!item?.variationId && ghost.has(pid)) return false;
+      if (badVariant.has(lineKey(item))) return false;
       return true;
     });
   })();

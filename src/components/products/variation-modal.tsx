@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
-import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import { toast } from 'react-toastify';
 import type { Product, VariationOption } from '@/types';
 import { getVariations } from '@/lib/get-variations';
 import { isVariationSelected } from '@/lib/is-variation-selected';
+import { availableValues, findVariant, pick, sellable, type Picks } from '@/lib/variant-match';
 import usePrice from '@/lib/use-price';
 import { useCitySupply } from '@/lib/use-city-supply';
 import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
@@ -38,53 +38,46 @@ const SizeSheet = ({ product }: { product: Product }) => {
   const { city, displayOnly } = useCitySupply();
   const [qty, setQty] = useState(1);
 
-  const rows = (product.variation_options ?? []) as VariationOption[];
+  // This product is the city-aware fetch, so its rows carry city_available.
+  const rows = useMemo(
+    () => (product.variation_options ?? []) as VariationOption[],
+    [product.variation_options],
+  );
+  const groups = useMemo(
+    () => getVariations(product.variations) as Record<string, Option[]>,
+    [product.variations],
+  );
+  // Per group, the values some sellable row has: city-unavailable and switched-off
+  // ones are hidden. Fail-open like the PDP: a group none reaches shows whole.
+  const offered = useMemo(
+    () => Object.fromEntries(Object.keys(groups).map((k) => [k, availableValues(rows, groups, {}, k)])),
+    [rows, groups],
+  );
 
-  // Option lists per attribute group, minus the sizes no vendor supplies in the
-  // city (variation_options[].city_available comes from the same city-aware
-  // fetch). Fail-open like the PDP: a filter that would empty a group shows the
-  // whole group instead.
-  const groups = useMemo(() => {
-    const opts = (product.variation_options ?? []) as VariationOption[];
-    const available = new Set<string>();
-    for (const row of opts) {
-      if (row.city_available === false) continue;
-      for (const o of row.options ?? []) available.add(String(o.value));
-    }
-    const all = getVariations(product.variations) as Record<string, Option[]>;
-    return Object.fromEntries(
-      Object.entries(all).map(([group, list]) => {
-        const shown = list.filter((o) => available.has(String(o.value)));
-        return [group, shown.length ? shown : list];
-      }),
-    );
-  }, [product.variations, product.variation_options]);
-
-  const hasVariations = !isEmpty(groups);
+  const isVariable = product.product_type?.toLowerCase() === 'variable';
   const isSelected = isVariationSelected(groups, attributes);
-  // The PDP's match: the variation_options row whose option values equal the
-  // chosen attribute values.
-  const selectedRow = isSelected
-    ? rows.find((o) =>
-        isEqual(
-          (o.options ?? []).map((v) => v.value).sort(),
-          Object.values(attributes as Record<string, string>).sort(),
-        ),
-      )
-    : undefined;
+  // The PDP's match: every group's pick, by attribute name and value.
+  const selectedRow = findVariant(rows, groups, attributes) as VariationOption | undefined;
 
-  // Preselect the first available option of every group, and repair a
-  // selection the city filter no longer offers (city switched while open).
+  // Keep the picks that still reach a sellable row together (a city switch while
+  // open can break them), then fill each empty group with its first value that
+  // still does, group by group, so the preselection always exists and can be sold.
+  // Nothing sellable at all: the picks are left to the shopper (the CTA says why).
   useEffect(() => {
-    const fix = Object.entries(groups).filter(
-      ([group, list]) => !list.some((o) => o.value === attributes[group]),
-    );
-    if (fix.length === 0) return;
-    setAttributes((prev: Record<string, string>) => ({
-      ...prev,
-      ...Object.fromEntries(fix.map(([group, list]) => [group, list[0].value])),
-    }));
-  }, [groups, attributes, setAttributes]);
+    if (!rows.some((r) => sellable(r, rows))) return;
+    const next: Picks = {};
+    for (const k of Object.keys(groups)) {
+      const v = attributes[k];
+      if (v != null && availableValues(rows, groups, next, k).has(String(v))) next[k] = String(v);
+    }
+    for (const [k, list] of Object.entries(groups)) {
+      if (next[k] != null) continue;
+      const ok = availableValues(rows, groups, next, k);
+      const first = list.find((o) => ok.has(String(o.value)));
+      if (first) next[k] = String(first.value);
+    }
+    if (!isEqual(next, attributes)) setAttributes(next);
+  }, [rows, groups, attributes, setAttributes]);
 
   const { minAmount, maxAmount, selectedAmount, hasVendorPrice } = useCityPrice({
     product,
@@ -98,7 +91,8 @@ const SizeSheet = ({ product }: { product: Product }) => {
   const { price: vendorPrice } = usePrice({ amount: Number(selectedAmount ?? 0) });
   const { price: minPrice } = usePrice({ amount: minAmount });
   const { price: maxPrice } = usePrice({ amount: maxAmount });
-  const showRange = hasVariations && !selectedRow;
+  // A variable product is never added without its variant (that was a ₹0 ghost line).
+  const showRange = isVariable && !selectedRow;
 
   // Gates, in the order the PDP applies them; the reason doubles as the CTA label.
   // City gates apply to city-based products only; nationwide ones (Tools) carry their own stock.
@@ -108,10 +102,12 @@ const SizeSheet = ({ product }: { product: Product }) => {
     ? `Not available in ${city ?? 'your city'} yet`
     : cityBased && displayOnly
       ? `Out of stock in ${city}`
-      : selectedRow?.is_disable || isNationwideOutOfStock(product)
+      : (selectedRow && !sellable(selectedRow, rows)) || isNationwideOutOfStock(product)
         ? 'Out of stock'
         : showRange
-          ? 'Select a size'
+          ? isSelected
+            ? "This combination isn't available"
+            : 'Select a size'
           : null;
 
   const handleAdd = () => {
@@ -171,34 +167,44 @@ const SizeSheet = ({ product }: { product: Product }) => {
         </button>
       </div>
 
-      {Object.entries(groups).map(([group, list]) => (
-        <div key={group} className="mt-5">
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900">
-            Select {group.replace(/-/g, ' ')}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {list.map((o) => {
-              const active = attributes[group] === o.value;
-              return (
-                <button
-                  key={o.id}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setAttributes((prev: Record<string, string>) => ({ ...prev, [group]: o.value }))}
-                  className={cn(
-                    'min-w-[3.25rem] rounded-full border px-4 py-1.5 text-[13px] font-medium transition',
-                    active
-                      ? 'border-forest-700 bg-forest-700 text-white'
-                      : 'border-kraft-300 text-forest-900 hover:border-forest-500',
-                  )}
-                >
-                  {o.value}
-                </button>
-              );
-            })}
+      {Object.entries(groups).map(([group, list]) => {
+        // Hidden: values no sellable row has. Muted: unavailable only with the other
+        // picks — still clickable; picking one drops those picks.
+        const reach = offered[group];
+        const shown = reach.size > 0 ? list.filter((o) => reach.has(String(o.value))) : list;
+        const avail = availableValues(rows, groups, attributes, group);
+        return (
+          <div key={group} className="mt-5">
+            <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900">
+              Select {group.replace(/-/g, ' ')}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {shown.map((o) => {
+                const active = attributes[group] === o.value;
+                const muted = !avail.has(String(o.value));
+                return (
+                  <button
+                    key={o.id}
+                    type="button"
+                    aria-pressed={active}
+                    aria-label={muted ? `${o.value}, not available with your other choices` : undefined}
+                    onClick={() => setAttributes((prev: Picks) => pick(rows, groups, prev, group, String(o.value)))}
+                    className={cn(
+                      'min-w-[3.25rem] rounded-full border px-4 py-1.5 text-[13px] font-medium transition',
+                      active
+                        ? 'border-forest-700 bg-forest-700 text-white'
+                        : 'border-kraft-300 text-forest-900 hover:border-forest-500',
+                      muted && 'opacity-50 line-through',
+                    )}
+                  >
+                    {o.value}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       <div className="mt-5 flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">

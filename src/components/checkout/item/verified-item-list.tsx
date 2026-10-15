@@ -6,7 +6,7 @@ import { CloseIcon } from '@/components/icons/close-icon';
 import { useTranslation } from 'next-i18next';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { calculateTotal } from '@/store/quick-cart/cart.utils';
-import { computeCheckoutTotals, asIdList } from '@/lib/checkout-totals';
+import { computeCheckoutTotals, asIdList, invalidLineKeys, lineKey } from '@/lib/checkout-totals';
 import { useAtom } from 'jotai';
 import {
   couponAtom,
@@ -51,11 +51,17 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   // stop being sequential, and `.includes` on an object is a render throw on the money path.
   const unavailable = asIdList(verifiedResponse?.unavailable_products);
   const ghostLines = asIdList((verifiedResponse as any)?.invalid_option_lines);
+  // Lines whose variant the server will not sell (missing, another product's,
+  // unknown, switched off) — matched on product AND variant, named in the notice.
+  const badVariantLines = invalidLineKeys((verifiedResponse as any)?.invalid_variant_lines);
+  const badVariant = (item: any) => badVariantLines.has(lineKey(item));
   const isExcluded = (item: any) =>
     unavailable.includes(item.id) ||
     (item.productId && unavailable.includes(item.productId)) ||
-    (!item.variationId && ghostLines.includes(item.productId ?? item.id));
+    (!item.variationId && ghostLines.includes(item.productId ?? item.id)) ||
+    badVariant(item);
   const available_items = (items ?? []).filter((item: any) => !isExcluded(item));
+  const badVariantNames = (items ?? []).filter(badVariant).map((item: any) => item.name).filter(Boolean).join(', ');
 
   // ONE totals computation, shared verbatim with PlaceOrderAction — what this summary
   // shows is exactly what gets submitted (percentage coupons, free shipping and all).
@@ -127,6 +133,12 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
           <p className="text-xs leading-relaxed text-amber-800">
             {t('text-unavailable-items-note')}
           </p>
+          {badVariantNames && (
+            <p className="mt-1 text-xs leading-relaxed text-amber-800">
+              The option you picked for {badVariantNames} is no longer available — remove it, then add
+              it again with another option.
+            </p>
+          )}
           <button
             type="button"
             className="mt-1.5 text-xs font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-700"

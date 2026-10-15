@@ -26,6 +26,20 @@ export function asIdList(v: unknown): Array<number | string> {
   return [];
 }
 
+/** A cart line's identity as the server names lines: "product_id:variation_option_id". */
+export const lineKey = (item: any): string => `${item?.productId ?? item?.id}:${item?.variationId ?? ''}`;
+
+/**
+ * The lines verify's `invalid_variant_lines` refused — variant missing, another product's,
+ * unknown or switched off — as lineKey()s. Only that exact line is dropped; the product's other
+ * variants stay orderable.
+ */
+export function invalidLineKeys(lines: unknown): Set<string> {
+  return new Set(
+    (asIdList(lines) as unknown[]).map((l: any) => `${l?.product_id}:${l?.variation_option_id ?? ''}`),
+  );
+}
+
 export function cartFingerprint(products: any[]): string {
   const rows = (products ?? [])
     .map((p: any) => [

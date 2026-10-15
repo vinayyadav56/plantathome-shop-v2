@@ -15,7 +15,7 @@ import CityMismatchDialog from './city-mismatch-dialog';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { checkoutAtom, checkoutStepAtom, discountAtom, walletAtom } from '@/store/checkout';
 import { calculateTotal } from '@/store/quick-cart/cart.utils';
-import { computeCheckoutTotals, asIdList } from '@/lib/checkout-totals';
+import { computeCheckoutTotals, asIdList, invalidLineKeys, lineKey } from '@/lib/checkout-totals';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from '@/compat/next-router';
 import { useLogout, useUser } from '@/framework/user';
@@ -137,14 +137,18 @@ export const PlaceOrderAction: React.FC<{
   // unavailable_products carries PRODUCT ids while a variation cart item's id is
   // the composite "product.variation" STRING — match productId too, or an
   // unavailable variable product slips through. invalid_option_lines = ghost
-  // lines (variable product, no variation picked) that would 422 the order.
+  // lines (variable product, no variation picked) that would 422 the order;
+  // invalid_variant_lines names every line that would, exactly (variant
+  // missing, another product's, unknown or switched off).
   const unavailableIds = asIdList(verified_response?.unavailable_products);
   const ghostLineIds = asIdList((verified_response as any)?.invalid_option_lines);
+  const badVariantLines = invalidLineKeys((verified_response as any)?.invalid_variant_lines);
   const available_items = (items ?? []).filter(
     (item: any) =>
       !unavailableIds.includes(item.id) &&
       !(item.productId && unavailableIds.includes(item.productId)) &&
-      !(!item.variationId && ghostLineIds.includes(item.productId ?? item.id)),
+      !(!item.variationId && ghostLineIds.includes(item.productId ?? item.id)) &&
+      !badVariantLines.has(lineKey(item)),
   );
 
   // ONE totals computation, shared verbatim with the order summary — what the customer

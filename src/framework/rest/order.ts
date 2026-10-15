@@ -300,6 +300,7 @@ export function useCreateOrder() {
   const { t } = useTranslation();
   const { resetCart } = useCart();
   const [, resetCheckout] = useAtom(clearCheckoutAtom);
+  const [, setVerifiedResponse] = useAtom(verifiedResponseAtom);
   const { mutate: createOrder, isLoading } = useMutation(client.orders.create, {
     onSuccess: (
       { tracking_number, payment_gateway, payment_intent, tracking_token },
@@ -375,6 +376,18 @@ export function useCreateOrder() {
       // message — surface the dedicated mismatch dialog instead of a raw toast.
       if (data?.code === "CITY_OUT_OF_STOCK") {
         toast.error(data?.message);
+        return;
+      }
+      // A line's variant stopped being sold after verify priced it in (switched off,
+      // deleted). Drop the verification: checkout verifies again, and verify then names
+      // these same lines in invalid_variant_lines — left out of the order and the totals,
+      // with the summary's notice — so what is shown is again what is charged.
+      if (data?.code === "INVALID_VARIANT") {
+        setVerifiedResponse(null);
+        toast.error(
+          data?.message ??
+            "An option in your cart is no longer available — please check availability again.",
+        );
         return;
       }
       try {

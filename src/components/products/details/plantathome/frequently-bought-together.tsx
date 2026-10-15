@@ -5,7 +5,10 @@ import { formatINR } from '@/components/storefront/verticals';
 import { PLACEHOLDER } from '@/components/storefront/pah/_img';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
+import { getVariations } from '@/lib/get-variations';
+import { findVariant, sellable, type Groups, type VariantRow } from '@/lib/variant-match';
 import { LineIcon } from '@/components/icons/line-icons';
+import { useAttributes } from '../attributes.context';
 
 /** Effective unit price — variable items (size-priced) fall back to min_price. */
 const unitPrice = (p: any) =>
@@ -18,15 +21,26 @@ const saving = (p: any) => {
   return sale > 0 && base > sale ? base - sale : 0;
 };
 
+const isVariable = (p: any) => String(p?.product_type ?? '').toLowerCase() === 'variable';
+/** A companion that can only be added as a variant: variable, or without a price of its own
+ *  (curated addons carry no product_type, and a variable product's own price is NULL). */
+const needsVariant = (p: any) => isVariable(p) || !(Number(p?.sale_price) || Number(p?.price));
+/** A companion joins "Add all" only with the variant the API picked for it (`default_variation`,
+ *  its cheapest enabled one); without one it is left out of the add and the total. */
+const joins = (p: any) => !needsVariant(p) || !!p?.default_variation;
+
 /**
  * "Frequently Bought Together" — REAL data only: curated addons when present,
  * otherwise the first 3 related products. Prices come from each product
- * (sale_price ?? price ?? min_price); the savings chip only shows when real
- * sale-vs-base prices make it computable. "Add all" puts the main product AND
- * every companion in the cart as separate lines.
+ * (sale_price ?? price ?? min_price), or from the variant it is added as; the
+ * savings chip only shows when real sale-vs-base prices make it computable.
+ * "Add all" puts the main product AND every companion in the cart as separate
+ * lines — a variable product never without its variant.
  */
 export default function FrequentlyBoughtTogether({ product }: { product: Product }) {
   const { addItemToCart, updateCartLanguage, language } = useCart();
+  // The size picked on the page above: FBT sits inside the PDP's AttributesProvider.
+  const { attributes } = useAttributes();
   const [added, setAdded] = useState(false);
   const p: any = product;
 
@@ -34,28 +48,39 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
   // same categories, nearest in price first. Owner 2026-10-14: keep the price range too — half to
   // 2.5× this product's price; if fewer than two sit in that band, the closest ones stand in.
   const anchor = unitPrice(p);
-  const related = ((p?.related_products ?? []) as any[]).filter((r) => r?.id !== p?.id);
+  const related = ((p?.related_products ?? []) as any[]).filter((r) => r?.id !== p?.id && joins(r));
   const inBand = anchor > 0
     ? related.filter((r) => { const v = unitPrice(r); return v >= anchor * 0.5 && v <= anchor * 2.5; })
     : related;
-  const companions: any[] = (p?.addons?.length ? p.addons : inBand.length >= 2 ? inBand : related).slice(0, 3);
+  const addons = ((p?.addons ?? []) as any[]).filter(joins);
+  const companions: any[] = (addons.length ? addons : inBand.length >= 2 ? inBand : related).slice(0, 3);
 
   if (companions.length === 0) return null;
 
-  const mainPrice = unitPrice(p);
-  const total = mainPrice + companions.reduce((sum, it) => sum + unitPrice(it), 0);
-  // Savings only when computable from real sale vs base prices (else omitted).
-  const save = saving(p) + companions.reduce((sum, it) => sum + saving(it), 0);
+  // The main product joins with the variant picked above, once it can be sold (the PDP's own
+  // CTA gate); a variable one without it keeps "Add all" disabled.
+  const rows = (p?.variation_options ?? []) as VariantRow[];
+  const picked = isVariable(p) ? findVariant(rows, getVariations(p?.variations) as Groups, attributes) : undefined;
+  const mainVariant = picked && sellable(picked, rows) ? picked : undefined;
+  const mainReady = !isVariable(p) || !!mainVariant;
 
-  const items = [p, ...companions];
+  // [product, the variant it is added as (undefined = a simple product)], main product first.
+  const lines: [any, any][] = [
+    [p, mainVariant],
+    ...companions.map((it): [any, any] => [it, needsVariant(it) ? it.default_variation : undefined]),
+  ];
+  const total = lines.reduce((sum, [it, v]) => sum + unitPrice(v ?? it), 0);
+  // Savings only when computable from real sale vs base prices (else omitted).
+  const save = lines.reduce((sum, [it, v]) => sum + saving(v ?? it), 0);
 
   const addAll = () => {
-    const main = generateCartItem(p, undefined as any);
+    if (!mainReady) return;
+    // generateCartItem reads shop.id for a variant line; related and addon payloads carry no shop.
+    const [main, ...rest] = lines.map(([it, v]) =>
+      generateCartItem({ ...it, shop: it.shop ?? { id: it.shop_id } }, v),
+    );
     if (main?.language && main.language !== language) updateCartLanguage(main.language);
-    addItemToCart(main, 1);
-    for (const it of companions) {
-      addItemToCart(generateCartItem(it, undefined as any), 1);
-    }
+    for (const item of [main, ...rest]) addItemToCart(item, 1);
     setAdded(true);
     setTimeout(() => setAdded(false), 1200);
   };
@@ -69,7 +94,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
       <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center">
         {/* scrollable product track — min-w-0 so ONLY this scrolls, not the page */}
         <div className="flex min-w-0 flex-1 flex-nowrap snap-x snap-mandatory items-start gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&>*]:snap-start">
-          {items.map((it: any, i) => {
+          {lines.map(([it, v], i) => {
             const img = it?.image?.thumbnail || it?.image?.original || '';
             return (
               <React.Fragment key={it?.id ?? i}>
@@ -87,10 +112,10 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
                     {it?.name}
                   </span>
                   <span className="text-[10.5px] text-[#6B6B6B]">
-                    {formatINR(unitPrice(it))}
+                    {formatINR(unitPrice(v ?? it))}
                   </span>
                 </div>
-                {i < items.length - 1 && (
+                {i < lines.length - 1 && (
                   <span className="mt-7 shrink-0 text-[#24693E]">
                     <LineIcon name="plus" className="h-4 w-4" />
                   </span>
@@ -105,13 +130,16 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
           <button
             type="button"
             onClick={addAll}
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover"
+            disabled={!mainReady}
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:bg-stone-300"
           >
             {added ? (
               <>
                 <LineIcon name="check" className="h-4 w-4" />
                 Added to Cart
               </>
+            ) : !mainReady ? (
+              'Select a size first'
             ) : (
               <>
                 <LineIcon name="cart" className="h-4 w-4" />

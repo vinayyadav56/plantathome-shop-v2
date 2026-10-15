@@ -373,6 +373,13 @@ export interface Product {
   city_based?: boolean;
   /** PDP only: the product's attribute values, display-ready. */
   specifications?: ProductSpecification[];
+  /** GS1 barcode number (8/12/13/14 digits); variants carry their own. */
+  gtin?: string | null;
+  /** Manufacturer part number; variants carry their own. */
+  mpn?: string | null;
+  /** related_products of a VARIABLE product only: the variant "Add all" adds — its cheapest
+   *  enabled one; null = none to sell. */
+  default_variation?: Pick<VariationOption, 'id' | 'title' | 'price' | 'sale_price' | 'options'> | null;
 }
 
 /** One attribute on the PDP. `values` are ready to print, units included ("22.5 mm", "40 – 60 cm", "Yes"). */
@@ -393,8 +400,12 @@ export interface VariationOption {
   quantity: number;
   is_disable?: boolean | number;
   options: { name: string; value: string }[];
+  /** false = not sellable now: no vendor in the city (Plants), or the seller can't supply it
+   *  (Tools, sent with or without a city). Absent = available. */
   city_available?: boolean | null;
   city_stock?: number | null;
+  gtin?: string | null;
+  mpn?: string | null;
 }
 
 export interface PlantAttribute {
@@ -1128,12 +1139,21 @@ export interface CheckoutVerificationInput {
   shipping_address?: Address;
 }
 
+/** A cart line the server will not order: also the order-create INVALID_VARIANT 422's `lines`. */
+export interface InvalidVariantLine {
+  product_id: number;
+  variation_option_id: number | null;
+  reason: 'option_missing' | 'not_variable' | 'not_found' | 'disabled';
+}
+
 export interface VerifiedCheckoutData {
   total_tax: number;
   shipping_charge: number;
   unavailable_products?: number[];
   /** Variable-product cart lines missing their variation (ghost lines) — dropped client-side. */
   invalid_option_lines?: number[];
+  /** Every line order-create would refuse, named exactly; none of them is in the totals. */
+  invalid_variant_lines?: InvalidVariantLine[];
   wallet_currency?: number;
   wallet_amount?: number;
   /** Per-vendor pincode coverage verdict (delivery-coverage system). */

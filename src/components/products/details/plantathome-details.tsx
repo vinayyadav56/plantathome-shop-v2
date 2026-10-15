@@ -7,7 +7,6 @@ import { useRouter } from '@/compat/next-router';
 import classNames from 'classnames';
 import { plantQuickFacts } from '@/components/products/cards/card-helpers';
 import isEmpty from 'lodash/isEmpty';
-import isEqual from 'lodash/isEqual';
 
 import { useQuery } from 'react-query';
 import { Routes } from '@/config/routes';
@@ -25,6 +24,7 @@ import { useSanitizeContent } from '@/lib/sanitize-content';
 import { displayImage } from '@/lib/display-product-preview-images';
 import { getVariations } from '@/lib/get-variations';
 import { isVariationSelected } from '@/lib/is-variation-selected';
+import { availableValues, findVariant, pick, sellable, type Groups, type VariantRow } from '@/lib/variant-match';
 import { useAttributes } from './attributes.context';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { useUser } from '@/framework/user';
@@ -89,21 +89,45 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     () => (product_type?.toLowerCase() === 'variable' ? getVariations(product?.variations) : {}),
     [product?.variations, product_type],
   );
-  const hasVariations = !isEmpty(variations) && product_type?.toLowerCase() === 'variable';
+  const isVariable = product_type?.toLowerCase() === 'variable';
+  const hasVariations = !isEmpty(variations) && isVariable;
   const isSelected = isVariationSelected(variations, attributes);
 
-  let selectedVariation: any = {};
-  if (isSelected) {
-    selectedVariation = product?.variation_options?.find((o: any) =>
-      isEqual(o.options.map((v: any) => v.value).sort(), Object.values(attributes).sort()),
-    );
-  }
+  // Still needed outside pricing: the vertical availability check and the
+  // delivery card's "to {city}" copy.
+  const customerCity = getStoredCity();
 
-  // A matched variation exists only when isSelected AND find() returned a row —
-  // an incomplete/unmatched selection falls back to the whole product so the
-  // range still shows instead of ₹0.
-  const hasSelectedVariation =
-    hasVariations && isSelected && !isEmpty(selectedVariation);
+  // What can be picked is decided on the city-aware copy of this product:
+  // attachCityPricing marks variation_options[].city_available (Plants: a vendor
+  // supplies that size in the city; Tools: the seller can supply that variant,
+  // city or not, so their SSR rows carry it too). Same react-query key useCityPrice
+  // uses internally, so this adds ZERO network requests.
+  const { product: cityProduct } = useProduct({
+    slug: slug ?? '',
+    enabled: !!customerCity,
+  });
+  const groups = variations as Groups;
+  const rows = useMemo(
+    () => (((cityProduct ?? product) as any)?.variation_options ?? []) as VariantRow[],
+    [cityProduct, product],
+  );
+  const match = useMemo(
+    () => (hasVariations ? findVariant(rows, groups, attributes) : undefined),
+    [hasVariations, rows, groups, attributes],
+  );
+  // Price, image, quantity cap and the cart line read this product's own row, as before:
+  // the city-aware copy carries the projection's price, while the server charges
+  // the location price (selectedAmount below) or this catalogue row.
+  const selectedVariation: any = match
+    ? ((product?.variation_options ?? []) as any[]).find((o) => String(o?.id) === String(match.id)) ?? match
+    : undefined;
+  // No variant to sell yet: nothing (complete) picked, or a combination no row
+  // has. A variable product is never added without one — that was a ₹0 ghost
+  // line, and the price shows the range instead of ₹0.
+  const noVariant = isVariable && !selectedVariation;
+  const comboMissing = noVariant && isSelected;
+
+  const hasSelectedVariation = !!selectedVariation;
   const priceSource: any = hasSelectedVariation ? selectedVariation : product;
   const { price, basePrice, discount } = usePrice({
     // variation_options[].price/sale_price arrive from the API as STRINGS —
@@ -127,51 +151,31 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     fulfillment,
   } = useCityPrice({
     product,
-    selectedVariationId: isSelected ? selectedVariation?.id : null,
+    selectedVariationId: selectedVariation?.id ?? null,
   });
 
-  // Still needed outside pricing: the vertical availability check and the
-  // delivery card's "to {city}" copy.
-  const customerCity = getStoredCity();
-
-  // Sizes are only offered when a vendor actually supplies them in the city —
-  // attachCityPricing marks variation_options[].city_available on the
-  // city-aware fetch. Same react-query key useCityPrice uses internally, so
-  // this adds ZERO network requests. Fail-open: no city / data not yet in /
-  // nothing available in the city ⇒ every size shows (browse-only cards and
-  // the delivery notices handle the nothing-deliverable case downstream).
-  const { product: cityProduct } = useProduct({
-    slug: slug ?? '',
-    enabled: !!customerCity,
-  });
-  const unavailableSizes = useMemo(() => {
-    const set = new Set<string>();
-    for (const o of (cityProduct as any)?.variation_options ?? []) {
-      if (o?.city_available === false) {
-        const v = (o?.options ?? []).find(
-          (x: any) => String(x?.name ?? '').toLowerCase() === 'size',
-        )?.value;
-        if (v != null) set.add(String(v));
-      }
-    }
-    return set;
-  }, [cityProduct]);
-  const anySizeAvailable = useMemo(
-    () => ((variations as any)?.size ?? []).some((o: any) => !unavailableSizes.has(String(o.value))),
-    [variations, unavailableSizes],
+  // Per axis, the values some sellable row has: city-unavailable and switched-off
+  // ones are hidden. Fail-open: no city / data not yet in / nothing sellable ⇒
+  // the whole axis shows (browse-only cards and the delivery notices handle the
+  // nothing-deliverable case downstream).
+  const offered = useMemo(
+    () => Object.fromEntries(Object.keys(groups).map((k) => [k, availableValues(rows, groups, {}, k)])),
+    [rows, groups],
   );
-  // A selection that just became city-unavailable must not persist (e.g. the
-  // customer switched city with a size already picked).
+  // A pick that just became unsellable must not persist (e.g. the customer
+  // switched city with a size already picked).
   React.useEffect(() => {
-    const sel = (attributes as any)?.size;
-    if (sel && anySizeAvailable && unavailableSizes.has(String(sel))) {
+    const stale = Object.keys(offered).filter(
+      (k) => attributes[k] != null && offered[k].size > 0 && !offered[k].has(String(attributes[k])),
+    );
+    if (stale.length) {
       setAttributes((p: any) => {
         const next = { ...p };
-        delete next.size;
+        stale.forEach((k) => delete next[k]);
         return next;
       });
     }
-  }, [unavailableSizes, anySizeAvailable, attributes, setAttributes]);
+  }, [offered, attributes, setAttributes]);
 
   const { price: minPrice } = usePrice({ amount: minAmount });
   const { price: maxPrice } = usePrice({ amount: maxAmount });
@@ -199,12 +203,12 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const content = useSanitizeContent({ description });
   const badge = getBadge(product);
 
-  const availableQty = hasVariations && isSelected ? Number(selectedVariation?.quantity) : Number(quantity);
+  const availableQty = selectedVariation ? Number(selectedVariation.quantity) : Number(quantity);
   // City-inventory model: never out of stock — keep only the intentional
   // variation "disable" toggle. Stock quantity does not gate orderability.
-  // A nationwide product (Tools) is the exception: its seller's stock does gate it.
-  const inStock = !(selectedVariation?.is_disable) && !isNationwideOutOfStock(cityProduct ?? product);
-  const needsSelection = hasVariations && !isSelected;
+  // A nationwide product (Tools) is the exception: its seller's stock does gate
+  // it, per variant too (sellable() reads the variant's city_available).
+  const inStock = (!match || sellable(match, rows)) && !isNationwideOutOfStock(cityProduct ?? product);
 
   /**
    * The price — ONE row, directly above the qty + CTA row, for every product (owner
@@ -215,7 +219,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
    * Slightly smaller in the range state (20px vs 22px) because "₹359.00 –
    * ₹929.00" is roughly twice the width of a single price.
    */
-  const priceBlock = needsSelection ? (
+  const priceBlock = noVariant ? (
     <span className="whitespace-nowrap text-[15px] font-bold leading-none text-ds-btn sm:text-[17px] lg:text-[20px]">
       {/* Paints the master range on the first frame (from the SSR product) and quietly
           refines to the city range when it arrives — no blank skeleton. */}
@@ -252,7 +256,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const cityUnavailable = cityBased && ((cityProduct ?? product) as any)?.available_in_city === false;
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (displayOnly || cityUnavailable) return;
-    if (!inStock || needsSelection) return;
+    if (!inStock || noVariant) return;
     const item = generateCartItem(product as any, selectedVariation);
     // Price integrity: when this product has a vendor cost sheet the server
     // charges the location/margin price (also what the PDP displays), NOT the
@@ -294,7 +298,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
   // ONE source of truth for both CTAs (inline + sticky bar) so copy/state
   // can never drift between them.
-  const ctaDisabled = !inStock || needsSelection || verticalBlocked || displayOnly || cityUnavailable;
+  const ctaDisabled = !inStock || noVariant || verticalBlocked || displayOnly || cityUnavailable;
   // Something to pick (sizes, or a pot for a plant) for the delivery card to sit beside on xl.
   const hasOptions = hasVariations || type?.slug === 'plants';
   const ctaLabel = displayOnly
@@ -305,7 +309,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     ? 'Unavailable in your city'
     : !inStock
     ? 'Out of Stock'
-    : needsSelection
+    : comboMissing
+    ? "This combination isn't available"
+    : noVariant
     ? 'Select Options'
     : 'Add to Cart';
   const atcSentinelRef = React.useRef<HTMLDivElement>(null);
@@ -522,13 +528,15 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     Object.keys(variations).map((groupName) => {
                       const allOptions = variations[groupName] as any[];
                       const isSizeGroup = groupName.toLowerCase() === 'size';
-                      // Only vendor-supplied sizes for the customer's city; fail-open
-                      // to the full list when the filter would empty it.
-                      const cityFiltered =
-                        isSizeGroup && unavailableSizes.size > 0
-                          ? allOptions.filter((o) => !unavailableSizes.has(String(o.value)))
-                          : allOptions;
-                      const options = cityFiltered.length > 0 ? cityFiltered : allOptions;
+                      // Hidden: values no sellable row has (fail-open to the full list
+                      // when that would empty it). Muted: unavailable only with the
+                      // other picks — still clickable, picking one drops those picks.
+                      const reach = offered[groupName];
+                      const options = reach.size > 0 ? allOptions.filter((o) => reach.has(String(o.value))) : allOptions;
+                      const avail = availableValues(rows, groups, attributes, groupName);
+                      const muted = (o: any) => !avail.has(String(o.value));
+                      const choose = (o: any) =>
+                        setAttributes((p: any) => pick(rows, groups, p, groupName, String(o.value)));
                       const color = isColorGroup(groupName, options);
                       const selected = attributes[groupName];
                       return (
@@ -566,11 +574,12 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                                   <button
                                     key={o.id}
                                     type="button"
-                                    aria-label={o.value}
-                                    onClick={() => setAttributes((p: any) => ({ ...p, [groupName]: o.value }))}
+                                    aria-label={muted(o) ? `${o.value}, not available with your other choices` : o.value}
+                                    onClick={() => choose(o)}
                                     className={classNames(
                                       'grid h-10 w-10 place-items-center rounded-full border-2 transition',
                                       active ? 'border-forest-600' : 'border-transparent hover:border-kraft-300',
+                                      muted(o) && 'opacity-40',
                                     )}
                                   >
                                     <span className="h-7 w-7 rounded-full border border-black/10" style={{ backgroundColor: o.meta || o.value }} />
@@ -586,12 +595,14 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                                   <button
                                     key={o.id}
                                     type="button"
-                                    onClick={() => setAttributes((p: any) => ({ ...p, [groupName]: o.value }))}
+                                    aria-label={muted(o) ? `${o.value}, not available with your other choices` : undefined}
+                                    onClick={() => choose(o)}
                                     className={classNames(
                                       'min-w-[3.25rem] rounded-full border px-4 py-1.5 text-[13px] font-medium transition',
                                       active
                                         ? 'border-forest-700 bg-forest-700 text-white'
                                         : 'border-kraft-300 bg-transparent text-forest-900 hover:border-forest-500',
+                                      muted(o) && 'opacity-50 line-through',
                                     )}
                                   >
                                     {o.value}
@@ -603,6 +614,11 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                         </div>
                       );
                     })}
+                  {comboMissing && (
+                    <p role="status" className="mt-3 text-[12.5px] font-medium text-[#D73C3C]">
+                      This combination isn&rsquo;t available — choose another.
+                    </p>
+                  )}
 
                   {/* pot picker — plants only; pots are real products added as their
                       own cart line, size-matched to the selected plant size */}
@@ -678,7 +694,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   etaDays={fulfillment?.eta_days ?? null}
                   fulfillmentMode={fulfillment?.fulfillment_mode ?? null}
                   product={product}
-                  variationOptionId={isSelected ? selectedVariation?.id ?? null : null}
+                  variationOptionId={selectedVariation?.id ?? null}
                   verticalBlocked={verticalBlocked}
                   verticalMessage={verticalMessage}
                   displayOnly={displayOnly}
@@ -740,7 +756,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
         <StickyAtcBar
           sentinel={atcSentinelRef}
           name={name}
-          priceText={needsSelection ? `${minPrice} – ${maxPrice}` : displayPrice}
+          priceText={noVariant ? `${minPrice} – ${maxPrice}` : displayPrice}
           disabled={ctaDisabled}
           label={ctaLabel}
           onAdd={() => handleAdd(undefined as any)}
