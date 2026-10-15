@@ -138,7 +138,7 @@ export default function NeedTiles({ type }: { type: string }) {
 
   return (
     <section aria-labelledby="plp-needs">
-      <h2 id="plp-needs" className="mb-3 font-heading text-[18px] font-medium leading-tight text-forest-900">
+      <h2 id="plp-needs" className="mb-3 font-heading text-[18px] font-medium leading-tight text-[#141414]">
         Shop by Need
       </h2>
       <div className="pah-chip-row flex gap-3 overflow-x-auto lg:flex-wrap lg:overflow-visible">
@@ -153,7 +153,7 @@ export default function NeedTiles({ type }: { type: string }) {
               className={`${TILE} ${tint}`}
             >
               <Icon size={24} className="text-forest-700" aria-hidden />
-              <span className="whitespace-nowrap text-[13px] font-semibold leading-none text-forest-900">{label}</span>
+              <span className="whitespace-nowrap text-[13px] font-semibold leading-none text-[#141414]">{label}</span>
             </button>
           );
         })}

@@ -93,12 +93,12 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
         {/* header — title + local search + ask-question CTA */}
         <div className="flex flex-col gap-6 border-b border-kraft-200 p-6 sm:p-8 [@container(min-width:58rem)]:flex-row [@container(min-width:58rem)]:items-center [@container(min-width:58rem)]:justify-between [@container(min-width:58rem)]:gap-10">
           <div className="shrink-0">
-            <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
+            <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#333333]">
               Plant Q&amp;A
             </p>
-            <h2 className="mt-2.5 text-[24px] font-medium leading-tight text-[#184A31] sm:text-[28px]">
+            <h2 className="mt-2.5 text-[24px] font-medium leading-tight text-[#141414] sm:text-[28px]">
               {t('text-question-answers')}{' '}
-              <span className="font-semibold text-[#6B6B6B]">
+              <span className="font-semibold text-[#333333]">
                 ({total.toLocaleString('en-IN')})
               </span>
             </h2>
@@ -120,7 +120,8 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
             <button
               type="button"
               onClick={openQuestionModal}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-control bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+              data-t="pdp.button"
+              className="inline-flex h-12 shrink-0 items-center justify-center gap-2.5 rounded-control bg-ds-btn px-6 text-[15.943px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
             >
               <MessageCircle size={18} className="shrink-0" aria-hidden />
               {t('text-ask-question')}
@@ -179,10 +180,10 @@ const ProductQuestions: React.FC<ProductQuestionsProps> = ({
             <span className="text-[#24693E]/35">
               <MessageCircle size={40} aria-hidden />
             </span>
-            <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
+            <h3 data-t="pdp.h.small" className="mt-4 text-[17.943px] font-medium text-[#141414]">
               {t('text-no-question-found')}
             </h3>
-            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#6B6B6B]">
+            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#333333]">
               {debouncedSearch
                 ? 'No questions match your search — try a different word.'
                 : 'Have a doubt about this plant? Ask away and our team will answer.'}

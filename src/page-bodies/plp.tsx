@@ -189,6 +189,7 @@ function Plp({ type, mode = 'browse', catalogueTotal = null }: Props) {
 
               <div
                 aria-busy={refetching || undefined}
+                data-t="cat.grid"
                 className={
                   refetching
                     ? 'pointer-events-none opacity-60 transition-opacity duration-200'

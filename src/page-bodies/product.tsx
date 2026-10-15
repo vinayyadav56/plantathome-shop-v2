@@ -134,11 +134,11 @@ const ProductPage = ({ product }: any) => {
                 {related.length > 0 && (
                   <section className="min-w-0 py-9 xl:py-10">
                     <div className="mb-6 flex items-center justify-between gap-3">
-                      <h2 className="flex items-center gap-2 text-[1.4rem] font-medium text-forest-700">
+                      <h2 className="flex items-center gap-2 text-[1.4rem] font-medium text-[#141414]">
                         You May Also Like
                         <Sparkles size={20} className="text-forest-500" aria-hidden />
                       </h2>
-                      <Link href="/plants" className="inline-flex shrink-0 items-center gap-1 text-[13px] font-semibold text-forest-600 hover:text-forest-700">
+                      <Link href="/plants" data-t="pdp.link" className="inline-flex shrink-0 items-center gap-1 text-[13.943px] font-semibold text-forest-600 hover:text-forest-700">
                         View All Plants
                         <ArrowRight size={14} aria-hidden />
                       </Link>

@@ -33,7 +33,8 @@ function VideoBlock({ url }: { url: string }) {
         href={url}
         target="_blank"
         rel="noreferrer"
-        className="mt-8 inline-flex items-center gap-2.5 rounded-control border border-kraft-200 bg-white px-5 py-3.5 text-sm font-semibold text-[#184A31] transition hover:border-ds-btn/40"
+        data-t="pdp.link"
+        className="mt-8 inline-flex items-center gap-2.5 rounded-control border border-kraft-200 bg-white px-5 py-3.5 text-[14.943px] leading-[1.25rem] font-semibold text-[#184A31] transition hover:border-ds-btn/40"
       >
         <LineIcon name="play" className="h-4 w-4 text-[#24693E]" />
         Watch the plant video
@@ -87,10 +88,10 @@ function SpecRows({ rows }: { rows: { label: string; value: string }[] }) {
           key={s.label}
           className="flex items-baseline justify-between gap-4 border-b border-kraft-200 py-2.5 first:pt-0 last:border-0 last:pb-0"
         >
-          <dt className="shrink-0 text-[13.5px] text-[#6B6B6B]">
+          <dt className="shrink-0 text-[13.5px] text-[#333333]">
             {s.label}
           </dt>
-          <dd className="text-right text-[14px] font-semibold text-[#184A31]">
+          <dd className="text-right text-[14px] font-semibold text-[#141414]">
             {s.value}
           </dd>
         </div>
@@ -202,7 +203,7 @@ export function PlantCareSection({
 
   return (
     <div>
-      <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
+      <h2 data-t="pdp.h.upper" className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#141414]">
         {isPlant ? 'Plant care & details' : 'Product details'}
       </h2>
 
@@ -212,14 +213,15 @@ export function PlantCareSection({
           <div className="min-w-0">
             {contentHtml && (
               <div
-                className="react-editor-description text-[13.5px] leading-6 text-[#5B5B5B]"
+                data-t="pdp.text"
+                className="react-editor-description text-[14.443px] leading-6 text-[#333333]"
                 dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
             )}
             {careTips.length > 0 && (
               <div className="rounded-2xl bg-[#F3F8EC] p-5">
-                <h3 className="text-sm font-medium text-[#184A31]">Care at a glance</h3>
-                <ul className="mt-1.5 space-y-1.5 text-sm leading-6 text-[#5B5B5B]">
+                <h3 data-t="pdp.h.small" className="text-[14.943px] leading-[1.25rem] font-medium text-[#141414]">Care at a glance</h3>
+                <ul className="mt-1.5 space-y-1.5 text-[14.943px] leading-6 text-[#333333]">
                   {careTips.map((tip) => (
                     <li key={tip} className="flex items-start gap-2">
                       <Check size={14} className="mt-1 shrink-0 text-[#24693E]" aria-hidden />
@@ -233,18 +235,18 @@ export function PlantCareSection({
               <div className={`${contentHtml || careTips.length ? 'mt-5' : ''} space-y-4`}>
                 {benefits && (
                   <div className="rounded-2xl bg-[#F3F8EC] p-5">
-                    <h3 className="text-sm font-medium text-[#184A31]">Benefits</h3>
-                    <p className="mt-1.5 text-sm leading-6 text-[#5B5B5B]">
+                    <h3 data-t="pdp.h.small" className="text-[14.943px] leading-[1.25rem] font-medium text-[#141414]">Benefits</h3>
+                    <p className="mt-1.5 text-[14.943px] leading-6 text-[#333333]">
                       {benefits}
                     </p>
                   </div>
                 )}
                 {medicinal && (
                   <div className="rounded-2xl bg-[#F3F8EC] p-5">
-                    <h3 className="text-sm font-medium text-[#184A31]">
+                    <h3 data-t="pdp.h.small" className="text-[14.943px] leading-[1.25rem] font-medium text-[#141414]">
                       Medicinal uses
                     </h3>
-                    <p className="mt-1.5 text-sm leading-6 text-[#5B5B5B]">
+                    <p className="mt-1.5 text-[14.943px] leading-6 text-[#333333]">
                       {medicinal}
                     </p>
                   </div>
@@ -265,12 +267,12 @@ export function PlantCareSection({
                   className={`flex flex-wrap gap-2 ${specs.length > 0 ? 'mt-4' : ''}`}
                 >
                   {airPurifying && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-xs font-semibold text-[#24693E]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12.943px] leading-[1rem] font-semibold text-[#262726]">
                       <LineIcon name="wind" className="h-3.5 w-3.5" /> Air purifying
                     </span>
                   )}
                   {petFriendly && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-xs font-semibold text-[#24693E]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F3F8EC] px-3.5 py-1.5 text-[12.943px] leading-[1rem] font-semibold text-[#262726]">
                       <LineIcon name="paw" className="h-3.5 w-3.5" /> Pet friendly
                     </span>
                   )}
@@ -280,7 +282,7 @@ export function PlantCareSection({
             )}
             {hasSpecifications && (
               <div className={`rounded-2xl border border-kraft-200 bg-white p-5 shadow-box ${hasRight ? 'mt-6' : ''}`}>
-                <h3 className="text-sm font-medium text-[#184A31]">Specifications</h3>
+                <h3 data-t="pdp.h.small" className="text-[14.943px] leading-[1.25rem] font-medium text-[#141414]">Specifications</h3>
                 <div className="mt-3">
                   <SpecRows rows={specifications} />
                 </div>
@@ -288,7 +290,7 @@ export function PlantCareSection({
             )}
             {hasSizeGuide && (
               <div id="size-guide" className={`scroll-mt-24 rounded-2xl border border-kraft-200 bg-white p-5 shadow-box ${hasRight || hasSpecifications ? 'mt-6' : ''}`}>
-                <h3 className="text-sm font-medium text-[#184A31]">Size guide</h3>
+                <h3 data-t="pdp.h.small" className="text-[14.943px] leading-[1.25rem] font-medium text-[#141414]">Size guide</h3>
                 <div className="mt-3">
                   <SizeGuideContent sizeGuide={sizeGuide!.sizeGuide} sizes={sizeGuide!.sizes} name={sizeGuide!.name} />
                 </div>

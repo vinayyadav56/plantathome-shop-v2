@@ -49,7 +49,7 @@ export default function CategoryTiles({ type }: { type: string }) {
       className="relative z-10 -mt-14 rounded-2xl bg-white p-5 shadow-box lg:-mt-[70px]"
     >
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 id="plp-categories" className="font-heading text-[18px] font-medium leading-none text-forest-900 sm:text-[22px]">
+        <h2 id="plp-categories" className="font-heading text-[18px] font-medium leading-none text-[#141414] sm:text-[22px]">
           Shop by Category
         </h2>
         <Link
@@ -107,7 +107,7 @@ export default function CategoryTiles({ type }: { type: string }) {
                     className="absolute inset-0 bg-gradient-to-t from-forest-950/90 via-forest-950/65 via-35% to-transparent to-80%"
                   />
                   <span className="absolute inset-x-0 bottom-0 p-2">
-                    <span className="line-clamp-2 break-words font-heading text-[14px] font-semibold leading-tight text-white">
+                    <span className="line-clamp-2 break-words font-heading text-[14px] font-bold leading-tight text-white">
                       {c.name}
                     </span>
                   </span>

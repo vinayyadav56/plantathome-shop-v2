@@ -133,6 +133,8 @@ const AppliedFilters: React.FC<{ facets?: DynamicFacet[] }> = ({ facets = [] }) 
         {chips.map((chip) => (
           <span
             key={`${chip.param}:${chip.value}`}
+            // Sized and inked by type-picks-categories.css inside the filter rail / drawer only.
+            data-t="cat.rail.option"
             className="inline-flex items-center gap-1.5 rounded-full bg-sage-100 py-1.5 pe-2 ps-3 text-[12.5px] font-semibold text-forest-900"
           >
             {chip.label}

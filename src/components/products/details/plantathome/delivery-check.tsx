@@ -72,7 +72,7 @@ export function DeliveryCheck({
           form fields (owner annotation 2026-10-11: "like a form input box with label"). */}
       <label
         htmlFor="delivery-pincode"
-        className="block text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900 sm:text-[12px]"
+        className="block text-[11.943px] font-bold uppercase tracking-[0.08em] text-[#141414] sm:text-[12.943px]"
       >
         Check delivery
       </label>
@@ -92,12 +92,13 @@ export function DeliveryCheck({
           }}
           placeholder="Enter pincode"
           aria-describedby="delivery-check-result"
-          className="h-11 w-full rounded border border-[#DCDCDC] bg-white pl-3 pr-[88px] text-[14px] text-[#184A31] outline-none placeholder:text-[#6B6B6B] focus:border-[#24693E]"
+          className="h-11 w-full rounded border border-[#DCDCDC] bg-white pl-3 pr-[88px] text-[14.943px] font-semibold text-[#333333] outline-none placeholder:text-[#6B6B6B] focus:border-[#24693E]"
         />
         <button
           type="submit"
           disabled={!valid || state === 'loading'}
-          className="absolute right-1 top-1 h-9 rounded-control bg-ds-btn px-4 text-[13px] font-semibold text-white transition-opacity hover:bg-ds-btn-hover disabled:opacity-40"
+          data-t="pdp.button"
+          className="absolute right-1 top-1 h-9 rounded-control bg-ds-btn px-4 text-[13.943px] font-semibold text-white transition-opacity hover:bg-ds-btn-hover disabled:opacity-40"
         >
           {state === 'loading' ? 'Checking…' : 'Check'}
         </button>
@@ -107,23 +108,23 @@ export function DeliveryCheck({
 
       <div id="delivery-check-result" aria-live="polite">
         {state === 'error' && (
-          <p className="mt-3 text-[13px] text-[#B4413C]">
+          <p className="mt-3 text-[13.943px] font-semibold text-[#B4413C]">
             Couldn&apos;t check right now. Please try again.
           </p>
         )}
 
         {state === 'done' && result && !result.serviceable && (
-          <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-[13px] text-stone-600">
+          <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-[13.943px] font-semibold text-stone-600">
             <LineIcon name="alert" className="mt-0.5 h-[18px] w-[18px] shrink-0" />
-            <span>{result.message || `We don't deliver to ${result.pincode} yet.`}</span>
+            <span className="text-[#333333]">{result.message || `We don't deliver to ${result.pincode} yet.`}</span>
           </div>
         )}
 
         {state === 'done' && result?.serviceable && (
           <div className="mt-3 space-y-2">
             {result.city && (
-              <p className="text-[12px] text-[#6B6B6B]">
-                Delivering to <span className="font-medium text-[#184A31]">{result.city}</span>
+              <p className="text-[12.943px] font-semibold text-[#333333]">
+                Delivering to <span className="font-semibold text-[#333333]">{result.city}</span>
               </p>
             )}
             {result.options.map((o) => (
@@ -135,11 +136,11 @@ export function DeliveryCheck({
                   name={o.type === 'instant' ? 'bike' : 'truck'}
                   className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#24693E]"
                 />
-                <span className="min-w-0 flex-1 text-[13px] text-[#184A31]">
+                <span className="min-w-0 flex-1 text-[13.943px] font-semibold text-[#333333]">
                   <span className="font-semibold">{o.label}</span>
-                  {o.note && <span className="block text-[12px] text-[#6B6B6B]">{o.note}</span>}
+                  {o.note && <span className="block text-[12.943px] text-[#333333]">{o.note}</span>}
                 </span>
-                <span className="shrink-0 text-[13px] font-semibold text-[#24693E]">
+                <span className="shrink-0 text-[13.943px] font-semibold text-[#333333]">
                   {/* Local (instant) always promises 1 day — owner rule. */}
                   {o.type === 'instant' ? '1 day' : o.eta_text}
                 </span>

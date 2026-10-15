@@ -44,7 +44,7 @@ export default function StyledSpaces() {
       {/* The product page's container (page-bodies/product.tsx CONTAINER), so its edges
           line up with the sections above and below. */}
       <div className="mx-auto w-full max-w-[1920px] px-4 py-8 sm:px-6 xl:px-8">
-        <h2 className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#184A31]">{heading}</h2>
+        <h2 data-t="pdp.h.upper" className="text-[15px] font-medium uppercase tracking-[0.08em] text-[#141414]">{heading}</h2>
         {subtitle && <p className="mt-1 text-[14px] text-[#5B5B5B]">{subtitle}</p>}
         <div className="relative mt-5">
           {/* horizontally scrollable tile rail — arrows scroll it */}
@@ -69,7 +69,7 @@ export default function StyledSpaces() {
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                 </div>
-                <div className="py-2.5 text-center text-[12px] font-medium text-[#184A31]">
+                <div className="py-2.5 text-center text-[12.943px] font-semibold text-[#333333]">
                   {t.caption}
                 </div>
               </div>

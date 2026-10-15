@@ -118,7 +118,7 @@ export default function CategoryPage() {
               structured data told Google "Home / Categories / X" while the page showed only a
               back pill, so what crawlers indexed and what people saw disagreed. On the dark
               hero the component's colors invert via the wrapper below. */}
-          <div className="mb-3 [&_a:hover]:!text-white [&_a]:!text-white/70 [&_li>span]:!text-white [&_svg]:!text-white/40">
+          <div data-t="cat.banner.small" className="mb-3 [&_a:hover]:underline [&_a:hover]:underline-offset-2 [&_a:hover]:!text-white [&_a]:!text-white [&_li>span]:!text-white [&_svg]:!text-white/40">
             <Breadcrumb
               items={[
                 { label: 'Home', href: Routes.home },
@@ -134,7 +134,7 @@ export default function CategoryPage() {
           {typeSlug && (
             <Link
               href={`/${typeSlug}`}
-              className="mb-5 inline-flex w-max items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 py-1.5 font-hanken text-[11px] font-semibold uppercase tracking-[0.18em] text-white/80 backdrop-blur-md transition hover:text-white"
+              className="mb-5 inline-flex w-max items-center gap-2 rounded-full border border-white/20 bg-white/[0.08] px-4 py-1.5 font-hanken text-[11px] font-semibold uppercase tracking-[0.18em] text-white backdrop-blur-md transition hover:bg-white/[0.16] hover:text-white"
             >
               <ArrowLeft size={12} aria-hidden />
               {typeName ?? 'All products'}
@@ -153,13 +153,13 @@ export default function CategoryPage() {
           </div>
 
           {/* H1 */}
-          <h1 className="font-pahserif text-[34px] font-medium leading-tight tracking-[-0.015em] text-white sm:text-[46px] lg:text-[52px]">
+          <h1 data-t="cat.banner.title" className="font-pahserif text-[34px] font-medium leading-tight tracking-[-0.015em] text-white sm:text-[46px] lg:text-[52px]">
             {category?.name ?? (loadingCategory ? 'Loading…' : 'Category')}
           </h1>
 
           {/* description */}
           {(category?.details || category?.description) && (
-            <p className="mt-4 max-w-2xl font-hanken text-[14px] leading-[1.6] text-white/[0.78] sm:text-[15.5px]">
+            <p className="mt-4 max-w-2xl font-hanken text-[14px] font-semibold leading-[1.6] text-white sm:text-[15.5px]">
               {category?.details || category?.description}
             </p>
           )}
@@ -175,12 +175,12 @@ export default function CategoryPage() {
                 <Link
                   key={child.id ?? child.slug}
                   href={`/c/${child.slug}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-kraft-200 bg-white px-4 py-2 font-hanken text-[12.5px] font-medium text-forest-800 shadow-[0_1px_4px_rgba(34,48,26,0.07)] transition duration-200 hover:border-forest-400 hover:bg-forest-50 hover:text-forest-700"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-kraft-200 bg-white px-4 py-2 font-hanken text-[12.5px] font-semibold text-[#141414] shadow-[0_1px_4px_rgba(34,48,26,0.07)] transition duration-200 hover:border-forest-400 hover:bg-forest-50 hover:text-forest-700"
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-forest-500" />
                   {child.name}
                   {(child.products_count ?? 0) > 0 && (
-                    <span className="text-stone-500">· {child.products_count}</span>
+                    <span className="font-semibold text-[#141414]">· {child.products_count}</span>
                   )}
                 </Link>
               ))}
@@ -195,10 +195,10 @@ export default function CategoryPage() {
         {/* section header */}
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <p className="font-hanken text-[10.5px] font-bold uppercase tracking-[0.2em] text-gold">
+            <p data-t="cat.eyebrow" className="font-hanken text-[11.443px] font-extrabold uppercase tracking-[0.2em] text-gold">
               {category?.name ?? 'Products'}
             </p>
-            <h2 className="mt-1.5 font-pahserif text-[1.6rem] font-medium leading-none tracking-[-0.01em] text-forest-900 sm:text-[2.1rem]">
+            <h2 className="mt-1.5 font-pahserif text-[1.6rem] font-medium leading-none tracking-[-0.01em] text-[#141414] sm:text-[2.1rem]">
               Shop the collection.
             </h2>
           </div>
@@ -218,7 +218,7 @@ export default function CategoryPage() {
               <SidebarFilter inRail showCategories={false} showSort={false} type={typeSlug} category={facetCategory} />
             </StickyBox>
           </div>
-          <div className="min-w-0 flex-1">
+          <div data-t="cat.grid" className="min-w-0 flex-1">
             <ListingToolbar
               view={view}
               onViewChange={setView}

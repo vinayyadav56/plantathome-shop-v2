@@ -56,7 +56,7 @@ export function StickyAtcBar({
           </p>
           {/* whitespace-nowrap: a price RANGE ("₹359.00 – ₹929.00") wrapped to
               two lines on narrow screens and shoved the bar taller. */}
-          <p className="truncate whitespace-nowrap text-[13.5px] font-bold leading-tight text-ds-btn sm:text-[15px]">
+          <p className="truncate whitespace-nowrap text-[15.387px] font-extrabold leading-tight text-[#141414] sm:text-[16.887px]">
             {priceText}
           </p>
         </div>
@@ -64,8 +64,9 @@ export function StickyAtcBar({
           type="button"
           onClick={onAdd}
           disabled={disabled}
+          data-t="pdp.button"
           className={classNames(
-            'flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-control px-4 py-2 text-[13px] font-semibold transition sm:gap-2 sm:px-6 sm:py-2.5 sm:text-sm',
+            'flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-control px-4 py-2 text-[13.943px] font-semibold transition sm:gap-2 sm:px-6 sm:py-2.5 sm:text-[14.943px] sm:leading-[1.25rem]',
             disabled
               ? 'cursor-not-allowed bg-stone-300 text-stone-500'
               : 'bg-ds-btn text-white hover:bg-ds-btn-hover',

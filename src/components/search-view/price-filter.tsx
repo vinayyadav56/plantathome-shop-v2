@@ -93,7 +93,7 @@ const PriceFilter = ({ type, category, simple = false }: { type?: string; catego
       />
       {/* Readout: "₹0 – ₹5,000+" — the "+" says the upper handle is at the
           catalogue max, i.e. no ceiling is applied. */}
-      <p className="mt-3 text-[13px] font-medium tabular-nums text-forest-900">
+      <p className="mt-3 text-[13.943px] font-medium tabular-nums text-[#333333]">
         ₹{Number(state[0] || sliderMin).toLocaleString('en-IN')} – ₹
         {Number(state[1] || sliderMax).toLocaleString('en-IN')}
         {Number(state[1] || sliderMax) >= sliderMax ? '+' : ''}
@@ -103,8 +103,8 @@ const PriceFilter = ({ type, category, simple = false }: { type?: string; catego
       {!simple && (
       <div className="mt-4 grid grid-cols-2 gap-3">
         <label className="flex flex-col items-start rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">From</span>
-          <span className="flex w-full items-center text-[13px] font-bold text-forest-900">
+          <span className="text-[11.943px] font-semibold uppercase tracking-wide text-[#333333]">From</span>
+          <span className="flex w-full items-center text-[13.943px] font-bold text-[#333333]">
             ₹
             <input
               type="number"
@@ -114,13 +114,13 @@ const PriceFilter = ({ type, category, simple = false }: { type?: string; catego
               value={String(state[0])}
               onChange={(e) => handleChange([Number(e.target.value || sliderMin), Number(state[1])])}
               aria-label="Minimum price"
-              className="w-full border-0 bg-transparent p-0 pl-0.5 text-[13px] font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-full border-0 bg-transparent p-0 pl-0.5 text-[13.943px] font-bold text-[#333333] focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </span>
         </label>
         <label className="flex flex-col rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30">
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">To</span>
-          <span className="flex w-full items-center text-[13px] font-bold text-forest-900">
+          <span className="text-[11.943px] font-semibold uppercase tracking-wide text-[#333333]">To</span>
+          <span className="flex w-full items-center text-[13.943px] font-bold text-[#333333]">
             ₹
             <input
               type="number"
@@ -130,7 +130,7 @@ const PriceFilter = ({ type, category, simple = false }: { type?: string; catego
               value={String(state[1])}
               onChange={(e) => handleChange([Number(state[0]), Number(e.target.value || sliderMax)])}
               aria-label="Maximum price"
-              className="w-full border-0 bg-transparent p-0 pl-0.5 text-[13px] font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-full border-0 bg-transparent p-0 pl-0.5 text-[13.943px] font-bold text-[#333333] focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </span>
         </label>

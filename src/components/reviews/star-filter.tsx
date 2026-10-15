@@ -81,7 +81,7 @@ const StarFilter = () => {
 
   return (
     <div className="flex items-center">
-      <span className="min-w-[50px] text-sm text-body ltr:mr-2 rtl:ml-2">
+      <span className="min-w-[50px] text-sm text-[#333333] ltr:mr-2 rtl:ml-2">
         {t('text-filter')} :
       </span>
       <Select

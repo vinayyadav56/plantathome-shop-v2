@@ -51,10 +51,10 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
       {/* headline number + stars */}
       <div className="shrink-0">
         <div className="flex items-end gap-2">
-          <span className="text-[44px] font-bold leading-none text-[#184A31]">
+          <span className="text-[44px] font-bold leading-none text-[#333333]">
             {ratingVal.toFixed(1)}
           </span>
-          <span className="pb-1 text-[15px] font-semibold text-[#6B6B6B]">
+          <span className="pb-1 text-[15px] font-semibold text-[#333333]">
             / 5
           </span>
         </div>
@@ -63,7 +63,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
             <GoldStar key={star} filled={index < Math.round(ratingVal)} />
           ))}
         </div>
-        <p className="mt-2 text-[14px] leading-none text-[#6B6B6B]">
+        <p className="mt-2 text-[14px] leading-none text-[#333333]">
           {totalReviews.toLocaleString('en-IN')}{' '}
           {totalReviews === 1 ? 'rating' : 'ratings'}
         </p>
@@ -73,7 +73,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
       <div className="w-full min-w-0 flex-1 space-y-2.5">
         {rows.map(({ star, total }) => (
           <div key={star} className="flex items-center gap-3">
-            <span className="flex w-8 shrink-0 items-center gap-1 text-[13px] font-semibold leading-none text-[#184A31]">
+            <span className="flex w-8 shrink-0 items-center gap-1 text-[13px] font-semibold leading-none text-[#333333]">
               {star}
               <GoldStar size={12} />
             </span>
@@ -89,7 +89,7 @@ const AverageRatings: React.FC<AverageRatingsProps> = ({
                 }}
               />
             </div>
-            <span className="w-9 shrink-0 text-right text-[13px] leading-none text-[#6B6B6B]">
+            <span className="w-9 shrink-0 text-right text-[13px] leading-none text-[#333333]">
               {total.toLocaleString('en-IN')}
             </span>
           </div>

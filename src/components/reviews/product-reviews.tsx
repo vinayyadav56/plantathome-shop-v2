@@ -96,19 +96,19 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
     // The product page supplies the container (this sits full width, or in the left column
     // beside "You May Also Like" from xl), so the header reads the CARD's width, not the
     // viewport's: side by side once there are ~800px for it, stacked otherwise.
-    <section id="reviews" className="scroll-mt-24 py-10 [container-type:inline-size]">
+    <section id="reviews" data-t="pdp.reviews" className="scroll-mt-24 py-10 [container-type:inline-size]">
       <div
         className={`overflow-hidden rounded-2xl border border-kraft-200 bg-white ${CARD_SHADOW}`}
       >
         {/* header — title + write-review affordance, ratings summary beside */}
         <div className="flex flex-col gap-8 border-b border-kraft-200 p-6 sm:p-8 [@container(min-width:50rem)]:flex-row [@container(min-width:50rem)]:items-start [@container(min-width:50rem)]:justify-between [@container(min-width:50rem)]:gap-12">
           <div className="shrink-0">
-            <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#B58E39]">
+            <p className="text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-[#333333]">
               Customer voices
             </p>
-            <h2 className="mt-2 text-[15px] font-medium uppercase leading-tight tracking-[0.08em] text-[#184A31]">
+            <h2 data-t="pdp.h.upper" className="mt-2 text-[15px] font-medium uppercase leading-tight tracking-[0.08em] text-[#141414]">
               {t('text-product-reviews')}{' '}
-              <span className="font-semibold text-[#6B6B6B]">
+              <span className="font-semibold text-[#333333]">
                 ({total.toLocaleString('en-IN')})
               </span>
             </h2>
@@ -116,7 +116,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
               {showOrdersLink ? (
                 <Link
                   href={Routes.orders}
-                  className="inline-flex items-center gap-2.5 rounded bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-snug text-[#24693E] transition hover:bg-[#E9F2DD]"
+                  className="inline-flex items-center gap-2.5 rounded bg-[#F3F8EC] px-4 py-3 text-[14px] font-semibold leading-snug text-[#333333] transition hover:bg-[#E9F2DD]"
                 >
                   Bought this plant? Review it from your orders.
                   <ArrowRight size={16} className="shrink-0" aria-hidden />
@@ -125,7 +125,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
                 <button
                   type="button"
                   onClick={handleWriteReview}
-                  className="inline-flex h-12 items-center gap-2.5 rounded-control bg-ds-btn px-6 text-[15px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
+                  data-t="pdp.button"
+                  className="inline-flex h-12 items-center gap-2.5 rounded-control bg-ds-btn px-6 text-[15.943px] font-semibold text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-0"
                 >
                   <Pencil size={18} className="shrink-0" aria-hidden />
                   Write a review
@@ -197,10 +198,10 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({
             <span className="text-[#24693E]/35">
               <Star size={40} aria-hidden />
             </span>
-            <h3 className="mt-4 text-[17px] font-medium text-[#184A31]">
+            <h3 data-t="pdp.h.small" className="mt-4 text-[17.943px] font-medium text-[#141414]">
               {t('text-no-reviews-found')}
             </h3>
-            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#6B6B6B]">
+            <p className="mt-1.5 max-w-sm text-[14px] leading-relaxed text-[#333333]">
               Be the first to share how this plant settled into your home.
             </p>
           </div>

@@ -43,7 +43,7 @@ function CategoryCard({ category }: { category: any }) {
         )}
       </div>
       <div className="px-3.5 py-3">
-        <p className="m-0 line-clamp-1 font-hanken text-[13.5px] font-bold text-forest-900 transition-colors group-hover:text-forest-700">
+        <p className="m-0 line-clamp-1 font-hanken text-[14.443px] font-bold text-[#141414] transition-colors group-hover:text-forest-700">
           {category.name}
         </p>
       </div>
@@ -81,13 +81,13 @@ function VerticalSection({ type }: { type: Type }) {
     >
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <h2 className="m-0 font-pahserif text-[24px] font-medium tracking-[-0.005em] text-forest-900 sm:text-[30px]">
+          <h2 className="m-0 font-pahserif text-[24px] font-medium tracking-[-0.005em] text-[#141414] sm:text-[30px]">
             {type.name ?? meta.label}
           </h2>
-          <p className="mt-1 font-hanken text-[13px] text-stone-500">
+          <p className="mt-1 font-hanken text-[13px] text-[#333333]">
             {meta.tagline}
             {total > 0 && (
-              <span className="ms-2 text-stone-400">
+              <span className="ms-2 text-[#333333]">
                 · {total} {t('categories-count-label')}
               </span>
             )}
@@ -95,7 +95,7 @@ function VerticalSection({ type }: { type: Type }) {
         </div>
         <Link
           href={meta.shopPath ?? meta.path}
-          className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap font-hanken text-[13.5px] font-semibold text-forest-700"
+          className="inline-flex shrink-0 items-center gap-[6px] whitespace-nowrap font-hanken text-[13.5px] font-bold text-forest-700"
         >
           {t('categories-explore-vertical')}
           <ArrowRight size={14} aria-hidden />
@@ -164,7 +164,8 @@ export default function CategoriesPage({ type }: { type?: string }) {
         title={only ? `${getVerticalMeta(only.slug, only.name).label} Categories` : t('categories-page-title')}
         breadcrumbTitle={t('text-home')}
       />
-      <div className="g-light-a">
+      {/* data-t: PageBanner is shared, so its h1 ink is set from this sibling (type-picks-categories.css). */}
+      <div data-t="cat.categories" className="g-light-a">
         <div className="mx-auto max-w-7xl px-5 pb-14 pt-2 sm:px-8 lg:px-16">
           {isLoading && list.length === 0 ? (
             <div className="space-y-8 py-10">

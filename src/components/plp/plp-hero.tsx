@@ -75,16 +75,16 @@ export default function PlpHero({ type, title, subtitle, total, searchTerm, tile
       </div>
 
       <div className={`relative px-5 pt-5 lg:px-6 lg:pt-6 xl:px-8 ${tiles ? 'pb-[88px] lg:pb-[100px]' : 'pb-2 lg:pb-4'}`}>
-        <Breadcrumb items={[{ label: 'Home', href: Routes.home }, { label: title }]} />
+        <Breadcrumb items={[{ label: 'Home', href: Routes.home }, { label: title }]} className="[&_a]:text-[#333333] [&_li>span]:text-[#333333]" />
 
         <div className="mt-4 lg:mt-5 lg:max-w-[58%]">
-          <h1 className="font-heading text-[36px] font-medium leading-none tracking-[-0.015em] text-forest-900 sm:text-[48px] lg:text-[60px]">
+          <h1 className="font-heading text-[36px] font-medium leading-none tracking-[-0.015em] text-[#141414] sm:text-[48px] lg:text-[60px]">
             {title}
           </h1>
-          <p className="mt-3 text-[17px] leading-snug text-forest-800/80 lg:text-[21px]">
+          <p className="mt-3 text-[17px] leading-snug text-[#333333] lg:text-[21px]">
             {searchTerm ? (
               <>
-                Results for <span className="font-semibold text-forest-900">“{searchTerm}”</span>
+                Results for <span className="font-semibold text-[#333333]">“{searchTerm}”</span>
               </>
             ) : (
               subtitle
@@ -112,10 +112,10 @@ export default function PlpHero({ type, title, subtitle, total, searchTerm, tile
                       {Icon ? <Icon size={20} aria-hidden /> : null}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-balance text-[13px] font-semibold leading-tight text-forest-900 md:text-[15px]">
+                      <span className="block text-balance text-[13.943px] font-semibold leading-tight text-forest-900 md:text-[15.943px]">
                         {item.t}
                       </span>
-                      <span className="mt-0.5 block text-balance text-[11px] leading-tight text-stone-500 md:text-[12px]">
+                      <span className="mt-0.5 block text-balance text-[11.943px] leading-tight text-stone-500 md:text-[12.943px]">
                         {item.d}
                       </span>
                     </span>

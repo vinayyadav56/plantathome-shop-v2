@@ -112,7 +112,7 @@ export function DynamicFacetView({ facet }: { facet: DynamicFacet }) {
             checked={selected.includes(t.slug)}
             onChange={() => toggle(t.slug)}
           />
-          <span className="text-xs tabular-nums text-stone-400">{t.count}</span>
+          <span className="text-[12.943px] leading-4 tabular-nums text-[#333333]">{t.count}</span>
         </div>
       ))}
     </div>
@@ -171,8 +171,8 @@ function AttrRangeView({
           key={label}
           className="flex flex-col items-start rounded border border-kraft-200 bg-white p-2.5 focus-within:border-forest-900/30"
         >
-          <span className="text-[11px] font-semibold uppercase tracking-wide text-stone-400">{label}</span>
-          <span className="flex w-full items-center gap-1 text-[13px] font-bold text-forest-900">
+          <span className="text-[11.943px] font-semibold uppercase tracking-wide text-[#333333]">{label}</span>
+          <span className="flex w-full items-center gap-1 text-[13.943px] font-bold text-[#333333]">
             <input
               type="number"
               inputMode="decimal"
@@ -185,9 +185,9 @@ function AttrRangeView({
               onBlur={apply}
               onKeyDown={(e) => e.key === 'Enter' && apply()}
               aria-label={`${facet.name} ${label.toLowerCase()}`}
-              className="w-full min-w-0 border-0 bg-transparent p-0 text-[13px] font-bold text-forest-900 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="w-full min-w-0 border-0 bg-transparent p-0 text-[13.943px] font-bold text-[#333333] focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
-            {facet.unit && <span className="shrink-0 font-semibold text-stone-400">{facet.unit}</span>}
+            {facet.unit && <span className="shrink-0 font-semibold text-[#333333]">{facet.unit}</span>}
           </span>
         </label>
       ))}
@@ -234,7 +234,7 @@ export function FacetFilterView({
             checked={selected.includes(o.value)}
             onChange={() => toggle(o.value)}
           />
-          <span className="text-xs tabular-nums text-stone-400">{o.count}</span>
+          <span className="text-[12.943px] leading-4 tabular-nums text-[#333333]">{o.count}</span>
         </div>
       ))}
     </div>
@@ -263,8 +263,8 @@ export function PlacementFilterView() {
             onClick={() => push('placement', on ? undefined : v)}
             className={
               on
-                ? 'rounded-full bg-[#2E5E2A] px-3 py-2 text-[13px] font-semibold text-white transition'
-                : 'rounded-full px-3 py-2 text-[13px] font-semibold text-body transition hover:bg-forest-900/5'
+                ? 'rounded-full bg-[#2E5E2A] px-3 py-2 text-[13.943px] font-semibold text-white transition'
+                : 'rounded-full px-3 py-2 text-[13.943px] font-semibold text-[#333333] transition hover:bg-forest-900/5'
             }
           >
             {v}
@@ -308,8 +308,8 @@ function ToggleRow({
   return (
     <label className="flex cursor-pointer items-center justify-between gap-3">
       <span className="flex flex-col">
-        <span className="text-[13px] font-medium text-heading">{title}</span>
-        <span className="text-xs text-body">{hint}</span>
+        <span className="text-[13.943px] font-medium text-[#333333]">{title}</span>
+        <span className="text-[12.943px] leading-4 text-[#333333]">{hint}</span>
       </span>
       <button
         type="button"

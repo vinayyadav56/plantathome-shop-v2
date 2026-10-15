@@ -90,7 +90,7 @@ function ClearFiltersButton() {
   return (
     <button
       type="button"
-      className="rounded-full border border-kraft-200 px-3 py-1 text-[12px] font-semibold text-forest-900 transition-colors hover:border-forest-900/30 hover:bg-sage-50 focus:outline-0 focus-visible:ring-1 focus-visible:ring-forest-700"
+      className="rounded-full border border-kraft-200 px-3 py-1 text-[12.943px] font-semibold text-[#333333] transition-colors hover:border-forest-900/30 hover:bg-sage-50 focus:outline-0 focus-visible:ring-1 focus-visible:ring-forest-700"
       onClick={clearFilters}
     >
       {t('text-clear-all')}
@@ -142,15 +142,17 @@ const SidebarFilter: React.FC<{
 
   return (
     <div
+      // data-t: the rail/drawer scope for type-picks-categories.css (chips, sort radios).
+      data-t="cat.rail"
       className={classNames(
         'flex h-full w-full flex-col rounded-xl border-kraft-200 bg-white',
-        // 13px facet scale, forced from the panel root. Checkbox and SearchBox
+        // Facet scale and ink (#333), forced from the panel root. Checkbox and SearchBox
         // are app-wide primitives that hardcode `text-sm` on their own label /
         // input, and Tailwind emits arbitrary sizes BEFORE the named scale, so
         // a `text-[13px]` handed down as a prop loses the cascade. A descendant
         // selector (0,1,1) beats the primitive's own class without resizing
         // every checkbox and search field in the app.
-        '[&_input]:text-[13px] [&_label]:text-[13px]',
+        '[&_input]:text-[13.943px] [&_label]:text-[13.943px] [&_input]:text-[#333333] [&_label]:text-[#333333]',
         inRail ? 'md:h-auto md:border' : 'lg:h-auto lg:border',
         className
       )}
@@ -169,7 +171,7 @@ const SidebarFilter: React.FC<{
             <span className="sr-only">{t('text-close')}</span>
           </button>
 
-          <h3 className="text-[18px] font-semibold text-forest-900">Filters</h3>
+          <h3 data-t="cat.rail.title" className="text-[18px] font-semibold text-[#141414]">Filters</h3>
         </div>
 
         <ClearFiltersButton />
@@ -281,6 +283,7 @@ const SidebarFilter: React.FC<{
             next to "Clear all" overflowed the drawer and clipped the label at
             390px. flex-1 gives it the leftover track instead. */}
         <Button
+          data-t="cat.button"
           className="min-w-0 flex-1"
           onClick={() => closeSidebar({ display: false, view: '' })}
         >

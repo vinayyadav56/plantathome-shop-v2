@@ -10,6 +10,9 @@ import '@/assets/css/main.css';
 import '@/assets/css/custom-plugins.css';
 import '@/assets/css/rich-text-editor.css';
 import '@/assets/css/plantathome-overrides.css';
+import '@/assets/css/type-picks-cards.css';
+import '@/assets/css/type-picks-categories.css';
+import '@/assets/css/type-picks-pdp.css';
 import 'react-toastify/dist/ReactToastify.css';
 import '@/assets/css/toast-overrides.css';
 

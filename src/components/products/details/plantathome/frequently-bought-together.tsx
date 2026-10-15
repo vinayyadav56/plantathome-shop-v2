@@ -87,7 +87,7 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
 
   return (
     <div className="rounded-2xl border border-kraft-200 bg-white p-6 shadow-box">
-      <h3 className="text-[13px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
+      <h3 data-t="pdp.h.upper" className="text-[13px] font-medium uppercase tracking-[0.08em] text-[#141414]">
         Frequently Bought Together
       </h3>
 
@@ -108,10 +108,10 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <span className="mt-1.5 line-clamp-2 text-[10.5px] font-semibold leading-tight text-[#184A31]">
+                  <span className="mt-1.5 line-clamp-2 text-[12.387px] font-semibold leading-tight text-[#141414]">
                     {it?.name}
                   </span>
-                  <span className="text-[10.5px] text-[#6B6B6B]">
+                  <span className="text-[12.387px] text-[#141414]">
                     {formatINR(unitPrice(v ?? it))}
                   </span>
                 </div>
@@ -131,7 +131,8 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
             type="button"
             onClick={addAll}
             disabled={!mainReady}
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-5 py-3 text-[13.5px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:bg-stone-300"
+            data-t="pdp.button"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control bg-ds-btn px-5 py-3 text-[14.443px] font-semibold text-white transition hover:bg-ds-btn-hover disabled:cursor-not-allowed disabled:bg-stone-300"
           >
             {added ? (
               <>

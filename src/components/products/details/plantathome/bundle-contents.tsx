@@ -43,7 +43,7 @@ export function BundleContents({
 
   return (
     <div className="rounded-2xl border border-kraft-200 bg-white p-5 shadow-box">
-      <h3 className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">
+      <h3 data-t="pdp.h.upper" className="flex items-center gap-2 text-[12px] font-medium uppercase tracking-[0.08em] text-[#141414]">
         <LineIcon name="box" className="h-4 w-4 text-[#24693E]" />
         What&apos;s inside this bundle ({items.length} item{items.length === 1 ? '' : 's'})
       </h3>
@@ -96,7 +96,7 @@ export function BundleContents({
           )}
           <span className="text-[13.5px] text-[#5B5B5B]">
             Bundle price{' '}
-            <span className="text-[15px] font-bold text-ds-btn">
+            <span data-t="pdp.price" className="text-[16.887px] font-extrabold text-ds-btn">
               {fmtINR(bundlePrice)}
             </span>
           </span>

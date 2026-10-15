@@ -220,14 +220,14 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
    * ₹929.00" is roughly twice the width of a single price.
    */
   const priceBlock = noVariant ? (
-    <span className="whitespace-nowrap text-[15px] font-bold leading-none text-ds-btn sm:text-[17px] lg:text-[20px]">
+    <span data-t="pdp.price" className="whitespace-nowrap text-[16.887px] font-extrabold leading-none text-ds-btn sm:text-[18.887px] lg:text-[21.887px]">
       {/* Paints the master range on the first frame (from the SSR product) and quietly
           refines to the city range when it arrives — no blank skeleton. */}
       {minPrice} – {maxPrice}
     </span>
   ) : (
     <>
-      <span className="whitespace-nowrap text-[17px] font-bold leading-none text-ds-btn sm:text-[19px] lg:text-[22px]">{displayPrice}</span>
+      <span data-t="pdp.price" className="whitespace-nowrap text-[18.887px] font-extrabold leading-none text-ds-btn sm:text-[20.887px] lg:text-[23.887px]">{displayPrice}</span>
       {displayBasePrice && (
         <del className="text-[13.5px] font-medium leading-none text-[#767676]">{displayBasePrice}</del>
       )}
@@ -357,7 +357,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
         {/* breadcrumb */}
         {!isModal && (
           <>
-            <Breadcrumb items={crumbs} />
+            <Breadcrumb items={crumbs} className="[&_a]:text-[#333333] [&_li>span]:text-[#333333]" />
             <div className="mt-3 h-px w-full bg-kraft-300/70" />
           </>
         )}
@@ -384,7 +384,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   <button
                     type="button"
                     onClick={onAskAi}
-                    className="absolute bottom-2.5 left-2.5 z-[2] inline-flex items-center gap-1 rounded-full border border-black/5 bg-white/90 px-2.5 py-1.5 text-[11px] font-bold text-clay-700 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:bottom-3 sm:left-3"
+                    data-t="pdp.link"
+                    className="absolute bottom-2.5 left-2.5 z-[2] inline-flex items-center gap-1 rounded-full border border-black/5 bg-white/90 px-2.5 py-1.5 text-[11.943px] font-bold text-clay-700 shadow-sm backdrop-blur transition hover:scale-105 hover:bg-white sm:bottom-3 sm:left-3"
                   >
                     <Sparkles size={14} fill="currentColor" className="text-clay-600" aria-hidden /> Ask AI
                   </button>
@@ -413,10 +414,10 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 space under the image section"). Phones keep the copy in the buy box. */}
             {!isModal && includedItems.length > 0 && (
               <div className="shadow-box mt-6 hidden rounded-2xl border border-kraft-200 bg-white p-4 lg:block">
-                <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
+                <h3 data-t="pdp.h.upper" className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#141414]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-[13px] text-stone-600">
+                    <li key={item} className="flex items-start gap-2 text-[13.943px] text-[#333333]">
                       <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" />
                       {item}
                     </li>
@@ -438,10 +439,11 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             <div className="flex items-start justify-between gap-3">
               <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 <h1
+                  data-t="pdp.title"
                   className={classNames(
                     // Myntra-scale: small, quiet name — weight and colour carry
                     // the hierarchy, not size (annotation: "small fonts").
-                    'min-w-0 text-[19px] font-medium leading-snug tracking-tight text-forest-900 sm:text-[22px]',
+                    'min-w-0 text-[20.887px] font-medium leading-snug tracking-tight text-[#141414] sm:text-[23.887px]',
                     { 'cursor-pointer transition-colors hover:text-forest-700': isModal },
                   )}
                   {...(isModal && { onClick: () => navigate(Routes.product(slug)) })}
@@ -449,7 +451,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                   {name}
                 </h1>
                 {reviewCount === 0 && (
-                  <span className="shrink-0 rounded-full bg-sage-100 px-2.5 py-1 text-[11px] font-medium leading-none text-forest-800">
+                  <span className="shrink-0 rounded-full bg-sage-100 px-2.5 py-1 text-[11.943px] font-semibold leading-none text-[#262726]">
                     New arrival
                   </span>
                 )}
@@ -458,7 +460,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
             {/* botanical subline */}
             {(pa?.scientific_name || hindiNames(pa)) && (
-              <p className="mt-1 text-[13px] text-[#6B6B6B]">
+              <p className="mt-1 text-[13.943px] font-semibold text-[#B58E39]">
                 {pa?.scientific_name}
                 {pa?.scientific_name && hindiNames(pa) ? ' · ' : ''}
                 {hindiNames(pa)}
@@ -487,7 +489,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 {quickChips.map((c) => (
                   <span
                     key={c.label}
-                    className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-[#F3F8EC] px-2 py-1 text-[11px] font-semibold text-[#24693E] sm:gap-1.5 sm:px-2.5 sm:text-[11.5px]"
+                    className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-[#F3F8EC] px-2 py-1 text-[11.943px] font-semibold text-[#262726] sm:gap-1.5 sm:px-2.5 sm:text-[12.443px]"
                   >
                     <LineIcon name={c.icon} className="h-3.5 w-3.5" />
                     {c.label}
@@ -501,7 +503,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
             {/* short description (the ONLY teaser — full text lives in the
                 "Plant care & details" section below the fold) */}
             {content && (
-              <div className="mt-4 react-editor-description text-[13.5px] leading-6 text-stone-600">
+              <div className="mt-4 react-editor-description text-[14.443px] leading-6 text-stone-600">
                 {/* 120 not 180: three teaser lines plus a Read more pushed the
                     pot picker below the fold, and the full text is a section
                     away under "Plant care & details" anyway. */}
@@ -543,7 +545,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                         <div key={groupName} className="mt-5">
                           <div className="mb-2 flex items-center justify-between gap-x-3">
                             <span className="flex min-w-0 items-center gap-x-2.5">
-                              <p className="shrink-0 whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.08em] text-forest-900 sm:text-[12px]">
+                              <p className="shrink-0 whitespace-nowrap text-[11.943px] font-bold uppercase tracking-[0.08em] text-[#141414] sm:text-[12.943px]">
                                 {`Select ${groupName.replace(/-/g, ' ')}`}
                               </p>
                               {/* Popup size guide, right where the sizes are chosen —
@@ -558,7 +560,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                                       name,
                                     })
                                   }
-                                  className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-forest-700 underline underline-offset-2 hover:text-forest-900"
+                                  data-t="pdp.link"
+                                  className="flex shrink-0 items-center gap-1 text-[11.943px] font-semibold text-forest-700 underline underline-offset-2 hover:text-forest-900"
                                 >
                                   <Ruler size={12} aria-hidden />
                                   Size guide
@@ -597,8 +600,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                                     type="button"
                                     aria-label={muted(o) ? `${o.value}, not available with your other choices` : undefined}
                                     onClick={() => choose(o)}
+                                    data-t="pdp.size"
                                     className={classNames(
-                                      'min-w-[3.25rem] rounded-full border px-4 py-1.5 text-[13px] font-medium transition',
+                                      'min-w-[3.25rem] rounded-full border px-4 py-1.5 text-[13.943px] font-medium transition',
                                       active
                                         ? 'border-forest-700 bg-forest-700 text-white'
                                         : 'border-kraft-300 bg-transparent text-forest-900 hover:border-forest-500',
@@ -637,7 +641,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 {/* the price, just above the CTA (annotation 2026-10-10) */}
                 <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1">
                   {priceBlock}
-                  <span className="w-full text-[11px] font-medium text-stone-400">
+                  <span className="w-full text-[11.943px] font-semibold text-[#333333]">
                     incl. of all taxes
                   </span>
                 </div>
@@ -655,7 +659,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     >
                       <Minus size={16} aria-hidden />
                     </button>
-                    <span className="min-w-[1.5rem] text-center text-[14px] font-semibold text-forest-900">
+                    <span className="min-w-[1.5rem] text-center text-[14.943px] font-bold text-[#141414]">
                       {String(qty).padStart(2, '0')}
                     </span>
                     <button
@@ -672,8 +676,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                     type="button"
                     onClick={handleAdd}
                     disabled={ctaDisabled}
+                    data-t="pdp.button"
                     className={classNames(
-                      'flex flex-1 items-center justify-center gap-2.5 rounded-control px-7 py-3.5 text-[14px] font-bold uppercase tracking-[0.04em] text-white transition',
+                      'flex flex-1 items-center justify-center gap-2.5 rounded-control px-7 py-3.5 text-[14.943px] font-bold uppercase tracking-[0.04em] text-white transition',
                       ctaDisabled
                         ? 'cursor-not-allowed bg-stone-300'
                         : 'bg-ds-btn shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-ds-btn-hover',
@@ -721,7 +726,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                       className="flex items-center gap-2 py-2.5 [@container(min-width:39.5rem)]:flex-1 [@container(min-width:39.5rem)]:justify-center [@container(min-width:39.5rem)]:px-3"
                     >
                       <LineIcon name={t.icon} className="h-[18px] w-[18px] shrink-0 text-[#24693E]" />
-                      <span className="whitespace-nowrap text-[12px] font-medium text-stone-600">{t.label}</span>
+                      <span className="whitespace-nowrap text-[12.943px] font-semibold text-[#333333]">{t.label}</span>
                     </div>
                   ))}
                 </div>
@@ -732,10 +737,10 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 only; from lg it sits under the gallery. */}
             {!isModal && includedItems.length > 0 && (
               <div className="shadow-box mt-4 rounded-2xl border border-kraft-200 bg-white p-4 lg:hidden">
-                <h3 className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#184A31]">What&rsquo;s included</h3>
+                <h3 data-t="pdp.h.upper" className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#141414]">What&rsquo;s included</h3>
                 <ul className="mt-2.5 grid gap-x-4 gap-y-2 sm:grid-cols-2">
                   {includedItems.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-[13px] text-stone-600">
+                    <li key={item} className="flex items-start gap-2 text-[13.943px] text-[#333333]">
                       <LineIcon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-[#24693E]" />
                       {item}
                     </li>

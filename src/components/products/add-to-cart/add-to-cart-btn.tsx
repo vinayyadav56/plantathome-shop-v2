@@ -92,6 +92,8 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled, label }) =>
         <button
           onClick={onClick}
           disabled={disabled}
+          // Type picks 2026-10-15: the card's button text is 700 (type-picks-cards.css).
+          data-t="card.cta"
           className={cn(
             // Sized in cqw against the CARD, like everything else inside it.
             // Fixed h-12/16px/px-4 was built for a full-width mobile card; in a
@@ -99,7 +101,7 @@ const AddToCartBtn: React.FC<Props> = ({ variant, onClick, disabled, label }) =>
             // The clamp bounds keep it sane if this ever renders outside a
             // container, where cqw falls back to the viewport.
             // Shares the card action row's baseline — see plantathome.tsx's CTA.
-            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-control bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(10.5px,3.4cqw,14px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2',
+            'flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 items-center justify-center gap-[clamp(4px,1.6cqw,8px)] rounded-control bg-ds-btn px-[clamp(6px,2.2cqw,12px)] text-[clamp(11.443px,calc(3.4cqw+0.943px),14.943px)] font-medium leading-none text-white transition duration-300 hover:bg-ds-btn-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2',
             {
               'cursor-not-allowed !bg-stone-300 !text-stone-500 hover:!bg-stone-300':
                 disabled,

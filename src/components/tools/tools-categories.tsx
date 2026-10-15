@@ -101,7 +101,7 @@ export function ToolsCategories({ type }: { type: string }) {
                     <div className="flex flex-1 flex-col p-3.5">
                       {/* Two lines, never an ellipsis: "Pruning & Cutting" needs 120 px and a six-up
                           tile at 1024 (or a phone rail tile) has a little less. */}
-                      <h3 className="line-clamp-2 font-heading text-[14px] font-semibold leading-5 text-forest-900">
+                      <h3 className="line-clamp-2 font-heading text-[14.943px] font-semibold leading-5 text-[#141414]">
                         {c.name}
                       </h3>
                       {c.details ? (

@@ -48,7 +48,7 @@ export function DeliveryCard(props: {
   // ETA — local same-city vs courier (never names the vendor).
   const hint =
     showEta || !cityBased ? (
-      <p className="mt-1.5 flex items-start gap-1.5 text-[12px] leading-snug text-[#184A31]">
+      <p className="mt-1.5 flex items-start gap-1.5 text-[12.943px] font-semibold leading-snug text-[#333333]">
         <LineIcon name="truck" className="mt-px h-4 w-4 shrink-0 text-[#24693E]" />
         <span>
           {!cityBased ? (

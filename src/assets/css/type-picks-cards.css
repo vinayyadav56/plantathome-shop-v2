@@ -1,0 +1,12 @@
+/* Type picks — cards. The owner's choice from the "PlantAtHome Type Picks" board (2026-10-15).
+   Tailwind classes on each element carry the new sizes and colours. This file holds only what a class
+   can't do: weights pinned by the global role rules in plantathome-overrides.css (links 500, h1–h3 500,
+   buttons 600) and colours forced by !important elsewhere. Hooks are data-t="<role id>" attributes.
+   Font sizes written here are rewritten by postcss-font-scale like any other stylesheet. */
+
+/* card.price — ink #141414. The span keeps .text-ds-btn (the role's selector); this outranks it. */
+[data-product-card] [data-t="card.price"] { color: #141414; }
+
+/* card.cta — 700 on "Select Options", "Add to cart", "Out of stock" and the qty − / +.
+   button / a[class*="btn"] pin 600 above any weight class, hence !important. */
+[data-t="card.cta"], [data-t="card.cta"] * { font-weight: 700 !important; }

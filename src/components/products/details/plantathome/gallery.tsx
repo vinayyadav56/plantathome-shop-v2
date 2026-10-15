@@ -153,7 +153,7 @@ const PlantAtHomeGallery: React.FC<Props> = ({ gallery, productName, overlay }) 
           Kept deliberately generic: this gallery serves pots, tools and farm
           boxes as well as plants, so it must not promise plant-specific
           variation. */}
-      <p className="mt-3 text-[11px] leading-relaxed text-stone-500">
+      <p data-t="pdp.note" className="mt-3 text-[11.943px] font-semibold leading-relaxed text-stone-500">
         Actual product may vary slightly from the images shown.
       </p>
     </div>

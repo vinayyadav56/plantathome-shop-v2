@@ -68,7 +68,7 @@ type Props = {
   variant?: 'card' | 'plain';
   /**
    * Replaces the "{n} plants" count span. In `plain` it is set at the mock's
-   * results-row size (18 → 22px, forest-900), so the PLP passes
+   * results-row size (18 → 22px, #141414, 600), so the PLP passes
    * `<><strong>{total}</strong> Plants available in {city}</>` and nothing else;
    * in `card` it inherits the 13px count look. Always wrapped, so a fragment
    * stays one flex item.
@@ -102,6 +102,7 @@ export default function ListingToolbar({
 
   return (
     <div
+      data-t="cat.toolbar"
       className={
         plain
           ? 'flex flex-wrap items-center justify-between gap-x-4 gap-y-3 py-2.5'
@@ -112,15 +113,15 @@ export default function ListingToolbar({
         <div
           className={
             plain
-              ? 'min-w-0 text-[18px] text-forest-900 md:text-[20px] lg:text-[22px]'
-              : 'font-hanken text-[13px] text-stone-500'
+              ? 'min-w-0 text-[18px] font-semibold text-[#141414] md:text-[20px] lg:text-[22px]'
+              : 'font-hanken text-[13px] font-semibold text-[#141414]'
           }
         >
           {countLabel}
         </div>
       ) : typeof count === 'number' && count > 0 ? (
-        <span className="font-hanken text-[13px] text-stone-500">
-          <strong className="font-medium text-forest-900">
+        <span className="font-hanken text-[13px] font-semibold text-[#141414]">
+          <strong className="font-semibold">
             {count}
             {hasMore ? '+' : ''}
           </strong>{' '}
@@ -131,7 +132,7 @@ export default function ListingToolbar({
       )}
 
       <div className="flex items-center gap-2 sm:gap-3">
-        {plain && <span className="text-[14px] text-forest-800/80">Sort by</span>}
+        {plain && <span className="text-[14px] font-semibold text-[#141414]">Sort by</span>}
         {/* Plain: white from the server HTML on — Select paints a blank placeholder
             until mount, which would otherwise pop from sage to white. */}
         <div className={plain ? 'w-[150px] rounded-lg bg-white' : 'w-[190px] sm:w-[215px]'}>

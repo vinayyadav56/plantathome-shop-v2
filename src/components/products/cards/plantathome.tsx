@@ -194,17 +194,20 @@ const PlantAtHomeCard: React.FC<Props> = ({
           // nearest positioned ancestor. Controls that must not navigate sit above it on z-10
           // (wishlist, Ask AI, the qty stepper + Add to Cart). The focus ring is drawn on the
           // overlay, so a keyboard user sees the whole card outlined.
-          className={`block w-full text-left font-semibold text-[#141414] transition after:absolute after:inset-0 after:rounded-2xl hover:text-forest-700 focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-forest-700 ${
+          // Type picks 2026-10-15 (owner): the odd px values on this card are authored so that
+          // postcss-font-scale (1.06·S − 2px, 9px floor) renders the picked size; weights the
+          // global role rules pin live in type-picks-cards.css, hooked by data-t.
+          className={`block w-full text-left font-semibold text-[#000000] transition after:absolute after:inset-0 after:rounded-2xl hover:text-forest-700 focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-forest-700 ${
             isList
-              ? 'text-[14px] leading-snug line-clamp-2 sm:text-[16px]'
-              : 'truncate text-[12.5px] leading-tight sm:text-[0.9rem]'
+              ? 'text-[15.887px] leading-snug line-clamp-2 sm:text-[17.887px]'
+              : 'truncate text-[14.387px] leading-tight sm:text-[16.287px]'
           }`}
         >
           {product.name}
         </Link>
-        {/* Botanical name — near-black, medium (owner 2026-10-14: all card text black, a little heavier) */}
+        {/* Botanical name — gold, semibold (type picks 2026-10-15) */}
         {sciName ? (
-          <p title={sciName} className="mt-[5px] truncate text-[clamp(10px,3.4cqw,12px)] font-medium leading-[1.4] text-[#1F1F1F]">{sciName}</p>
+          <p title={sciName} className="mt-[5px] truncate text-[clamp(11.321px,calc(3.4cqw+0.943px),12.943px)] font-semibold leading-[1.4] text-[#EAB034]">{sciName}</p>
         ) : null}
       </div>
       {/* Rating only. The "New" chip that used to be the else-branch here
@@ -248,12 +251,13 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <span
               key={f.key}
               className={`inline-flex h-5 min-w-0 max-w-full items-center gap-[3px] whitespace-nowrap rounded-full bg-[#F3F8EC] font-medium leading-none text-[#24693E] ${
-                isList ? 'px-2 text-[10.5px]' : 'px-[clamp(5px,2.4cqw,9px)] text-[clamp(9px,2.9cqw,11px)]'
+                isList ? 'px-2 text-[11.443px]' : 'px-[clamp(5px,2.4cqw,9px)] text-[clamp(11.321px,calc(2.9cqw+0.943px),11.943px)]'
               }`}
             >
-              {/* icon shrink-0 so truncation only ever eats the label */}
+              {/* icon shrink-0 so truncation only ever eats the label. The icon keeps the
+                  leaf green (currentColor); the label carries the type pick. */}
               <LineIcon name={f.icon} className="pah-chip-icon h-3 w-3 shrink-0" aria-hidden />
-              <span className="min-w-0 truncate">
+              <span className="min-w-0 truncate font-semibold text-[#141414]">
                 {suffix ? f.value : f.chip}
                 {suffix && <span className="pah-chip-suffix">{suffix}</span>}
               </span>
@@ -263,7 +267,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
       </div>
     ) : null;
 
-  /* price row — 34px (28px mobile) var(--ds-btn, #2E5E2A) · struck 18px #767676 ·
+  /* price row — #141414 extrabold (type picks 2026-10-15) · struck #333333 ·
      chip #FFEAEA / #D73C3C. Sits directly on top of the CTA.
 
      Price and struck price group on the LEFT, discount chip pinned RIGHT.
@@ -283,11 +287,13 @@ const PlantAtHomeCard: React.FC<Props> = ({
     >
       <span className="flex min-w-0 items-center gap-x-[clamp(5px,2.2cqw,10px)]">
         {/* variable products show the size range min–max */}
+        {/* text-ds-btn stays as the role's hook; data-t sets the picked ink over it */}
         <span
-          className={`whitespace-nowrap leading-none text-ds-btn ${
+          data-t="card.price"
+          className={`whitespace-nowrap font-extrabold leading-none text-ds-btn ${
             isVariable && hasRange
-              ? 'text-[clamp(12px,4.4cqw,16px)] font-semibold'
-              : 'text-[clamp(13.5px,5.4cqw,19px)] font-bold'
+              ? 'text-[clamp(13.887px,calc(4.4cqw+1.887px),17.887px)]'
+              : 'text-[clamp(15.387px,calc(5.4cqw+1.887px),20.887px)]'
           }`}
         >
           {isVariable
@@ -297,13 +303,13 @@ const PlantAtHomeCard: React.FC<Props> = ({
             : compactPrice(price)}
         </span>
         {!isVariable && basePrice && (
-          <del className="whitespace-nowrap text-[clamp(11px,4.4cqw,18px)] leading-none text-[#767676]">
+          <del className="whitespace-nowrap text-[clamp(11.943px,calc(4.4cqw+0.943px),18.943px)] leading-none text-[#333333]">
             {compactPrice(basePrice)}
           </del>
         )}
       </span>
       {!isVariable && discount && (
-        <span className="shrink-0 whitespace-nowrap rounded bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(9.5px,3.4cqw,14px)] font-bold leading-none text-[#D73C3C]">
+        <span className="shrink-0 whitespace-nowrap rounded bg-[#FFEAEA] px-[clamp(6px,2.6cqw,12px)] py-1.5 text-[clamp(11.321px,calc(3.4cqw+0.943px),14.943px)] font-extrabold leading-none text-[#D73C3C]">
           {discount} OFF
         </span>
       )}
@@ -315,11 +321,11 @@ const PlantAtHomeCard: React.FC<Props> = ({
      cards. Kept in lockstep with the qty stepper below and add-to-cart-btn/add-to-cart, which
      share this baseline — changing one alone breaks the action row's alignment. */
   const ctaBox =
-    'flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control px-2 text-[clamp(11px,3.6cqw,14px)] font-semibold';
+    'flex h-[clamp(34px,9.5cqw,40px)] w-full items-center justify-center gap-2 whitespace-nowrap rounded-control px-2 text-[clamp(11.943px,calc(3.6cqw+0.943px),14.943px)] font-semibold';
   const cta = displayOnly ? (
     /* The city can't supply it (or a nationwide product is out of stock): say so, for simple
        AND sized products — "Select Options" on an unbuyable plant was a dead end. */
-    <button type="button" disabled className={`${ctaBox} cursor-not-allowed truncate bg-stone-200 text-stone-500`}>
+    <button type="button" disabled data-t="card.cta" className={`${ctaBox} cursor-not-allowed truncate bg-stone-200 text-stone-500`}>
       {cityBased && city ? `Out of stock in ${city}` : 'Out of stock'}
     </button>
   ) : isVariable ? (
@@ -330,6 +336,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
     <Link
       {...linkProps}
       href={Routes.product(product.slug)}
+      data-t="card.cta"
       className={`${ctaBox} bg-ds-btn text-white transition duration-300 group-hover:bg-ds-btn-hover focus:outline-0 focus-visible:ring-2 focus-visible:ring-forest-700 focus-visible:ring-offset-2`}
     >
       {/* No cart glyph: on a ~150px two-up card it ate the width the label needed. */}
@@ -411,10 +418,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
           /* Designed no-image state: soft wash, line-art plant, heading */
           <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-5 text-center">
             <PlantMark className="h-[clamp(44px,18cqw,64px)] w-[clamp(44px,18cqw,64px)] text-forest-800/35" />
-            <span className="text-[clamp(14px,5.6cqw,19px)] font-bold leading-tight text-forest-900/80">
+            <span className="text-[clamp(14.943px,calc(5.6cqw+0.943px),19.943px)] font-bold leading-tight text-forest-900/80">
               No Image Available
             </span>
-            <span className="max-w-[200px] text-[clamp(10.5px,3.8cqw,12px)] leading-snug text-stone-500">
+            <span className="max-w-[200px] text-[clamp(11.443px,calc(3.8cqw+0.943px),12.943px)] leading-snug text-stone-500">
               We&rsquo;re working on adding a beautiful image for this {!typeSlug || typeSlug === 'plants' ? 'plant' : 'product'}.
             </span>
           </span>
@@ -431,15 +438,15 @@ const PlantAtHomeCard: React.FC<Props> = ({
           uses that corner (and Ask AI is hidden on those cards, below).
         */}
         {noImage ? (
-          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
+          <span className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11.943px,calc(3.8cqw+0.943px),14.943px)] font-semibold leading-none text-white">
             No Image
           </span>
         ) : badge ? (
-          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-white">
+          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-[#1C5E3C] px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11.943px,calc(3.8cqw+0.943px),14.943px)] font-semibold leading-none text-white">
             {badge}
           </span>
         ) : reviewCount === 0 ? (
-          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-sage-100 px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11px,3.8cqw,14px)] font-semibold leading-none text-forest-800">
+          <span className="absolute bottom-[clamp(10px,4.6cqw,18px)] left-[clamp(10px,4.6cqw,18px)] z-10 rounded bg-sage-100 px-[clamp(9px,3.8cqw,15px)] py-[clamp(5px,2cqw,8px)] text-[clamp(11.943px,calc(3.8cqw+0.943px),14.943px)] font-semibold leading-none text-forest-800">
             New
           </span>
         ) : null}
@@ -471,7 +478,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             /* Same clamp insets as the wishlist heart opposite it — it used a
                fixed bottom-3/left-3, so it only lined up with the other
                overlays at one card width. */
-            className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 inline-flex items-center rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
+            className="absolute left-[clamp(10px,4.6cqw,18px)] top-[clamp(10px,4.6cqw,18px)] z-10 inline-flex items-center rounded-full border border-white/25 bg-black/45 px-2.5 py-1.5 text-[11.943px] font-medium text-white/95 backdrop-blur-md transition hover:border-white/40 hover:bg-black/60"
           >
             Ask AI
           </button>
@@ -499,7 +506,7 @@ const PlantAtHomeCard: React.FC<Props> = ({
             <div className="flex min-w-0 flex-1 flex-col">
               {titleRow}
               {desc ? (
-                <p title={desc || undefined} className="mt-1.5 text-[12.5px] font-medium leading-[1.45] text-[#1F1F1F] line-clamp-2">{desc}</p>
+                <p title={desc || undefined} className="mt-1.5 text-[13.443px] font-medium leading-[1.45] text-[#767676] line-clamp-2">{desc}</p>
               ) : null}
               {/* A phone-width row can't seat a label/value grid (values cut to
                   "Brig…"), so it gets the same whole-chip row as the grid card;
@@ -536,10 +543,10 @@ const PlantAtHomeCard: React.FC<Props> = ({
           <>
             {titleRow}
 
-            {/* description — near-black, medium; 2-line clamp with fixed min-height
+            {/* description — grey, medium (type picks 2026-10-15); 2-line clamp with fixed min-height
                 so grid rows stay aligned. `title` shows the full text on hover
                 (owner 2026-10-14), the same tooltip the name and botanical name use. */}
-            <p title={desc || undefined} className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(10.5px,3.4cqw,12.5px)] font-medium leading-[1.3] text-[#1F1F1F] line-clamp-2">
+            <p title={desc || undefined} className="mb-[0.275rem] mt-[0.1rem] min-h-[2.6em] text-[clamp(11.443px,calc(3.4cqw+0.943px),13.443px)] font-medium leading-[1.3] text-[#767676] line-clamp-2">
               {desc}
             </p>
 

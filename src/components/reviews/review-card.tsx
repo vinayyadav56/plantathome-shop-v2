@@ -70,10 +70,10 @@ export default function ReviewCard({ review }: ReviewCardProps) {
       <Rating rating={rating} className="mb-2.5" />
       <div className="mb-4 flex items-center text-xs text-gray-500">
         {t('text-by')}{' '}
-        <span className="capitalize ltr:ml-1 rtl:mr-1">{user?.name}</span>
+        <span className="capitalize text-[#333333] ltr:ml-1 rtl:mr-1">{user?.name}</span>
         <CheckedIcon className="h-[13px] w-[13px] text-gray-700 ltr:ml-1 rtl:mr-1" />
       </div>
-      <p className="text-base leading-7 text-heading">{comment}</p>
+      <p className="text-base leading-7 text-[#333333]">{comment}</p>
 
       <div className="space-s-2 flex items-start pt-3">
         {photos?.map((photo, idx) => (
@@ -99,7 +99,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
         </div>
         <div className="flex items-center space-x-6 rtl:space-x-reverse">
           <button
-            className="flex items-center text-xs tracking-wider text-gray-400 transition"
+            className="flex items-center text-xs tracking-wider text-[#333333] transition"
             disabled={my_feedback?.positive}
             onClick={() => feedback({ positive: true })}
           >
@@ -111,7 +111,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
             {positive_feedbacks_count}
           </button>
           <button
-            className="flex items-center text-xs tracking-wider text-gray-400 transition"
+            className="flex items-center text-xs tracking-wider text-[#333333] transition"
             onClick={() => feedback({ negative: true })}
             disabled={my_feedback?.negative}
           >
@@ -151,7 +151,7 @@ export default function ReviewCard({ review }: ReviewCardProps) {
                       onClick={openAbuseReportModal}
                       className={cn(
                         'flex w-full items-center space-x-4 px-5 py-2.5 text-sm font-semibold capitalize transition duration-200 hover:text-accent focus:outline-0 rtl:space-x-reverse',
-                        active ? 'text-accent' : 'text-body'
+                        active ? 'text-accent' : 'text-[#333333]'
                       )}
                     >
                       {t('text-report-abuse')}

@@ -112,7 +112,7 @@ const FacetCategoryList = ({ rows }: { rows: NonNullable<FilterFacets['facets'][
             checked={selected.includes(c.slug)}
             onChange={() => toggle(c.slug)}
           />
-          <span className="text-xs tabular-nums text-stone-400">{c.count}</span>
+          <span className="text-[12.943px] leading-4 tabular-nums text-[#333333]">{c.count}</span>
         </div>
       ))}
       {sorted.length > VISIBLE_ROWS && (
@@ -120,6 +120,7 @@ const FacetCategoryList = ({ rows }: { rows: NonNullable<FilterFacets['facets'][
           type="button"
           onClick={() => setExpanded((v) => !v)}
           aria-expanded={expanded}
+          data-t="cat.link"
           className="self-start text-[13px] font-semibold text-forest-700 hover:underline focus:outline-0 focus-visible:underline"
         >
           {expanded ? '− Show less' : '+ Show more'}

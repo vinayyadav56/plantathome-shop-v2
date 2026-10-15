@@ -44,16 +44,16 @@ export default function QuestionCard({ question }: QuestionCardProps) {
 
   return (
     <div className="border-t border-border-200 border-opacity-70 py-7 first:border-t-0">
-      <p className="mb-2.5 text-base font-semibold text-heading">
+      <p className="mb-2.5 text-base font-semibold text-[#333333]">
         <span className="inline-block uppercase ltr:mr-1 rtl:ml-1">Q:</span>
         {userQuestion}
       </p>
       {answer && (
-        <p className="text-base">
-          <span className="inline-block font-semibold uppercase text-heading ltr:mr-1 rtl:ml-1">
+        <p className="text-base text-[#333333]">
+          <span className="inline-block font-semibold uppercase text-[#333333] ltr:mr-1 rtl:ml-1">
             A:
           </span>
-          <span className="text-gray-600">{answer}</span>
+          <span className="text-[#333333]">{answer}</span>
         </p>
       )}
 
@@ -64,7 +64,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
 
         <div className="flex items-center space-x-6 rtl:space-x-reverse">
           <button
-            className="flex items-center text-xs tracking-wider text-gray-400 transition"
+            className="flex items-center text-xs tracking-wider text-[#333333] transition"
             disabled={my_feedback?.positive}
             onClick={() => feedback({ positive: true })}
           >
@@ -76,7 +76,7 @@ export default function QuestionCard({ question }: QuestionCardProps) {
             {positive_feedbacks_count}
           </button>
           <button
-            className="flex items-center text-xs tracking-wider text-gray-400 transition"
+            className="flex items-center text-xs tracking-wider text-[#333333] transition"
             onClick={() => feedback({ negative: true })}
             disabled={my_feedback?.negative}
           >
