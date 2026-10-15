@@ -11,6 +11,7 @@ import { useTypes } from '@/framework/type';
 import { useCategories } from '@/framework/category';
 import { TYPES_PER_PAGE } from '@/framework/client/variables';
 import { getVerticalMeta } from '@/components/storefront/verticals';
+import ComingSoon from '@/components/storefront/coming-soon';
 import type { Type } from '@/types';
 import { ArrowRight } from '@/components/ui/icon';
 
@@ -55,6 +56,8 @@ function CategoryCard({ category }: { category: any }) {
 function VerticalSection({ type }: { type: Type }) {
   const { t } = useTranslation('common');
   const meta = getVerticalMeta(type.slug, type.name);
+  // Switched to Coming Soon (the API's flag): its tile, even where categories exist.
+  const comingSoon = type.availability?.status === 'coming_soon';
   const { categories, isLoading, hasMore, isLoadingMore, loadMore, paginatorInfo } =
     useCategories({
       type: type.slug,
@@ -86,7 +89,7 @@ function VerticalSection({ type }: { type: Type }) {
           </h2>
           <p className="mt-1 font-hanken text-[13px] text-[#333333]">
             {meta.tagline}
-            {total > 0 && (
+            {total > 0 && !comingSoon && (
               <span className="ms-2 text-[#333333]">
                 · {total} {t('categories-count-label')}
               </span>
@@ -102,7 +105,9 @@ function VerticalSection({ type }: { type: Type }) {
         </Link>
       </div>
 
-      {isLoading && list.length === 0 ? (
+      {comingSoon ? (
+        <ComingSoon compact slug={type.slug} name={type.name} message={type.availability?.message} />
+      ) : isLoading && list.length === 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="h-[168px] animate-pulse rounded-2xl bg-sage-100" />

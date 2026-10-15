@@ -66,9 +66,13 @@ export default function PincodeServiceability() {
   return (
     <div className="pa-pin pa-pin--no">
       <X size={14} className="mr-1 inline-block align-[-2px]" aria-hidden />
-      Sorry, we don’t deliver to {result.pincode} yet. Please use a serviceable
-      delivery address to continue.
-      <DeliveryNotifyMe pincode={zip} />
+      {result.message || (
+        <>
+          Sorry, we don’t deliver to {result.pincode} yet. Please use a serviceable
+          delivery address to continue.
+        </>
+      )}
+      {result.reason !== 'unknown_pincode' && <DeliveryNotifyMe pincode={zip} />}
     </div>
   );
 }

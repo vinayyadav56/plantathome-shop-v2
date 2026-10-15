@@ -9,6 +9,7 @@ import { isVariationSelected } from '@/lib/is-variation-selected';
 import { availableValues, findVariant, pick, sellable, type Picks } from '@/lib/variant-match';
 import usePrice from '@/lib/use-price';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 // '@/framework/*' maps to src/framework/rest/* (see tsconfig paths).
 import { useCityPrice } from '@/framework/use-city-price';
@@ -36,6 +37,7 @@ const SizeSheet = ({ product }: { product: Product }) => {
   const { attributes, setAttributes } = useAttributes();
   const { addItemToCart, updateCartLanguage, language } = useCart();
   const { city, displayOnly } = useCitySupply();
+  const { isComingSoon } = useComingSoon();
   const [qty, setQty] = useState(1);
 
   // This product is the city-aware fetch, so its rows carry city_available.
@@ -95,20 +97,23 @@ const SizeSheet = ({ product }: { product: Product }) => {
   const showRange = isVariable && !selectedRow;
 
   // Gates, in the order the PDP applies them; the reason doubles as the CTA label.
+  // A Coming Soon vertical sells nothing, wherever and whatever the stock.
   // City gates apply to city-based products only; nationwide ones (Tools) carry their own stock.
   const cityBased = isCityBased(product);
   const cityUnavailable = cityBased && (product as { available_in_city?: boolean }).available_in_city === false;
-  const blocked = cityUnavailable
-    ? `Not available in ${city ?? 'your city'} yet`
-    : cityBased && displayOnly
-      ? `Out of stock in ${city}`
-      : (selectedRow && !sellable(selectedRow, rows)) || isNationwideOutOfStock(product)
-        ? 'Out of stock'
-        : showRange
-          ? isSelected
-            ? "This combination isn't available"
-            : 'Select a size'
-          : null;
+  const blocked = isComingSoon(product)
+    ? 'Coming soon'
+    : cityUnavailable
+      ? `Not available in ${city ?? 'your city'} yet`
+      : cityBased && displayOnly
+        ? `Out of stock in ${city}`
+        : (selectedRow && !sellable(selectedRow, rows)) || isNationwideOutOfStock(product)
+          ? 'Out of stock'
+          : showRange
+            ? isSelected
+              ? "This combination isn't available"
+              : 'Select a size'
+            : null;
 
   const handleAdd = () => {
     if (blocked) return;

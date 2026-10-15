@@ -2,9 +2,10 @@ import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadCategoryData } from '@/framework/ssr/prefetch';
+import { loadCategoryData, loadComingSoon, loadGeneralData } from '@/framework/ssr/prefetch';
 import { pageTitle } from '@/lib/seo';
 import { PageBody } from '@/page-bodies/category';
+import { PageBody as ComingSoonPageBody } from '@/components/storefront/coming-soon';
 import { SITE_URL as BASE } from '@/lib/site-url';
 
 export const revalidate = 300;
@@ -65,6 +66,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const category = await fetchCategory(slug);
   if (category === false) notFound();
+  // A category of a Coming Soon vertical renders that vertical's Coming Soon page (below).
+  const soon = category?.type?.slug ? await loadComingSoon(category.type.slug) : null;
+  if (soon) return { title: `${soon.name} — Coming soon`, robots: { index: false } };
   const name = category?.name ?? prettify(slug);
   const title = pageTitle(category?.seo_title || `Buy ${name} Online in India`);
   // A category with no products is thin content (e.g. the empty "-plants"
@@ -100,6 +104,16 @@ export default async function Page({
   // used to stream a 200 shell first is gone).
   const category = await fetchCategory(slug);
   if (category === false) notFound();
+  // Keyed on the category's vertical: /c/planters-pots is a Tools category.
+  const soon = category?.type?.slug ? await loadComingSoon(category.type.slug) : null;
+  if (soon) {
+    const { dehydratedState } = await loadGeneralData();
+    return (
+      <Hydrate state={dehydratedState}>
+        <ComingSoonPageBody slug={category.type.slug} {...soon} />
+      </Hydrate>
+    );
+  }
   const { dehydratedState } = await loadCategory(slug, category);
   const name = category?.name ?? prettify(slug);
   // The whole primary path, root first (matches the visible breadcrumb).

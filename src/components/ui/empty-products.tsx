@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getStoredCity } from '@/lib/customer-location';
 import { useRouter } from '@/compat/next-router';
 import { getVerticalMeta } from '@/components/storefront/verticals';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { ArrowRight } from '@/components/ui/icon';
 import PottedPlantIllustration from '@/components/ui/illustration/potted-plant';
 
@@ -31,6 +32,7 @@ export function EmptyProducts({
   React.useEffect(() => {
     setCity(getStoredCity());
   }, []);
+  const { plantsNationwide } = useComingSoon();
 
   // A search with no matches is not an inventory gap: say what was searched and send the shopper
   // back to the vertical they searched (the per-vertical boxes land here for Tools and FarmBox too,
@@ -92,13 +94,15 @@ export function EmptyProducts({
   }
 
   const what = categoryName ? categoryName.toLowerCase() : 'plants';
+  // Plants ship anywhere in India (a nationwide catalogue): an empty list is no city gap then.
+  const where = plantsNationwide ? null : city;
   const heading =
     title ??
-    (city ? `No ${what} in ${city} yet` : `No ${what} here yet`);
+    (where ? `No ${what} in ${where} yet` : `No ${what} here yet`);
   const sub =
     subtitle ??
-    (city
-      ? `We're still growing our collection in ${city}. Explore everything available, or change your city from the top bar.`
+    (where
+      ? `We're still growing our collection in ${where}. Explore everything available, or change your city from the top bar.`
       : `We couldn't find anything to show here. Explore our full collection of plants and essentials.`);
 
   return (

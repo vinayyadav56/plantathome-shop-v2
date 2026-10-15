@@ -7,6 +7,7 @@ import { MinusIconNew } from '@/components/icons/minus-icon';
 import { useTranslation } from 'next-i18next';
 import classNames from 'classnames';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 import dynamic from 'next/dynamic';
 const AddToCartBtn = dynamic(
@@ -74,6 +75,9 @@ export const AddToCart = ({
   // A nationwide product (Tools) is gated by its own stock instead.
   const { displayOnly: cityDisplayOnly } = useCitySupply();
   const displayOnly = isCityBased(data) ? cityDisplayOnly : isNationwideOutOfStock(data);
+  // A Coming Soon vertical sells nothing at all (wishlist rows included).
+  const { isComingSoon } = useComingSoon();
+  const comingSoon = isComingSoon(data);
   const item = generateCartItem(data, variation);
   const addToCart = (
     e: React.MouseEvent<HTMLButtonElement | MouseEvent>,
@@ -114,7 +118,9 @@ export const AddToCart = ({
 
   // Display-only city: swap every add-to-cart affordance for an Out of Stock
   // pill — the catalog stays browsable, ordering waits for nursery supply.
-  if (displayOnly && !isInCart(item?.id)) {
+  // A Coming Soon product gets the same pill, saying so.
+  if ((displayOnly || comingSoon) && !isInCart(item?.id)) {
+    const pill = comingSoon ? t('text-coming-soon') : 'Out of Stock';
     // Inside a product card this has to obey the SAME container-query geometry
     // as the real CTA it replaces. As a fixed inline-flex chip (px-3, text-xs,
     // ~119px wide, ~28px tall) it neither filled nor fitted the card's action
@@ -124,13 +130,13 @@ export const AddToCart = ({
     if (variant === 'plantathome') {
       return (
         <span className="flex h-[clamp(34px,9.5cqw,40px)] w-full min-w-0 cursor-not-allowed items-center justify-center rounded bg-gray-100 px-[clamp(6px,2.2cqw,12px)] text-[clamp(10px,3.2cqw,12px)] font-medium uppercase leading-none tracking-wide text-stone-500">
-          <span className="truncate">Out of Stock</span>
+          <span className="truncate">{pill}</span>
         </span>
       );
     }
     return (
       <span className="inline-flex cursor-not-allowed items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-stone-500">
-        Out of Stock
+        {pill}
       </span>
     );
   }
@@ -194,7 +200,7 @@ export const AddToCart = ({
         onIncrement={handleIncrementClick}
         variant={(counterVariant || variant) as any}
         className={counterClass}
-        disabled={outOfStock || displayOnly}
+        disabled={outOfStock || displayOnly || comingSoon}
       />
     </>
   );

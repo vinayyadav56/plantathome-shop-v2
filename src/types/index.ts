@@ -488,6 +488,9 @@ export interface Type {
   banners: Banner[];
   icon?: string;
   promotional_sliders: Attachment[];
+  /** Storefront list only: the vertical's live switch. `coming_soon` = listed, never sold;
+   *  `nationwide` = a global catalogue (Plants ship anywhere in India). */
+  availability?: { status: string; message?: string | null; nationwide?: boolean } | null;
   settings: {
     isHome: boolean;
     layoutType: string;

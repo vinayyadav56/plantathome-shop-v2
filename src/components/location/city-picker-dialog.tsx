@@ -6,6 +6,7 @@ import { getBrowserCoords } from '@/lib/geocode';
 import { CITY_ALIASES, pickerCityKey, reverseGeocodePin } from '@/lib/shopping-city';
 import { track } from '@/lib/analytics/track';
 import { getRecentCities, pushRecentCity } from '@/lib/recent-cities';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { ChevronDown, MapPin, X } from '@/components/ui/icon';
 
 interface Props {
@@ -77,8 +78,9 @@ function haystack(c: LookupCity) {
 
 /**
  * Searchable shopping-city picker over every city we list (useAllCities: nursery cities first,
- * the rest tagged "No plants yet"). Used by the header city switcher, the city-blocked screen,
- * checkout's city-mismatch prompt and the first-visit Shopping-City selection. Fail-safe.
+ * the rest tagged "No plants yet", or "Ships by courier" while Plants are a nationwide
+ * catalogue). Used by the header city switcher, the city-blocked screen, checkout's
+ * city-mismatch prompt and the first-visit Shopping-City selection. Fail-safe.
  *
  * Compact, Blinkit-style (owner annotation 2026-10-12): detect | or | search on one row,
  * the city list as a dropdown that opens from the search box, no "Popular cities" block.
@@ -94,6 +96,7 @@ export default function CityPickerDialog({
 }: Props) {
   // ~1,600 cities, and a picker is mounted on every page: load the list only while open.
   const { data: cities, isLoading, isError, refetch } = useAllCities(open);
+  const { plantsNationwide } = useComingSoon();
   const [q, setQ] = useState('');
   // The city list is a DROPDOWN under the search box (owner annotation 2026-10-12: "provide
   // the list in dropdown", "make small size of this popup just like blinkit"): closed until
@@ -359,12 +362,13 @@ export default function CityPickerDialog({
                     >
                       <span className="min-w-0">
                         <span className="font-medium text-heading">{c.name}</span>
-                        {/* No partner nursery here: Tools ship, plants don't yet. */}
+                        {/* No partner nursery here: plants come by courier from the
+                            nationwide catalogue, or not at all yet. */}
                         {!c.is_serviceable ? (
                           <>
                             {' '}
                             <span className="ms-1 whitespace-nowrap rounded-full bg-stone-100 px-2 py-0.5 text-[11px] font-medium text-stone-600">
-                              No plants yet
+                              {plantsNationwide ? 'Ships by courier' : 'No plants yet'}
                             </span>
                           </>
                         ) : null}

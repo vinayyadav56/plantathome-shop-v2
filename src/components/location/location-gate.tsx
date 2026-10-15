@@ -121,7 +121,7 @@ export default function LocationGate() {
     <CityPickerDialog
       open={mustPick && !exemptRoute}
       title="Select your shopping city"
-      subtitle="Plants, pots and prices are specific to your city. You can change it anytime from the top of the page."
+      subtitle="Delivery and prices depend on your city. You can change it anytime from the top of the page."
       suggestedCity={suggested}
       onClose={dismiss}
       onPick={pickCity}

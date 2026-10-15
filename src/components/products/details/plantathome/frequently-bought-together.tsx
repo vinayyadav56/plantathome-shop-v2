@@ -8,6 +8,7 @@ import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import { getVariations } from '@/lib/get-variations';
 import { findVariant, sellable, type Groups, type VariantRow } from '@/lib/variant-match';
 import { LineIcon } from '@/components/icons/line-icons';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { useAttributes } from '../attributes.context';
 
 /** Effective unit price — variable items (size-priced) fall back to min_price. */
@@ -42,20 +43,24 @@ export default function FrequentlyBoughtTogether({ product }: { product: Product
   // The size picked on the page above: FBT sits inside the PDP's AttributesProvider.
   const { attributes } = useAttributes();
   const [added, setAdded] = useState(false);
+  // A Coming Soon vertical sells nothing: no companion from one, and no bundle on its own page.
+  const { isComingSoon } = useComingSoon();
   const p: any = product;
 
   // Related products arrive from the API already buyable (published, listed, in stock, priced),
   // same categories, nearest in price first. Owner 2026-10-14: keep the price range too — half to
   // 2.5× this product's price; if fewer than two sit in that band, the closest ones stand in.
   const anchor = unitPrice(p);
-  const related = ((p?.related_products ?? []) as any[]).filter((r) => r?.id !== p?.id && joins(r));
+  const related = ((p?.related_products ?? []) as any[]).filter(
+    (r) => r?.id !== p?.id && joins(r) && !isComingSoon(r),
+  );
   const inBand = anchor > 0
     ? related.filter((r) => { const v = unitPrice(r); return v >= anchor * 0.5 && v <= anchor * 2.5; })
     : related;
-  const addons = ((p?.addons ?? []) as any[]).filter(joins);
+  const addons = ((p?.addons ?? []) as any[]).filter((a) => joins(a) && !isComingSoon(a));
   const companions: any[] = (addons.length ? addons : inBand.length >= 2 ? inBand : related).slice(0, 3);
 
-  if (companions.length === 0) return null;
+  if (companions.length === 0 || isComingSoon(p)) return null;
 
   // The main product joins with the variant picked above, once it can be sold (the PDP's own
   // CTA gate); a variable one without it keeps "Add all" disabled.

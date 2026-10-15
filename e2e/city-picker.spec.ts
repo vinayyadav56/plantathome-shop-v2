@@ -43,12 +43,14 @@ test('search covers every city we list, nursery cities first', async ({ page }) 
   const list = page.locator('#city-picker-list');
   // An empty box: the nursery cities, and how to reach the rest.
   await expect(list.getByText(/Type to search all [\d,]+ cities/)).toBeVisible({ timeout: 20_000 });
-  await expect(list.getByRole('button', { name: /No plants yet/ })).toHaveCount(0);
+  // A city with no nursery is tagged "Ships by courier" while Plants are a nationwide
+  // catalogue (GET /types: plants.availability.nationwide), else "No plants yet".
+  await expect(list.getByRole('button', { name: /No plants yet|Ships by courier/ })).toHaveCount(0);
 
   await box.fill('pune');
-  await expect(list.getByRole('button').first()).toHaveText(/^Pune\s*No plants yet/);
+  await expect(list.getByRole('button').first()).toHaveText(/^Pune\s*(No plants yet|Ships by courier)/);
   await box.fill('bangalore'); // old name
-  await expect(list.getByRole('button').first()).toHaveText(/^Bengaluru(?!.*No plants)/);
+  await expect(list.getByRole('button').first()).toHaveText(/^Bengaluru(?!.*(No plants yet|Ships by courier))/);
   await box.fill('gurg'); // "Gurgaon" is Gurugram's old-name row: not listed twice
   await expect(list.getByRole('button')).toHaveText([/^Gurugram/]);
 

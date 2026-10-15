@@ -10,6 +10,8 @@ export interface PincodeServiceability {
   cod_enabled?: boolean;
   eta_days?: number | null;
   reason?: string;
+  /** Why not, in the server's words (e.g. an unknown PIN). */
+  message?: string | null;
 }
 
 /**

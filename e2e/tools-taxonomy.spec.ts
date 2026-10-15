@@ -10,9 +10,23 @@ import { test, expect } from '@playwright/test';
  * nationwide). Read only.
  */
 
+const API = process.env.E2E_API_BASE || 'https://plantathome-production.up.railway.app/api';
+
 test.describe('Gardening Tools category pages', () => {
+  // Tools switched to COMING SOON: every Tools category is the Coming Soon page (the /tools
+  // spec covers it), so the taxonomy has nothing to show here.
+  let toolsSoon = false;
+  test.beforeAll(async ({ request }) => {
+    const r = await request.get(`${API}/types`, { params: { limit: 100, language: 'en' } });
+    const body = r.ok() ? await r.json() : [];
+    toolsSoon = ((Array.isArray(body) ? body : body?.data ?? []) as { slug?: string; availability?: { status?: string } | null }[]).some(
+      (t) => t?.slug === 'tools' && t?.availability?.status === 'coming_soon',
+    );
+  });
+
   // A first visit opens the city picker over the page; seed a city as the /tools specs do.
   test.beforeEach(async ({ page }) => {
+    test.skip(toolsSoon, 'Tools is Coming Soon in this environment');
     await page.addInitScript(() => {
       try {
         localStorage.setItem('pah_customer_city', 'Delhi');

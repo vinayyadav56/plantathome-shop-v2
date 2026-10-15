@@ -46,8 +46,9 @@ async function fetchSlugs(path: string): Promise<string[]> {
     const json = await res.json();
     const rows: any[] = Array.isArray(json) ? json : json?.data ?? [];
     return rows
-      // Admin noindex flag (products/categories emit it): never advertise those.
-      .filter((r) => r?.noindex !== true)
+      // Admin noindex flag (products/categories emit it): never advertise those. A Coming Soon
+      // vertical (types carry `availability`) renders a noindex page: never advertised either.
+      .filter((r) => r?.noindex !== true && r?.availability?.status !== 'coming_soon')
       .map((r) => r?.slug)
       .filter((s): s is string => typeof s === 'string' && s.length > 0);
   } catch {
@@ -136,11 +137,23 @@ async function categoriesWithProducts(slugs: string[]): Promise<string[]> {
 async function listableCategorySlugs(): Promise<string[] | null> {
   if (!API) return [];
   try {
-    const res = await fetch(`${API}/categories/tree`, { next: { revalidate: 3600 } });
+    const [res, typesRes] = await Promise.all([
+      fetch(`${API}/categories/tree`, { next: { revalidate: 3600 } }),
+      fetch(`${API}/types?limit=100`, { next: { revalidate: 3600 } }),
+    ]);
     if (!res.ok) return null;
+    // A Coming Soon vertical's categories render its noindex Coming Soon page: not listed.
+    type ApiType = { id?: number | string; availability?: { status?: string } | null };
+    const types: ApiType[] | { data?: ApiType[] } = typesRes.ok ? await typesRes.json() : [];
+    const soon = new Set(
+      (Array.isArray(types) ? types : types.data ?? [])
+        .filter((t) => t?.availability?.status === 'coming_soon')
+        .map((t) => Number(t.id)),
+    );
     const out = new Set<string>();
     const walk = (nodes: any[]) => {
       for (const n of nodes ?? []) {
+        if (soon.has(Number(n?.type_id))) continue;
         if (!n?.placement && n?.is_active !== false && n?.noindex !== true && Number(n?.products_count) > 0 && typeof n?.slug === 'string') {
           out.add(n.slug);
         }

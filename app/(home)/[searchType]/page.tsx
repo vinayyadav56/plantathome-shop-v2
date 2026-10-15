@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import { Caveat } from 'next/font/google';
 import { Hydrate } from '@/compat/react-query-hydration';
 import {
+  loadComingSoon,
   loadFarmboxData,
+  loadGeneralData,
   loadHomeData,
   loadPlpData,
   loadToolsData,
@@ -14,6 +16,7 @@ import HomeScreen from '@/app-shell/home-screen';
 import { PageBody as PlpPageBody } from '@/page-bodies/plp';
 import { PageBody as ToolsPageBody } from '@/page-bodies/tools';
 import { PageBody as FarmboxPageBody } from '@/page-bodies/farmbox';
+import { PageBody as ComingSoonPageBody } from '@/components/storefront/coming-soon';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 // Plain module (no 'use client'), so the FAQ copy is real data here, not a client reference.
 import { TOOLS_FAQS } from '@/components/tools/tools-content';
@@ -70,6 +73,9 @@ export async function generateMetadata({
   params: Promise<{ searchType: string }>;
 }): Promise<Metadata> {
   const { searchType } = await params;
+  // A Coming Soon vertical renders its Coming Soon page (below), kept out of the index.
+  const soon = await loadComingSoon(searchType);
+  if (soon) return { title: `${soon.name} — Coming soon`, robots: { index: false } };
   // Reject unknown verticals HERE as well as in the page body, so a garbage
   // slug is never keyword-stuffed into <title>. (The root app/loading.tsx that
   // used to flush a 200 shell before this ran is gone — it made EVERY missing
@@ -97,6 +103,16 @@ export async function generateStaticParams() {
 
 export default async function VerticalPage({ params }: { params: Promise<{ searchType: string }> }) {
   const { searchType: vertical } = await params;
+  // Switched to COMING SOON (the API still lists it, so this is not a 404): its page, not the catalogue.
+  const soon = await loadComingSoon(vertical);
+  if (soon) {
+    const { dehydratedState } = await loadGeneralData();
+    return (
+      <Hydrate state={dehydratedState}>
+        <ComingSoonPageBody slug={vertical} {...soon} />
+      </Hydrate>
+    );
+  }
   const name = (await loadTypeName(vertical)) ?? prettify(vertical);
   const breadcrumb = {
     '@context': 'https://schema.org',

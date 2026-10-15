@@ -27,6 +27,19 @@ async function liveToolRoots(request: APIRequestContext): Promise<number> {
   return ((await r.json())?.data ?? []).length;
 }
 
+/** Tools switched to COMING SOON: GET /types still lists it, with `availability.status:
+ *  coming_soon`. Then /tools and its categories are the Coming Soon page, and the landing and
+ *  nationwide suites below have nothing to test (they skip; "/tools while Coming Soon" runs). */
+type ApiType = { slug?: string; name?: string; availability?: { status?: string } | null };
+let TOOLS_SOON: ApiType | null = null;
+
+test.beforeAll(async ({ request }) => {
+  const r = await request.get(`${API}/types`, { params: { limit: 100, language: 'en' } });
+  const body = r.ok() ? await r.json() : [];
+  const tools = ((Array.isArray(body) ? body : body?.data ?? []) as ApiType[]).find((t) => t?.slug === 'tools');
+  TOOLS_SOON = tools?.availability?.status === 'coming_soon' ? tools : null;
+});
+
 const SEED_CITY = () => {
   try {
     localStorage.setItem('pah_customer_city', 'Delhi');
@@ -105,6 +118,7 @@ async function scrollThrough(page: Page) {
 
 test.describe('/tools landing', () => {
   test.beforeEach(async ({ page }) => {
+    test.skip(!!TOOLS_SOON, 'Tools is Coming Soon in this environment');
     await page.addInitScript(SEED_CITY);
   });
 
@@ -253,6 +267,45 @@ test.describe('/tools landing', () => {
   }
 });
 
+test.describe('/tools while Coming Soon', () => {
+  test.beforeEach(async ({ page }) => {
+    test.skip(!TOOLS_SOON, 'Tools is live in this environment');
+    await page.addInitScript(SEED_CITY);
+  });
+
+  test('server HTML: the landing, search, categories and a category are the noindex Coming Soon page', async ({ request }) => {
+    const r = await request.get(`${API}/categories`, {
+      params: { type: 'tools', parent: 'null', active: 1, limit: 1, language: 'en' },
+    });
+    const category: string | undefined = (await r.json())?.data?.[0]?.slug;
+    for (const path of ['/tools', '/tools/search?text=pruner', '/categories/tools', ...(category ? [`/c/${category}`] : [])]) {
+      const res = await request.get(path);
+      expect(res.status(), path).toBe(200);
+      const html = await res.text();
+      expect(html, `${path}: noindex`).toMatch(/<meta(?=[^>]*name="robots")(?=[^>]*content="noindex)[^>]*>/);
+      expect((html.match(/<h1[\s>]/g) ?? []).length, `${path}: one h1`).toBe(1);
+      expect(html, `${path}: the chip`).toMatch(/>Coming soon<\/span>/);
+      expect(html, `${path}: the way out`).toMatch(/<a[^>]*href="\/plants"[^>]*>Shop plants/);
+      expect(html, `${path}: nothing to buy`).not.toMatch(/data-product-card|Add To Shopping Cart/);
+    }
+  });
+
+  for (const width of [390, 1440]) {
+    test(`the Coming Soon page at ${width}px: name, chip, Shop plants, clean console/images/overflow`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      const h = await hygiene(page);
+      await page.goto('/tools', { waitUntil: 'domcontentloaded' });
+      await hydrated(page);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(TOOLS_SOON!.name!);
+      await expect(page.locator('main').getByText('Coming soon', { exact: true })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Shop plants', exact: true })).toHaveAttribute('href', '/plants');
+      await expect(page.getByRole('button', { name: /add to (shopping )?cart/i })).toHaveCount(0);
+      await scrollThrough(page);
+      await h.assert();
+    });
+  }
+});
+
 /* ── Tools = one seller, nationwide (plan 2026-10-08) ──────────────────────────
  * Needs the API that sends `city_based: false` on tools and skips its city gates
  * for them. The shopper's city never hides or blocks a tool: Delhi (supplied), a
@@ -327,6 +380,10 @@ const toolCards = (page: Page) =>
   page.getByRole('region', { name: 'Tools gardeners love' }).locator('[data-product-card]');
 
 test.describe('Tools are nationwide: never city-gated', () => {
+  test.beforeEach(() => {
+    test.skip(!!TOOLS_SOON, 'Tools is Coming Soon in this environment: nothing is listed or sold');
+  });
+
   for (const kind of ['Delhi', 'a no-supply city', 'no city'] as const) {
     test(`${kind}: tools are listed, never "Out of stock in {city}", and the PDP ships across India`, async ({ page, request }) => {
       await page.setViewportSize({ width: 1440, height: 900 });

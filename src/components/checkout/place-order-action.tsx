@@ -117,6 +117,10 @@ export const PlaceOrderAction: React.FC<{
   const shippingZip = (shipping_address as any)?.address?.zip as string | undefined;
   const { result: pincodeResult } = usePincodeServiceability(cityGated ? shippingZip : undefined);
   const pincodeBlocked = pincodeResult?.serviceable === false && !courierMode;
+  // The server's own words when it has them ("We couldn't find this PIN code…").
+  const pincodeMessage =
+    pincodeResult?.message ||
+    `We don't deliver to ${pincodeResult?.pincode ?? shippingZip} yet. Please use a serviceable delivery address.`;
 
   // Delivery coverage, per LINE. verify() has always returned this and the page
   // only displayed it, so a cart with an uncoverable item reached /orders and
@@ -280,9 +284,7 @@ export const PlaceOrderAction: React.FC<{
       return;
     }
     if (pincodeBlocked) {
-      setErrorMessage(
-        `We don't deliver to ${pincodeResult?.pincode ?? shippingZip} yet. Please use a serviceable delivery address.`,
-      );
+      setErrorMessage(pincodeMessage);
       return;
     }
     if (coverageBlockedItems?.length) {
@@ -368,11 +370,11 @@ export const PlaceOrderAction: React.FC<{
           {cityStock.message}
         </div>
       )}
-      {pincodeBlocked && (
+      {/* verify() refuses a PIN the postal master doesn't know (PINCODE_UNKNOWN): said here for
+          as long as it stands. When the PIN check already says so, its notice is the one shown. */}
+      {(pincodeBlocked || coverage?.code === 'PINCODE_UNKNOWN') && (
         <div className="mt-3">
-          <ValidationError
-            message={`We don't deliver to ${pincodeResult?.pincode ?? shippingZip} yet. Please use a serviceable delivery address.`}
-          />
+          <ValidationError message={pincodeBlocked ? pincodeMessage : coverage.message} />
         </div>
       )}
       {errorMessage && (

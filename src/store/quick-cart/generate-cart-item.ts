@@ -41,6 +41,8 @@ export function generateCartItem(item: Item, variation: Variation) {
     // false = nationwide (Tools): checkout skips the shopping-city gates for it.
     city_based,
   } = item;
+  // The line's vertical, so the cart can tell a Coming Soon one (use-coming-soon).
+  const type_slug = (item.type as { slug?: string } | null | undefined)?.slug ?? null;
   if (!isEmpty(variation)) {
     return {
       id: `${id}.${variation.id}`,
@@ -59,6 +61,7 @@ export function generateCartItem(item: Item, variation: Variation) {
       in_flash_sale,
       shop_id: shop.id,
       city_based,
+      type_slug,
     };
   }
   return {
@@ -74,5 +77,6 @@ export function generateCartItem(item: Item, variation: Variation) {
     in_flash_sale,
     shop_id: shop?.id,
     city_based,
+    type_slug,
   };
 }

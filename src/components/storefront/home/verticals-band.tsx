@@ -48,11 +48,14 @@ export function VerticalsBand() {
       name: ty.name ?? meta.label,
       tagline: str(cfg?.tagline) ?? meta.tagline,
       img: resolveImageUrl(cfg?.image ?? null) || meta.scenes[0],
-      href: meta.shopPath ?? meta.path,
+      // Coming Soon: its own page (Pots' shop path is a Tools category).
+      href: ty.availability?.status === 'coming_soon' ? `/${ty.slug}` : meta.shopPath ?? meta.path,
+      // The API's Coming Soon switch wins; otherwise the admin tile flag, then verticals.ts.
       comingSoon:
-        typeof cfg?.comingSoon === 'boolean'
+        ty.availability?.status === 'coming_soon' ||
+        (typeof cfg?.comingSoon === 'boolean'
           ? cfg.comingSoon
-          : Boolean(meta.comingSoon),
+          : Boolean(meta.comingSoon)),
       // Configured tiles sort by their admin `order` (ahead of unconfigured
       // ones, which keep their API order). With no config every key is
       // 1000 + i → identical order to before (sort is stable).

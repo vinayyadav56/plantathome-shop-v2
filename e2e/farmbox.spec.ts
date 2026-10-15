@@ -111,8 +111,21 @@ const textOf = (html: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+/** FarmBox switched to COMING SOON (GET /types still lists it): its landing is the Coming Soon
+ *  page, covered by the /tools spec's Coming Soon suite; nothing here applies, so it skips. */
+let FARMBOX_SOON = false;
+
 test.beforeAll(async ({ request }) => {
   SLUG = (await request.get('/farmbox')).status() === 404 ? 'farm-box' : 'farmbox';
+  const r = await request.get(`${API}/types`, { params: { limit: 100, language: 'en' } });
+  const body = r.ok() ? await r.json() : [];
+  FARMBOX_SOON = ((Array.isArray(body) ? body : body?.data ?? []) as { slug?: string; availability?: { status?: string } | null }[]).some(
+    (t) => (t?.slug === 'farmbox' || t?.slug === 'farm-box') && t?.availability?.status === 'coming_soon',
+  );
+});
+
+test.beforeEach(() => {
+  test.skip(FARMBOX_SOON, 'FarmBox is Coming Soon in this environment');
 });
 
 test.describe('/farmbox landing', () => {

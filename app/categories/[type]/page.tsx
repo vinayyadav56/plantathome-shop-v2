@@ -1,8 +1,15 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { Hydrate } from '@/compat/react-query-hydration';
-import { loadCategoriesIndexData, loadTypeName, loadTypeSlugs } from '@/framework/ssr/prefetch';
+import {
+  loadCategoriesIndexData,
+  loadComingSoon,
+  loadGeneralData,
+  loadTypeName,
+  loadTypeSlugs,
+} from '@/framework/ssr/prefetch';
 import { PageBody } from '@/page-bodies/categories';
+import { PageBody as ComingSoonPageBody } from '@/components/storefront/coming-soon';
 import { getVerticalMeta } from '@/components/storefront/verticals';
 import { SITE_URL } from '@/lib/site-url';
 
@@ -27,6 +34,9 @@ async function label(type: string) {
 
 export async function generateMetadata({ params }: { params: Promise<{ type: string }> }): Promise<Metadata> {
   const { type } = await params;
+  // A Coming Soon vertical renders its Coming Soon page (below), kept out of the index.
+  const soon = await loadComingSoon(type);
+  if (soon) return { title: `${soon.name} — Coming soon`, robots: { index: false } };
   const slugs: string[] = await loadTypeSlugs();
   if (slugs.length && !slugs.includes(type)) notFound();
   const name = await label(type);
@@ -39,6 +49,15 @@ export async function generateMetadata({ params }: { params: Promise<{ type: str
 
 export default async function Page({ params }: { params: Promise<{ type: string }> }) {
   const { type } = await params;
+  const soon = await loadComingSoon(type);
+  if (soon) {
+    const { dehydratedState } = await loadGeneralData();
+    return (
+      <Hydrate state={dehydratedState}>
+        <ComingSoonPageBody slug={type} {...soon} />
+      </Hydrate>
+    );
+  }
   const slugs: string[] = await loadTypeSlugs();
   if (slugs.length && !slugs.includes(type)) return notFound();
   const name = await label(type);

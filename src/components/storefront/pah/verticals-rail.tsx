@@ -31,9 +31,12 @@ export function VerticalsRail() {
       slug: ty.slug,
       name: ty.name ?? meta.label,
       img: resolveImageUrl(cfg?.image ?? null) || meta.scenes[0],
-      href: meta.shopPath ?? meta.path,
+      // Coming Soon: its own page (Pots' shop path is a Tools category).
+      href: ty.availability?.status === 'coming_soon' ? `/${ty.slug}` : meta.shopPath ?? meta.path,
+      // The API's Coming Soon switch wins; otherwise the admin tile flag, then verticals.ts.
       comingSoon:
-        typeof cfg?.comingSoon === 'boolean' ? cfg.comingSoon : Boolean(meta.comingSoon),
+        ty.availability?.status === 'coming_soon' ||
+        (typeof cfg?.comingSoon === 'boolean' ? cfg.comingSoon : Boolean(meta.comingSoon)),
     };
   });
 

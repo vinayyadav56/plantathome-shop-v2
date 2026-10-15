@@ -453,3 +453,16 @@ export async function loadTypeName(slug: string): Promise<string | null> {
     return null;
   }
 }
+
+/** A COMING SOON vertical's name and admin message (the API lists it, never sells it); null
+ *  for any other slug, and when the API is down — the route then renders as before. */
+export async function loadComingSoon(slug: string): Promise<{ name: string; message: string | null } | null> {
+  try {
+    const type = (await client.types.all({ limit: 100 }))?.find((t) => t.slug === slug);
+    return type?.availability?.status === 'coming_soon'
+      ? { name: type.name, message: type.availability.message ?? null }
+      : null;
+  } catch {
+    return null;
+  }
+}

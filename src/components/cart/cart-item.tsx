@@ -10,6 +10,8 @@ import { useToggleWishlist } from '@/framework/wishlist';
 import { useUser } from '@/framework/user';
 import { goToSignin } from '@/lib/go-to-signin';
 import { track } from '@/lib/analytics/track';
+import { useComingSoon } from '@/lib/use-coming-soon';
+import { useTranslation } from 'next-i18next';
 
 interface CartItemProps {
   item: any;
@@ -26,6 +28,11 @@ const CartItem = ({ item }: CartItemProps) => {
   const { price } = usePrice({ amount: item.price });
   const { price: itemTotal } = usePrice({ amount: item.itemTotal });
   // City-inventory model: cart items are always orderable; never out of stock.
+  // Except a line from a vertical switched to Coming Soon since it was added
+  // (`type_slug`): no more of it, and checkout leaves it out.
+  const { t } = useTranslation('common');
+  const { isComingSoon } = useComingSoon();
+  const comingSoon = isComingSoon(item);
 
   function handleIncrement(e: React.MouseEvent) {
     e.stopPropagation();
@@ -62,6 +69,11 @@ const CartItem = ({ item }: CartItemProps) => {
         {item.unit && (
           <p className="pa-cart-item-unit">{item.unit}</p>
         )}
+        {comingSoon && (
+          <span className="mb-2 block w-fit rounded-full bg-[#D4A44B] px-2 py-0.5 font-hanken text-[9px] font-bold uppercase tracking-[0.12em] text-[#231A05]">
+            {t('text-coming-soon')}
+          </span>
+        )}
         <div className="pa-cart-item-bottom">
           {/* Quantity stepper */}
           <div className="pa-qty-stepper">
@@ -73,13 +85,15 @@ const CartItem = ({ item }: CartItemProps) => {
               <Minus size={12} aria-hidden />
             </button>
             <span className="pa-qty-val">{item.quantity}</span>
-            <button
-              className="pa-qty-btn"
-              onClick={handleIncrement}
-              aria-label="Increase quantity"
-            >
-              <Plus size={12} aria-hidden />
-            </button>
+            {!comingSoon && (
+              <button
+                className="pa-qty-btn"
+                onClick={handleIncrement}
+                aria-label="Increase quantity"
+              >
+                <Plus size={12} aria-hidden />
+              </button>
+            )}
           </div>
           <span className="pa-cart-item-total">{itemTotal}</span>
         </div>

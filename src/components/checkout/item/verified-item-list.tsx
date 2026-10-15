@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import Coupon from '@/components/checkout/coupon';
 import usePrice from '@/lib/use-price';
 import EmptyCartIcon from '@/components/icons/empty-cart';
@@ -62,6 +63,22 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
     badVariant(item);
   const available_items = (items ?? []).filter((item: any) => !isExcluded(item));
   const badVariantNames = (items ?? []).filter(badVariant).map((item: any) => item.name).filter(Boolean).join(', ');
+  // Lines refused because their vertical is switched off ({slug: message|null}): say why, in the
+  // admin's words, instead of the generic note; with no message, the Coming Soon line.
+  const blockedVerticals = (verifiedResponse as { blocked_verticals?: Record<string, string | null> } | null)
+    ?.blocked_verticals;
+  const { isComingSoon } = useComingSoon();
+  const verticalNotes = [
+    ...new Set(
+      Object.entries(blockedVerticals ?? {}).map(
+        ([slug, m]) =>
+          m ||
+          (isComingSoon({ type_slug: slug })
+            ? "Coming soon: this item can't be ordered yet."
+            : "This item can't be delivered to this address right now."),
+      ),
+    ),
+  ];
 
   // ONE totals computation, shared verbatim with PlaceOrderAction — what this summary
   // shows is exactly what gets submitted (percentage coupons, free shipping and all).
@@ -130,9 +147,11 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
           being broken. Name what happened and offer the one action that unblocks the order. */}
       {items?.some((item) => isExcluded(item)) && (
         <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
-          <p className="text-xs leading-relaxed text-amber-800">
-            {t('text-unavailable-items-note')}
-          </p>
+          {(verticalNotes.length ? verticalNotes : [t('text-unavailable-items-note')]).map((note) => (
+            <p key={note} className="text-xs leading-relaxed text-amber-800">
+              {note}
+            </p>
+          ))}
           {badVariantNames && (
             <p className="mt-1 text-xs leading-relaxed text-amber-800">
               The option you picked for {badVariantNames} is no longer available — remove it, then add

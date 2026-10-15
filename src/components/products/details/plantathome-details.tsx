@@ -31,6 +31,7 @@ import { useUser } from '@/framework/user';
 import { useAskAiEnabled } from '@/framework/ask-ai';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { useCitySupply } from '@/lib/use-city-supply';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { isCityBased, isNationwideOutOfStock } from '@/lib/is-city-based';
 import { generateCartItem } from '@/store/quick-cart/generate-cart-item';
 import PotPicker, { type SelectedPot } from './pot-picker';
@@ -39,6 +40,7 @@ import PlantAtHomeGallery from './plantathome/gallery';
 import BundleContents from './plantathome/bundle-contents';
 import DeliveryCard from './plantathome/delivery-card';
 import StickyAtcBar from './plantathome/sticky-atc-bar';
+import ComingSoon from '@/components/storefront/coming-soon';
 import { LineIcon } from '@/components/icons/line-icons';
 import { usePdpContent } from '@/lib/use-home-config';
 import { useToggleWishlist, useInWishlist } from '@/framework/wishlist';
@@ -184,7 +186,8 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   const displayBasePrice = hasVendorPrice ? null : basePrice;
 
   // Operations Control Center — is this product's vertical available in the
-  // customer's city? Only checked when a city is known; fail open otherwise.
+  // customer's city? Without a city the global switch still answers (a Coming
+  // Soon vertical); fail open otherwise.
   const { data: svcAvail } = useQuery<any>(
     ['svc-availability', type?.slug, customerCity],
     () =>
@@ -192,12 +195,17 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
         vertical: type?.slug,
         ...(customerCity ? { city: customerCity } : {}),
       }),
-    { enabled: !!type?.slug && !!customerCity, retry: 0, staleTime: 60_000 },
+    { enabled: !!type?.slug, retry: 0, staleTime: 60_000 },
   );
   const verticalBlocked = svcAvail?.available === false;
   const verticalMessage: string | null =
     svcAvail?.message ||
-    (verticalBlocked ? `Currently unavailable in ${customerCity}.` : null);
+    (verticalBlocked ? `Currently unavailable${customerCity ? ` in ${customerCity}` : ''}.` : null);
+  // A Coming Soon vertical: shown, never sold — no buy box at all, just its tile.
+  const { isComingSoon, isOpen, messageFor } = useComingSoon();
+  const comingSoon = isComingSoon(product) || svcAvail?.status === 'coming_soon';
+  // Pots are their own vertical: the picker (and the pot line it adds) only while it sells.
+  const potsOpen = type?.slug === 'plants' && isOpen('pots-planters');
 
   const previewImages = displayImage(selectedVariation?.image, gallery, image);
   const content = useSanitizeContent({ description });
@@ -255,7 +263,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   // available_in_city: true); the city-aware answer lives on cityProduct.
   const cityUnavailable = cityBased && ((cityProduct ?? product) as any)?.available_in_city === false;
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (displayOnly || cityUnavailable) return;
+    if (displayOnly || cityUnavailable || verticalBlocked || comingSoon) return;
     if (!inStock || noVariant) return;
     const item = generateCartItem(product as any, selectedVariation);
     // Price integrity: when this product has a vendor cost sheet the server
@@ -270,7 +278,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
     addItemToCart(item, qty);
     // The chosen pot is its own product line (one pot per plant) — the server
     // re-prices both lines from their variation_option ids at checkout.
-    if (selectedPot?.option) {
+    if (potsOpen && selectedPot?.option) {
       const potProduct = {
         ...selectedPot.product,
         shop: selectedPot.product.shop ?? { id: selectedPot.product.shop_id },
@@ -300,7 +308,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
   // can never drift between them.
   const ctaDisabled = !inStock || noVariant || verticalBlocked || displayOnly || cityUnavailable;
   // Something to pick (sizes, or a pot for a plant) for the delivery card to sit beside on xl.
-  const hasOptions = hasVariations || type?.slug === 'plants';
+  const hasOptions = hasVariations || potsOpen;
   const ctaLabel = displayOnly
     ? `Out of Stock in ${shoppingCity}`
     : cityUnavailable
@@ -626,7 +634,7 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
                   {/* pot picker — plants only; pots are real products added as their
                       own cart line, size-matched to the selected plant size */}
-                  {type?.slug === 'plants' && (
+                  {potsOpen && (
                     <PotPicker
                       plantSize={(attributes as any)?.size ?? null}
                       fallbackSize={((variations as any)?.size?.[0]?.value as string) ?? null}
@@ -647,63 +655,77 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
                 </div>
 
                 {/* quantity + add to cart (the div is also the sticky-bar sentinel:
-                    the condensed bar appears once this row scrolls above the fold) */}
-                <div ref={atcSentinelRef} className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-                  <div className="flex items-center justify-between gap-2 rounded-full border border-kraft-300 px-2 py-1.5 sm:w-[140px]">
+                    the condensed bar appears once this row scrolls above the fold).
+                    None for a Coming Soon product: nothing to buy. */}
+                {!comingSoon && (
+                  <div ref={atcSentinelRef} className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                    <div className="flex items-center justify-between gap-2 rounded-full border border-kraft-300 px-2 py-1.5 sm:w-[140px]">
+                      <button
+                        type="button"
+                        aria-label="Decrease quantity"
+                        onClick={() => setQty((q) => Math.max(1, q - 1))}
+                        className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-page disabled:opacity-40"
+                        disabled={qty <= 1}
+                      >
+                        <Minus size={16} aria-hidden />
+                      </button>
+                      <span className="min-w-[1.5rem] text-center text-[14.943px] font-bold text-[#141414]">
+                        {String(qty).padStart(2, '0')}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Increase quantity"
+                        onClick={() => setQty((q) => (availableQty ? Math.min(availableQty, q + 1) : q + 1))}
+                        className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-page"
+                      >
+                        <Plus size={16} aria-hidden />
+                      </button>
+                    </div>
+
                     <button
                       type="button"
-                      aria-label="Decrease quantity"
-                      onClick={() => setQty((q) => Math.max(1, q - 1))}
-                      className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-page disabled:opacity-40"
-                      disabled={qty <= 1}
+                      onClick={handleAdd}
+                      disabled={ctaDisabled}
+                      data-t="pdp.button"
+                      className={classNames(
+                        'flex flex-1 items-center justify-center gap-2.5 rounded-control px-7 py-3.5 text-[14.943px] font-bold uppercase tracking-[0.04em] text-white transition',
+                        ctaDisabled
+                          ? 'cursor-not-allowed bg-stone-300'
+                          : 'bg-ds-btn shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-ds-btn-hover',
+                      )}
                     >
-                      <Minus size={16} aria-hidden />
-                    </button>
-                    <span className="min-w-[1.5rem] text-center text-[14.943px] font-bold text-[#141414]">
-                      {String(qty).padStart(2, '0')}
-                    </span>
-                    <button
-                      type="button"
-                      aria-label="Increase quantity"
-                      onClick={() => setQty((q) => (availableQty ? Math.min(availableQty, q + 1) : q + 1))}
-                      className="grid h-10 w-10 place-items-center rounded-full text-forest-900 transition hover:bg-page"
-                    >
-                      <Plus size={16} aria-hidden />
+                      <ShoppingBag size={20} aria-hidden />
+                      {ctaLabel}
                     </button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={handleAdd}
-                    disabled={ctaDisabled}
-                    data-t="pdp.button"
-                    className={classNames(
-                      'flex flex-1 items-center justify-center gap-2.5 rounded-control px-7 py-3.5 text-[14.943px] font-bold uppercase tracking-[0.04em] text-white transition',
-                      ctaDisabled
-                        ? 'cursor-not-allowed bg-stone-300'
-                        : 'bg-ds-btn shadow-[0_14px_30px_-12px_rgba(20,83,45,0.6)] hover:bg-ds-btn-hover',
-                    )}
-                  >
-                    <ShoppingBag size={20} aria-hidden />
-                    {ctaLabel}
-                  </button>
-                </div>
+                )}
               </div>
 
               {/* ONE coherent "Delivery & availability" card — merges the ETA
                   line, the vendor-availability note, the vertical-blocked and
-                  browse-only notices that used to be four scattered rows. */}
+                  browse-only notices that used to be four scattered rows.
+                  A Coming Soon product gets its vertical's tile in this slot:
+                  nothing to buy, nothing to deliver. */}
               <div className={classNames('mt-5', hasOptions ? 'xl:col-start-2 xl:row-start-1' : 'xl:col-span-2')}>
-                <DeliveryCard
-                  city={customerCity}
-                  etaDays={fulfillment?.eta_days ?? null}
-                  fulfillmentMode={fulfillment?.fulfillment_mode ?? null}
-                  product={product}
-                  variationOptionId={selectedVariation?.id ?? null}
-                  verticalBlocked={verticalBlocked}
-                  verticalMessage={verticalMessage}
-                  displayOnly={displayOnly}
-                />
+                {comingSoon ? (
+                  <ComingSoon
+                    compact
+                    slug={type?.slug}
+                    name={type?.name}
+                    message={svcAvail?.message || messageFor(type?.slug)}
+                  />
+                ) : (
+                  <DeliveryCard
+                    city={customerCity}
+                    etaDays={fulfillment?.eta_days ?? null}
+                    fulfillmentMode={fulfillment?.fulfillment_mode ?? null}
+                    product={product}
+                    variationOptionId={selectedVariation?.id ?? null}
+                    verticalBlocked={verticalBlocked}
+                    verticalMessage={verticalMessage}
+                    displayOnly={displayOnly}
+                  />
+                )}
               </div>
             </div>
 
@@ -756,8 +778,9 @@ const PlantAtHomeProductDetails: React.FC<Props> = ({ product, isModal = false }
 
       {/* Scroll-triggered condensed ATC bar — appears only after the inline
           CTA leaves the viewport; same computed state/copy as the inline
-          button (single source of truth). Never renders in the quick-view. */}
-      {!isModal && (
+          button (single source of truth). Never renders in the quick-view,
+          nor for a Coming Soon product (no inline CTA, nothing to add). */}
+      {!isModal && !comingSoon && (
         <StickyAtcBar
           sentinel={atcSentinelRef}
           name={name}

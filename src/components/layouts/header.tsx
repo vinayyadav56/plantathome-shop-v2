@@ -168,11 +168,13 @@ const Header = ({ layout }: { layout?: string }) => {
             { label: 'All Categories', href: '/categories/tools' },
           ]
         : null;
+      // Coming Soon: its own page (Pots' shop path is a Tools category), no category menu.
+      const soon = ty.availability?.status === 'coming_soon';
       return {
         label: ty.name ?? meta.label,
-        href: meta.shopPath ?? meta.path,
+        href: soon ? `/${ty.slug}` : meta.shopPath ?? meta.path,
         vertical: ty.slug,
-        menu: live ?? CATEGORY_MENUS[ty.slug],
+        menu: soon ? undefined : live ?? CATEGORY_MENUS[ty.slug],
       };
     });
     return [...verticals, ...NAV_TAIL];
