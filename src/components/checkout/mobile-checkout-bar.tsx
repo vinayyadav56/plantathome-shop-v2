@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useCart } from '@/store/quick-cart/cart.context';
 import usePrice from '@/lib/use-price';
+import { useCheckoutTotals } from '@/lib/use-checkout-totals';
 import { ArrowRight } from '@/components/ui/icon';
 
 /**
@@ -14,8 +15,12 @@ import { ArrowRight } from '@/components/ui/icon';
  * scroll math, so it tracks layout changes for free.
  */
 export default function MobileCheckoutBar() {
-  const { total, isEmpty, totalUniqueItems } = useCart();
-  const { price: totalPrice } = usePrice({ amount: total });
+  const { total: cartSubtotal, isEmpty, totalUniqueItems } = useCart();
+  // The order summary's own figure (annotation 2026-10-16: the bar said ₹339 while the summary
+  // said ₹388): its Total — shipping, tax and discount included — once verify has run for this
+  // cart, and before that the subtotal it shows next to "Calculated at checkout".
+  const { fresh, totals } = useCheckoutTotals();
+  const { price: totalPrice } = usePrice({ amount: fresh ? totals.total : cartSubtotal });
   const [summaryVisible, setSummaryVisible] = useState(false);
 
   useEffect(() => {

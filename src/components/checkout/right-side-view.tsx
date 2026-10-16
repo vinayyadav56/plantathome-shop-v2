@@ -1,9 +1,4 @@
-import { verifiedResponseAtom } from '@/store/checkout';
-import { useAtom } from 'jotai';
-import isEmpty from 'lodash/isEmpty';
-import { useCart } from '@/store/quick-cart/cart.context';
-import { cartFingerprint } from '@/lib/checkout-totals';
-import { formatOrderedProduct } from '@/lib/format-ordered-product';
+import { useCheckoutTotals } from '@/lib/use-checkout-totals';
 // STATIC imports, deliberately. These three used to be next/dynamic, so the
 // VerifiedItemList chunk was fetched at the exact moment "Check Availability"
 // landed — and a tab opened before a deploy asks for a hashed filename the server
@@ -18,18 +13,8 @@ export const RightSideView = ({
 }: {
   hideTitle?: boolean;
 }) => {
-  const [verifiedResponse] = useAtom(verifiedResponseAtom);
-  const { items } = useCart();
-  // verified_response persists in localStorage; it is only trustworthy while the cart
-  // still matches what /checkout/verify saw. A stale one (yesterday's session, edited
-  // cart) used to skip re-verification and submit outdated totals — now it falls back
-  // to "Check availability". Responses without a fingerprint (pre-fix blobs) are stale.
-  const currentFingerprint = cartFingerprint(
-    (items ?? []).map((item: any) => formatOrderedProduct(item)),
-  );
-  const verifiedFresh =
-    !isEmpty(verifiedResponse) &&
-    (verifiedResponse as any)?.__fingerprint === currentFingerprint;
+  // A stale verify (yesterday's session, edited cart) falls back to "Check availability".
+  const { fresh: verifiedFresh } = useCheckoutTotals();
   return (
     <>
       {!verifiedFresh ? (

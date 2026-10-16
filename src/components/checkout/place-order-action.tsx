@@ -14,13 +14,12 @@ import {
 import CityMismatchDialog from './city-mismatch-dialog';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { checkoutAtom, checkoutStepAtom, discountAtom, walletAtom } from '@/store/checkout';
-import { calculateTotal } from '@/store/quick-cart/cart.utils';
-import { computeCheckoutTotals, asIdList, invalidLineKeys, lineKey } from '@/lib/checkout-totals';
+import { asIdList } from '@/lib/checkout-totals';
+import { useCheckoutTotals } from '@/lib/use-checkout-totals';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from '@/compat/next-router';
 import { useLogout, useUser } from '@/framework/user';
 import { PaymentGateway } from '@/types';
-import { useSettings } from '@/framework/settings';
 import { usePincodeServiceability } from '@/lib/use-pincode-serviceability';
 import { isCityGatedCart } from '@/lib/is-city-based';
 import { track } from '@/lib/analytics/track';
@@ -138,38 +137,11 @@ export const PlaceOrderAction: React.FC<{
     setErrorMessage(null);
   }, [payment_gateway]);
 
-  // unavailable_products carries PRODUCT ids while a variation cart item's id is
-  // the composite "product.variation" STRING — match productId too, or an
-  // unavailable variable product slips through. invalid_option_lines = ghost
-  // lines (variable product, no variation picked) that would 422 the order;
-  // invalid_variant_lines names every line that would, exactly (variant
-  // missing, another product's, unknown or switched off).
-  const unavailableIds = asIdList(verified_response?.unavailable_products);
-  const ghostLineIds = asIdList((verified_response as any)?.invalid_option_lines);
-  const badVariantLines = invalidLineKeys((verified_response as any)?.invalid_variant_lines);
-  const available_items = (items ?? []).filter(
-    (item: any) =>
-      !unavailableIds.includes(item.id) &&
-      !(item.productId && unavailableIds.includes(item.productId)) &&
-      !(!item.variationId && ghostLineIds.includes(item.productId ?? item.id)) &&
-      !badVariantLines.has(lineKey(item)),
-  );
-
-  // ONE totals computation, shared verbatim with the order summary — what the customer
-  // saw is exactly what is submitted. (This used to diverge: percentage coupons were
-  // submitted flat, and free-shipping totals still included the fee shown as ₹0.)
-  const { settings } = useSettings();
-  const totals = computeCheckoutTotals({
-    clientSubtotal: calculateTotal(available_items),
-    verifiedAmount: verified_response?.amount,
-    totalTax: verified_response?.total_tax,
-    shippingCharge: verified_response?.shipping_charge,
-    coupon,
-    freeShippingEnabled: settings?.freeShipping,
-    freeShippingAmount: settings?.freeShippingAmount,
-  });
+  // Unavailable, ghost and refused-variant lines are left out of what is submitted, and the totals
+  // are the ones the order summary and the mobile bar show — what the customer saw is exactly what
+  // is submitted (percentage coupons, free shipping and all).
+  const { available_items, totals } = useCheckoutTotals();
   const subtotal = totals.subtotal;
-  const freeShippings = totals.freeShipping;
   const total = totals.total;
   const submitOrder = () => {
     // Fold the optional shared-location check into the order note so it's

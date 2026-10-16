@@ -6,8 +6,7 @@ import EmptyCartIcon from '@/components/icons/empty-cart';
 import { CloseIcon } from '@/components/icons/close-icon';
 import { useTranslation } from 'next-i18next';
 import { useCart } from '@/store/quick-cart/cart.context';
-import { calculateTotal } from '@/store/quick-cart/cart.utils';
-import { computeCheckoutTotals, asIdList, invalidLineKeys, lineKey } from '@/lib/checkout-totals';
+import { useCheckoutTotals } from '@/lib/use-checkout-totals';
 import { useAtom } from 'jotai';
 import {
   couponAtom,
@@ -21,7 +20,6 @@ import { ItemInfoRow } from '@/components/checkout/item/item-info-row';
 import PaymentGrid from '@/components/checkout/payment/payment-grid';
 import { PlaceOrderAction } from '@/components/checkout/place-order-action';
 import Wallet from '@/components/checkout/wallet/wallet';
-import { useSettings } from '@/framework/settings';
 import { authorizationAtom } from '@/store/authorization-atom';
 import { ShoppingBag, ChevronDown, ChevronUp } from '@/components/ui/icon';
 import cn from 'classnames';
@@ -40,29 +38,12 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
   // Guests have no wallet — hide the block (its balance/checkbox are meaningless
   // without an account).
   const [isAuthorized] = useAtom(authorizationAtom);
-  const { settings } = useSettings();
-  const freeShippingAmount = settings?.freeShippingAmount;
-  const freeShipping = settings?.freeShipping;
-
-  // unavailable_products carries PRODUCT ids while a variation cart item's id is
-  // the composite "product.variation" STRING — match productId too. Ghost lines
-  // (variable product, no variation picked — invalid_option_lines) are excluded
-  // exactly like unavailable ones. MUST mirror PlaceOrderAction's filter.
-  // asIdList: these fields are PHP arrays that serialise as a JSON object the moment their keys
-  // stop being sequential, and `.includes` on an object is a render throw on the money path.
-  const unavailable = asIdList(verifiedResponse?.unavailable_products);
-  const ghostLines = asIdList((verifiedResponse as any)?.invalid_option_lines);
-  // Lines whose variant the server will not sell (missing, another product's,
-  // unknown, switched off) — matched on product AND variant, named in the notice.
-  const badVariantLines = invalidLineKeys((verifiedResponse as any)?.invalid_variant_lines);
-  const badVariant = (item: any) => badVariantLines.has(lineKey(item));
-  const isExcluded = (item: any) =>
-    unavailable.includes(item.id) ||
-    (item.productId && unavailable.includes(item.productId)) ||
-    (!item.variationId && ghostLines.includes(item.productId ?? item.id)) ||
-    badVariant(item);
-  const available_items = (items ?? []).filter((item: any) => !isExcluded(item));
-  const badVariantNames = (items ?? []).filter(badVariant).map((item: any) => item.name).filter(Boolean).join(', ');
+  // ONE totals computation, shared with PlaceOrderAction and the mobile checkout bar — what this
+  // summary shows is exactly what gets submitted (percentage coupons, free shipping and all).
+  // isExcluded drops unavailable, ghost and refused-variant lines, exactly as the order does.
+  const { totals, isExcluded, isBadVariant } = useCheckoutTotals();
+  // Lines whose variant the server will not sell — matched on product AND variant, named in the notice.
+  const badVariantNames = (items ?? []).filter(isBadVariant).map((item: any) => item.name).filter(Boolean).join(', ');
   // Lines refused because their vertical is switched off ({slug: message|null}): say why, in the
   // admin's words, instead of the generic note; with no message, the Coming Soon line.
   const blockedVerticals = (verifiedResponse as { blocked_verticals?: Record<string, string | null> } | null)
@@ -80,17 +61,6 @@ const VerifiedItemList: React.FC<Props> = ({ className }) => {
     ),
   ];
 
-  // ONE totals computation, shared verbatim with PlaceOrderAction — what this summary
-  // shows is exactly what gets submitted (percentage coupons, free shipping and all).
-  const totals = computeCheckoutTotals({
-    clientSubtotal: calculateTotal(available_items),
-    verifiedAmount: verifiedResponse?.amount,
-    totalTax: verifiedResponse?.total_tax,
-    shippingCharge: verifiedResponse?.shipping_charge,
-    coupon,
-    freeShippingEnabled: freeShipping,
-    freeShippingAmount,
-  });
   const freeShippings = totals.freeShipping;
   const calculateDiscount = totals.discount;
   const totalPrice = verifiedResponse ? totals.total : 0;
