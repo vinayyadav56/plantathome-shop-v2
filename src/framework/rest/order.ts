@@ -30,8 +30,13 @@ import { useRouter } from "@/compat/next-router";
 import { Routes } from "@/config/routes";
 import { mapPaginatorData } from "@/framework/utils/data-mappers";
 import { isArray, isObject, isEmpty } from "lodash";
-import { useMemo } from "react";
-import { resolveOrderToken, saveOrderToken } from "@/lib/order-token";
+import { useCallback, useMemo } from "react";
+import {
+  clearPendingAttempt,
+  resolveOrderToken,
+  saveOrderToken,
+  savePendingAttempt,
+} from "@/lib/order-token";
 import { cartFingerprint } from "@/lib/checkout-totals";
 import { firstFieldError, getErrorMessage } from "@/lib/get-error-message";
 
@@ -294,12 +299,39 @@ export function useCreateRefund() {
   };
 }
 
+/**
+ * Consume the cart and the checkout once an order is PLACED. Never for an unpaid online-payment
+ * attempt: until it is paid (or switched to Cash on Delivery) the customer may still need the
+ * cart to try again (owner rule, 2026-10-16).
+ */
+export function useConsumeCheckout() {
+  const { resetCart } = useCart();
+  const [, resetCheckout] = useAtom(clearCheckoutAtom);
+  return useCallback(() => {
+    resetCart();
+    //@ts-ignore
+    resetCheckout();
+    // The wizard position is remembered per session (so a reload keeps the customer's place);
+    // clear it, because the checkout atoms this order consumed are gone and the NEXT checkout
+    // must start at Contact rather than on a Review step with no address.
+    try {
+      sessionStorage.removeItem("pah-checkout-step");
+    } catch {
+      /* non-fatal */
+    }
+    clearPendingAttempt();
+  }, [resetCart, resetCheckout]);
+}
+
+/** Why an online payment did not happen, as the payment-failed prompt words it. */
+export type UnpaidReason = "failed" | "dismissed" | "unavailable";
+
 export function useCreateOrder() {
   const router = useRouter();
   const { locale } = router;
   const { t } = useTranslation();
-  const { resetCart } = useCart();
-  const [, resetCheckout] = useAtom(clearCheckoutAtom);
+  const consumeCheckout = useConsumeCheckout();
+  const { openModal } = useModalAction();
   const [, setVerifiedResponse] = useAtom(verifiedResponseAtom);
   const { mutate: createOrder, isLoading } = useMutation(client.orders.create, {
     onSuccess: (
@@ -312,24 +344,8 @@ export function useCreateOrder() {
         const gateway = String(payment_gateway ?? "").toLowerCase();
         const orderMeta = { gateway, tracking_number, quantity: variables?.products?.length };
         track("order_created", { label: tracking_number, value: Number(variables?.paid_total ?? variables?.total) || undefined, meta: orderMeta });
-        // The order EXISTS — consume the cart + checkout state HERE, at the moment of
-        // creation. This used to live in the shared OrderView, which is also rendered by
-        // order HISTORY and the payment page — so merely opening a past order emptied the
-        // live cart (D4).
-        resetCart();
-        //@ts-ignore
-        resetCheckout();
-        // The wizard position is remembered per session (so a reload keeps the customer's
-        // place); clear it here, because the checkout atoms this order just consumed are
-        // gone and the NEXT checkout must start at Contact rather than on a Review step
-        // with no address.
-        try {
-          sessionStorage.removeItem("pah-checkout-step");
-        } catch {
-          /* non-fatal */
-        }
-        // Persist the per-order token so a guest can view their confirmation,
-        // payment and thank-you pages after this redirect (and on reload).
+        // Persist the per-order token so a guest can view their confirmation, payment and
+        // thank-you pages (and on reload) — and answer the payment-failed prompt.
         if (tracking_token) saveOrderToken(tracking_number, tracking_token);
         const tokenQuery = tracking_token
           ? `?token=${encodeURIComponent(tracking_token)}`
@@ -342,11 +358,43 @@ export function useCreateOrder() {
             PaymentGateway.FULL_WALLET_PAYMENT,
           ].includes(payment_gateway as PaymentGateway)
         ) {
-          // COD / wallet: there is no payment step, the order is final now.
+          // COD / wallet: there is no payment step, the order is placed now. Consume the cart
+          // and checkout HERE, at creation — never in the shared OrderView, which order
+          // HISTORY renders too (merely opening a past order emptied the live cart, D4).
+          consumeCheckout();
           track("order_success", { label: tracking_number, meta: orderMeta });
           return router.push(`${Routes.order(tracking_number)}${tokenQuery}`);
         }
 
+        if (String(payment_gateway).toUpperCase() === PaymentGateway.RAZORPAY) {
+          // Online payment: nothing is placed until it is paid (owner rule, 2026-10-16). Keep the
+          // cart and pay right here on checkout; a failed or closed payment hands over to the
+          // payment-failed prompt (PlaceOrderAction), which offers Cash on Delivery.
+          savePendingAttempt(tracking_number);
+          const unpaid = (reason: UnpaidReason) =>
+            window.dispatchEvent(
+              new CustomEvent("pah-payment-unpaid", {
+                detail: { tracking_number, token: tracking_token, reason },
+              }),
+            );
+          if (!payment_intent?.payment_intent_info?.payment_id) {
+            // The payment provider could not start the payment — nothing was charged.
+            return unpaid("unavailable");
+          }
+          return openModal("PAYMENT_MODAL", {
+            paymentGateway: payment_gateway,
+            paymentIntentInfo: payment_intent.payment_intent_info,
+            trackingNumber: tracking_number,
+            onPaid: () => {
+              consumeCheckout();
+              router.push(`${Routes.order(tracking_number)}${tokenQuery}`);
+            },
+            onUnpaid: unpaid,
+          });
+        }
+
+        // Any other gateway keeps its own payment page.
+        consumeCheckout();
         if (payment_intent?.payment_intent_info?.is_redirect) {
           return router.push(
             payment_intent?.payment_intent_info?.redirect_url as string,

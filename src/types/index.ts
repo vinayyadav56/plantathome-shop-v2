@@ -671,6 +671,9 @@ export interface Order {
   tracking_number: string;
   // Per-order secret returned only on creation; used to view a guest order.
   tracking_token?: string | null;
+  // When the order was placed. Null for an online checkout still waiting on its payment: it is
+  // only a payment attempt until paid or switched to Cash on Delivery (owner rule, 2026-10-16).
+  placed_at?: string | null;
   customer_id: number | string;
   customer_name: string;
   customer_contact: string;

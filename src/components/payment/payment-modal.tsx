@@ -26,7 +26,9 @@ const PAYMENTS_FORM_COMPONENTS: any = {
 const PaymentModal = () => {
   const {
     isOpen,
-    data: { paymentGateway, paymentIntentInfo, trackingNumber },
+    // onPaid / onUnpaid: set when checkout opens the payment itself (an online order is placed
+    // only once paid); absent on the order page, which just refetches.
+    data: { paymentGateway, paymentIntentInfo, trackingNumber, onPaid, onUnpaid },
   } = useModalState();
   const { closeModal } = useModalAction();
   const PaymentMethod = PAYMENTS_FORM_COMPONENTS[paymentGateway?.toUpperCase()];
@@ -51,6 +53,8 @@ const PaymentModal = () => {
         paymentIntentInfo={paymentIntentInfo}
         trackingNumber={trackingNumber}
         paymentGateway={paymentGateway}
+        onPaid={onPaid}
+        onUnpaid={onUnpaid}
       />
     </Modal>
   ) : (
@@ -58,6 +62,8 @@ const PaymentModal = () => {
       paymentIntentInfo={paymentIntentInfo}
       trackingNumber={trackingNumber}
       paymentGateway={paymentGateway}
+      onPaid={onPaid}
+      onUnpaid={onUnpaid}
     />
   );
 };

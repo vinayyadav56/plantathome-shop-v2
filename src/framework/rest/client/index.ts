@@ -420,6 +420,19 @@ class Client {
       HttpClient.post<Refund>(API_ENDPOINTS.ORDERS_REFUNDS, input),
     payment: (input: CreateOrderPaymentInput) =>
       HttpClient.post<any>(API_ENDPOINTS.ORDERS_PAYMENT, input),
+    // The payment-failed prompt (owner rule, 2026-10-16). "Yes": place the unpaid checkout as Cash
+    // on Delivery. "No": close it and give back what it held. The per-order token authorises both;
+    // either may answer 'paid' when the payment went through after all.
+    cashOnDelivery: (tracking_number: string, token?: string) =>
+      HttpClient.post<{ status: 'placed' | 'paid'; tracking_number: string }>(
+        `${API_ENDPOINTS.ORDERS}/${tracking_number}/cash-on-delivery`,
+        { token },
+      ),
+    abandonPayment: (tracking_number: string, token?: string) =>
+      HttpClient.post<{ status: 'abandoned' | 'placed' | 'paid'; tracking_number: string }>(
+        `${API_ENDPOINTS.ORDERS}/${tracking_number}/abandon-payment`,
+        { token },
+      ),
     savePaymentMethod: (input: any) =>
       HttpClient.post<any>(API_ENDPOINTS.SAVE_PAYMENT_METHOD, input),
 

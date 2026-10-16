@@ -17,12 +17,18 @@ interface Props {
   paymentIntentInfo: PaymentIntentInfo;
   trackingNumber: string;
   paymentGateway: PaymentGateway;
+  /** Checkout opened the payment itself: the order is placed now, take the customer on. */
+  onPaid?: () => void;
+  /** Checkout opened the payment itself: it did not happen — offer Cash on Delivery. */
+  onUnpaid?: (reason: 'failed' | 'dismissed' | 'unavailable') => void;
 }
 
 const RazorpayPaymentModal: React.FC<Props> = ({
   trackingNumber,
   paymentIntentInfo,
   paymentGateway,
+  onPaid,
+  onUnpaid,
 }) => {
   const { t } = useTranslation();
   const { closeModal } = useModalAction();
@@ -65,6 +71,9 @@ const RazorpayPaymentModal: React.FC<Props> = ({
   // rendered null: no modal, no error, no way forward, order left unpaid (D10).
   const [loadError, setLoadError] = useState(false);
   const launchedRef = useRef(false);
+  // An attempt failed inside the window (declined card, bank error). Razorpay keeps its own retry
+  // screen open, so this only colours what the customer is told when they close the window.
+  const failedRef = useRef(false);
 
   // @ts-ignore
   const { customer_name, customer_contact, customer, billing_address } =
@@ -95,7 +104,8 @@ const RazorpayPaymentModal: React.FC<Props> = ({
           track('order_success', { label: trackingNumber, meta: { gateway: 'razorpay', tracking_number: trackingNumber } });
         }
         closeModal();
-        await refetch();
+        if (onPaid) onPaid();
+        else await refetch();
       },
       prefill: {
         ...(customer_name && { name: customer_name }),
@@ -109,7 +119,8 @@ const RazorpayPaymentModal: React.FC<Props> = ({
         ondismiss: async () => {
           track('payment_failed', { label: trackingNumber, meta: { gateway: 'razorpay', reason: 'dismissed', tracking_number: trackingNumber } });
           closeModal();
-          await refetch();
+          if (onUnpaid) onUnpaid(failedRef.current ? 'failed' : 'dismissed');
+          else await refetch();
         },
       },
     };
@@ -118,6 +129,7 @@ const RazorpayPaymentModal: React.FC<Props> = ({
     // Attach BEFORE open(): a declined card / bank failure is a funnel step we never saw.
     try {
       razorpay.on('payment.failed', (res: any) => {
+        failedRef.current = true;
         track('payment_failed', {
           label: trackingNumber,
           meta: { gateway: 'razorpay', reason: String(res?.error?.reason ?? res?.error?.code ?? 'failed').slice(0, 80), tracking_number: trackingNumber },
@@ -156,12 +168,15 @@ const RazorpayPaymentModal: React.FC<Props> = ({
         </p>
         <p className="text-sm text-body">
           The Razorpay checkout script failed to load — this can happen with ad-blockers or a
-          flaky connection. Your order is saved; nothing was charged.
+          flaky connection. {onUnpaid ? 'Nothing was charged.' : 'Your order is saved; nothing was charged.'}
         </p>
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={closeModal}
+            onClick={() => {
+              closeModal();
+              onUnpaid?.('unavailable');
+            }}
             className="rounded-md border border-border-200 px-5 py-2 text-sm font-medium text-heading"
           >
             Close
