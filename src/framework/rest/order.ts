@@ -335,7 +335,7 @@ export function useCreateOrder() {
   const [, setVerifiedResponse] = useAtom(verifiedResponseAtom);
   const { mutate: createOrder, isLoading } = useMutation(client.orders.create, {
     onSuccess: (
-      { tracking_number, payment_gateway, payment_intent, tracking_token },
+      { tracking_number, payment_gateway, payment_intent, tracking_token, customer_id },
       variables: any,
     ) => {
       if (tracking_number) {
@@ -370,7 +370,11 @@ export function useCreateOrder() {
           // Online payment: nothing is placed until it is paid (owner rule, 2026-10-16). Keep the
           // cart and pay right here on checkout; a failed or closed payment hands over to the
           // payment-failed prompt (PlaceOrderAction), which offers Cash on Delivery.
-          savePendingAttempt(tracking_number);
+          savePendingAttempt({
+            tracking_number,
+            owner: String(customer_id ?? "guest"),
+            fingerprint: cartFingerprint(variables?.products ?? []),
+          });
           const unpaid = (reason: UnpaidReason) =>
             window.dispatchEvent(
               new CustomEvent("pah-payment-unpaid", {

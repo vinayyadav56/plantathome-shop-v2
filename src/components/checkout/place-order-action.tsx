@@ -20,7 +20,7 @@ import {
 import CityMismatchDialog from './city-mismatch-dialog';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { checkoutAtom, checkoutStepAtom, discountAtom, walletAtom } from '@/store/checkout';
-import { asIdList } from '@/lib/checkout-totals';
+import { asIdList, cartFingerprint } from '@/lib/checkout-totals';
 import { useCheckoutTotals } from '@/lib/use-checkout-totals';
 import { useTranslation } from 'next-i18next';
 import { useRouter } from '@/compat/next-router';
@@ -104,6 +104,13 @@ export const PlaceOrderAction: React.FC<{
     if (vm?.code === 'SHOPPING_CITY_MISMATCH') setCityMismatch(vm);
   }, [verified_response]);
 
+  // Unavailable, ghost and refused-variant lines are left out of what is submitted, and the totals
+  // are the ones the order summary and the mobile bar show — what the customer saw is exactly what
+  // is submitted (percentage coupons, free shipping and all).
+  const { available_items, totals } = useCheckoutTotals();
+  const subtotal = totals.subtotal;
+  const total = totals.total;
+
   // The payment-failed prompt (owner rule, 2026-10-16): an online order is placed only once it is
   // paid. When the payment fails, is closed or never starts, the customer is offered Cash on
   // Delivery — "Place order? Yes / No". No keeps them here with the cart to try again.
@@ -139,6 +146,8 @@ export const PlaceOrderAction: React.FC<{
       `${Routes.order(trackingNumber)}${attemptToken ? `?token=${encodeURIComponent(attemptToken)}` : ''}`,
     );
   };
+  // A remembered attempt is only ever this shopper's (see getPendingAttempt).
+  const attemptOwner = String(me?.id ?? 'guest');
   const failure = (e: unknown) => {
     const response = (e as { response?: { status?: number; data?: { code?: string } } })?.response;
     return { status: response?.status, code: response?.data?.code };
@@ -148,7 +157,11 @@ export const PlaceOrderAction: React.FC<{
   // was closed — is settled first: placed means the payment went through, cancelled means it is
   // gone, anything else gets the same prompt instead of a second order (and a second payment).
   useEffect(() => {
-    const pending = getPendingAttempt();
+    // Same shopper AND the same cart — someone else on this browser never sees it.
+    const pending = getPendingAttempt(
+      attemptOwner,
+      cartFingerprint((available_items ?? []).map((item) => formatOrderedProduct(item))),
+    );
     if (!pending || (modalOpen && modalView === 'PAYMENT_MODAL')) return;
     let stale = false;
     const attemptToken = getOrderToken(pending);
@@ -160,8 +173,10 @@ export const PlaceOrderAction: React.FC<{
         else if (['order-cancelled', 'order-refunded', 'order-failed'].includes(order?.order_status)) clearPendingAttempt();
         else setUnpaid({ tracking_number: pending, token: attemptToken, reason: 'dismissed' });
       })
-      .catch(() => {
-        if (!stale) clearPendingAttempt();
+      .catch((e) => {
+        // Forget it only when the server says it is gone. A blip must not drop the marker, or the
+        // next "Place order" would open a second attempt while this one may still be paid.
+        if (!stale && failure(e).status === 404) clearPendingAttempt();
       });
     return () => {
       stale = true;
@@ -239,7 +254,8 @@ export const PlaceOrderAction: React.FC<{
    * was paid after all, or its payment is still settling).
    */
   const closeEarlierAttempt = async (): Promise<boolean> => {
-    const pending = getPendingAttempt();
+    // Any earlier attempt of this shopper's, whatever the cart now holds.
+    const pending = getPendingAttempt(attemptOwner);
     if (!pending) return true;
     const attemptToken = getOrderToken(pending);
     try {
@@ -302,12 +318,6 @@ export const PlaceOrderAction: React.FC<{
     setErrorMessage(null);
   }, [payment_gateway]);
 
-  // Unavailable, ghost and refused-variant lines are left out of what is submitted, and the totals
-  // are the ones the order summary and the mobile bar show — what the customer saw is exactly what
-  // is submitted (percentage coupons, free shipping and all).
-  const { available_items, totals } = useCheckoutTotals();
-  const subtotal = totals.subtotal;
-  const total = totals.total;
   const submitOrder = async () => {
     if (!(await closeEarlierAttempt())) return;
     // Fold the optional shared-location check into the order note so it's
