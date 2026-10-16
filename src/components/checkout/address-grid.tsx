@@ -9,6 +9,7 @@ import type { Address } from '@/types';
 import { useCustomerCity } from '@/lib/use-customer-city';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { isCityGatedCart } from '@/lib/is-city-based';
+import { useComingSoon } from '@/lib/use-coming-soon';
 import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
 import { isAddressComplete } from '@/lib/address-complete';
 import CityMismatchDialog from './city-mismatch-dialog';
@@ -47,8 +48,11 @@ export const AddressGrid: React.FC<AddressesProps> = ({
   const { city } = useCustomerCity();
   // A cart with no city-based line (Tools only) ships nationwide: no address is
   // "other city", so nothing is greyed out and the mismatch dialog never opens.
+  // Same while Plants are a nationwide catalogue (owner 2026-10-17: deliverable
+  // from everywhere); checkout's verify still asks when a nursery's price is involved.
   const { items } = useCart();
-  const shoppingCity = isCityGatedCart(items) ? city : null;
+  const { plantsNationwide } = useComingSoon();
+  const shoppingCity = isCityGatedCart(items) && !plantsNationwide ? city : null;
   const [mismatch, setMismatch] = useState<Address | null>(null);
 
   const cityKey = normalizeCityClient(shoppingCity);

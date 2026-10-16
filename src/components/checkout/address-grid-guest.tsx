@@ -9,6 +9,7 @@ import { addressCityOf, normalizeCityClient } from '@/lib/shopping-city';
 import { getStoredCity } from '@/lib/customer-location';
 import { useCart } from '@/store/quick-cart/cart.context';
 import { isCityGatedCart } from '@/lib/is-city-based';
+import { useComingSoon } from '@/lib/use-coming-soon';
 
 interface AddressesProps {
   addresses: Address[] | undefined;
@@ -30,9 +31,11 @@ export const GuestAddressGrid: React.FC<AddressesProps> = ({
   const { t } = useTranslation('common');
   const [selectedAddress, setAddress] = useAtom(atom);
   const { openModal } = useModalAction();
-  // Tools-only cart: ships nationwide, so no address is an "other city" one.
+  // Tools-only cart, or Plants while they're a nationwide catalogue: ships anywhere,
+  // so no address is an "other city" one (verify still asks when a nursery's price is involved).
   const { items } = useCart();
-  const cityGated = isCityGatedCart(items);
+  const { plantsNationwide } = useComingSoon();
+  const cityGated = isCityGatedCart(items) && !plantsNationwide;
 
   function onAdd() {
     openModal('ADD_OR_UPDATE_GUEST_ADDRESS', { type, atom });
