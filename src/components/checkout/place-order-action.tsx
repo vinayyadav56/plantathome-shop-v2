@@ -169,6 +169,9 @@ export const PlaceOrderAction: React.FC<{
       .get(pending, attemptToken)
       .then((order) => {
         if (stale) return;
+        // The shopper may have moved on while this was loading: placing again closes this attempt
+        // and starts a new one, which then gets its own prompt — never ask about the old one.
+        if (getPendingAttempt(attemptOwner) !== pending) return;
         if (order?.placed_at) goToPlacedOrder(pending, attemptToken);
         else if (['order-cancelled', 'order-refunded', 'order-failed'].includes(order?.order_status)) clearPendingAttempt();
         else setUnpaid({ tracking_number: pending, token: attemptToken, reason: 'dismissed' });
