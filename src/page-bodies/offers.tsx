@@ -14,11 +14,15 @@ import { getLayoutWithFooter } from '@/components/layouts/layout-with-footer';
 import PageBanner from '@/components/banners/page-banner';
 import { isEmpty } from 'lodash';
 import { Tab } from '@headlessui/react';
+import { useRouter } from '@/compat/next-router';
 import CorporatePanel from '@/components/offers/corporate-panel';
 
 const OffersPage: NextPageWithLayout = () => {
   const limit = 20;
   const { t } = useTranslation('common');
+  // ?tab=corporate (the gifting page's "View all") opens the Corporate tab. `query` is {}
+  // until hydration and Tab.Group reads defaultIndex once, so the key remounts it then.
+  const { tab } = useRouter().query;
   const { isLoading, isLoadingMore, hasMore, coupons, error, loadMore } =
     useCoupons({ limit });
   const isValidCoupon = coupons.filter(
@@ -35,7 +39,7 @@ const OffersPage: NextPageWithLayout = () => {
         breadcrumbTitle={t('text-home')}
       />
       <div className="w-full px-5 py-12 mx-auto g-light-a max-w-1920 lg:py-14 lg:px-8 xl:py-24 xl:px-16 2xl:px-20">
-        <Tab.Group>
+        <Tab.Group key={String(tab)} defaultIndex={tab === 'corporate' ? 1 : 0}>
           <Tab.List className="flex flex-wrap gap-2">
             {[t('common:text-tab-offers'), t('common:text-tab-corporate')].map(
               (label) => (

@@ -50,6 +50,11 @@ export interface GardenLeadInput {
   space_size?: string;
   budget_range?: string;
   message?: string;
+  // corporate-leads only (the garden route ignores them)
+  company?: string;
+  occasion?: string;
+  quantity?: string;
+  meta?: { preferred_date?: string; plant_preferences?: string[] };
 }
 
 export function useGardenTemplates() {
@@ -65,7 +70,7 @@ export function useGiftingTemplates() {
 }
 
 export function useSubmitCorporateLead() {
-  return useMutation((input: GardenLeadInput & { company?: string; occasion?: string; quantity?: string }) =>
+  return useMutation((input: GardenLeadInput) =>
     HttpClient.post<{ data: { id: number }; message: string }>('corporate-leads', { ...input, source: 'corporate' })
   );
 }
