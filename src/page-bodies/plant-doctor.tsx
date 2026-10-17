@@ -16,6 +16,7 @@ import {
   ConsultationRecord,
   DiagnoseInput,
   DiagnosisResponse,
+  Outcome,
   Severity,
 } from '@/framework/plant-doctor';
 import {
@@ -240,11 +241,48 @@ interface Case {
   turns: number; // successful diagnoses so far
 }
 
+/** Why a photo got no diagnosis: one of the service's outcomes, or there was no photo at all. */
+type RejectionOutcome = Exclude<Outcome, 'plant_detected'> | 'no_photo';
+
 type MsgBody =
   | { kind: 'user'; text?: string; photoUrl?: string }
   | { kind: 'diagnosis'; result: DiagnosisResponse; update: boolean }
-  | { kind: 'rejection'; reason?: string; hadPhoto: boolean }
+  | { kind: 'rejection'; outcome: RejectionOutcome; reason?: string; askFor?: string }
   | { kind: 'error'; text: string; retry?: { input: DiagnoseInput; kase: Case } };
+
+/** The service's outcome, with the pre-outcome contract (`is_plant`) as the fallback. */
+function outcomeOf(data: DiagnosisResponse): Outcome {
+  if (data.outcome) return data.outcome;
+  return data.is_plant === false ? 'non_plant' : 'plant_detected';
+}
+
+const REJECTION_COPY: Record<RejectionOutcome, { title: string; body: string; button: string }> = {
+  non_plant: {
+    title: 'I couldn’t find a living plant in that photo.',
+    body: 'Send a clear photo of a real plant — a few leaves or the whole plant in its pot.',
+    button: 'Try another photo',
+  },
+  poor_quality: {
+    title: 'That photo is too blurry, dark or far away to assess.',
+    body: 'Hold the phone steady in good daylight and get close enough that the leaves fill the frame.',
+    button: 'Take a clearer photo',
+  },
+  uncertain: {
+    title: 'I can’t tell for sure what I’m looking at.',
+    body: 'A close-up of a few leaves — and the whole plant from the front — would let me check it properly.',
+    button: 'Send a closer photo',
+  },
+  mixed_content: {
+    title: 'I can see more than one plant, or the plant is in the background.',
+    body: 'Which one should I look at? Send a photo of just that plant.',
+    button: 'Photograph one plant',
+  },
+  no_photo: {
+    title: 'Please add a photo.',
+    body: 'Dr. Planty diagnoses from what it can see — a clear shot of the leaves helps most.',
+    button: 'Add a photo',
+  },
+};
 
 type Msg = MsgBody & { id: string; at: number };
 
@@ -258,14 +296,19 @@ function messagesFromEntry(e: ConsultationEntry): Msg[] {
 
 function errorFor(e: any): { text: string; canRetry: boolean } {
   const status = e?.response?.status;
+  const code = e?.response?.data?.code;
+  const serverMessage = e?.response?.data?.message;
   if (status === 503) {
     return { text: 'Plant Doctor is taking a break right now. Please try later.', canRetry: false };
   }
   if (status === 429) {
+    // The month's budget is gone: a retry cannot succeed. The per-IP throttle's 429 can.
+    if (code === 'budget_exhausted') {
+      return { text: typeof serverMessage === 'string' && serverMessage ? serverMessage : 'Plant Doctor has reached this month’s limit.', canRetry: false };
+    }
     return { text: 'Plant Doctor is busy right now. Please try again later.', canRetry: true };
   }
-  const serverMessage = e?.response?.data?.message;
-  if (status === 422 && typeof serverMessage === 'string' && serverMessage) {
+  if ((status === 422 || code === 'invalid_image') && typeof serverMessage === 'string' && serverMessage) {
     return { text: serverMessage, canRetry: false };
   }
   return { text: "We couldn't complete the diagnosis. Please try again.", canRetry: true };
@@ -371,8 +414,18 @@ function TypingBubble({ hasPhoto }: { hasPhoto: boolean }) {
 
 /* ── The report, as a run of bubbles ──────────────────────────────────────── */
 
+const CONFIDENCE_LABEL = { high: 'High confidence match', medium: 'Medium confidence match', low: 'Low confidence match' } as const;
+
 function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; update: boolean }) {
   const id = result.identification;
+  const stage = result.stage_results?.identification ?? null;
+  const care = result.stage_results?.care ?? null;
+  // Confidence is a category from the service; the numeric field is kept for older replies.
+  const level = stage?.confidence ?? (typeof id?.confidence === 'number' && id.confidence > 0
+    ? (id.confidence >= 0.8 ? 'high' : id.confidence >= 0.5 ? 'medium' : 'low')
+    : null);
+  const alternatives = (stage?.candidates ?? []).slice(1).map((c) => c.common_name || c.scientific_name).filter(Boolean);
+  const groupOnly = stage ? !stage.reliable_for_species_advice : false;
   return (
     <>
       {/* plant identity + health */}
@@ -383,12 +436,21 @@ function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; updat
             <h2 className="mt-1 text-[17px] font-semibold leading-snug text-[#184A31]">
               {id?.common_name || result.plant_name || 'Your plant'}
             </h2>
-            {(id?.scientific_name || (id?.confidence ?? 0) > 0) && (
+            {(id?.scientific_name || level) && (
               <p className="mt-0.5 text-[12.5px] italic text-[#6B6B6B]">
                 {id?.scientific_name}
-                {typeof id?.confidence === 'number' && id.confidence > 0
-                  ? `${id?.scientific_name ? ' · ' : ''}${Math.round(id.confidence * 100)}% match`
-                  : ''}
+                {level ? `${id?.scientific_name ? ' · ' : ''}${CONFIDENCE_LABEL[level]}` : ''}
+              </p>
+            )}
+            {level !== 'high' && alternatives.length > 0 && (
+              <p className="mt-1 text-[12.5px] text-[#5B5B5B]">Could also be: {alternatives.join(', ')}</p>
+            )}
+            {groupOnly && (
+              <p className="mt-1 text-[12.5px] text-[#5B5B5B]">
+                {stage?.broader_group
+                  ? `The care below is general for a ${stage.broader_group}; `
+                  : 'The care below is general; '}
+                send a close-up of the leaves or stems for species-specific advice.
               </p>
             )}
           </div>
@@ -478,6 +540,11 @@ function DiagnosisBubbles({ result, update }: { result: DiagnosisResponse; updat
         <div className={BOT_WIDE}>
           <p className="text-[10.5px] font-bold uppercase tracking-[0.2em] text-[#6B6B6B]">Long-term care</p>
           <p className="mt-1.5 text-[#5B5B5B]">{result.long_term_care}</p>
+          {care?.uncertainty_notes && care.uncertainty_notes.length > 0 && (
+            <div className="mt-3 border-t border-[#EFECE3] pt-2.5">
+              <CareList title="Not sure about" items={care.uncertainty_notes} />
+            </div>
+          )}
         </div>
       )}
 
@@ -700,8 +767,10 @@ export default function PlantDoctorPage() {
     mutate(input, {
       onSuccess: (res) => {
         const data = res.data;
-        if (data?.is_plant === false) {
-          push({ kind: 'rejection', reason: data.rejection_reason, hadPhoto: Boolean(c.photo) });
+        const outcome = outcomeOf(data);
+        if (outcome !== 'plant_detected') {
+          // No identity card, no gauge, nothing saved: the gate did not pass this photo.
+          push({ kind: 'rejection', outcome, reason: data.rejection_reason, askFor: data.guidance?.message });
           // Never carry a rejected photo into the next message.
           if (c.turns === 0) setKase((k) => (k?.id === c.id ? null : k));
           return;
@@ -724,17 +793,24 @@ export default function PlantDoctorPage() {
     // A new photo is a new plant; words alone add to the one being discussed.
     const base: Case = draft || !kase ? { id: newId(), photo: draft, texts: [], turns: 0 } : kase;
     const next: Case = { ...base, texts: said ? [...base.texts, said] : base.texts };
-    setKase(next);
     setViewing(null);
     setNote(null);
     setText('');
     push({ kind: 'user', text: said || undefined, photoUrl: draft?.url });
     clearDraft();
+    if (!next.photo) {
+      // Words alone are never diagnosed (owner decision 2026-10-17): ask for the photo here,
+      // without a request — the API would refuse it the same way.
+      push({ kind: 'rejection', outcome: 'no_photo' });
+      return;
+    }
+    setKase(next);
+    // The earlier identification is NOT sent back as `plant_name`: the service re-identifies
+    // the photo every turn, and a claim of its own making would only anchor it.
     run(
       {
-        image_base64: next.photo?.b64,
+        image_base64: next.photo.b64,
         symptoms: next.texts.join('\n').slice(-SYMPTOMS_MAX) || undefined,
-        plant_name: next.plantName,
         language: locale || 'en',
         session_id: next.id,
       },
@@ -990,27 +1066,22 @@ export default function PlantDoctorPage() {
                 }
 
                 if (m.kind === 'rejection') {
+                  const copy = REJECTION_COPY[m.outcome];
                   return (
                     <li key={m.id} ref={isLast ? lastRef : undefined} className={`${ITEM} items-start`}>
-                      <div className={BOT}>
-                        <p className="font-semibold">
-                          {m.hadPhoto
-                            ? 'I couldn’t find a plant in that photo.'
-                            : 'I couldn’t work out a diagnosis from that.'}
-                        </p>
-                        <p className="mt-1 text-[#5B5B5B]">
-                          {m.reason ||
-                            (m.hadPhoto
-                              ? 'Please send a clear, well-lit photo of the plant or the affected leaf.'
-                              : 'A photo helps most — or tell me the plant and what you see on its leaves.')}
-                        </p>
+                      <div className={BOT} data-outcome={m.outcome}>
+                        <p className="font-semibold">{copy.title}</p>
+                        {/* The service's own words first (they say what it saw, in the shopper's
+                            language); the fixed copy is the fallback for older replies. */}
+                        <p className="mt-1 text-[#5B5B5B]">{m.reason || copy.body}</p>
+                        {m.askFor && m.reason && <p className="mt-1 text-[#5B5B5B]">{m.askFor}</p>}
                         <button
                           type="button"
                           onClick={() => fileRef.current?.click()}
                           className={`${QUICK_BTN} mt-2.5`}
                         >
                           <Camera className="h-4 w-4" aria-hidden />
-                          {m.hadPhoto ? 'Try another photo' : 'Add a photo'}
+                          {copy.button}
                         </button>
                       </div>
                       <span className="px-1 text-[10.5px] leading-none text-[#4F5E67]">{time}</span>

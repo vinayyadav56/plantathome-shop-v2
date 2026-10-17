@@ -19,17 +19,51 @@ export interface DiagnosisResult {
 
 export type ImageQuality = 'ok' | 'blurry' | 'dark' | 'partial' | 'no_plant';
 
+/** What the staged service decided about the photo. Only plant_detected comes with a diagnosis. */
+export type Outcome = 'plant_detected' | 'non_plant' | 'uncertain' | 'poor_quality' | 'mixed_content';
+export type ConfidenceLevel = 'high' | 'medium' | 'low';
+
 export interface PlantIdentification {
   common_name: string;
   scientific_name: string;
   confidence: number;
 }
 
+export interface IdentificationCandidate {
+  common_name: string;
+  scientific_name: string;
+  rank: 'species' | 'genus' | 'family' | 'group';
+  supporting_features: string[];
+}
+
+export interface IdentificationStage {
+  candidates: IdentificationCandidate[];
+  confidence: ConfidenceLevel;
+  broader_group: string;
+  ambiguities: string[];
+  needs_more_views: string[];
+  reliable_for_species_advice: boolean;
+}
+
+export interface CareStage {
+  advice_scope: 'species_specific' | 'group_level' | 'general_only';
+  uncertainty_notes: string[];
+  when_to_seek_help: string;
+}
+
 export interface DiagnosisResponse {
+  /** The source of truth. The API forces is_plant=false and empties the diagnosis for every other outcome. */
+  outcome?: Outcome;
   // Trust gate: when is_plant is false the UI must show `rejection_reason`, NOT a diagnosis.
   is_plant?: boolean;
   image_quality?: ImageQuality;
   rejection_reason?: string;
+  /** What to send next (ask_for keys) and the sentence saying so, in the shopper's language. */
+  guidance?: { ask_for: string[]; message: string };
+  stage_results?: {
+    identification?: IdentificationStage | null;
+    care?: CareStage | null;
+  };
   identification?: PlantIdentification;
   plant_name: string;
   diagnosis: DiagnosisResult[];
@@ -38,10 +72,16 @@ export interface DiagnosisResponse {
   long_term_care: string;
 }
 
+/** Error bodies from the diagnose endpoint carry a code the UI can branch on. */
+export type DiagnoseErrorCode =
+  | 'disabled' | 'not_configured' | 'budget_exhausted' | 'image_required' | 'invalid_image'
+  | 'image_unreadable' | 'unsupported_format' | 'image_too_large' | 'image_too_small' | 'upstream';
+
 export interface DiagnoseInput {
   image_base64?: string;
   image_url?: string;
   symptoms?: string;
+  /** An unverified claim the service checks against the photo. The chat no longer sends its own earlier identification here. */
   plant_name?: string;
   session_id?: string;
   /** ISO 639 code so the diagnosis text comes back in the shopper's language. */
