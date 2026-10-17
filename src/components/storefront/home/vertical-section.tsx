@@ -6,7 +6,6 @@ import { useCategories } from '@/framework/category';
 import LineIcon from '@/components/icons/line-icons';
 import SafeImage from '@/components/ui/safe-image';
 import BestSellers from '@/components/storefront/home/best-sellers';
-import ComingSoon from '@/components/storefront/coming-soon';
 import { useComingSoon } from '@/lib/use-coming-soon';
 import { ArrowRight } from '@/components/ui/icon';
 import {
@@ -75,7 +74,7 @@ export function VerticalSection({
   label?: string;
 }) {
   const { t } = useTranslation('common');
-  const { isComingSoon, messageFor } = useComingSoon();
+  const { isComingSoon } = useComingSoon();
 
   const limit = Math.min(
     Math.max(Number(section.maxCategories) || 12, 1),
@@ -128,16 +127,12 @@ export function VerticalSection({
   const showCategories = section.showCategories !== false && (isLoading || cards.length > 0);
   const showProducts = section.showProducts !== false;
 
-  // A Coming Soon vertical: its tile, in the section's own gutters — no rail of
-  // things nobody can buy yet.
+  // A Coming Soon vertical gets no block at all: the "Six worlds" tiles above already
+  // carry its chip, and a band per vertical stacked five dark "Coming soon" panels under
+  // the best-sellers (owner annotation 2026-10-17: "why these came here"). Its own page
+  // still explains it.
   if (isComingSoon({ type_slug: section.typeSlug })) {
-    return (
-      <section className="g-light-a">
-        <div className="mx-auto max-w-none px-5 pb-[40px] pt-[40px] sm:px-8 lg:px-16 lg:pb-[52px] lg:pt-[48px]">
-          <ComingSoon compact slug={section.typeSlug} name={label} message={messageFor(section.typeSlug)} />
-        </div>
-      </section>
-    );
+    return null;
   }
 
   // Nothing to render → render NOTHING, not an empty shell. A heading with no
